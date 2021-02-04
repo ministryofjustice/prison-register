@@ -24,5 +24,3 @@ rather than calling the `/health` endpoint.
 - `/health`: provides information about the application health and its dependencies.  This should only be used
 by court-register health monitoring (e.g. pager duty) and not other systems who wish to find out the state of court-register.
 - `/info`: provides information about the version of deployed application.
-
-# court-registry

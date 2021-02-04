@@ -1,0 +1,12 @@
+[
+  {
+    "courtId": "ACCRYC",
+    "courtName": "Accrington Youth Court",
+    "active": true
+  },
+  {
+    "courtId": "KIDDYC",
+    "courtName": "Kidderminster Youth Court",
+    "active": true
+  }
+]

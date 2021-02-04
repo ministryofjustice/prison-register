@@ -1,0 +1,31 @@
+version: '3.1'
+services:
+  court-register:
+    image: quay.io/hmpps/court-register:latest
+    networks:
+      - hmpps
+    container_name: court-register
+    depends_on:
+      - court-register-db
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    environment:
+      - SPRING_PROFILES_ACTIVE=postgres
+
+  court-register-db:
+    image: postgres
+    networks:
+      - hmpps
+    container_name: court-register-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=admin_password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=court-register-db
+
+networks:
+  hmpps:

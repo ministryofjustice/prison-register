@@ -1,0 +1,65 @@
+info.app:
+  name: HMPPS Court Register
+  version: 1.0
+
+spring:
+  application:
+    name: court-register
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+  flyway:
+    enabled: true
+
+  datasource:
+    url: jdbc:postgresql://${DATABASE_ENDPOINT}/${DATABASE_NAME}?sslmode=verify-full
+    continue-on-error: true
+    hikari:
+      pool-name: CourtRegister-CP
+      connectionTimeout: 1000
+      validationTimeout:  500
+
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+  thymeleaf.render-hidden-markers-before-checkboxes: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  forward-headers-strategy: native
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol_header: x-forwarded-proto
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.security: INFO
+    uk.gov.justice.digital: DEBUG
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: 'info, health'
+  endpoint:
+    health:
+      cache:
+        time-to-live: 2000ms
+      show-components: always
+      show-details: always
+    info:
+      cache:
+        time-to-live: 2000ms
+
+graceful.shutdown.enabled: true

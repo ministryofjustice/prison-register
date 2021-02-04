@@ -1,0 +1,15 @@
+graceful:
+  shutdown.enabled: false
+
+management.endpoint:
+  health.cache.time-to-live: 0
+  info.cache.time-to-live: 0
+
+spring:
+  datasource:
+    url: 'jdbc:h2:mem:court-register-db;MODE=PostgreSQL'
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
