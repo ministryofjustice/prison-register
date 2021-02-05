@@ -84,7 +84,7 @@ jobs:
             rm BOOT-INF/classes/META-INF/build-info.properties
 
             # make up a good version name
-            ( [[ "$CIRCLE_BRANCH" == "master" ]] && echo "$APP_VERSION" || echo "$APP_VERSION.$CIRCLE_BRANCH" ) > ./app_version.txt
+            ( [[ "$CIRCLE_BRANCH" == "main" ]] && echo "$APP_VERSION" || echo "$APP_VERSION.$CIRCLE_BRANCH" ) > ./app_version.txt
 
       - save_cache:
           paths:
@@ -123,7 +123,7 @@ jobs:
                --label "build.url=$CIRCLE_BUILD_URL" \
                --label "build.gitref=$CIRCLE_SHA1"
 
-            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+            if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
               # publish to quay.io as the tag
               docker login -u $QUAYIO_USERNAME -p $QUAYIO_PASSWORD quay.io
               docker tag $IMAGE_NAME:$APP_VERSION $IMAGE_NAME:latest
@@ -137,17 +137,6 @@ jobs:
       - deploy_to_env:
           env: "dev"
 
-  deploy_preprod:
-    executor: deployer
-    steps:
-      - deploy_to_env:
-          env: "preprod"
-
-  deploy_prod:
-    executor: deployer
-    steps:
-      - deploy_to_env:
-          env: "prod"
 
 workflows:
   version: 2
@@ -162,26 +151,11 @@ workflows:
             - build
           filters:
             branches:
-              only: master
+              only: main
       - deploy_dev:
           requires:
             - build_docker
-      - request-preprod-approval:
-          type: approval
-          requires:
-            - deploy_dev
-      - deploy_preprod:
-          context: court-register-preprod
-          requires:
-            - request-preprod-approval
-      - request-prod-approval:
-          type: approval
-          requires:
-            - deploy_preprod
-      - deploy_prod:
-          context: court-register-prod
-          requires:
-            - request-prod-approval
+
   scheduled:
     triggers:
       - schedule:
