@@ -1,12 +1,9 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "app.fullname" . }}
   labels:
-    app: {{ template "app.name" . }}
-    chart: {{ template "app.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "app.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 2
@@ -18,13 +15,11 @@ spec:
       maxUnavailable: 50%
   selector:
     matchLabels:
-      app: {{ template "app.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ template "app.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "app.selectorLabels" . | nindent 8 }}
     spec:
       affinity:
         podAntiAffinity:
@@ -41,13 +36,12 @@ spec:
       containers:
         - name: court-register
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.image.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /health/ping
+              path: /health/liveness
               port: {{ .Values.image.port }}
             periodSeconds: 30
             initialDelaySeconds: 90
@@ -55,7 +49,7 @@ spec:
             failureThreshold: 10
           readinessProbe:
             httpGet:
-              path: /health/ping
+              path: /health/readiness
               port: {{ .Values.image.port }}
             periodSeconds: 20
             initialDelaySeconds: 60
