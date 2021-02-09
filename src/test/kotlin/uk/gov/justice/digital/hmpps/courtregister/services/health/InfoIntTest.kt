@@ -17,15 +17,6 @@ class InfoIntTest : IntegrationTest() {
   }
 
   @Test
-  fun `Info page reports build gradle variable`() {
-    val ciSet = !System.getenv("CI").isNullOrBlank()
-    webTestClient.get().uri("/info")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().jsonPath("build.continuousIntegration").isEqualTo(ciSet.toString())
-  }
-
-  @Test
   fun `Info page reports version`() {
     webTestClient.get().uri("/info")
         .exchange()

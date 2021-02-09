@@ -12,9 +12,9 @@ interface CourtRepository : CrudRepository<Court, String> {
 
 @Entity
 data class Court(
-    @Id
-    val id: String,
-    val courtName: String,
-    val courtDescription: String?,
-    val active: Boolean) {
-}
+  @Id
+  val id: String,
+  val courtName: String,
+  val courtDescription: String?,
+  val active: Boolean
+)

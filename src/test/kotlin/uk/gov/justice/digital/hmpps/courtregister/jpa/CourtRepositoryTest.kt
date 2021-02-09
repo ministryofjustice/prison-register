@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.transaction.TestTransaction
 import org.springframework.transaction.annotation.Transactional
 
-
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @Transactional
@@ -42,7 +41,6 @@ class CourtRepositoryTest {
     assertThat(court).get().isEqualTo(Court("SHEFCC", "Sheffield Crown Court", null, true))
   }
 
-
   @Test
   fun `should get active courts`() {
     val activeCourts = courtRepository.findByActiveOrderById(true)
@@ -54,5 +52,4 @@ class CourtRepositoryTest {
     val allCourts = courtRepository.findAll()
     assertThat(allCourts).hasSize(activeCourts.size + inActiveCourts.size)
   }
-
 }

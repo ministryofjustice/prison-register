@@ -6,6 +6,17 @@ spring:
   application:
     name: court-register
 
+  profiles:
+    group:
+      test:
+        - "dev"
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${oauth.endpoint.url}/.well-known/jwks.json
+
   jpa:
     open-in-view: false
     show-sql: false
@@ -37,8 +48,9 @@ server:
     context-path: /
   forward-headers-strategy: native
   tomcat:
-    remote-ip-header: x-forwarded-for
-    protocol_header: x-forwarded-proto
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
 
 logging:
   level:
@@ -62,4 +74,16 @@ management:
       cache:
         time-to-live: 2000ms
 
-graceful.shutdown.enabled: true
+oauth:
+  token.url: ${oauth.endpoint.url}/oauth/token
+
+graceful:
+  shutdown.enabled: true
+
+azure:
+  application-insights.web.enable-W3C: true
+
+aws:
+  provider: aws
+  region: eu-west-2
+

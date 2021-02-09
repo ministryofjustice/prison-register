@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@2.2
+  hmpps: ministryofjustice/hmpps@2.3
 
 executors:
   validator-integration:
@@ -89,7 +89,6 @@ workflows:
           env: "preprod"
           context:
             - hmpps-common-vars
-            - offender-case-notes-preprod
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -102,7 +101,6 @@ workflows:
           slack_notification: true
           context:
             - hmpps-common-vars
-            - offender-case-notes-prod
           requires:
             - request-prod-approval
 

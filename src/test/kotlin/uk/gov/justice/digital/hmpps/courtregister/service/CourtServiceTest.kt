@@ -10,7 +10,7 @@ import org.mockito.ArgumentMatchers.anyString
 import uk.gov.justice.digital.hmpps.courtregister.jpa.Court
 import uk.gov.justice.digital.hmpps.courtregister.jpa.CourtRepository
 import uk.gov.justice.digital.hmpps.courtregister.resource.CourtDto
-import java.util.*
+import java.util.Optional
 
 class CourtServiceTest {
   private val courtRepository: CourtRepository = mock()
@@ -22,11 +22,11 @@ class CourtServiceTest {
     @Test
     fun `find court`() {
       whenever(courtRepository.findById(anyString())).thenReturn(
-          Optional.of(Court("ACCRYC", "A Court", null, true)))
+        Optional.of(Court("ACCRYC", "A Court", null, true))
+      )
       val courtDto = courtService.findById("ACCRYC")
       assertThat(courtDto).isEqualTo(CourtDto("ACCRYC", "A Court", null, true))
       verify(courtRepository).findById("ACCRYC")
     }
   }
-
 }
