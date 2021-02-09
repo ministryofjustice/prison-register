@@ -1,0 +1,8 @@
+graceful:
+  shutdown.enabled: false
+
+oauth:
+  endpoint.url: http://localhost:8090/auth
+
+aws:
+  provider: localstack
