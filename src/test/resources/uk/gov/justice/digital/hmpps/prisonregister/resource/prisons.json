@@ -1,0 +1,12 @@
+[
+  {
+    "prisonId": "LEI",
+    "prisonName": "Leeds HMP",
+    "active": true
+  },
+  {
+    "prisonId": "MDI",
+    "prisonName": "Moorland HMP",
+    "active": true
+  }
+]
