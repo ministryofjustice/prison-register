@@ -19,4 +19,5 @@ ingress:
   path: /
 
 env:
-  JAVA_OPTS: "-Xmx1024m"
+  JAVA_OPTS: "-Xmx256m"
+  OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
