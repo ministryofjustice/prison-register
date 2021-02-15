@@ -1,18 +1,18 @@
 version: '3.1'
 services:
-  prison-register:
-    image: quay.io/hmpps/prison-register:latest
-    networks:
-      - hmpps
-    container_name: prison-register
-    depends_on:
-      - prison-register-db
-    ports:
-      - "8080:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
-    environment:
-      - SPRING_PROFILES_ACTIVE=postgres
+#  prison-register:
+#    image: quay.io/hmpps/prison-register:latest
+#    networks:
+#      - hmpps
+#    container_name: prison-register
+#    depends_on:
+#      - prison-register-db
+#    ports:
+#      - "8080:8080"
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=postgres
 
   prison-register-db:
     image: postgres
@@ -26,6 +26,19 @@ services:
       - POSTGRES_PASSWORD=admin_password
       - POSTGRES_USER=admin
       - POSTGRES_DB=prison-register-db
+
+  hmpps-auth:
+    image: quay.io/hmpps/hmpps-auth:latest
+    networks:
+      - hmpps
+    container_name: hmpps-auth
+    ports:
+      - '8090:8080'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/auth/health']
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DELIUS_ENABLED: "false"
 
 networks:
   hmpps:
