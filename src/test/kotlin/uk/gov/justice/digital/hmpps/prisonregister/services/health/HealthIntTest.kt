@@ -11,26 +11,30 @@ class HealthIntTest : IntegrationTest() {
   @Test
   fun `Health page reports ok`() {
     webTestClient.get().uri("/health")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().jsonPath("status").isEqualTo("UP")
+      .exchange()
+      .expectStatus().isOk
+      .expectBody().jsonPath("status").isEqualTo("UP")
   }
 
   @Test
   fun `Health ping reports ok`() {
     webTestClient.get().uri("/health/ping")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().jsonPath("status").isEqualTo("UP")
+      .exchange()
+      .expectStatus().isOk
+      .expectBody().jsonPath("status").isEqualTo("UP")
   }
 
   @Test
   fun `Health info reports version`() {
     webTestClient.get().uri("/health")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().jsonPath("components.healthInfo.details.version").value(Consumer<String> {
+      .exchange()
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("components.healthInfo.details.version")
+      .value(
+        Consumer<String> {
           assertThat(it).startsWith(LocalDateTime.now().format(ISO_DATE))
-        })
+        }
+      )
   }
 }

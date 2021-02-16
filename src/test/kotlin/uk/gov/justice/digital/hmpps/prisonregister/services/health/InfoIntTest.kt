@@ -11,18 +11,22 @@ class InfoIntTest : IntegrationTest() {
   @Test
   fun `Info page contains git information`() {
     webTestClient.get().uri("/info")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().jsonPath("git.commit.id").isNotEmpty
+      .exchange()
+      .expectStatus().isOk
+      .expectBody().jsonPath("git.commit.id").isNotEmpty
   }
 
   @Test
   fun `Info page reports version`() {
     webTestClient.get().uri("/info")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().jsonPath("build.version").value(Consumer<String> {
+      .exchange()
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("build.version")
+      .value(
+        Consumer<String> {
           assertThat(it).startsWith(LocalDateTime.now().format(ISO_DATE))
-        })
+        }
+      )
   }
 }

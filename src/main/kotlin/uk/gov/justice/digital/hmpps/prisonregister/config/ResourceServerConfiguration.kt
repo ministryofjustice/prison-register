@@ -18,12 +18,23 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
       .and().csrf().disable()
       .authorizeRequests { auth ->
         auth.antMatchers(
-          "/webjars/**", "/favicon.ico", "/csrf",
-          "/health/**", "/info", "/ping",
+          "/webjars/**",
+          "/favicon.ico",
+          "/csrf",
+          "/health/**",
+          "/info",
+          "/ping",
           "/prisons/**",
-          "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
+          "/v3/api-docs/**",
+          "/swagger-ui/**",
+          "/swagger-ui.html"
         )
-          .permitAll().anyRequest().authenticated()
-      }.oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
+          .permitAll()
+          .anyRequest()
+          .authenticated()
+      }
+      .oauth2ResourceServer()
+      .jwt()
+      .jwtAuthenticationConverter(AuthAwareTokenConverter())
   }
 }

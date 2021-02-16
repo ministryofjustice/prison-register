@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.jpa
+package uk.gov.justice.digital.hmpps.prisonregister.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

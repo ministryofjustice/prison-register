@@ -1,63 +1,89 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
-import com.nhaarman.mockito_kotlin.whenever
-import org.junit.jupiter.api.Nested
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
-import org.springframework.boot.test.mock.mockito.MockBean
-import uk.gov.justice.digital.hmpps.prisonregister.jpa.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.jpa.PrisonRepository
-import java.util.Optional
+import org.springframework.http.HttpStatus
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
+import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 
-class PrisonResourceTest : IntegrationTest() {
-  @MockBean
-  private lateinit var prisonRepository: PrisonRepository
+/**
+ * Test logic in the PrisonResource class.  Doesn't need any Spring support.
+ */
+class PrisonResourceTest {
+  val prisonService: PrisonService = mock()
+  val prisonResource = PrisonResource(prisonService)
 
-  @Suppress("ClassName")
-  @Nested
-  inner class findAll {
-    @Test
-    fun `find prisons`() {
-      val prisons = listOf(
-        Prison("MDI", "Moorland HMP", true),
-        Prison("LEI", "Leeds HMP", true)
-      )
-
-      whenever(prisonRepository.findAll()).thenReturn(
-        prisons
-      )
-      webTestClient.get().uri("/prisons")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().json("prisons".loadJson())
+  @Test
+  fun `VCC email address found`() {
+    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn("p@q.com")
+    val response = prisonResource.getEmailForVideoConferencingCentre("MDI")
+    with(response) {
+      assertThat(statusCode).isEqualTo(HttpStatus.OK)
+      assertThat(body).isEqualTo("p@q.com")
     }
+    verify(prisonService).getVccEmailAddress("MDI")
   }
 
-  @Suppress("ClassName")
-  @Nested
-  inner class findById {
-    @Test
-    fun `find prison`() {
-      val prison = Prison("MDI", "Moorland HMP", true)
-
-      whenever(prisonRepository.findById(anyString())).thenReturn(
-        Optional.of(prison)
-      )
-      webTestClient.get().uri("/prisons/id/MDI")
-        .exchange()
-        .expectStatus().isOk
-        .expectBody().json("prison_id_MDI".loadJson())
-    }
-
-    @Test
-    fun `find prison validation failure`() {
-      webTestClient.get().uri("/prisons/id/1234567890123")
-        .exchange()
-        .expectStatus().isBadRequest
-        .expectBody().json("prison_id_badrequest_getPrisonFromId".loadJson())
-    }
+  @Test
+  fun `VCC email address not found`() {
+    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(null)
+    val response = prisonResource.getEmailForVideoConferencingCentre("MDI")
+    assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    verify(prisonService).getVccEmailAddress("MDI")
   }
 
-  private fun String.loadJson(): String =
-    PrisonResourceTest::class.java.getResource("$this.json").readText()
+  @Test
+  fun `OMU email address found`() {
+    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn("p@q.com")
+    val response = prisonResource.getEmailForOffenderManagementUnit("MDI")
+    with(response) {
+      assertThat(statusCode).isEqualTo(HttpStatus.OK)
+      assertThat(body).isEqualTo("p@q.com")
+    }
+    verify(prisonService).getOmuEmailAddress("MDI")
+  }
+
+  @Test
+  fun `OMU email address not found`() {
+    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(null)
+    val response = prisonResource.getEmailForOffenderManagementUnit("MDI")
+    assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    verify(prisonService).getOmuEmailAddress("MDI")
+  }
+
+  @Test
+  fun `put OMU email - create`() {
+    whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.CREATED)
+    val response = prisonResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
+    assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+    verify(prisonService).setOmuEmailAddress("MDI", "a@b.com")
+  }
+
+  @Test
+  fun `put OMU email - update`() {
+    whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.UPDATED)
+    val response = prisonResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
+    assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    verify(prisonService).setOmuEmailAddress("MDI", "a@b.com")
+  }
+
+  @Test
+  fun `put VCC email - create`() {
+    whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.CREATED)
+    val response = prisonResource.putEmailAddressForVideolinkConferencingCentre("MDI", "a@b.com")
+    assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+    verify(prisonService).setVccEmailAddress("MDI", "a@b.com")
+  }
+
+  @Test
+  fun `put VCC email - update`() {
+    whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.UPDATED)
+    val response = prisonResource.putEmailAddressForVideolinkConferencingCentre("MDI", "a@b.com")
+    assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    verify(prisonService).setVccEmailAddress("MDI", "a@b.com")
+  }
 }
