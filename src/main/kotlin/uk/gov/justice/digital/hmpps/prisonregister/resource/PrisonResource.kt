@@ -48,8 +48,7 @@ class PrisonResource(private val prisonService: PrisonService) {
   fun getPrisonFromId(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable @Size(max = 12, min = 2) prisonId: String
-  ): PrisonDto =
-    prisonService.findById(prisonId)
+  ): PrisonDto = prisonService.findById(prisonId)
 
   @GetMapping("")
   @Operation(summary = "Get all prisons", description = "All prisons")
@@ -62,8 +61,7 @@ class PrisonResource(private val prisonService: PrisonService) {
       )
     ]
   )
-  fun getPrisons(): List<PrisonDto> =
-    prisonService.findAll()
+  fun getPrisons(): List<PrisonDto> = prisonService.findAll()
 
   @GetMapping(
     "$PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
@@ -95,8 +93,8 @@ class PrisonResource(private val prisonService: PrisonService) {
   ): ResponseEntity<String> =
     prisonService
       .getVccEmailAddress(prisonId)
-      .map { emailAddress -> ResponseEntity.ok(emailAddress) }
-      .orElse(ResponseEntity.notFound().build())
+      ?.let { ResponseEntity.ok(it) }
+      ?: ResponseEntity.notFound().build()
 
   @GetMapping(
     "$PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
@@ -128,8 +126,8 @@ class PrisonResource(private val prisonService: PrisonService) {
   ): ResponseEntity<String> =
     prisonService
       .getOmuEmailAddress(prisonId)
-      .map { emailAddress -> ResponseEntity.ok(emailAddress) }
-      .orElse(ResponseEntity.notFound().build())
+      ?.let { ResponseEntity.ok(it) }
+      ?: ResponseEntity.notFound().build()
 
   @PutMapping(
     "$PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
@@ -167,14 +165,11 @@ class PrisonResource(private val prisonService: PrisonService) {
     @Valid
     @Email
     emailAddress: String
-  ): ResponseEntity<Void> {
-    val outcome = prisonService.setVccEmailAddress(prisonId, emailAddress)
-
-    return when (outcome) {
+  ): ResponseEntity<Void> =
+    when (prisonService.setVccEmailAddress(prisonId, emailAddress)) {
       SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
       SetOutcome.UPDATED -> ResponseEntity.noContent()
     }.build()
-  }
 
   @PutMapping(
     "/$PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
@@ -212,14 +207,11 @@ class PrisonResource(private val prisonService: PrisonService) {
     @Valid
     @Email
     emailAddress: String
-  ): ResponseEntity<Void> {
-    val outcome = prisonService.setOmuEmailAddress(prisonId, emailAddress)
-
-    return when (outcome) {
+  ): ResponseEntity<Void> =
+    when (prisonService.setOmuEmailAddress(prisonId, emailAddress)) {
       SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
       SetOutcome.UPDATED -> ResponseEntity.noContent()
     }.build()
-  }
 
   @DeleteMapping("$PRISON_BY_ID/$VCC/$EMAIL_ADDRESS")
   @Operation(summary = "Remove a prison's Videolink Conferencing Centre email address")

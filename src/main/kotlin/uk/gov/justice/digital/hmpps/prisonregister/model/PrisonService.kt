@@ -1,13 +1,14 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
-import java.util.Optional
 import javax.persistence.EntityNotFoundException
 
 const val HAS_MAINTAIN_REF_DATA_ROLE = "hasRole('MAINTAIN_REF_DATA')"
+
 @Service
 class PrisonService(
   private val prisonRepository: PrisonRepository,
@@ -16,49 +17,47 @@ class PrisonService(
 ) {
   @Transactional(readOnly = true)
   fun findById(prisonId: String): PrisonDto {
-    val prison = prisonRepository.findById(prisonId)
-      .orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
+    val prison =
+      prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException("Prison $prisonId not found")
     return PrisonDto(prison)
   }
 
   @Transactional(readOnly = true)
-  fun findAll(): List<PrisonDto> {
-    return prisonRepository.findAll().map { PrisonDto(it) }
-  }
+  fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
 
   @Transactional(readOnly = true)
-  fun getVccEmailAddress(prisonId: String): Optional<String> = videoLinkConferencingCentreRepository
-    .findById(prisonId)
-    .map { vcc -> vcc.emailAddress }
+  fun getVccEmailAddress(prisonId: String): String? = videoLinkConferencingCentreRepository
+    .findByIdOrNull(prisonId)
+    ?.run { emailAddress }
 
   @Transactional(readOnly = true)
-  fun getOmuEmailAddress(prisonId: String): Optional<String> = offenderManagementUnitRepository
-    .findById(prisonId)
-    .map { omu -> omu.emailAddress }
+  fun getOmuEmailAddress(prisonId: String): String? = offenderManagementUnitRepository
+    .findByIdOrNull(prisonId)
+    ?.run { emailAddress }
 
   @Transactional
   @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
   fun setVccEmailAddress(prisonId: String, emailAddress: String): SetOutcome {
-    val vccOpt = videoLinkConferencingCentreRepository.findById(prisonId)
-    if (vccOpt.isPresent) {
-      vccOpt.get().emailAddress = emailAddress
-      return SetOutcome.UPDATED
-    } else {
-      val prison = prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException() }
+    val vcc = videoLinkConferencingCentreRepository.findByIdOrNull(prisonId)
+    return if (vcc == null) {
+      val prison = prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException()
       videoLinkConferencingCentreRepository.save(VideolinkConferencingCentre(prison, emailAddress))
-      return SetOutcome.CREATED
+      SetOutcome.CREATED
+    } else {
+      vcc.emailAddress = emailAddress
+      SetOutcome.UPDATED
     }
   }
 
   @Transactional
   @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
   fun setOmuEmailAddress(prisonId: String, emailAddress: String): SetOutcome {
-    val omuOpt = offenderManagementUnitRepository.findById(prisonId)
-    return if (omuOpt.isPresent) {
-      omuOpt.get().emailAddress = emailAddress
+    val omu = offenderManagementUnitRepository.findByIdOrNull(prisonId)
+    return if (omu != null) {
+      omu.emailAddress = emailAddress
       SetOutcome.UPDATED
     } else {
-      val prison = prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException() }
+      val prison = prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException()
       offenderManagementUnitRepository.save(OffenderManagementUnit(prison, emailAddress))
       SetOutcome.CREATED
     }
@@ -67,20 +66,16 @@ class PrisonService(
   @Transactional
   @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
   fun deleteOmuEmailAddress(prisonId: String) {
-    offenderManagementUnitRepository
-      .findById(prisonId)
-      .ifPresent {
-        offenderManagementUnitRepository.deleteById(prisonId)
-      }
+    if (offenderManagementUnitRepository.existsById(prisonId)) {
+      offenderManagementUnitRepository.deleteById(prisonId)
+    }
   }
 
   @Transactional
   @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
   fun deleteVccEmailAddress(prisonId: String) {
-    videoLinkConferencingCentreRepository
-      .findById(prisonId)
-      .ifPresent {
-        videoLinkConferencingCentreRepository.deleteById(prisonId)
-      }
+    if (videoLinkConferencingCentreRepository.existsById(prisonId)) {
+      videoLinkConferencingCentreRepository.deleteById(prisonId)
+    }
   }
 }

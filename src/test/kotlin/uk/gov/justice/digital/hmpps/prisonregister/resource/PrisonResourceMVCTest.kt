@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
-import java.util.Optional
 import javax.persistence.EntityNotFoundException
 
 const val OMU_EMAIL_ADDRESS_PATH = "/prisons/id/{prisonId}/offender-management-unit/email-address"
@@ -33,7 +32,7 @@ class PrisonResourceMVCTest(@Autowired val mvc: MockMvc) {
 
   @Test
   fun `get OMU email address`() {
-    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(Optional.of("a@b.com"))
+    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn("a@b.com")
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .accept(MediaType.TEXT_PLAIN)
@@ -44,7 +43,7 @@ class PrisonResourceMVCTest(@Autowired val mvc: MockMvc) {
 
   @Test
   fun `get OMU email address - Not found`() {
-    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(Optional.empty())
+    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(null)
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .accept(MediaType.TEXT_PLAIN)
@@ -102,7 +101,7 @@ class PrisonResourceMVCTest(@Autowired val mvc: MockMvc) {
 
   @Test
   fun `get VCC email address`() {
-    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(Optional.of("a@b.com"))
+    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn("a@b.com")
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .accept(MediaType.TEXT_PLAIN)
@@ -113,7 +112,7 @@ class PrisonResourceMVCTest(@Autowired val mvc: MockMvc) {
 
   @Test
   fun `get VCC email address - Not found`() {
-    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(Optional.empty())
+    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(null)
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .accept(MediaType.TEXT_PLAIN)

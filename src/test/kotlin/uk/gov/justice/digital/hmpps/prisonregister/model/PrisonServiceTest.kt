@@ -38,7 +38,7 @@ class PrisonServiceTest {
 
   @Nested
   inner class VCC {
-    val prisonId = "MDI"
+    private val PRISON_ID = "MDI"
 
     @Test
     fun `get Email Address found`() {
@@ -46,14 +46,14 @@ class PrisonServiceTest {
         .thenReturn(
           Optional.of(
             VideolinkConferencingCentre(
-              prison = Prison(prisonId, "Test", true),
+              prison = Prison(PRISON_ID, "Test", true),
               emailAddress = "a@b.com"
             )
           )
         )
 
-      assertThat(prisonService.getVccEmailAddress(prisonId)).contains("a@b.com")
-      verify(videoLinkConferencingCentreRepository).findById(prisonId)
+      assertThat(prisonService.getVccEmailAddress(PRISON_ID)).contains("a@b.com")
+      verify(videoLinkConferencingCentreRepository).findById(PRISON_ID)
     }
 
     @Test
@@ -61,32 +61,34 @@ class PrisonServiceTest {
       whenever(videoLinkConferencingCentreRepository.findById(anyString()))
         .thenReturn(Optional.empty())
 
-      assertThat(prisonService.getVccEmailAddress(prisonId)).isEmpty
-      verify(videoLinkConferencingCentreRepository).findById(prisonId)
+      assertThat(prisonService.getVccEmailAddress(PRISON_ID)).isNull()
+      verify(videoLinkConferencingCentreRepository).findById(PRISON_ID)
     }
 
     @Test
     fun `set Email Address created`() {
-      val prison = Prison(prisonId, "Test", true)
-      whenever(videoLinkConferencingCentreRepository.findById(eq(prisonId))).thenReturn(Optional.empty())
-      whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.of(prison))
+      val prison = Prison(PRISON_ID, "Test", true)
+      whenever(videoLinkConferencingCentreRepository.findById(eq(PRISON_ID))).thenReturn(Optional.empty())
+      whenever(prisonRepository.findById(eq(PRISON_ID))).thenReturn(Optional.of(prison))
 
-      val outcome = prisonService.setVccEmailAddress(prisonId, "a@b.com")
+      val outcome = prisonService.setVccEmailAddress(PRISON_ID, "a@b.com")
 
       assertThat(outcome).isEqualTo(SetOutcome.CREATED)
+      verify(videoLinkConferencingCentreRepository).findById(PRISON_ID)
       verify(videoLinkConferencingCentreRepository).save(eq(VideolinkConferencingCentre(prison, "a@b.com")))
+      verify(prisonRepository).findById(PRISON_ID)
     }
 
     @Test
     fun `set Email Address updated`() {
-      val prison = Prison(prisonId, "Test", true)
+      val prison = Prison(PRISON_ID, "Test", true)
       val persistentVcc = VideolinkConferencingCentre(prison, "p@q.com")
 
-      whenever(videoLinkConferencingCentreRepository.findById(eq(prisonId)))
+      whenever(videoLinkConferencingCentreRepository.findById(anyString()))
         .thenReturn(Optional.of(persistentVcc))
-      whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.of(prison))
+      whenever(prisonRepository.findById(anyString())).thenReturn(Optional.of(prison))
 
-      val outcome = prisonService.setVccEmailAddress(prisonId, "a@b.com")
+      val outcome = prisonService.setVccEmailAddress(PRISON_ID, "a@b.com")
 
       assertThat(outcome).isEqualTo(SetOutcome.UPDATED)
       assertThat(persistentVcc.emailAddress).isEqualTo("a@b.com")
@@ -94,40 +96,31 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address no prison`() {
-      whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.empty())
+      whenever(prisonRepository.findById(anyString())).thenReturn(Optional.empty())
 
-      assertThatThrownBy {
-        prisonService.setVccEmailAddress(prisonId, "a@b.com")
-      }
+      assertThatThrownBy { prisonService.setVccEmailAddress(PRISON_ID, "a@b.com") }
         .isInstanceOf(EntityNotFoundException::class.java)
     }
 
     @Test
     fun `delete Email Address, address exists`() {
-      val prison = Prison(prisonId, "Test", true)
-      val persistentVcc = VideolinkConferencingCentre(prison, "p@q.com")
-      whenever(videoLinkConferencingCentreRepository.findById(prisonId))
-        .thenReturn(Optional.of(persistentVcc))
-
-      prisonService.deleteVccEmailAddress(prisonId)
-
-      verify(videoLinkConferencingCentreRepository).deleteById(prisonId)
+      whenever(videoLinkConferencingCentreRepository.existsById(anyString())).thenReturn(true)
+      prisonService.deleteVccEmailAddress(PRISON_ID)
+      verify(videoLinkConferencingCentreRepository).deleteById(PRISON_ID)
     }
 
     @Test
     fun `delete Email Address, address does not exist`() {
-      whenever(videoLinkConferencingCentreRepository.findById(prisonId)).thenReturn(Optional.empty())
-
-      prisonService.deleteVccEmailAddress(prisonId)
-
-      verify(videoLinkConferencingCentreRepository).findById(prisonId)
+      whenever(videoLinkConferencingCentreRepository.existsById(anyString())).thenReturn(false)
+      prisonService.deleteVccEmailAddress(PRISON_ID)
+      verify(videoLinkConferencingCentreRepository).existsById(PRISON_ID)
       verifyNoMoreInteractions(videoLinkConferencingCentreRepository)
     }
   }
 
   @Nested
   inner class OMU {
-    val prisonId = "MDI"
+    private val PRISON_ID = "MDI"
 
     @Test
     fun `get Email Address found`() {
@@ -135,14 +128,14 @@ class PrisonServiceTest {
         .thenReturn(
           Optional.of(
             OffenderManagementUnit(
-              prison = Prison(prisonId, "Test", true),
+              prison = Prison(PRISON_ID, "Test", true),
               emailAddress = "a@b.com"
             )
           )
         )
 
-      assertThat(prisonService.getOmuEmailAddress(prisonId)).contains("a@b.com")
-      verify(offenderManagementUnitRepository).findById(prisonId)
+      assertThat(prisonService.getOmuEmailAddress(PRISON_ID)).contains("a@b.com")
+      verify(offenderManagementUnitRepository).findById(PRISON_ID)
     }
 
     @Test
@@ -150,17 +143,17 @@ class PrisonServiceTest {
       whenever(offenderManagementUnitRepository.findById(anyString()))
         .thenReturn(Optional.empty())
 
-      assertThat(prisonService.getOmuEmailAddress(prisonId)).isEmpty
-      verify(offenderManagementUnitRepository).findById(prisonId)
+      assertThat(prisonService.getOmuEmailAddress(PRISON_ID)).isNull()
+      verify(offenderManagementUnitRepository).findById(PRISON_ID)
     }
 
     @Test
     fun `set Email Address created`() {
-      val prison = Prison(prisonId, "Test", true)
-      whenever(offenderManagementUnitRepository.findById(eq(prisonId))).thenReturn(Optional.empty())
-      whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.of(prison))
+      val prison = Prison(PRISON_ID, "Test", true)
+      whenever(offenderManagementUnitRepository.findById(anyString())).thenReturn(Optional.empty())
+      whenever(prisonRepository.findById(anyString())).thenReturn(Optional.of(prison))
 
-      val outcome = prisonService.setOmuEmailAddress(prisonId, "a@b.com")
+      val outcome = prisonService.setOmuEmailAddress(PRISON_ID, "a@b.com")
 
       assertThat(outcome).isEqualTo(SetOutcome.CREATED)
       verify(offenderManagementUnitRepository).save(eq(OffenderManagementUnit(prison, "a@b.com")))
@@ -168,14 +161,13 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address updated`() {
-      val prison = Prison(prisonId, "Test", true)
+      val prison = Prison(PRISON_ID, "Test", true)
       val persistentOmu = OffenderManagementUnit(prison, "p@q.com")
 
-      whenever(offenderManagementUnitRepository.findById(eq(prisonId)))
-        .thenReturn(Optional.of(persistentOmu))
-      whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.of(prison))
+      whenever(offenderManagementUnitRepository.findById(anyString())).thenReturn(Optional.of(persistentOmu))
+      whenever(prisonRepository.findById(anyString())).thenReturn(Optional.of(prison))
 
-      val outcome = prisonService.setOmuEmailAddress(prisonId, "a@b.com")
+      val outcome = prisonService.setOmuEmailAddress(PRISON_ID, "a@b.com")
 
       assertThat(outcome).isEqualTo(SetOutcome.UPDATED)
       assertThat(persistentOmu.emailAddress).isEqualTo("a@b.com")
@@ -183,33 +175,23 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address no prison`() {
-      whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.empty())
-
-      assertThatThrownBy {
-        prisonService.setOmuEmailAddress(prisonId, "a@b.com")
-      }
+      whenever(prisonRepository.findById(anyString())).thenReturn(Optional.empty())
+      assertThatThrownBy { prisonService.setOmuEmailAddress(PRISON_ID, "a@b.com") }
         .isInstanceOf(EntityNotFoundException::class.java)
     }
 
     @Test
     fun `delete Email Address, address exists`() {
-      val prison = Prison(prisonId, "Test", true)
-      val persistentOmu = OffenderManagementUnit(prison, "p@q.com")
-      whenever(offenderManagementUnitRepository.findById(prisonId))
-        .thenReturn(Optional.of(persistentOmu))
-
-      prisonService.deleteOmuEmailAddress(prisonId)
-
-      verify(offenderManagementUnitRepository).deleteById(prisonId)
+      whenever(offenderManagementUnitRepository.existsById(anyString())).thenReturn(true)
+      prisonService.deleteOmuEmailAddress(PRISON_ID)
+      verify(offenderManagementUnitRepository).deleteById(PRISON_ID)
     }
 
     @Test
     fun `delete Email Address, address does not exist`() {
-      whenever(offenderManagementUnitRepository.findById(prisonId)).thenReturn(Optional.empty())
-
-      prisonService.deleteOmuEmailAddress(prisonId)
-
-      verify(offenderManagementUnitRepository).findById(prisonId)
+      whenever(offenderManagementUnitRepository.existsById(anyString())).thenReturn(false)
+      prisonService.deleteOmuEmailAddress(PRISON_ID)
+      verify(offenderManagementUnitRepository).existsById(PRISON_ID)
       verifyNoMoreInteractions(offenderManagementUnitRepository)
     }
   }

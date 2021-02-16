@@ -9,7 +9,6 @@ import org.mockito.ArgumentMatchers.anyString
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
-import java.util.Optional
 
 /**
  * Test logic in the PrisonResource class.  Doesn't need any Spring support.
@@ -20,7 +19,7 @@ class PrisonResourceTest {
 
   @Test
   fun `VCC email address found`() {
-    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(Optional.of("p@q.com"))
+    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn("p@q.com")
     val response = prisonResource.getEmailForVideoConferencingCentre("MDI")
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
@@ -31,7 +30,7 @@ class PrisonResourceTest {
 
   @Test
   fun `VCC email address not found`() {
-    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(Optional.empty())
+    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(null)
     val response = prisonResource.getEmailForVideoConferencingCentre("MDI")
     assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     verify(prisonService).getVccEmailAddress("MDI")
@@ -39,7 +38,7 @@ class PrisonResourceTest {
 
   @Test
   fun `OMU email address found`() {
-    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(Optional.of("p@q.com"))
+    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn("p@q.com")
     val response = prisonResource.getEmailForOffenderManagementUnit("MDI")
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
@@ -50,7 +49,7 @@ class PrisonResourceTest {
 
   @Test
   fun `OMU email address not found`() {
-    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(Optional.empty())
+    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(null)
     val response = prisonResource.getEmailForOffenderManagementUnit("MDI")
     assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     verify(prisonService).getOmuEmailAddress("MDI")
