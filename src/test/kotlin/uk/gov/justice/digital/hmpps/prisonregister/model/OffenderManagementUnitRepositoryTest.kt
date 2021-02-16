@@ -11,13 +11,10 @@ import org.springframework.transaction.annotation.Transactional
 @ActiveProfiles("test")
 @DataJpaTest
 @Transactional
-class OffenderManagementUnitRepositoryTest {
-
-  @Autowired
-  lateinit var prisonRepository: PrisonRepository
-
-  @Autowired
-  lateinit var omuRepository: OffenderManagementUnitRepository
+class OffenderManagementUnitRepositoryTest(
+  @Autowired val prisonRepository: PrisonRepository,
+  @Autowired val omuRepository: OffenderManagementUnitRepository
+) {
 
   @Test
   fun lifecycle() {

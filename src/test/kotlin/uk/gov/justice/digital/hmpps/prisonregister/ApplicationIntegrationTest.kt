@@ -19,11 +19,7 @@ const val MAINTAIN_REF_DATA_ROLE = "ROLE_MAINTAIN_REF_DATA"
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class ApplicationIntegrationTest : IntegrationTest() {
-
-  @Autowired
-  lateinit var jwtAuthHelper: JwtAuthHelper
-
+class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : IntegrationTest() {
   @Test
   fun `OMU email address life-cycle`() {
     webTestClient

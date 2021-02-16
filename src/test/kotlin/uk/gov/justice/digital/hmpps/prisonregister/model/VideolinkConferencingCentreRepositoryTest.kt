@@ -11,14 +11,10 @@ import org.springframework.transaction.annotation.Transactional
 @ActiveProfiles("test")
 @DataJpaTest
 @Transactional
-class VideolinkConferencingCentreRepositoryTest {
-
-  @Autowired
-  lateinit var prisonRepository: PrisonRepository
-
-  @Autowired
-  lateinit var vccRepository: VideoLinkConferencingCentreRepository
-
+class VideolinkConferencingCentreRepositoryTest(
+  @Autowired val prisonRepository: PrisonRepository,
+  @Autowired val vccRepository: VideoLinkConferencingCentreRepository
+) {
   @Test
   fun lifecycle() {
     val prisonId = "MDI"

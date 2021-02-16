@@ -16,7 +16,7 @@ const val ROLE_MAINTAIN_REF_DATA = "MAINTAIN_REF_DATA"
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ActiveProfiles("test")
-class PrisonServiceSecurityTest {
+class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
 
   @MockBean
   lateinit var prisonRepository: PrisonRepository
@@ -26,9 +26,6 @@ class PrisonServiceSecurityTest {
 
   @MockBean
   lateinit var videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository
-
-  @Autowired
-  lateinit var prisonService: PrisonService
 
   @Test
   @WithMockUser(roles = [ROLE_MAINTAIN_REF_DATA])

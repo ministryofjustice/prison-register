@@ -23,5 +23,5 @@ data class OffenderManagementUnit(
     strategy = "foreign",
     parameters = [Parameter(name = "property", value = "prison")]
   )
-  var prisonId: String? = null
+  private var prisonId: String? = null
 }

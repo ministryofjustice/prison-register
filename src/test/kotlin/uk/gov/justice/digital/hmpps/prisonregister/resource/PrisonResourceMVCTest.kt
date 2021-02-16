@@ -27,10 +27,7 @@ const val VCC_EMAIL_ADDRESS_PATH = "/prisons/id/{prisonId}/videolink-conferencin
  */
 @WebMvcTest(PrisonResource::class)
 @ActiveProfiles("test")
-class PrisonResourceMVCTest {
-  @Autowired
-  lateinit var mvc: MockMvc
-
+class PrisonResourceMVCTest(@Autowired val mvc: MockMvc) {
   @MockBean
   lateinit var prisonService: PrisonService
 
