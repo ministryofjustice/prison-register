@@ -3,6 +3,7 @@ Prison registry services for hmpps
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/prison-register/tree/master.svg?style=svg)](https://circleci.com/gh/ministryofjustice/prison-register)
 [![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/prison-register/badge.svg)](https://snyk.io/test/github/ministryofjustice/prison-register)
+[![API docs](https://img.shields.io/badge/API_docs_(needs_VPN)-view-85EA2D.svg?logo=swagger)](https://prison-register-dev.hmpps.service.justice.gov.uk/swagger-ui.html)
 
 Self-contained fat-jar micro-service to publish prison information
  
