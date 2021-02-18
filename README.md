@@ -15,9 +15,21 @@ Self-contained fat-jar micro-service to publish prison information
 ### Running
 
 ```bash
-./gradlew bootRun
+./gradlew bootRun  --args='--spring.profiles.active=dev' 
 ```
+Which isn't very useful.
+Alternatively, to run with a local auth service and postgres first start those docker images using docker-compose
+Then run like this:
+```bash
+./gradlew bootRun --args='--spring.profiles.active=postgres,local' 
+```
+or
+```bash
+SPRING_PROFILES_ACTIVE=postgres,local ./gradlew bootRun
+```
+Swagger documentation is now at http://localhost:8080/swagger-ui.html
 
+You can obtain valid auth tokens form the local auth server using curl.
 #### Health
 
 - `/health/ping`: will respond with status `UP` to all requests.  This should be used by dependent systems to check connectivity to prison-register,

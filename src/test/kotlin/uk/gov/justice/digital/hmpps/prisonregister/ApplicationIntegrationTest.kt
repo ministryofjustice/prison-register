@@ -10,12 +10,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
 
 const val PRISON_ID = "LEI"
-const val OMU_URI = "/prisons/id/{prisonId}/offender-management-unit/email-address"
-const val VCC_URI = "/prisons/id/{prisonId}/videolink-conferencing-centre/email-address"
+const val OMU_URI = "/secure/prisons/id/{prisonId}/offender-management-unit/email-address"
+const val VCC_URI = "/secure/prisons/id/{prisonId}/videolink-conferencing-centre/email-address"
 const val EMAIL_1 = "a@b.com"
 const val EMAIL_2 = "d@e.org"
-
-const val MAINTAIN_REF_DATA_ROLE = "ROLE_MAINTAIN_REF_DATA"
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -26,13 +24,20 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
       .get()
       .uri(OMU_URI, PRISON_ID)
       .exchange()
+      .expectStatus().isUnauthorized
+
+    webTestClient
+      .get()
+      .uri(OMU_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
+      .exchange()
       .expectStatus().isNotFound
 
     webTestClient
       .put()
       .uri(OMU_URI, PRISON_ID)
       .contentType(MediaType.TEXT_PLAIN)
-      .headers { it.authorize(MAINTAIN_REF_DATA_ROLE) }
+      .headers { it.maintenanceToken() }
       .bodyValue(EMAIL_1)
       .exchange()
       .expectStatus().isCreated
@@ -40,6 +45,13 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
     webTestClient
       .get()
       .uri(OMU_URI, PRISON_ID)
+      .exchange()
+      .expectStatus().isUnauthorized
+
+    webTestClient
+      .get()
+      .uri(OMU_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
@@ -49,7 +61,7 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
       .put()
       .uri(OMU_URI, PRISON_ID)
       .contentType(MediaType.TEXT_PLAIN)
-      .headers { it.authorize(MAINTAIN_REF_DATA_ROLE) }
+      .headers { it.maintenanceToken() }
       .bodyValue(EMAIL_2)
       .exchange()
       .expectStatus().isNoContent
@@ -57,6 +69,7 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
     webTestClient
       .get()
       .uri(OMU_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
@@ -65,13 +78,14 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
     webTestClient
       .delete()
       .uri(OMU_URI, PRISON_ID)
-      .headers { it.authorize(MAINTAIN_REF_DATA_ROLE) }
+      .headers { it.maintenanceToken() }
       .exchange()
       .expectStatus().isNoContent
 
     webTestClient
       .get()
       .uri(OMU_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
       .exchange()
       .expectStatus().isNotFound
   }
@@ -82,13 +96,20 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
       .get()
       .uri(OMU_URI, PRISON_ID)
       .exchange()
+      .expectStatus().isUnauthorized
+
+    webTestClient
+      .get()
+      .uri(OMU_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
+      .exchange()
       .expectStatus().isNotFound
 
     webTestClient
       .put()
       .uri(VCC_URI, PRISON_ID)
       .contentType(MediaType.TEXT_PLAIN)
-      .headers { it.authorize(MAINTAIN_REF_DATA_ROLE) }
+      .headers { it.maintenanceToken() }
       .bodyValue(EMAIL_1)
       .exchange()
       .expectStatus().isCreated
@@ -96,6 +117,13 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
     webTestClient
       .get()
       .uri(VCC_URI, PRISON_ID)
+      .exchange()
+      .expectStatus().isUnauthorized
+
+    webTestClient
+      .get()
+      .uri(VCC_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
@@ -105,7 +133,7 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
       .put()
       .uri(VCC_URI, PRISON_ID)
       .contentType(MediaType.TEXT_PLAIN)
-      .headers { it.authorize(MAINTAIN_REF_DATA_ROLE) }
+      .headers { it.maintenanceToken() }
       .bodyValue(EMAIL_2)
       .exchange()
       .expectStatus().isNoContent
@@ -113,6 +141,7 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
     webTestClient
       .get()
       .uri(VCC_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
@@ -121,23 +150,35 @@ class ApplicationIntegrationTest(@Autowired val jwtAuthHelper: JwtAuthHelper) : 
     webTestClient
       .delete()
       .uri(VCC_URI, PRISON_ID)
-      .headers { it.authorize(MAINTAIN_REF_DATA_ROLE) }
+      .headers { it.maintenanceToken() }
       .exchange()
       .expectStatus().isNoContent
 
     webTestClient
       .get()
       .uri(VCC_URI, PRISON_ID)
+      .headers { it.readOnlyToken() }
       .exchange()
       .expectStatus().isNotFound
   }
 
-  private fun HttpHeaders.authorize(vararg roles: String) {
+  private fun HttpHeaders.readOnlyToken() {
     this.setBearerAuth(
       jwtAuthHelper.createJwt(
         subject = "A_USER",
-        roles = listOf(*roles),
-        clientId = "prison-register"
+        roles = listOf(),
+        clientId = "prison-register-client"
+      )
+    )
+  }
+
+  private fun HttpHeaders.maintenanceToken() {
+    this.setBearerAuth(
+      jwtAuthHelper.createJwt(
+        subject = "A_USER",
+        roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+        scope = listOf("write"),
+        clientId = "prison-register-client"
       )
     )
   }

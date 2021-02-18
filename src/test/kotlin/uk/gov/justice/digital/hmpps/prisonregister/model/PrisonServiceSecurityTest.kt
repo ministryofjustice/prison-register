@@ -12,7 +12,8 @@ import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import java.util.Optional
 
-const val ROLE_MAINTAIN_REF_DATA = "MAINTAIN_REF_DATA"
+@WithMockUser(authorities = ["ROLE_MAINTAIN_REF_DATA", "SCOPE_write"])
+annotation class WithMaintenanceMockUser
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ActiveProfiles("test")
@@ -28,7 +29,7 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   lateinit var videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository
 
   @Test
-  @WithMockUser(roles = [ROLE_MAINTAIN_REF_DATA])
+  @WithMaintenanceMockUser
   fun `Authorised user can update OMU email`() {
     whenever(offenderManagementUnitRepository.findById(ArgumentMatchers.anyString())).thenReturn(
       Optional.of(
@@ -51,7 +52,7 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   }
 
   @Test
-  @WithMockUser(roles = [ROLE_MAINTAIN_REF_DATA])
+  @WithMaintenanceMockUser
   fun `Authorised user can delete OMU email`() {
     prisonService.deleteOmuEmailAddress("MDI")
   }
@@ -64,7 +65,7 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   }
 
   @Test
-  @WithMockUser(roles = [ROLE_MAINTAIN_REF_DATA])
+  @WithMaintenanceMockUser
   fun `Authorised user can update VCC email`() {
     whenever(videoLinkConferencingCentreRepository.findById(ArgumentMatchers.anyString())).thenReturn(
       Optional.of(
@@ -87,7 +88,7 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   }
 
   @Test
-  @WithMockUser(roles = [ROLE_MAINTAIN_REF_DATA])
+  @WithMaintenanceMockUser
   fun `Authorised user can delete VCC email`() {
     prisonService.deleteVccEmailAddress("MDI")
   }
