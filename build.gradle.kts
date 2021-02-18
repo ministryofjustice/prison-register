@@ -7,6 +7,7 @@ plugins {
 
 configurations {
   implementation { exclude(group = "tomcat-jdbc") }
+  testImplementation { exclude(group = "org.junit.vintage") }
 }
 
 dependencies {

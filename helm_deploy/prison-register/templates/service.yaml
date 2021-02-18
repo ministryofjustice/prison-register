@@ -11,4 +11,4 @@ spec:
       targetPort: {{ .Values.image.port }} 
       name: http
   selector:
-     {{- include "app.selectorLabels" . | nindent 4 }}
+    {{- include "app.selectorLabels" . | nindent 4 }}

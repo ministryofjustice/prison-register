@@ -4,17 +4,9 @@ orbs:
   owasp: entur/owasp@0.0.10
   hmpps: ministryofjustice/hmpps@2.3
 
-executors:
-  validator:
-    docker:
-      - image: circleci/openjdk:11-jdk
-    environment:
-      _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
-    working_directory: ~/app
-
 jobs:
   validate:
-    executor: validator
+    executor: hmpps/java
     steps:
       - checkout
       - restore_cache:
