@@ -6,13 +6,10 @@ replicaCount: 2
 image:
   repository: quay.io/hmpps/prison-register
   tag: latest
-  pullPolicy: Always
   port: 8080
 
 ingress:
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
   hosts:
     - host: prison-register-dev.hmpps.service.justice.gov.uk
       cert_secret: prison-register-cert
