@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
@@ -28,13 +27,14 @@ import javax.validation.constraints.Size
 const val OMU = "offender-management-unit"
 const val VCC = "videolink-conferencing-centre"
 const val EMAIL_ADDRESS = "email-address"
-const val PRISON_BY_ID = "/id/{prisonId}"
+const val PRISONS = "prisons"
+const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
+const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
 
 @RestController
 @Validated
-@RequestMapping("/prisons", produces = [MediaType.APPLICATION_JSON_VALUE])
 class PrisonResource(private val prisonService: PrisonService) {
-  @GetMapping(PRISON_BY_ID)
+  @GetMapping("/$PRISON_BY_ID", produces = [MediaType.APPLICATION_JSON_VALUE])
   @Operation(summary = "Get specified prison", description = "Information on a specific prison")
   @ApiResponses(
     value = [
@@ -50,7 +50,7 @@ class PrisonResource(private val prisonService: PrisonService) {
     @PathVariable @Size(max = 12, min = 2) prisonId: String
   ): PrisonDto = prisonService.findById(prisonId)
 
-  @GetMapping("")
+  @GetMapping("/$PRISONS", produces = [MediaType.APPLICATION_JSON_VALUE])
   @Operation(summary = "Get all prisons", description = "All prisons")
   @ApiResponses(
     value = [
@@ -64,7 +64,7 @@ class PrisonResource(private val prisonService: PrisonService) {
   fun getPrisons(): List<PrisonDto> = prisonService.findAll()
 
   @GetMapping(
-    "$PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE]
   )
   @Operation(summary = "Get a prison's Videolink Conferencing Centre email address")
@@ -97,7 +97,7 @@ class PrisonResource(private val prisonService: PrisonService) {
       ?: ResponseEntity.notFound().build()
 
   @GetMapping(
-    "$PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE]
   )
   @Operation(summary = "Get a prison's Offender Management Unit email address")
@@ -130,7 +130,7 @@ class PrisonResource(private val prisonService: PrisonService) {
       ?: ResponseEntity.notFound().build()
 
   @PutMapping(
-    "$PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE]
   )
   @Operation(summary = "Set or change a prison's Videolink Conferencing Centre email address")
@@ -172,7 +172,7 @@ class PrisonResource(private val prisonService: PrisonService) {
     }.build()
 
   @PutMapping(
-    "/$PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE]
   )
   @Operation(summary = "Set or change a prison's Offender Management Unit email address")
@@ -213,7 +213,7 @@ class PrisonResource(private val prisonService: PrisonService) {
       SetOutcome.UPDATED -> ResponseEntity.noContent()
     }.build()
 
-  @DeleteMapping("$PRISON_BY_ID/$VCC/$EMAIL_ADDRESS")
+  @DeleteMapping("/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS")
   @Operation(summary = "Remove a prison's Videolink Conferencing Centre email address")
   @ApiResponses(
     value = [
@@ -237,7 +237,7 @@ class PrisonResource(private val prisonService: PrisonService) {
     return ResponseEntity.noContent().build()
   }
 
-  @DeleteMapping("$PRISON_BY_ID/$OMU/$EMAIL_ADDRESS")
+  @DeleteMapping("/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS")
   @Operation(summary = "Remove a prison's Offender Management Unit email address")
   @ApiResponses(
     value = [

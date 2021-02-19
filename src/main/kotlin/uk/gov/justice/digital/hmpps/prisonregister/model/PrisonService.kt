@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import javax.persistence.EntityNotFoundException
 
-const val HAS_MAINTAIN_REF_DATA_ROLE = "hasRole('MAINTAIN_REF_DATA')"
+const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
 @Service
 class PrisonService(
@@ -36,7 +36,7 @@ class PrisonService(
     ?.run { emailAddress }
 
   @Transactional
-  @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
   fun setVccEmailAddress(prisonId: String, emailAddress: String): SetOutcome {
     val vcc = videoLinkConferencingCentreRepository.findByIdOrNull(prisonId)
     return if (vcc == null) {
@@ -50,7 +50,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
   fun setOmuEmailAddress(prisonId: String, emailAddress: String): SetOutcome {
     val omu = offenderManagementUnitRepository.findByIdOrNull(prisonId)
     return if (omu != null) {
@@ -64,7 +64,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
   fun deleteOmuEmailAddress(prisonId: String) {
     if (offenderManagementUnitRepository.existsById(prisonId)) {
       offenderManagementUnitRepository.deleteById(prisonId)
@@ -72,7 +72,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(HAS_MAINTAIN_REF_DATA_ROLE)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
   fun deleteVccEmailAddress(prisonId: String) {
     if (videoLinkConferencingCentreRepository.existsById(prisonId)) {
       videoLinkConferencingCentreRepository.deleteById(prisonId)
