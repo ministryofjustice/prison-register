@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.1"
   kotlin("plugin.spring") version "1.4.30"
   kotlin("plugin.jpa") version "1.4.30"
   idea
@@ -22,7 +22,7 @@ dependencies {
 
   runtimeOnly("com.h2database:h2:1.4.200")
   runtimeOnly("org.flywaydb:flyway-core:7.5.3")
-  runtimeOnly("org.postgresql:postgresql:42.2.18")
+  runtimeOnly("org.postgresql:postgresql:42.2.19")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
@@ -35,12 +35,12 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.5.4")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.942"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.959"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.22.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.24.0")
   testImplementation("org.testcontainers:localstack:1.15.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.4.2")
