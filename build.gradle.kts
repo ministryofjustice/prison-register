@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.7"
   kotlin("plugin.spring") version "1.4.32"
   kotlin("plugin.jpa") version "1.4.32"
   idea
@@ -46,4 +46,12 @@ dependencies {
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.4.3")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+}
+
+tasks {
+  compileKotlin {
+    kotlinOptions {
+      jvmTarget = "15"
+    }
+  }
 }
