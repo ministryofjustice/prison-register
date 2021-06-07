@@ -77,16 +77,4 @@ management:
       cache:
         time-to-live: 2000ms
 
-oauth:
-  token.url: ${oauth.endpoint.url}/oauth/token
-
-graceful:
-  shutdown.enabled: true
-
-azure:
-  application-insights.web.enable-W3C: true
-
-aws:
-  provider: aws
-  region: eu-west-2
 

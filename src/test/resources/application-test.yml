@@ -1,5 +1,4 @@
-server:
-  shutdown: immediate
+server.shutdown: immediate
 
 management.endpoint:
   health.cache.time-to-live: 0
