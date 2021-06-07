@@ -1,5 +1,4 @@
-graceful:
-  shutdown.enabled: false
+server.shutdown: immediate
 
 oauth:
   endpoint.url: http://localhost:8090/auth
