@@ -10,27 +10,25 @@ import javax.persistence.EntityNotFoundException
 const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
 @Service
+@Transactional(readOnly = true)
 class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
   private val offenderManagementUnitRepository: OffenderManagementUnitRepository
 ) {
-  @Transactional(readOnly = true)
-  fun findById(prisonId: String): PrisonDto {
-    val prison =
-      prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException("Prison $prisonId not found")
-    return PrisonDto(prison)
-  }
+  fun findById(prisonId: String): Prison =
+    prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException("Prison $prisonId not found")
 
-  @Transactional(readOnly = true)
+  fun findByGpPractice(gpPracticeCode: String): Prison =
+    prisonRepository.findByGpPracticeGpPracticeCode(gpPracticeCode)
+      ?: throw EntityNotFoundException("Prison with gp practice $gpPracticeCode not found")
+
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
 
-  @Transactional(readOnly = true)
   fun getVccEmailAddress(prisonId: String): String? = videoLinkConferencingCentreRepository
     .findByIdOrNull(prisonId)
     ?.run { emailAddress }
 
-  @Transactional(readOnly = true)
   fun getOmuEmailAddress(prisonId: String): String? = offenderManagementUnitRepository
     .findByIdOrNull(prisonId)
     ?.run { emailAddress }

@@ -25,6 +25,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
           "/info",
           "/ping",
           "/prisons/**",
+          "/gp/**",
           "/v3/api-docs/**",
           "/swagger-ui/**",
           "/swagger-ui.html"

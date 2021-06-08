@@ -42,6 +42,12 @@ class PrisonRepositoryTest {
   }
 
   @Test
+  fun `should find associated gp practice`() {
+    val prison = prisonRepository.findById("MDI").orElseThrow()
+    assertThat(prison.gpPractice).isEqualTo(PrisonGpPractice("MDI", "Y05537"))
+  }
+
+  @Test
   fun `should get active prisons`() {
     val activePrisons = prisonRepository.findByActiveOrderByPrisonId(true)
     assertThat(activePrisons).hasSizeGreaterThan(100).allMatch { it.active }
@@ -51,5 +57,11 @@ class PrisonRepositoryTest {
 
     val allPrisons = prisonRepository.findAll()
     assertThat(allPrisons).hasSize(activePrisons.size + inActivePrisons.size)
+  }
+
+  @Test
+  fun `should find prison by gp practice code`() {
+    val prison = prisonRepository.findByGpPracticeGpPracticeCode("Y05537")
+    assertThat(prison).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
   }
 }
