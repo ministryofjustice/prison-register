@@ -49,6 +49,13 @@ class GpResourceTest : IntegrationTest() {
   }
 
   @Test
+  fun `find by id not found`() {
+    webTestClient.get().uri("/gp/prison/123456")
+      .exchange()
+      .expectStatus().isNotFound
+  }
+
+  @Test
   fun `find by gp practice prison`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
@@ -67,6 +74,13 @@ class GpResourceTest : IntegrationTest() {
       .exchange()
       .expectStatus().isOk
       .expectBody().json("prison_id_mdi_no_gp".loadJson())
+  }
+
+  @Test
+  fun `find by gp practice not found`() {
+    webTestClient.get().uri("/gp/practice/Y05537")
+      .exchange()
+      .expectStatus().isNotFound
   }
 
   @Test

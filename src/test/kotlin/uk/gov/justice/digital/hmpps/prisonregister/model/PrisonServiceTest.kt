@@ -35,6 +35,12 @@ class PrisonServiceTest {
       assertThat(actual).isEqualTo(prison)
       verify(prisonRepository).findById("MDI")
     }
+
+    @Test
+    fun `find prison not found`() {
+      assertThatThrownBy { prisonService.findById("MDI") }
+        .isInstanceOf(EntityNotFoundException::class.java).hasMessage("Prison MDI not found")
+    }
   }
 
   @Nested
@@ -46,6 +52,12 @@ class PrisonServiceTest {
       whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
       val prisonDto = prisonService.findByGpPractice("MDI")
       assertThat(prisonDto).isEqualTo(prison)
+    }
+
+    @Test
+    fun `find prison from gp practice not found`() {
+      assertThatThrownBy { prisonService.findByGpPractice("A12345") }
+        .isInstanceOf(EntityNotFoundException::class.java).hasMessage("Prison with gp practice A12345 not found")
     }
   }
 
