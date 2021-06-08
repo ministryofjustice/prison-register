@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface PrisonRepository : CrudRepository<Prison, String> {
   fun findByActiveOrderByPrisonId(active: Boolean): List<Prison>
+
+  fun findByGpPracticeGpPracticeCode(gpPracticeCode: String): Prison?
 }
