@@ -24,7 +24,7 @@ import javax.validation.constraints.Size
 @RequestMapping("/gp", produces = [MediaType.APPLICATION_JSON_VALUE])
 class GpResource(private val prisonService: PrisonService) {
   @GetMapping("/prison/{prisonId}")
-  @Operation(summary = "Get GP practise code about specified prison")
+  @Operation(summary = "Get GP practice code about specified prison")
   @ApiResponses(
     value = [
       ApiResponse(
