@@ -29,6 +29,19 @@ class GpResourceTest : IntegrationTest() {
   }
 
   @Test
+  fun `find by id prison case insensitive match`() {
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
+    whenever(prisonRepository.findById(anyString())).thenReturn(
+      Optional.of(prison)
+    )
+    webTestClient.get().uri("/gp/prison/mdi")
+      .exchange()
+      .expectStatus().isOk
+      .expectBody().json("prison_id_mdi_with_gp".loadJson())
+  }
+
+  @Test
   fun `find by id prison no gp practice mapped`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
     whenever(prisonRepository.findById(anyString())).thenReturn(
@@ -61,6 +74,17 @@ class GpResourceTest : IntegrationTest() {
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/Y05537")
+      .exchange()
+      .expectStatus().isOk
+      .expectBody().json("prison_id_mdi_with_gp".loadJson())
+  }
+
+  @Test
+  fun `find by gp practice prison case insensitive match`() {
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
+    whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
+    webTestClient.get().uri("/gp/practice/y05537")
       .exchange()
       .expectStatus().isOk
       .expectBody().json("prison_id_mdi_with_gp".loadJson())
