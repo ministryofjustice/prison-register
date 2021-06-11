@@ -18,3 +18,5 @@ ingress:
 env:
   JAVA_OPTS: "-Xmx512m"
   OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
+  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+
