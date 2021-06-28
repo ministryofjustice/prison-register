@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.0"
-  kotlin("plugin.spring") version "1.5.10"
-  kotlin("plugin.jpa") version "1.5.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.1-beta"
+  kotlin("plugin.spring") version "1.5.20"
+  kotlin("plugin.jpa") version "1.5.20"
   idea
 }
 
@@ -24,8 +24,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
   runtimeOnly("com.h2database:h2:1.4.200")
-  runtimeOnly("org.flywaydb:flyway-core:7.9.2")
-  runtimeOnly("org.postgresql:postgresql:42.2.20")
+  runtimeOnly("org.flywaydb:flyway-core:7.10.0")
+  runtimeOnly("org.postgresql:postgresql:42.2.22")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
