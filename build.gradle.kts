@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.4"
-  kotlin("plugin.spring") version "1.5.20"
-  kotlin("plugin.jpa") version "1.5.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.5-beta"
+  kotlin("plugin.spring") version "1.5.21"
+  kotlin("plugin.jpa") version "1.5.21"
   idea
 }
 
@@ -31,7 +31,7 @@ dependencies {
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.google.code.gson:gson:2.8.7")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
 
   implementation("org.springdoc:springdoc-openapi-webmvc-core:1.5.9")
   implementation("org.springdoc:springdoc-openapi-ui:1.5.9")
