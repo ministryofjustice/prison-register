@@ -24,18 +24,18 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
   runtimeOnly("com.h2database:h2:1.4.200")
-  runtimeOnly("org.flywaydb:flyway-core:7.10.0")
-  runtimeOnly("org.postgresql:postgresql:42.2.22")
+  runtimeOnly("org.flywaydb:flyway-core:7.15.0")
+  runtimeOnly("org.postgresql:postgresql:42.2.23")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
-  implementation("com.google.code.gson:gson:2.8.7")
+  implementation("com.google.code.gson:gson:2.8.8")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
 
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.5.9")
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.9")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.9")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.5.10")
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.10")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.10")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
