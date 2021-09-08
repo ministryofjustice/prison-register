@@ -43,8 +43,12 @@ dependencies {
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 }
 
+java {
+  toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+}
+
 tasks {
-  compileKotlin {
+  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
       jvmTarget = "16"
     }
