@@ -1,24 +1,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-replicaCount: 4
-
-image:
-  repository: quay.io/hmpps/prison-register
-  tag: latest
-  port: 8080
-
-ingress:
-  enabled: true
-  hosts:
-    - host: prison-register.hmpps.service.justice.gov.uk
-      cert_secret: prison-register-cert
-  path: /
-
-env:
-  JAVA_OPTS: "-Xmx512m"
-  OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
-  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+generic-service:
+  ingress:
+    host: prison-register.hmpps.service.justice.gov.uk
+  env:
+    OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:

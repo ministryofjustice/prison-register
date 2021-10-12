@@ -1,21 +1,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-replicaCount: 2
-
-image:
-  repository: quay.io/hmpps/prison-register
-  tag: latest
-  port: 8080
-
-ingress:
-  enabled: true
-  hosts:
-    - host: prison-register-dev.hmpps.service.justice.gov.uk
-      cert_secret: prison-register-cert
-  path: /
-
-env:
-  JAVA_OPTS: "-Xmx256m"
-  OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
-  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
+generic-service:
+  replicaCount: 2
+  ingress:
+    host: prison-register-dev.hmpps.service.justice.gov.uk
+  env:
+    JAVA_OPTS: "-Xmx256m"
+    OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
