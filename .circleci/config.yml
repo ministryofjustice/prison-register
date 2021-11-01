@@ -7,14 +7,14 @@ jobs:
   validate:
     executor:
       name: hmpps/java
-      tag: "16.0"
+      tag: "17.0"
     steps:
       - checkout
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
-      - run: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" check
+      - run: ./gradlew check
       - save_cache:
           paths:
             - ~/.gradle
