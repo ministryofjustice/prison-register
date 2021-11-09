@@ -4,6 +4,7 @@ generic-service:
   replicaCount: 2
   ingress:
     host: prison-register-dev.hmpps.service.justice.gov.uk
+    contextColour: green
   env:
     JAVA_OPTS: "-Xmx256m"
     OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
