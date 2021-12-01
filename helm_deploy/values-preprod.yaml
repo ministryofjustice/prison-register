@@ -3,5 +3,6 @@
 generic-service:
   ingress:
     host: prison-register-preprod.hmpps.service.justice.gov.uk
+    contextColour: green
   env:
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
