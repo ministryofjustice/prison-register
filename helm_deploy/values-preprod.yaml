@@ -2,6 +2,6 @@
 # Declare variables to be passed into your templates.
 generic-service:
   ingress:
-    host: prison-register-preprod.hmpps.service.justice.gov.uk
+    host: prison-register-preprod.hmpps.service.justice.gov.ukn    contextColour: green
   env:
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
