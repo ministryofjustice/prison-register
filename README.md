@@ -1,3 +1,7 @@
+## ⚠️ Note - that the data set behind this repository is no longer maintained ⚠️
+Consider using other data source such as [prison-api](https://api.prison.service.justice.gov.uk/swagger-ui/index.html)
+
+
 # prison-register
 Prison registry services for hmpps
 
