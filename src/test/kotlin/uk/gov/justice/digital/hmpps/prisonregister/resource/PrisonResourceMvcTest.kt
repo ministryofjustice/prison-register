@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
-import org.mockito.kotlin.whenever
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
