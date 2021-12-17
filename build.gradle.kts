@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.16"
-  kotlin("plugin.spring") version "1.5.31"
-  kotlin("plugin.jpa") version "1.5.31"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.0"
+  kotlin("plugin.spring") version "1.6.0"
+  kotlin("plugin.jpa") version "1.6.0"
   idea
 }
 
@@ -25,17 +25,17 @@ dependencies {
 
   runtimeOnly("com.h2database:h2:1.4.200")
   runtimeOnly("org.flywaydb:flyway-core:8.0.0")
-  runtimeOnly("org.postgresql:postgresql:42.2.24")
+  runtimeOnly("org.postgresql:postgresql:42.3.1")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
-  implementation("com.google.code.gson:gson:2.8.8")
+  implementation("com.google.code.gson:gson:2.8.9")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
 
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.5.11")
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.11")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.11")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.1")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
