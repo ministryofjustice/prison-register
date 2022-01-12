@@ -19,7 +19,7 @@ services:
       - hmpps
     container_name: hmpps-auth
     ports:
-      - '8090:8080'
+      - '9090:8080'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8080/auth/health']
     environment:
