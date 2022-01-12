@@ -49,9 +49,10 @@ jq -r '.[] | "INSERT INTO prison VALUES (@" + .agencyId + "@, @" + .description 
 
 This will generate insert statements for each prison, ordered by description.
 
-Now grab all the existing data from the insert statements:
+Now grab the existing data from the prison register api {{prisonregisterhost}}/prisons
+Save this as `register-prisons.json`, then run:
 ```bash
-sort -k6 *insert_prisons.sql | grep 'INSERT INTO prison ' > old_prisons.sql
+jq -r '.[] | "INSERT INTO prison VALUES (@" + .prisonId + "@, @" + .prisonName + "@, " + (.active|tostring) + ");"' register-prisons.json | tr @ "'" | sort -k6 > old_prisons.sql
 ```
 
 and compare:
@@ -59,7 +60,7 @@ and compare:
 diff -iw old_prisons.sql new_prisons.sql
 ```
 
-Output the differences to a the new file `VX_X__insert_prisons.sql`.
+Output the differences to a new file `VX_X__insert_prisons.sql`.
 
 ### Updating GP information
 
