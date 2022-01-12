@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.0"
-  kotlin("plugin.spring") version "1.6.0"
-  kotlin("plugin.jpa") version "1.6.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.1"
+  kotlin("plugin.spring") version "1.6.10"
+  kotlin("plugin.jpa") version "1.6.10"
   idea
 }
 
@@ -23,19 +23,19 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-  runtimeOnly("com.h2database:h2:1.4.200")
-  runtimeOnly("org.flywaydb:flyway-core:8.0.0")
+  runtimeOnly("com.h2database:h2:2.0.206")
+  runtimeOnly("org.flywaydb:flyway-core:8.4.1")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.google.code.gson:gson:2.8.9")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1")
 
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.1")
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.1")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.4")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.4")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.4")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
@@ -45,13 +45,13 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "16"
+      jvmTarget = "17"
     }
   }
 }
