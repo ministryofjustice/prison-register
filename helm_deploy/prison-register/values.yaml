@@ -18,6 +18,7 @@ generic-service:
           return 401;
         }
     tlsSecretName: prison-register-cert
+    contextColour: green
 
   env:
     SERVER_PORT: 8080
