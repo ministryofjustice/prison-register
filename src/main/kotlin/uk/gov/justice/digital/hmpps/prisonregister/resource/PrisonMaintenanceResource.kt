@@ -69,7 +69,7 @@ class PrisonMaintenanceResource(
   @PutMapping("/id/{prisonId}")
   fun updatePrison(
     @Schema(description = "Prison Id", example = "MDI", required = true)
-    @PathVariable @Size(max = 6, min = 3, message = "Prison Id must be between 3 and 6") prisonId: String,
+    @PathVariable @Size(max = 6, min = 3, message = "Prison Id must be between 3 and 6 letters") prisonId: String,
     @RequestBody @Valid prisonUpdateRecord: UpdatePrisonDto
   ): PrisonDto {
     return prisonService.updatePrison(prisonId, prisonUpdateRecord)

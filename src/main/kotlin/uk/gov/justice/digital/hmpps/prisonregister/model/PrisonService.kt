@@ -100,7 +100,7 @@ data class UpdatePrisonDto(
   @Schema(description = "Name of the prison", example = "HMPPS Moorland", required = true) @field:Size(
     max = 40,
     min = 3,
-    message = "Prison name must be between 3 and 40"
+    message = "Prison name must be between 3 and 40 letters"
   ) @field:NotBlank(message = "Prison name is required") val prisonName: String,
 
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean
