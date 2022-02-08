@@ -14,7 +14,7 @@ import javax.validation.constraints.Size
 const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
@@ -29,6 +29,7 @@ class PrisonService(
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
 
+  @Transactional
   fun updatePrison(prisonId: String, prisonUpdateRecord: UpdatePrisonDto): PrisonDto {
     val prison = prisonRepository.findById(prisonId)
       .orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
