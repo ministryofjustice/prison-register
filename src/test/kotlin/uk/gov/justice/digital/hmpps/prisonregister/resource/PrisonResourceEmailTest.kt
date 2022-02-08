@@ -13,9 +13,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 /**
  * Test logic in the PrisonResource class.  Doesn't need any Spring support.
  */
-class PrisonResourceTest {
-  val prisonService: PrisonService = mock()
-  val prisonResource = PrisonResource(prisonService)
+class PrisonResourceEmailTest {
+  private val prisonService: PrisonService = mock()
+  private val prisonResource = PrisonResource(prisonService)
 
   @Test
   fun `VCC email address found`() {

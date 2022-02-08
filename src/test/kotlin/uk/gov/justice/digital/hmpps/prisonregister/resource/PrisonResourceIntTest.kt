@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import java.util.Optional
 
-class PrisonResourceAndServiceIntegrationTest : IntegrationTest() {
+class PrisonResourceIntTest : IntegrationTest() {
   @MockBean
   private lateinit var prisonRepository: PrisonRepository
 
@@ -59,5 +59,5 @@ class PrisonResourceAndServiceIntegrationTest : IntegrationTest() {
   }
 
   private fun String.loadJson(): String =
-    PrisonResourceAndServiceIntegrationTest::class.java.getResource("$this.json").readText()
+    PrisonResourceIntTest::class.java.getResource("$this.json").readText()
 }

@@ -9,8 +9,8 @@ import javax.persistence.OneToOne
 data class Prison(
   @Id
   val prisonId: String,
-  val name: String,
-  val active: Boolean,
+  var name: String,
+  var active: Boolean,
 ) {
 
   @OneToOne

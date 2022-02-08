@@ -4,6 +4,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -12,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import java.util.Optional
 import javax.persistence.EntityNotFoundException
 
@@ -218,6 +220,34 @@ class PrisonServiceTest {
       prisonService.deleteOmuEmailAddress(PRISON_ID)
       verify(offenderManagementUnitRepository).existsById(PRISON_ID)
       verifyNoMoreInteractions(offenderManagementUnitRepository)
+    }
+  }
+
+  @Nested
+  inner class MaintainPrisons {
+
+    @Test
+    fun `try to update a prison that doesn't exist`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(
+        Optional.empty()
+      )
+
+      Assertions.assertThrows(EntityNotFoundException::class.java) {
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A Prison 1", true))
+      }
+      verify(prisonRepository).findById("MDI")
+    }
+
+    @Test
+    fun `update a prison`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(
+        Optional.of(Prison("MDI", "A prison 1", true))
+      )
+
+      val updatedPrison =
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", true))
+      verify(prisonRepository).findById("MDI")
     }
   }
 }

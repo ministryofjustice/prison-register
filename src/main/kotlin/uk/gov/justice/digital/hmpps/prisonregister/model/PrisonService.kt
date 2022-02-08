@@ -1,11 +1,15 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import javax.persistence.EntityNotFoundException
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
 
 const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
@@ -24,6 +28,17 @@ class PrisonService(
       ?: throw EntityNotFoundException("Prison with gp practice $gpPracticeCode not found")
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
+
+  fun updatePrison(prisonId: String, prisonUpdateRecord: UpdatePrisonDto): PrisonDto {
+    val prison = prisonRepository.findById(prisonId)
+      .orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
+
+    with(prisonUpdateRecord) {
+      prison.name = prisonName
+      prison.active = active
+    }
+    return PrisonDto(prison)
+  }
 
   fun getVccEmailAddress(prisonId: String): String? = videoLinkConferencingCentreRepository
     .findByIdOrNull(prisonId)
@@ -77,3 +92,16 @@ class PrisonService(
     }
   }
 }
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "Prison Update Record")
+data class UpdatePrisonDto(
+  @Schema(description = "Name of the prison", example = "HMPPS Moorland", required = true) @field:Size(
+    max = 40,
+    min = 3,
+    message = "Prison name must be between 3 and 40"
+  ) @field:NotBlank(message = "Prison name is required") val prisonName: String,
+
+  @Schema(description = "Whether the prison is still active", required = true) val active: Boolean
+
+)
