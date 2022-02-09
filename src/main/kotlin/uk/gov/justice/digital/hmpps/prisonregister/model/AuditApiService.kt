@@ -13,6 +13,6 @@ class AuditApiService(
       .bodyValue(auditEvent)
       .retrieve()
       .toBodilessEntity()
-      .block()!!
+      .block()
   }
 }

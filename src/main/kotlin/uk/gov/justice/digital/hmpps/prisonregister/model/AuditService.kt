@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonregister.config.SecurityUserContext
-import uk.gov.justice.digital.hmpps.prisonregister.utils.UserContext
 import java.time.Instant
 
 @Service
