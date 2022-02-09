@@ -33,15 +33,16 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1")
 
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.5")
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.5")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.5")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.6")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.6")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
 }
 
 java {
