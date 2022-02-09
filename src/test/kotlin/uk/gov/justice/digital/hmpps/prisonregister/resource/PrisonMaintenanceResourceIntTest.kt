@@ -2,10 +2,14 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
+import uk.gov.justice.digital.hmpps.prisonregister.model.AuditApiService
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
@@ -15,6 +19,9 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
 
   @MockBean
   private lateinit var prisonRepository: PrisonRepository
+
+  @MockBean
+  private lateinit var auditApiService: AuditApiService
 
   @Nested
   inner class UpdatePrisons {
@@ -64,6 +71,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         )
         .exchange()
         .expectStatus().isBadRequest
+      verifyNoInteractions(auditApiService)
     }
 
     @Test
@@ -85,6 +93,8 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
+
+      verify(auditApiService).auditPrisonEvent(any())
     }
   }
 

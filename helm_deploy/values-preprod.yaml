@@ -5,3 +5,5 @@ generic-service:
     host: prison-register-preprod.hmpps.service.justice.gov.uk
   env:
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
+    AUDIT_ENDPOINT_URL: "https://audit-api-preprod.hmpps.service.justice.gov.uk"
+

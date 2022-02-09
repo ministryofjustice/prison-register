@@ -3,6 +3,9 @@ server.shutdown: immediate
 oauth:
   endpoint.url: http://localhost:9090/auth
 
+audit:
+  endpoint.url: http://localhost:8182
+
 management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
