@@ -19,7 +19,16 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.endpoint.url}/.well-known/jwks.json
-
+      client:
+        registration:
+          audit-api:
+            provider: hmpps-auth
+            client-id: ${hmpps-auth.client.client-id}
+            client-secret: ${hmpps-auth.client.client-secret}
+            authorization-grant-type: client_credentials
+        provider:
+          hmpps-auth:
+            token-uri: ${oauth.endpoint.url}/oauth/token
   jpa:
     open-in-view: false
     show-sql: false
