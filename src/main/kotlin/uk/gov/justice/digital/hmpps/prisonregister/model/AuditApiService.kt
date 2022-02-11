@@ -6,7 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Service
 class AuditApiService(
-  @Qualifier("auditWebClient") val auditWebClient: WebClient
+  @Qualifier("auditWebClient") private val auditWebClient: WebClient
 ) {
   fun auditPrisonEvent(auditEvent: AuditEvent) {
     auditWebClient.post().uri("/audit")

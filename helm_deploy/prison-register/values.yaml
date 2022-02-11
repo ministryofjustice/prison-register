@@ -29,6 +29,8 @@ generic-service:
   namespace_secrets:
     prison-register:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      HMPPS_AUTH_CLIENT_ID: "SYSTEM_CLIENT_ID"
+      HMPPS_AUTH_CLIENT_CLIENT_SECRET: "SYSTEM_CLIENT_SECRET"
     prisons-rds-instance-output:
       DATABASE_NAME: "database_name"
       DATABASE_ENDPOINT: "rds_instance_endpoint"

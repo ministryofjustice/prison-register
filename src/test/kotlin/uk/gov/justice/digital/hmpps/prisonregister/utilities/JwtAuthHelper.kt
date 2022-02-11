@@ -25,7 +25,7 @@ class JwtAuthHelper {
   }
 
   fun setAuthorisation(
-    user: String = "prison-reg-client",
+    user: String = "prison-register-api-client",
     roles: List<String> = listOf(),
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit {
