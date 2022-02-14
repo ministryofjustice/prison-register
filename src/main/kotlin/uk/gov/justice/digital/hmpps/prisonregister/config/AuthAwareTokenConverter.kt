@@ -42,7 +42,7 @@ class AuthAwareAuthenticationToken(
   private val aPrincipal: String,
   authorities: Collection<GrantedAuthority>
 ) : JwtAuthenticationToken(jwt, authorities) {
-  override fun getPrincipal(): Any {
+  override fun getPrincipal(): String {
     return aPrincipal
   }
 }

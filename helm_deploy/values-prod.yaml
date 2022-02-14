@@ -5,6 +5,7 @@ generic-service:
     host: prison-register.hmpps.service.justice.gov.uk
   env:
     OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
+    AUDIT_ENDPOINT_URL: "https://audit-api.hmpps.service.justice.gov.uk"
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:

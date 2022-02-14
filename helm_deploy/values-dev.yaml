@@ -7,4 +7,5 @@ generic-service:
   env:
     JAVA_OPTS: "-Xmx256m"
     OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    AUDIT_ENDPOINT_URL: "https://audit-api-dev.hmpps.service.justice.gov.uk"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json

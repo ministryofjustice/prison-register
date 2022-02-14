@@ -24,7 +24,7 @@ abstract class IntegrationTest {
   }
 
   internal fun setAuthorisation(
-    user: String = "prison-reg-client",
+    user: String = "prison-register-api-client",
     roles: List<String> = listOf(),
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
