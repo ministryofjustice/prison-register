@@ -39,7 +39,7 @@ To run a local version with a postgres h2 db, simply use the dev spring profile.
 Localstack and AWS use different bean config functions. So for each AWSSQSClient there will be 2 versions of this
 config.
 
-Queues, topics and the tables will automatically when the application starts.
+Queues, topics and the tables will automatically be created when the application starts.
 
 Running all services except this application (hence allowing you to run this in the IDE)
 
