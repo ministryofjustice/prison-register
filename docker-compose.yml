@@ -14,7 +14,7 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ping" ]
     environment:
       - SERVER_PORT=8080
-      - OAUTH_API_BASE_URL=http://localhost:8080/auth
+      - OAUTH_API_BASE_URL=http://localhost:9090/auth
       - SNS_ENDPOINT_URL=http://localhost:4566
       - SPRING_PROFILES_ACTIVE=stdout,localstack,postgres
       - AWS_ACCESS_KEY_ID=foobar
