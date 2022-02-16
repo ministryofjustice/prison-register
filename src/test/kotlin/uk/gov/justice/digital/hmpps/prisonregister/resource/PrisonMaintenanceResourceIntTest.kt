@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import com.microsoft.applicationinsights.TelemetryClient
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -14,10 +17,8 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
-import uk.gov.justice.digital.hmpps.prisonregister.model.EventType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
 import java.util.Optional
 
@@ -28,9 +29,6 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
 
   @MockBean
   private lateinit var auditService: AuditService
-
-  @MockBean
-  private lateinit var snsService: SnsService
 
   @MockBean
   private lateinit var telemetryClient: TelemetryClient
@@ -84,7 +82,6 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         .exchange()
         .expectStatus().isBadRequest
       verifyNoInteractions(auditService)
-      verifyNoInteractions(snsService)
       verifyNoInteractions(telemetryClient)
     }
 
@@ -109,7 +106,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         .expectBody().json("updated_prison".loadJson())
 
       verify(auditService).sendAuditEvent("PRISON_REGISTER_UPDATE", Pair("MDI", UpdatePrisonDto("Updated Prison", false)))
-      verify(snsService).sendEvent(EventType.PRISON_REGISTER_UPDATE, "MDI")
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
   }
@@ -117,4 +114,9 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
   private fun String.loadJson(): String =
     PrisonMaintenanceResourceIntTest::class.java.getResource("$this.json")?.readText()
       ?: throw AssertionError("file $this.json not found")
+
+  fun testQueueEventMessageCount(): Int? {
+    val queueAttributes = testSqsClient.getQueueAttributes(testQueueUrl, listOf("ApproximateNumberOfMessages"))
+    return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
+  }
 }

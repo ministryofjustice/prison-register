@@ -8,9 +8,9 @@ jobs:
     executor:
       name: hmpps/java_localstack_postgres
       jdk_tag: "17.0"
-      services: "sns"
+      services: "sns,sqs"
       postgres_tag: "13.2"
-      localstack_tag: "0.12.10"
+      localstack_tag: "0.14.0"
       postgres_username: "admin"
       postgres_password: "admin_password"
     steps:
