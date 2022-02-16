@@ -31,6 +31,37 @@ SPRING_PROFILES_ACTIVE=postgres,local ./gradlew bootRun
 Swagger documentation is now at http://localhost:8080/swagger-ui.html
 
 You can obtain valid auth tokens form the local auth server using curl.
+
+### Running in IntelliJ
+To run a local version with a postgres h2 db, simply use the dev spring profile.
+
+#### LocalStack & AWS
+Localstack and AWS use different bean config functions. So for each AWSSQSClient there will be 2 versions of this
+config.
+
+Queues, topics and the tables will automatically when the application starts.
+
+Running all services except this application (hence allowing you to run this in the IDE)
+
+```bash
+TMPDIR=/private$TMPDIR docker-compose up --scale prison-register=0 
+```
+
+Check the docker-compose file for sample environment variables to run the application locally.
+
+Or to just run `localstack` which is useful when running against a non-local test system
+
+```bash
+TMPDIR=/private$TMPDIR docker-compose up localstack 
+```
+
+In all of the above the application should use the host network to communicate with `localstack` since AWS Client will
+try to read messages from localhost rather than the `localstack` network.
+
+### Auditing
+When changes are made to the prison register, these are sent to the audit service. Locally, this
+uses port 8182 (set in the application-dev.yml).
+
 #### Health
 
 - `/health/ping`: will respond with status `UP` to all requests.  This should be used by dependent systems to check connectivity to prison-register,
@@ -81,3 +112,13 @@ Then compare to see what's changed:
 ```bash
 diff old_gp_practice.sql new_gp_practice.sql
 ```
+
+## Testing
+
+### Localstack
+
+`localstack` is used to emulate the AWS SNS and SQS services. When running the integration tests localstack is started automatically by TestContainers.
+
+If you wish to run localstack manually (as is done in the Circle build) then you must:
+* start localstack with command `TMPDIR=/private$TMPDIR docker-compose up localstack`
+* run the tests with command `AWS_PROVIDER=localstack ./gradlew check`

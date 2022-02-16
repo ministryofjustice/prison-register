@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.model.AuditType
+import uk.gov.justice.digital.hmpps.prisonregister.model.EventType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
+import uk.gov.justice.digital.hmpps.prisonregister.model.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
 import javax.validation.Valid
 import javax.validation.constraints.Size
@@ -25,6 +28,7 @@ import javax.validation.constraints.Size
 @RequestMapping(name = "Prison Maintenance", path = ["/prison-maintenance"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class PrisonMaintenanceResource(
   private val prisonService: PrisonService,
+  private val snsService: SnsService,
   private val auditService: AuditService
 ) {
   @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
@@ -75,14 +79,11 @@ class PrisonMaintenanceResource(
     @RequestBody @Valid prisonUpdateRecord: UpdatePrisonDto
   ): PrisonDto {
     val updatedPrison = prisonService.updatePrison(prisonId, prisonUpdateRecord)
+    snsService.sendEvent(EventType.PRISON_REGISTER_UPDATE, prisonId)
     auditService.sendAuditEvent(
       AuditType.PRISON_REGISTER_UPDATE.name,
       prisonId to prisonUpdateRecord
     )
     return updatedPrison
   }
-}
-
-enum class AuditType {
-  PRISON_REGISTER_UPDATE
 }

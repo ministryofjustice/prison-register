@@ -37,6 +37,7 @@ class JwtAuthHelper {
     )
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
   }
+
   @Bean
   fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withPublicKey(keyPair.public as RSAPublicKey).build()
 
@@ -46,7 +47,7 @@ class JwtAuthHelper {
     scope: List<String>? = listOf(),
     roles: List<String>? = listOf(),
     expiryTime: Duration = Duration.ofHours(1),
-    clientId: String = "prison-register-client",
+    clientId: String = "prison-register-api-client",
     jwtId: String = UUID.randomUUID().toString(),
   ): String {
     val claims = mutableMapOf<String, Any?>("user_name" to subject, "client_id" to clientId, "user_id" to userId)

@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.prisonregister.resource.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 
 const val PRISON_ID = "LEI"
 const val OMU_URI = "/secure/prisons/id/{prisonId}/offender-management-unit/email-address"

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.microsoft.applicationinsights.TelemetryClient
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
@@ -18,7 +19,8 @@ const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') an
 class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
-  private val offenderManagementUnitRepository: OffenderManagementUnitRepository
+  private val offenderManagementUnitRepository: OffenderManagementUnitRepository,
+  private val telemetryClient: TelemetryClient
 ) {
   fun findById(prisonId: String): Prison =
     prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException("Prison $prisonId not found")
@@ -38,6 +40,7 @@ class PrisonService(
       prison.name = prisonName
       prison.active = active
     }
+    telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
   }
 

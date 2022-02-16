@@ -2,15 +2,19 @@
 
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
@@ -21,9 +25,10 @@ class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
   private val offenderManagementUnitRepository: OffenderManagementUnitRepository = mock()
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository = mock()
+  private val telemetryClient: TelemetryClient = mock()
 
   private val prisonService =
-    PrisonService(prisonRepository, videoLinkConferencingCentreRepository, offenderManagementUnitRepository)
+    PrisonService(prisonRepository, videoLinkConferencingCentreRepository, offenderManagementUnitRepository, telemetryClient)
 
   @Nested
   inner class findById {
@@ -236,6 +241,7 @@ class PrisonServiceTest {
         prisonService.updatePrison("MDI", UpdatePrisonDto("A Prison 1", true))
       }
       verify(prisonRepository).findById("MDI")
+      verifyNoInteractions(telemetryClient)
     }
 
     @Test
@@ -248,6 +254,7 @@ class PrisonServiceTest {
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true))
       assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", true))
       verify(prisonRepository).findById("MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
   }
 }

@@ -39,3 +39,6 @@ data class AuditEvent(
   val service: String,
   val details: String? = null,
 )
+enum class AuditType {
+  PRISON_REGISTER_UPDATE
+}

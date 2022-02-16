@@ -23,6 +23,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
+  implementation("org.springframework.cloud:spring-cloud-starter-aws-messaging:2.2.6.RELEASE")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.0.3")
+
   runtimeOnly("com.h2database:h2:2.1.210")
   runtimeOnly("org.flywaydb:flyway-core:8.4.4")
   runtimeOnly("org.postgresql:postgresql:42.3.2")
@@ -37,12 +40,13 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.6")
 
-  testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
+  testImplementation("io.jsonwebtoken:jjwt:0.9.1")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+  testImplementation("org.mockito:mockito-inline:3.11.2")
+  testImplementation("org.springframework.security:spring-security-test")
 }
 
 java {

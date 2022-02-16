@@ -86,4 +86,19 @@ management:
       cache:
         time-to-live: 2000ms
 
+aws:
+  provider: aws
+  region: eu-west-2
 
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      auto: false
+      static: ${aws.region}
+
+hmpps.sqs:
+  topics:
+    domainevents:
+      asyncClient: true
