@@ -1,16 +1,23 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.model.EventType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
 import java.util.Optional
 
@@ -21,6 +28,12 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
 
   @MockBean
   private lateinit var auditService: AuditService
+
+  @MockBean
+  private lateinit var snsService: SnsService
+
+  @MockBean
+  private lateinit var telemetryClient: TelemetryClient
 
   @Nested
   inner class UpdatePrisons {
@@ -71,6 +84,8 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         .exchange()
         .expectStatus().isBadRequest
       verifyNoInteractions(auditService)
+      verifyNoInteractions(snsService)
+      verifyNoInteractions(telemetryClient)
     }
 
     @Test
@@ -94,6 +109,8 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         .expectBody().json("updated_prison".loadJson())
 
       verify(auditService).sendAuditEvent("PRISON_REGISTER_UPDATE", Pair("MDI", UpdatePrisonDto("Updated Prison", false)))
+      verify(snsService).sendEvent(EventType.PRISON_REGISTER_UPDATE, "MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
   }
 

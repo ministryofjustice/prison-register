@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.services.health
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.prisonregister.resource.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_DATE
 import java.util.function.Consumer

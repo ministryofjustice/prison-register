@@ -1,15 +1,22 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
+  hmpps: ministryofjustice/hmpps@3.12.2
 
 jobs:
   validate:
     executor:
-      name: hmpps/java
-      tag: "17.0"
+      name: hmpps/java_localstack_postgres
+      jdk_tag: "17.0"
+      services: "sns"
+      postgres_tag: "13.2"
+      localstack_tag: "0.12.10"
+      postgres_username: "admin"
+      postgres_password: "admin_password"
     steps:
       - checkout
+      - hmpps/wait_till_ready
+      - hmpps/wait_till_ready_postgres
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}

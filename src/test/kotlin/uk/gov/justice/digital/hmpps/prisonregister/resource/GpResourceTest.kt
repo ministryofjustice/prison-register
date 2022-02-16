@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository

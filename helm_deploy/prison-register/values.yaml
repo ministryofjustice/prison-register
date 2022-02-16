@@ -36,6 +36,10 @@ generic-service:
       DATABASE_ENDPOINT: "rds_instance_endpoint"
       SPRING_DATASOURCE_USERNAME: "database_username"
       SPRING_DATASOURCE_PASSWORD: "database_password"
+    hmpps-domain-events-topic:
+      HMPPS_SQS_TOPICS_DOMAINEVENTS_ACCESS_KEY_ID: "access_key_id"
+      HMPPS_SQS_TOPICS_DOMAINEVENTS_SECRET_ACCESS_KEY: "secret_access_key"
+      HMPPS_SQS_TOPICS_DOMAINEVENTS_ARN: "topic_arn"
 
 generic-prometheus-alerts:
   targetApplication: prison-register

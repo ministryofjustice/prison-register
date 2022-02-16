@@ -1,5 +1,26 @@
 version: '3.1'
 services:
+  prison-register:
+    build:
+      context: .
+    network_mode: "host"
+    container_name: prison-register
+    depends_on:
+      - localstack
+      - prison-register-db
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ping" ]
+    environment:
+      - SERVER_PORT=8080
+      - OAUTH_API_BASE_URL=http://localhost:9090/auth
+      - SNS_ENDPOINT_URL=http://localhost:4566
+      - SPRING_PROFILES_ACTIVE=stdout,localstack,postgres
+      - AWS_ACCESS_KEY_ID=foobar
+      - AWS_SECRET_ACCESS_KEY=foobar
+      - AWS_DEFAULT_REGION=eu-west-2
+
   prison-register-db:
     image: postgres
     networks:
@@ -25,6 +46,28 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DELIUS_ENABLED: "false"
+
+  localstack:
+    image: localstack/localstack:0.12.10
+    networks:
+      - hmpps
+    container_name: localstack
+    ports:
+      - "4566-4597:4566-4597"
+      - 8999:8080
+    environment:
+      - SERVICES=sns
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_EXECUTION_ENV=True
+      - DEFAULT_REGION=eu-west-2
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 networks:
   hmpps:
