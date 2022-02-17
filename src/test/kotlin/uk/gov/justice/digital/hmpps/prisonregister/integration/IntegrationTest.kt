@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration
 
+import com.amazonaws.services.sqs.model.PurgeQueueRequest
+import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.SpyBean
@@ -15,6 +17,11 @@ import uk.gov.justice.hmpps.sqs.MissingTopicException
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 abstract class IntegrationTest {
+  @BeforeEach
+  fun `clear queues`() {
+    testSqsClient.purgeQueue(PurgeQueueRequest(testQueueUrl))
+  }
+
   @Suppress("unused")
   @Autowired
   lateinit var webTestClient: WebTestClient
@@ -40,4 +47,8 @@ abstract class IntegrationTest {
     roles: List<String> = listOf(),
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
+
+  internal val testQueue by lazy { hmppsQueueService.findByQueueId("domaineventstestqueue") ?: throw RuntimeException("Queue with name domaineventstestqueue doesn't exist") }
+  internal val testSqsClient by lazy { testQueue.sqsClient }
+  internal val testQueueUrl by lazy { testQueue.queueUrl }
 }
