@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.model
+package uk.gov.justice.digital.hmpps.prisonregister.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger

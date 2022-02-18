@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.model
+package uk.gov.justice.digital.hmpps.prisonregister.services
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.microsoft.applicationinsights.TelemetryClient
@@ -7,6 +7,13 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
+import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
+import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import javax.persistence.EntityNotFoundException
 import javax.validation.constraints.NotBlank

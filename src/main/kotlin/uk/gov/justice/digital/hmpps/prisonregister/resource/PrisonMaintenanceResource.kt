@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
-import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
-import uk.gov.justice.digital.hmpps.prisonregister.model.AuditType.PRISON_REGISTER_UPDATE
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
-import uk.gov.justice.digital.hmpps.prisonregister.model.SnsService
-import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.services.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.services.AuditType.PRISON_REGISTER_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.services.PrisonService
+import uk.gov.justice.digital.hmpps.prisonregister.services.SnsService
+import uk.gov.justice.digital.hmpps.prisonregister.services.UpdatePrisonDto
 import java.time.Instant
 import javax.validation.Valid
 import javax.validation.constraints.Size
