@@ -7,8 +7,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
-import uk.gov.justice.digital.hmpps.prisonregister.services.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
+import uk.gov.justice.digital.hmpps.prisonregister.services.PrisonService
 
 /**
  * Test logic in the PrisonResource class.  Doesn't need any Spring support.
