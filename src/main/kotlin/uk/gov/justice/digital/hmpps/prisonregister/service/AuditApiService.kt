@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.model
+package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service

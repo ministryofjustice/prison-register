@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.model
+package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -10,6 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
+import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
+import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
 import java.util.Optional
 
 @WithMockUser(authorities = ["ROLE_MAINTAIN_REF_DATA", "SCOPE_write"])
