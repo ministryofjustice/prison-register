@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
-import uk.gov.justice.digital.hmpps.prisonregister.model.AuditType
-import uk.gov.justice.digital.hmpps.prisonregister.model.EventType
+import uk.gov.justice.digital.hmpps.prisonregister.model.AuditType.PRISON_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.model.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
+import java.time.Instant
 import javax.validation.Valid
 import javax.validation.constraints.Size
 
@@ -79,10 +79,12 @@ class PrisonMaintenanceResource(
     @RequestBody @Valid prisonUpdateRecord: UpdatePrisonDto
   ): PrisonDto {
     val updatedPrison = prisonService.updatePrison(prisonId, prisonUpdateRecord)
-    snsService.sendEvent(EventType.PRISON_REGISTER_UPDATE, prisonId)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAmendedEvent(prisonId, now)
     auditService.sendAuditEvent(
-      AuditType.PRISON_REGISTER_UPDATE.name,
-      prisonId to prisonUpdateRecord
+      PRISON_REGISTER_UPDATE.name,
+      prisonId to prisonUpdateRecord,
+      now
     )
     return updatedPrison
   }

@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
@@ -12,17 +14,19 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.model.HMPPSDomainEvent
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
 import java.util.Optional
 
-class PrisonMaintenanceResourceIntTest : IntegrationTest() {
+class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: ObjectMapper) : IntegrationTest() {
 
   @MockBean
   private lateinit var prisonRepository: PrisonRepository
@@ -105,8 +109,17 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
 
-      verify(auditService).sendAuditEvent("PRISON_REGISTER_UPDATE", Pair("MDI", UpdatePrisonDto("Updated Prison", false)))
+      verify(auditService).sendAuditEvent(eq("PRISON_REGISTER_UPDATE"), eq(Pair("MDI", UpdatePrisonDto("Updated Prison", false))), any())
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been updated"))
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
   }
@@ -120,3 +133,11 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
     return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
   }
 }
+
+data class HMPPSEventType(val Value: String, val Type: String)
+data class HMPPSMessageAttributes(val eventType: HMPPSEventType)
+data class HMPPSMessage(
+  val Message: String,
+  val MessageId: String,
+  val MessageAttributes: HMPPSMessageAttributes
+)

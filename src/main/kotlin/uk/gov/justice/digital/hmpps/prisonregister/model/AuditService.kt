@@ -20,9 +20,11 @@ class AuditService(
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
-  fun sendAuditEvent(what: String, details: Any) {
+
+  fun sendAuditEvent(what: String, details: Any, occurredAt: Instant) {
     val auditEvent = AuditEvent(
       what = what,
+      `when` = occurredAt,
       who = securityUserContext.principal,
       service = serviceName,
       details = mapper.writeValueAsString(details)
