@@ -19,11 +19,11 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
-import uk.gov.justice.digital.hmpps.prisonregister.model.AuditService
-import uk.gov.justice.digital.hmpps.prisonregister.model.HMPPSDomainEvent
+import uk.gov.justice.digital.hmpps.prisonregister.services.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.services.HMPPSDomainEvent
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.UpdatePrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.services.UpdatePrisonDto
 import java.util.Optional
 
 class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: ObjectMapper) : IntegrationTest() {
