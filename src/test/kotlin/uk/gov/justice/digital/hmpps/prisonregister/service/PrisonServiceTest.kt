@@ -81,10 +81,13 @@ class PrisonServiceTest {
   inner class findByActiveAndTextSearch {
     @Test
     fun `find prison by active and text search`() {
-      val prison = Prison("MDI", "Name", true)
+      val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
       whenever(prisonRepository.findByActiveAndTextSearchOrderByPrisonId(anyBoolean(), anyString())).thenReturn(listOf(prison))
-      val results = prisonService.findByActiveAndTextSearch(true, "M")
+      val results = prisonService.findByActiveAndTextSearch(true, "moorland")
+
       assertThat(results).containsOnly(PrisonDto(prison))
+      // Check textSearch has been converted to uppercase
+      verify(prisonRepository).findByActiveAndTextSearchOrderByPrisonId(true, "MOORLAND")
     }
   }
 

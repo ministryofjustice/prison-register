@@ -85,7 +85,7 @@ class PrisonResource(private val prisonService: PrisonService) {
   fun getPrisonsFromActiveAndTextSearch(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null
-  ): List<PrisonDto> = prisonService.findByActiveAndTextSearch(active, textSearch?.uppercase())
+  ): List<PrisonDto> = prisonService.findByActiveAndTextSearch(active, textSearch)
 
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
