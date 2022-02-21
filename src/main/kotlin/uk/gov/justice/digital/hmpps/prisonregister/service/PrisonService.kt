@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.microsoft.applicationinsights.TelemetryClient
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.data.repository.query.Param
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -37,6 +38,9 @@ class PrisonService(
       ?: throw EntityNotFoundException("Prison with gp practice $gpPracticeCode not found")
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
+
+  fun findByActiveAndTextSearch(active: Boolean? = null, textSearchUpperCase: String? = null): List<PrisonDto> =
+    prisonRepository.findByActiveAndTextSearchOrderByPrisonId(active, textSearchUpperCase).map { PrisonDto(it) }
 
   @Transactional
   fun updatePrison(prisonId: String, prisonUpdateRecord: UpdatePrisonDto): PrisonDto {

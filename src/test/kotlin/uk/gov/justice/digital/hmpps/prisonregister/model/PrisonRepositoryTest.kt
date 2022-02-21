@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -63,5 +64,38 @@ class PrisonRepositoryTest {
   fun `should find prison by gp practice code`() {
     val prison = prisonRepository.findByGpPracticeGpPracticeCode("Y05537")
     assertThat(prison).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+  }
+
+  @Nested
+  inner class findByActiveAndTextSearch {
+    @Test
+    fun `should find prisons when both params null`() {
+      val activePrisons = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(null, null)
+      assertThat(activePrisons).hasSizeGreaterThan(100)
+    }
+
+    @Test
+    fun `should find prisons by active or inactive`() {
+      val activePrisons = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(true, null)
+      assertThat(activePrisons).hasSizeGreaterThan(100).allMatch { it.active }
+
+      val inactivePrisons = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(false, null)
+      assertThat(inactivePrisons).hasSizeGreaterThan(40).allMatch { !it.active }
+    }
+
+    @Test
+    fun `should find prisons by text search`() {
+      val prisonsByPrisonId = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(null, "mdi".uppercase())
+      assertThat(prisonsByPrisonId.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+
+      val prisonsByPrisonName = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(null, "moorland".uppercase())
+      assertThat(prisonsByPrisonName.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+    }
+
+    @Test
+    fun `should find prisons by active and text search`() {
+      val prisonsByActiveAndTextSearch = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(false, "AKI")
+      assertThat(prisonsByActiveAndTextSearch.first()).isEqualTo(Prison("AKI", "Acklington (HMP)", false))
+    }
   }
 }

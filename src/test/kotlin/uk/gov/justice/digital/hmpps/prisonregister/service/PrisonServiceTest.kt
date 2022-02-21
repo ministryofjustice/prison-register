@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -73,6 +74,17 @@ class PrisonServiceTest {
     fun `find prison from gp practice not found`() {
       assertThatThrownBy { prisonService.findByGpPractice("A12345") }
         .isInstanceOf(EntityNotFoundException::class.java).hasMessage("Prison with gp practice A12345 not found")
+    }
+  }
+
+  @Nested
+  inner class findByActiveAndTextSearch {
+    @Test
+    fun `find prison by active and text search`() {
+      val prison = Prison("MDI", "Name", true)
+      whenever(prisonRepository.findByActiveAndTextSearchOrderByPrisonId(anyBoolean(), anyString())).thenReturn(listOf(prison))
+      val results = prisonService.findByActiveAndTextSearch(true, "M")
+      assertThat(results).containsOnly(PrisonDto(prison))
     }
   }
 
