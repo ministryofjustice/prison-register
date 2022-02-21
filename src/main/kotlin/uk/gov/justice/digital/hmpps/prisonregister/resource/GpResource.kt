@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
+import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import javax.validation.constraints.Size
 
 @RestController

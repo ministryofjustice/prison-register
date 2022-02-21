@@ -1,6 +1,6 @@
 @file:Suppress("ClassName")
 
-package uk.gov.justice.digital.hmpps.prisonregister.model
+package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
@@ -17,6 +17,14 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
+import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
+import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import java.util.Optional
 import javax.persistence.EntityNotFoundException

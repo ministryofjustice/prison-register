@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
+import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import javax.validation.Valid
 import javax.validation.constraints.Email
 import javax.validation.constraints.Size

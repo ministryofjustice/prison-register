@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.model
+package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.amazonaws.services.sns.model.MessageAttributeValue
