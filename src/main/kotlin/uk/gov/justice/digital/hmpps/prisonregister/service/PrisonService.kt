@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
@@ -37,6 +38,9 @@ class PrisonService(
       ?: throw EntityNotFoundException("Prison with gp practice $gpPracticeCode not found")
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
+
+  fun findByActiveAndTextSearch(active: Boolean? = null, textSearch: String? = null): List<PrisonDto> =
+    prisonRepository.findAll(PrisonFilter(active, textSearch)).map { PrisonDto(it) }
 
   @Transactional
   fun updatePrison(prisonId: String, prisonUpdateRecord: UpdatePrisonDto): PrisonDto {
