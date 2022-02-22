@@ -5,7 +5,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -25,8 +25,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
+import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import java.util.Optional
+import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 
 class PrisonServiceTest {
@@ -46,8 +50,10 @@ class PrisonServiceTest {
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)
       )
+      val prisonDto = PrisonDto(prison)
+
       val actual = prisonService.findById("MDI")
-      assertThat(actual).isEqualTo(prison)
+      assertThat(actual).isEqualTo(prisonDto)
       verify(prisonRepository).findById("MDI")
     }
 
@@ -64,9 +70,10 @@ class PrisonServiceTest {
     fun `find prison from gp practice`() {
       val prison = Prison("MDI", "Name", true)
       prison.gpPractice = PrisonGpPractice("MDI", "A12345")
+      val prisonGpPracticeDto = GpDto(prison)
       whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
       val prisonDto = prisonService.findByGpPractice("MDI")
-      assertThat(prisonDto).isEqualTo(prison)
+      assertThat(prisonDto).isEqualTo(prisonGpPracticeDto)
     }
 
     @Test
@@ -249,6 +256,34 @@ class PrisonServiceTest {
   }
 
   @Nested
+  inner class CreatePrison {
+
+    @Test
+    fun `try to create a prison that doesn't exist`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(
+        Optional.of(Prison("MDI", "A Prison 1", true))
+      )
+      assertThrows(EntityExistsException::class.java) {
+        prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true))
+      }
+      verify(prisonRepository).findById("MDI")
+      verifyNoInteractions(telemetryClient)
+    }
+
+    @Test
+    fun `create a prison`() {
+      val prisonToSave = Prison("MDI", "A Prison 1", true)
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
+      whenever(prisonRepository.save(prisonToSave)).thenReturn(prisonToSave)
+
+      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true))
+      assertThat(createdPrisonId).isEqualTo("MDI")
+      verify(prisonRepository).findById("MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+    }
+  }
+
+  @Nested
   inner class MaintainPrisons {
 
     @Test
@@ -257,7 +292,7 @@ class PrisonServiceTest {
         Optional.empty()
       )
 
-      Assertions.assertThrows(EntityNotFoundException::class.java) {
+      assertThrows(EntityNotFoundException::class.java) {
         prisonService.updatePrison("MDI", UpdatePrisonDto("A Prison 1", true))
       }
       verify(prisonRepository).findById("MDI")

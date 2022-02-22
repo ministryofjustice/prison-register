@@ -21,6 +21,17 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   private val domaineventsTopic by lazy { hmppsQueueService.findByTopicId("domainevents") ?: throw RuntimeException("Topic with name domainevents doesn't exist") }
   private val domaineventsTopicClient by lazy { domaineventsTopic.snsClient as AmazonSNSAsync }
 
+  fun sendPrisonRegisterInsertedEvent(prisonId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSDomainEvent(
+        "register.prison.inserted",
+        AdditionalInformation(prisonId),
+        occurredAt,
+        "A prison has been inserted"
+      )
+    )
+  }
+
   fun sendPrisonRegisterAmendedEvent(prisonId: String, occurredAt: Instant) {
     publishToDomainEventsTopic(
       HMPPSDomainEvent(

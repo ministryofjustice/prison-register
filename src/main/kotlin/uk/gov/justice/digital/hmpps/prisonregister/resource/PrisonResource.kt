@@ -51,7 +51,7 @@ class PrisonResource(private val prisonService: PrisonService) {
   fun getPrisonFromId(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable @Size(max = 12, min = 2) prisonId: String
-  ): PrisonDto = PrisonDto(prisonService.findById(prisonId))
+  ): PrisonDto = prisonService.findById(prisonId)
 
   @GetMapping("/$PRISONS", produces = [MediaType.APPLICATION_JSON_VALUE])
   @Operation(summary = "Get all prisons", description = "All prisons")

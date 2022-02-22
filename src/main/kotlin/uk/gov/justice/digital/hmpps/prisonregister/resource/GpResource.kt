@@ -42,7 +42,7 @@ class GpResource(private val prisonService: PrisonService) {
   fun getPrisonFromId(
     @Parameter(description = "Prison ID", example = "MDI")
     @PathVariable @Size(min = 2, max = 12) prisonId: String
-  ): GpDto = GpDto(prisonService.findById(prisonId.uppercase()))
+  ): GpDto = prisonService.findPrisonAndGpPracticeById(prisonId.uppercase())
 
   @GetMapping("/practice/{gpPracticeCode}")
   @Operation(summary = "Get specified prison from GP practice code")
@@ -63,7 +63,7 @@ class GpResource(private val prisonService: PrisonService) {
   fun getPrisonFromGpPrescriber(
     @Parameter(description = "GP Practice Code", example = "Y05537")
     @PathVariable @Size(max = 6) gpPracticeCode: String
-  ): GpDto = GpDto(prisonService.findByGpPractice(gpPracticeCode.uppercase()))
+  ): GpDto = prisonService.findByGpPractice(gpPracticeCode.uppercase())
 }
 
 @Schema(description = "Prison and GP Practice Information")
