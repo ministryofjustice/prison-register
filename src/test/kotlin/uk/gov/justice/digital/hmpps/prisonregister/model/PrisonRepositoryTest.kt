@@ -67,34 +67,38 @@ class PrisonRepositoryTest {
   }
 
   @Nested
-  inner class findByActiveAndTextSearch {
+  inner class prisonFilter {
     @Test
-    fun `should find prisons when both params null`() {
-      val activePrisons = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(null, null)
-      assertThat(activePrisons).hasSizeGreaterThan(100)
+    fun `should find all prisons when no params provided`() {
+      val allPrisons = prisonRepository.findAll(PrisonFilter())
+      val groupedByActive = allPrisons.groupBy { it.active }
+      assertThat(groupedByActive[true]).hasSizeGreaterThan(100)
+      assertThat(groupedByActive[false]).hasSizeGreaterThan(40)
     }
 
     @Test
     fun `should find prisons by active or inactive`() {
-      val activePrisons = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(true, null)
+      val activePrisons = prisonRepository.findAll(PrisonFilter(active = true))
       assertThat(activePrisons).hasSizeGreaterThan(100).allMatch { it.active }
 
-      val inactivePrisons = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(false, null)
+      val inactivePrisons = prisonRepository.findAll(PrisonFilter(active = false))
       assertThat(inactivePrisons).hasSizeGreaterThan(40).allMatch { !it.active }
     }
 
     @Test
     fun `should find prisons by text search`() {
-      val prisonsByPrisonId = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(null, "mdi".uppercase())
+      // case insensitive
+      val prisonsByPrisonId = prisonRepository.findAll(PrisonFilter(textSearch = "mdi"))
       assertThat(prisonsByPrisonId.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
 
-      val prisonsByPrisonName = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(null, "moorland".uppercase())
+      // wildcard is supported
+      val prisonsByPrisonName = prisonRepository.findAll(PrisonFilter(textSearch = "moorland"))
       assertThat(prisonsByPrisonName.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
     }
 
     @Test
     fun `should find prisons by active and text search`() {
-      val prisonsByActiveAndTextSearch = prisonRepository.findByActiveAndTextSearchOrderByPrisonId(false, "AKI")
+      val prisonsByActiveAndTextSearch = prisonRepository.findAll(PrisonFilter(active = false, textSearch = "aki"))
       assertThat(prisonsByActiveAndTextSearch.first()).isEqualTo(Prison("AKI", "Acklington (HMP)", false))
     }
   }

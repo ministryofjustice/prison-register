@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
@@ -62,22 +62,41 @@ class PrisonResourceIntTest : IntegrationTest() {
 
   @Suppress("ClassName")
   @Nested
-  inner class getPrisonFromActiveAndTextSearch {
+  inner class prisonSearch {
     @Test
     fun `search by active and text`() {
       val prisons = listOf(
         Prison("MDI", "Moorland HMP", true)
       )
+      whenever(prisonRepository.findAll(any())).thenReturn(prisons)
 
-      whenever(prisonRepository.findByActiveAndTextSearchOrderByPrisonId(anyBoolean(), anyString())).thenReturn(
-        prisons
-      )
       webTestClient.get()
         .uri { uriBuilder ->
           uriBuilder
             .path("/prisons/search")
             .queryParam("active", true)
             .queryParam("textSearch", "MDI")
+            .build()
+        }
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$[0].prisonId").isEqualTo("MDI")
+        .jsonPath("$[0].prisonName").isEqualTo("Moorland HMP")
+        .jsonPath("$[0].active").isEqualTo(true)
+    }
+
+    @Test
+    fun `no search params provided`() {
+      val prisons = listOf(
+        Prison("MDI", "Moorland HMP", true)
+      )
+      whenever(prisonRepository.findAll(any())).thenReturn(prisons)
+
+      webTestClient.get()
+        .uri { uriBuilder ->
+          uriBuilder
+            .path("/prisons/search")
             .build()
         }
         .exchange()

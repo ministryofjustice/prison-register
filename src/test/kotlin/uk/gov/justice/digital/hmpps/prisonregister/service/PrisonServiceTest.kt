@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -82,12 +81,10 @@ class PrisonServiceTest {
     @Test
     fun `find prison by active and text search`() {
       val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
-      whenever(prisonRepository.findByActiveAndTextSearchOrderByPrisonId(anyBoolean(), anyString())).thenReturn(listOf(prison))
+      whenever(prisonRepository.findAll(any())).thenReturn(listOf(prison))
       val results = prisonService.findByActiveAndTextSearch(true, "moorland")
 
       assertThat(results).containsOnly(PrisonDto(prison))
-      // Check textSearch has been converted to uppercase
-      verify(prisonRepository).findByActiveAndTextSearchOrderByPrisonId(true, "MOORLAND")
     }
   }
 
