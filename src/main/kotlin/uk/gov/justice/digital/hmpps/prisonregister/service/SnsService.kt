@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
-import com.amazonaws.services.sns.AmazonSNSAsync
 import com.amazonaws.services.sns.model.MessageAttributeValue
 import com.amazonaws.services.sns.model.PublishRequest
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -19,7 +18,6 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   }
 
   private val domaineventsTopic by lazy { hmppsQueueService.findByTopicId("domainevents") ?: throw RuntimeException("Topic with name domainevents doesn't exist") }
-  private val domaineventsTopicClient by lazy { domaineventsTopic.snsClient as AmazonSNSAsync }
 
   fun sendPrisonRegisterInsertedEvent(prisonId: String, occurredAt: Instant) {
     publishToDomainEventsTopic(
@@ -45,7 +43,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
 
   private fun publishToDomainEventsTopic(payload: HMPPSDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.prisonId)
-    domaineventsTopicClient.publishAsync(
+    domaineventsTopic.snsClient.publish(
       PublishRequest(domaineventsTopic.arn, objectMapper.writeValueAsString(payload))
         .withMessageAttributes(
           mapOf(
