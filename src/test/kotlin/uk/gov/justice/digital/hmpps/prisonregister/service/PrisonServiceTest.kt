@@ -46,7 +46,7 @@ class PrisonServiceTest {
   inner class findById {
     @Test
     fun `find prison`() {
-      val prison = Prison("MDI", "A Prison", true)
+      val prison = Prison("MDI", "A Prison", active = true)
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)
       )
@@ -68,7 +68,7 @@ class PrisonServiceTest {
   inner class findByGpPractice {
     @Test
     fun `find prison from gp practice`() {
-      val prison = Prison("MDI", "Name", true)
+      val prison = Prison("MDI", "Name", active = true)
       prison.gpPractice = PrisonGpPractice("MDI", "A12345")
       val prisonGpPracticeDto = GpDto(prison)
       whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
@@ -87,7 +87,7 @@ class PrisonServiceTest {
   inner class findByActiveAndTextSearch {
     @Test
     fun `find prison by active and text search`() {
-      val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+      val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
       whenever(prisonRepository.findAll(any())).thenReturn(listOf(prison))
       val results = prisonService.findByActiveAndTextSearch(true, "moorland")
 
@@ -105,7 +105,7 @@ class PrisonServiceTest {
         .thenReturn(
           Optional.of(
             VideolinkConferencingCentre(
-              prison = Prison(prisonId, "Test", true),
+              prison = Prison(prisonId, "Test", active = true),
               emailAddress = "a@b.com"
             )
           )
@@ -126,7 +126,7 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address created`() {
-      val prison = Prison(prisonId, "Test", true)
+      val prison = Prison(prisonId, "Test", active = true)
       whenever(videoLinkConferencingCentreRepository.findById(eq(prisonId))).thenReturn(Optional.empty())
       whenever(prisonRepository.findById(eq(prisonId))).thenReturn(Optional.of(prison))
 
@@ -140,7 +140,7 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address updated`() {
-      val prison = Prison(prisonId, "Test", true)
+      val prison = Prison(prisonId, "Test", active = true)
       val persistentVcc = VideolinkConferencingCentre(prison, "p@q.com")
 
       whenever(videoLinkConferencingCentreRepository.findById(anyString()))
@@ -187,7 +187,7 @@ class PrisonServiceTest {
         .thenReturn(
           Optional.of(
             OffenderManagementUnit(
-              prison = Prison(PRISON_ID, "Test", true),
+              prison = Prison(PRISON_ID, "Test", active = true),
               emailAddress = "a@b.com"
             )
           )
@@ -208,7 +208,7 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address created`() {
-      val prison = Prison(PRISON_ID, "Test", true)
+      val prison = Prison(PRISON_ID, "Test", active = true)
       whenever(offenderManagementUnitRepository.findById(anyString())).thenReturn(Optional.empty())
       whenever(prisonRepository.findById(anyString())).thenReturn(Optional.of(prison))
 
@@ -220,7 +220,7 @@ class PrisonServiceTest {
 
     @Test
     fun `set Email Address updated`() {
-      val prison = Prison(PRISON_ID, "Test", true)
+      val prison = Prison(PRISON_ID, "Test", active = true)
       val persistentOmu = OffenderManagementUnit(prison, "p@q.com")
 
       whenever(offenderManagementUnitRepository.findById(anyString())).thenReturn(Optional.of(persistentOmu))
@@ -261,7 +261,7 @@ class PrisonServiceTest {
     @Test
     fun `try to create a prison that doesn't exist`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A Prison 1", true))
+        Optional.of(Prison("MDI", "A Prison 1", active = true))
       )
       assertThrows(EntityExistsException::class.java) {
         prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true))
@@ -272,7 +272,7 @@ class PrisonServiceTest {
 
     @Test
     fun `create a prison`() {
-      val prisonToSave = Prison("MDI", "A Prison 1", true)
+      val prisonToSave = Prison("MDI", "A Prison 1", active = true)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
       whenever(prisonRepository.save(prisonToSave)).thenReturn(prisonToSave)
 
@@ -302,7 +302,7 @@ class PrisonServiceTest {
     @Test
     fun `update a prison`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A prison 1", true))
+        Optional.of(Prison("MDI", "A prison 1", active = true))
       )
 
       val updatedPrison =

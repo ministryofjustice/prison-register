@@ -5,6 +5,7 @@ import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
 @Entity
@@ -20,5 +21,6 @@ data class Address(
   var country: String,
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn(name = "PRISON_ID", nullable = false)
   var prison: Prison,
 )

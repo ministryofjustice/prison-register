@@ -20,7 +20,7 @@ class PrisonRepositoryTest {
 
   @Test
   fun `should insert prison`() {
-    val prison = Prison("SHFCRT", "Sheffield Prison", true)
+    val prison = Prison("SHFCRT", "Sheffield Prison", active = true)
 
     val id = prisonRepository.save(prison).prisonId
 
@@ -39,7 +39,7 @@ class PrisonRepositoryTest {
   @Test
   fun `should find prison by name`() {
     val prison = prisonRepository.findById("MDI")
-    assertThat(prison).get().isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+    assertThat(prison).get().isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", active = true))
   }
 
   @Test
@@ -63,7 +63,7 @@ class PrisonRepositoryTest {
   @Test
   fun `should find prison by gp practice code`() {
     val prison = prisonRepository.findByGpPracticeGpPracticeCode("Y05537")
-    assertThat(prison).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+    assertThat(prison).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", active = true))
   }
 
   @Nested
@@ -89,17 +89,17 @@ class PrisonRepositoryTest {
     fun `should find prisons by text search`() {
       // case insensitive
       val prisonsByPrisonId = prisonRepository.findAll(PrisonFilter(textSearch = "mdi"))
-      assertThat(prisonsByPrisonId.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+      assertThat(prisonsByPrisonId.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", active = true))
 
       // wildcard is supported
       val prisonsByPrisonName = prisonRepository.findAll(PrisonFilter(textSearch = "moorland"))
-      assertThat(prisonsByPrisonName.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", true))
+      assertThat(prisonsByPrisonName.first()).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", active = true))
     }
 
     @Test
     fun `should find prisons by active and text search`() {
       val prisonsByActiveAndTextSearch = prisonRepository.findAll(PrisonFilter(active = false, textSearch = "aki"))
-      assertThat(prisonsByActiveAndTextSearch.first()).isEqualTo(Prison("AKI", "Acklington (HMP)", false))
+      assertThat(prisonsByActiveAndTextSearch.first()).isEqualTo(Prison("AKI", "Acklington (HMP)", active = true))
     }
   }
 }

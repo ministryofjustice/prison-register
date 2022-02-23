@@ -2,8 +2,8 @@ CREATE TABLE address
 (
     id              SERIAL      PRIMARY KEY,
     prison_id       VARCHAR(6)  NOT NULL,
-    address_line_1  VARCHAR(80) NOT NULL,
-    address_line_2  VARCHAR(80) NULL,
+    address_line1   VARCHAR(80) NOT NULL,
+    address_line2   VARCHAR(80) NULL,
     town            VARCHAR(80) NULL,
     county          VARCHAR(80) NOT NULL,
     postcode        VARCHAR(8)  NOT NULL,
