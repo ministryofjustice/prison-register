@@ -1,15 +1,21 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
-import java.util.UUID
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 
 @Entity
 data class PrisonType(
   @Id
-  val id: UUID,
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  val id: Long = 0,
+
+  @Enumerated(EnumType.STRING)
   var type: Type,
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)

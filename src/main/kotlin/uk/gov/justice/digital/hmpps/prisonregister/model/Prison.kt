@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.model
 import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.OneToMany
@@ -13,10 +15,13 @@ data class Prison(
   @Id
   val prisonId: String,
   var name: String,
-  var description: String?,
+  var description: String? = null,
   var active: Boolean,
-  var gender: Gender,
-  var inactiveDate: LocalDate?,
+
+  @Enumerated(EnumType.STRING)
+  var gender: Gender? = null,
+
+  var inactiveDate: LocalDate? = null,
 
   @OneToMany(cascade = [CascadeType.ALL], mappedBy = "prison")
   var prisonTypes: List<PrisonType> = listOf(),
