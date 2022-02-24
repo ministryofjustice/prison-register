@@ -122,3 +122,4 @@ update PRISON set gender = 'MALE' where PRISON_ID = 'WCI';
 update PRISON set gender = 'MALE' where PRISON_ID = 'WHI';
 update PRISON set gender = 'MALE' where PRISON_ID = 'WSI';
 update PRISON set gender = 'MALE' where PRISON_ID = 'WMI';
+update PRISON set gender = 'MALE' where PRISON_ID = 'WNI';
