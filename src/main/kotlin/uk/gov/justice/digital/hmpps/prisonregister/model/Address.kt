@@ -13,10 +13,10 @@ data class Address(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
-  var addressLine1: String,
+  var addressLine1: String? = null,
   var addressLine2: String? = null,
-  var town: String? = null,
-  var county: String,
+  var town: String,
+  var county: String? = null,
   var postcode: String,
   var country: String,
 
