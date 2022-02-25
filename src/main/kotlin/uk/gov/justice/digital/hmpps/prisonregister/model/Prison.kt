@@ -4,8 +4,6 @@ import org.hibernate.Hibernate
 import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
@@ -19,9 +17,8 @@ data class Prison(
   var name: String,
   var description: String? = null,
   var active: Boolean,
-
-  @Enumerated(EnumType.STRING)
-  var gender: Gender? = null,
+  var male: Boolean = false,
+  var female: Boolean = false,
 
   var inactiveDate: LocalDate? = null,
 
@@ -48,10 +45,7 @@ data class Prison(
 
   @Override
   override fun toString(): String {
-    return this::class.simpleName + "(prisonId = $prisonId , name = $name , description = $description , active = $active , gender = $gender )"
+    return this::class.simpleName + "(prisonId = $prisonId , name = $name , description = $description , active = $active ," +
+      " male = $male, female = $female )"
   }
-}
-
-enum class Gender {
-  MALE, FEMALE
 }
