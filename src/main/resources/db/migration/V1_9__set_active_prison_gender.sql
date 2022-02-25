@@ -125,3 +125,5 @@ update PRISON set male = true where PRISON_ID = 'WHI';
 update PRISON set male = true where PRISON_ID = 'WSI';
 update PRISON set male = true where PRISON_ID = 'WMI';
 update PRISON set male = true where PRISON_ID = 'WNI';
+
+update PRISON set active = false where PRISON_ID ='MWI';
