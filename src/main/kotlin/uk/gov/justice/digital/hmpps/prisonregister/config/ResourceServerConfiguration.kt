@@ -15,6 +15,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
     http
       .sessionManagement()
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      .and().headers().frameOptions().sameOrigin()
       .and().csrf().disable()
       .authorizeRequests { auth ->
         auth.antMatchers(
@@ -28,7 +29,8 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
           "/gp/**",
           "/v3/api-docs/**",
           "/swagger-ui/**",
-          "/swagger-ui.html"
+          "/swagger-ui.html",
+          "/h2-console/**"
         )
           .permitAll()
           .anyRequest()

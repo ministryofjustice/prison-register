@@ -1,0 +1,1 @@
+INSERT INTO prison (PRISON_ID, NAME, ACTIVE) VALUES ('PYI', 'Parc (HMYOI)', true);

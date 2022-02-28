@@ -58,7 +58,7 @@ class PrisonService(
     }
 
     with(prisonInsertRecord) {
-      val prison = Prison(prisonId, prisonName, active)
+      val prison = Prison(prisonId = prisonId, name = prisonName, active = active)
       telemetryClient.trackEvent("prison-register-insert", mapOf("prison" to prison.name), null)
       return prisonRepository.save(prison).prisonId
     }

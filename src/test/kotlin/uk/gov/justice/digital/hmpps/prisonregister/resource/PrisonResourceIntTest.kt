@@ -21,8 +21,8 @@ class PrisonResourceIntTest : IntegrationTest() {
     @Test
     fun `find prisons`() {
       val prisons = listOf(
-        Prison("MDI", "Moorland HMP", true),
-        Prison("LEI", "Leeds HMP", true)
+        Prison("MDI", "Moorland HMP", active = true),
+        Prison("LEI", "Leeds HMP", active = true)
       )
 
       whenever(prisonRepository.findAll()).thenReturn(
@@ -40,7 +40,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class findById {
     @Test
     fun `find prison`() {
-      val prison = Prison("MDI", "Moorland HMP", true)
+      val prison = Prison("MDI", "Moorland HMP", active = true)
 
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)
@@ -66,7 +66,7 @@ class PrisonResourceIntTest : IntegrationTest() {
     @Test
     fun `search by active and text`() {
       val prisons = listOf(
-        Prison("MDI", "Moorland HMP", true)
+        Prison("MDI", "Moorland HMP", active = true)
       )
       whenever(prisonRepository.findAll(any())).thenReturn(prisons)
 
@@ -89,7 +89,7 @@ class PrisonResourceIntTest : IntegrationTest() {
     @Test
     fun `no search params provided`() {
       val prisons = listOf(
-        Prison("MDI", "Moorland HMP", true)
+        Prison("MDI", "Moorland HMP", active = true)
       )
       whenever(prisonRepository.findAll(any())).thenReturn(prisons)
 

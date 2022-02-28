@@ -18,7 +18,7 @@ class GpResourceTest : IntegrationTest() {
 
   @Test
   fun `find by id prison`() {
-    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findById(anyString())).thenReturn(
       Optional.of(prison)
@@ -31,7 +31,7 @@ class GpResourceTest : IntegrationTest() {
 
   @Test
   fun `find by id prison case insensitive match`() {
-    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findById(anyString())).thenReturn(
       Optional.of(prison)
@@ -44,7 +44,7 @@ class GpResourceTest : IntegrationTest() {
 
   @Test
   fun `find by id prison no gp practice mapped`() {
-    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     whenever(prisonRepository.findById(anyString())).thenReturn(
       Optional.of(prison)
     )
@@ -71,7 +71,7 @@ class GpResourceTest : IntegrationTest() {
 
   @Test
   fun `find by gp practice prison`() {
-    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/Y05537")
@@ -82,7 +82,7 @@ class GpResourceTest : IntegrationTest() {
 
   @Test
   fun `find by gp practice prison case insensitive match`() {
-    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/y05537")
@@ -93,7 +93,7 @@ class GpResourceTest : IntegrationTest() {
 
   @Test
   fun `find by gp practice find prison no gp practice mapped`() {
-    val prison = Prison("MDI", "Moorland (HMP & YOI)", true)
+    val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/Y05537")
       .exchange()

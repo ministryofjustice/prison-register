@@ -91,7 +91,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
     @Test
     fun `update a prison`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A Prison 1", true))
+        Optional.of(Prison("MDI", "A Prison 1", active = true))
       )
       webTestClient.put()
         .uri("/prison-maintenance/id/MDI")
@@ -179,7 +179,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
 
     @Test
     fun `insert a prison`() {
-      val prison = Prison("MDI", "Inserted Prison", false)
+      val prison = Prison("MDI", "Inserted Prison", active = false)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
 
