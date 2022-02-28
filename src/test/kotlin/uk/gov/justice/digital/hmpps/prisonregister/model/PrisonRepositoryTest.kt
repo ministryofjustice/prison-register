@@ -49,6 +49,14 @@ class PrisonRepositoryTest {
   }
 
   @Test
+  fun `should find associated prison address`() {
+    val prison = prisonRepository.findById("MDI").orElseThrow()
+    assertThat(prison.addresses).size().isEqualTo(1)
+    assertThat(prison.addresses.first().addressLine1).isEqualTo("Bawtry Road")
+    assertThat(prison.addresses.first().postcode).isEqualTo("DN7 6BW")
+  }
+
+  @Test
   fun `should get active prisons`() {
     val activePrisons = prisonRepository.findByActiveOrderByPrisonId(true)
     assertThat(activePrisons).hasSizeGreaterThan(100).allMatch { it.active }
