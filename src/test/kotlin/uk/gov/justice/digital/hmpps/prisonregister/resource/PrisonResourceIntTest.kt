@@ -7,6 +7,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import java.util.Optional
@@ -20,8 +21,20 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class findAll {
     @Test
     fun `find prisons`() {
+      val prison = Prison("MDI", "Moorland HMP", active = true)
+      val address = Address(
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        country = "England",
+        postcode = "DN7 6BW",
+        prison = prison
+      )
+      prison.addresses = listOf(address)
+
       val prisons = listOf(
-        Prison("MDI", "Moorland HMP", active = true),
+        prison,
         Prison("LEI", "Leeds HMP", active = true)
       )
 
@@ -41,6 +54,16 @@ class PrisonResourceIntTest : IntegrationTest() {
     @Test
     fun `find prison`() {
       val prison = Prison("MDI", "Moorland HMP", active = true)
+      val mdiAddress = Address(
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        country = "England",
+        postcode = "DN7 6BW",
+        prison = prison
+      )
+      prison.addresses = listOf(mdiAddress)
 
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)

@@ -17,6 +17,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -47,6 +48,16 @@ class PrisonServiceTest {
     @Test
     fun `find prison`() {
       val prison = Prison("MDI", "A Prison", active = true)
+      val address = Address(
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        country = "England",
+        postcode = "DN7 6BW",
+        prison = prison
+      )
+      prison.addresses = listOf(address)
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)
       )

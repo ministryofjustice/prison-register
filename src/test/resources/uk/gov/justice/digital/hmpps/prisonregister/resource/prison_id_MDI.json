@@ -1,5 +1,15 @@
 {
   "prisonId": "MDI",
   "prisonName": "Moorland HMP",
-  "active": true
+  "active": true,
+  "addresses": [
+    {
+      "addressLine1": "Bawtry Road",
+      "addressLine2": "Hatfield Woodhouse",
+      "town": "Doncaster",
+      "county": "South Yorkshire",
+      "country": "England",
+      "postcode": "DN7 6BW"
+    }
+  ]
 }
