@@ -95,12 +95,12 @@ class PrisonServiceTest {
   }
 
   @Nested
-  inner class findByActiveAndTextSearch {
+  inner class findByPrisonFilter {
     @Test
     fun `find prison by active and text search`() {
       val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
       whenever(prisonRepository.findAll(any())).thenReturn(listOf(prison))
-      val results = prisonService.findByActiveAndTextSearch(true, "moorland")
+      val results = prisonService.findByPrisonFilter(true, "moorland")
 
       assertThat(results).containsOnly(PrisonDto(prison))
     }

@@ -68,7 +68,7 @@ class PrisonResource(private val prisonService: PrisonService) {
   fun getPrisons(): List<PrisonDto> = prisonService.findAll()
 
   @GetMapping("/$PRISONS/search", produces = [MediaType.APPLICATION_JSON_VALUE])
-  @Operation(summary = "Get prisons from active and text search", description = "All prisons")
+  @Operation(summary = "Get prisons by search filter", description = "All prisons")
   @ApiResponses(
     value = [
       ApiResponse(
@@ -83,10 +83,12 @@ class PrisonResource(private val prisonService: PrisonService) {
       )
     ]
   )
-  fun getPrisonsFromActiveAndTextSearch(
+  fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
-    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null
-  ): List<PrisonDto> = prisonService.findByActiveAndTextSearch(active, textSearch)
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "Male", example = "true", required = false) @RequestParam male: Boolean? = null,
+    @Parameter(description = "Female", example = "true", required = false) @RequestParam female: Boolean? = null,
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, male, female)
 
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
@@ -293,10 +295,12 @@ data class PrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
-  @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf()
+  @Schema(description = "Whether the prison has male prisoners") val male: Boolean? = null,
+  @Schema(description = "Whether the prison has female prisoners") val female: Boolean? = null,
+  @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
 ) {
   constructor(prison: Prison) : this(
-    prison.prisonId, prison.name, prison.active, prison.addresses.map { AddressDto(it) }
+    prison.prisonId, prison.name, prison.active, prison.male, prison.female, prison.addresses.map { AddressDto(it) }
   )
 }
 

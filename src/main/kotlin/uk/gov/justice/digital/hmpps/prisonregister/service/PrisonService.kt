@@ -48,8 +48,13 @@ class PrisonService(
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
 
-  fun findByActiveAndTextSearch(active: Boolean? = null, textSearch: String? = null): List<PrisonDto> =
-    prisonRepository.findAll(PrisonFilter(active, textSearch)).map { PrisonDto(it) }
+  fun findByPrisonFilter(
+    active: Boolean? = null,
+    textSearch: String? = null,
+    male: Boolean? = null,
+    female: Boolean? = null,
+  ): List<PrisonDto> =
+    prisonRepository.findAll(PrisonFilter(active, textSearch, male, female)).map { PrisonDto(it) }
 
   @Transactional
   fun insertPrison(prisonInsertRecord: InsertPrisonDto): String {

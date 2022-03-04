@@ -105,9 +105,21 @@ class PrisonRepositoryTest {
     }
 
     @Test
-    fun `should find prisons by active and text search`() {
-      val prisonsByActiveAndTextSearch = prisonRepository.findAll(PrisonFilter(active = false, textSearch = "aki"))
-      assertThat(prisonsByActiveAndTextSearch.first()).isEqualTo(Prison("AKI", "Acklington (HMP)", active = true))
+    fun `should find prisons by male and female flags`() {
+      val malePrisons = prisonRepository.findAll(PrisonFilter(male = true))
+      assertThat(malePrisons).hasSizeGreaterThan(100).allMatch { it.male }
+
+      val femalePrisons = prisonRepository.findAll(PrisonFilter(female = true))
+      assertThat(femalePrisons).hasSizeGreaterThan(10).allMatch { it.female }
+
+      val bothMaleAndFemale = prisonRepository.findAll(PrisonFilter(male = true, female = true))
+      assertThat(bothMaleAndFemale.first()).isEqualTo(Prison("WYI", "Wetherby (HMPYOI)", active = true, male = true, female = true))
+    }
+
+    @Test
+    fun `should find prisons by active , text search , male flag`() {
+      val prisonsByMultipleFields = prisonRepository.findAll(PrisonFilter(active = true, textSearch = "vei", male = true))
+      assertThat(prisonsByMultipleFields.first()).isEqualTo(Prison("VEI", "The Verne (HMP)", active = true, male = true))
     }
   }
 }
