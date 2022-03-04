@@ -318,7 +318,7 @@ class PrisonServiceTest {
 
       val updatedPrison =
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", true))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = false))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
