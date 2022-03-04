@@ -13,14 +13,14 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 /**
  * Test logic in the PrisonResource class.  Doesn't need any Spring support.
  */
-class PrisonResourceEmailTest {
+class PrisonEmailResourceTest {
   private val prisonService: PrisonService = mock()
-  private val prisonResource = PrisonResource(prisonService)
+  private val prisonEmailResource = PrisonEmailResource(prisonService)
 
   @Test
   fun `VCC email address found`() {
     whenever(prisonService.getVccEmailAddress(anyString())).thenReturn("p@q.com")
-    val response = prisonResource.getEmailForVideoConferencingCentre("MDI")
+    val response = prisonEmailResource.getEmailForVideoConferencingCentre("MDI")
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
       assertThat(body).isEqualTo("p@q.com")
@@ -31,7 +31,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `VCC email address not found`() {
     whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(null)
-    val response = prisonResource.getEmailForVideoConferencingCentre("MDI")
+    val response = prisonEmailResource.getEmailForVideoConferencingCentre("MDI")
     assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     verify(prisonService).getVccEmailAddress("MDI")
   }
@@ -39,7 +39,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `OMU email address found`() {
     whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn("p@q.com")
-    val response = prisonResource.getEmailForOffenderManagementUnit("MDI")
+    val response = prisonEmailResource.getEmailForOffenderManagementUnit("MDI")
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
       assertThat(body).isEqualTo("p@q.com")
@@ -50,7 +50,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `OMU email address not found`() {
     whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(null)
-    val response = prisonResource.getEmailForOffenderManagementUnit("MDI")
+    val response = prisonEmailResource.getEmailForOffenderManagementUnit("MDI")
     assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     verify(prisonService).getOmuEmailAddress("MDI")
   }
@@ -58,7 +58,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `put OMU email - create`() {
     whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.CREATED)
-    val response = prisonResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
+    val response = prisonEmailResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
     assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
     verify(prisonService).setOmuEmailAddress("MDI", "a@b.com")
   }
@@ -66,7 +66,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `put OMU email - update`() {
     whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.UPDATED)
-    val response = prisonResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
+    val response = prisonEmailResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
     assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
     verify(prisonService).setOmuEmailAddress("MDI", "a@b.com")
   }
@@ -74,7 +74,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `put VCC email - create`() {
     whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.CREATED)
-    val response = prisonResource.putEmailAddressForVideolinkConferencingCentre("MDI", "a@b.com")
+    val response = prisonEmailResource.putEmailAddressForVideolinkConferencingCentre("MDI", "a@b.com")
     assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
     verify(prisonService).setVccEmailAddress("MDI", "a@b.com")
   }
@@ -82,7 +82,7 @@ class PrisonResourceEmailTest {
   @Test
   fun `put VCC email - update`() {
     whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.UPDATED)
-    val response = prisonResource.putEmailAddressForVideolinkConferencingCentre("MDI", "a@b.com")
+    val response = prisonEmailResource.putEmailAddressForVideolinkConferencingCentre("MDI", "a@b.com")
     assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
     verify(prisonService).setVccEmailAddress("MDI", "a@b.com")
   }
