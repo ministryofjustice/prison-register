@@ -219,17 +219,4 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
   private fun String.loadJson(): String =
     PrisonMaintenanceResourceIntTest::class.java.getResource("$this.json")?.readText()
       ?: throw AssertionError("file $this.json not found")
-
-  fun testQueueEventMessageCount(): Int? {
-    val queueAttributes = testSqsClient.getQueueAttributes(testQueueUrl, listOf("ApproximateNumberOfMessages"))
-    return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
-  }
 }
-
-data class HMPPSEventType(val Value: String, val Type: String)
-data class HMPPSMessageAttributes(val eventType: HMPPSEventType)
-data class HMPPSMessage(
-  val Message: String,
-  val MessageId: String,
-  val MessageAttributes: HMPPSMessageAttributes
-)

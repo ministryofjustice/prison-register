@@ -1,0 +1,122 @@
+package uk.gov.justice.digital.hmpps.prisonregister.resource
+
+import com.fasterxml.jackson.annotation.JsonInclude
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import org.springframework.http.MediaType
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_ADDRESS_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import java.time.Instant
+import javax.validation.Valid
+import javax.validation.constraints.Size
+
+@RestController
+@Validated
+@RequestMapping(name = "Prison Maintenance", path = ["/prison-maintenance"], produces = [MediaType.APPLICATION_JSON_VALUE])
+class PrisonAddressMaintenanceResource(
+  private val addressService: PrisonAddressService,
+  private val snsService: SnsService,
+  private val auditService: AuditService
+) {
+  @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
+  @Operation(
+    summary = "Update specified address details",
+    description = "Updates address information, role required is MAINTAIN_REF_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdateAddressDto::class)
+        )
+      ]
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Address Information Updated",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = AddressDto::class))]
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad Information request to update address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to make address update",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Address Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      )
+    ]
+  )
+  @PutMapping("/id/{prisonId}/address/{addressId}")
+  fun updateAddress(
+    @Schema(description = "Prison Id", example = "MDI", required = true)
+    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters") prisonId: String,
+    @Schema(description = "Address Id", example = "234231", required = true)
+    @PathVariable addressId: Long,
+    @RequestBody @Valid updateAddressDto: UpdateAddressDto
+  ): AddressDto {
+    val updatedAddress = addressService.updateAddress(prisonId, addressId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAmendedEvent(prisonId, now)
+    auditService.sendAuditEvent(
+      PRISON_REGISTER_ADDRESS_UPDATE.name,
+      mapOf("prisonId" to prisonId, "address" to updatedAddress),
+      now
+    )
+    return updatedAddress
+  }
+}
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "Address Update Record")
+data class UpdateAddressDto(
+  @Schema(description = "Address line 1", example = "Bawtry Road") @field:Size(
+    max = 80,
+    message = "Address line 1 must be no more than 80 characters"
+  ) val addressLine1: String?,
+  @Schema(description = "Address line 2", example = "Hatfield Woodhouse") @field:Size(
+    max = 80,
+    message = "Address line 2 must be no more than 80 characters"
+  ) val addressLine2: String?,
+  @Schema(description = "Village/Town/City", example = "Doncaster", required = true) @field:Size(
+    max = 80,
+    message = "Village/Town/City must be no more than 80 characters"
+  ) val town: String,
+  @Schema(description = "County", example = "South Yorkshire") @field:Size(
+    max = 80,
+    message = "County must be no more than 80 characters"
+  ) val county: String?,
+  @Schema(description = "Postcode", example = "DN7 6BW", required = true) @field:Size(
+    max = 8,
+    message = "Postcode must be no more than 8 characters"
+  ) val postcode: String,
+  @Schema(description = "Country", example = "England", required = true) @field:Size(
+    max = 16,
+    message = "Country must be no more than 16 characters"
+  ) val country: String
+)

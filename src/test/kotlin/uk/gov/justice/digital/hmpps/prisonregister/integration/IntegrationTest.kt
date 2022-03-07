@@ -51,4 +51,17 @@ abstract class IntegrationTest {
   internal val testQueue by lazy { hmppsQueueService.findByQueueId("domaineventstestqueue") ?: throw RuntimeException("Queue with name domaineventstestqueue doesn't exist") }
   internal val testSqsClient by lazy { testQueue.sqsClient }
   internal val testQueueUrl by lazy { testQueue.queueUrl }
+
+  fun testQueueEventMessageCount(): Int? {
+    val queueAttributes = testSqsClient.getQueueAttributes(testQueueUrl, listOf("ApproximateNumberOfMessages"))
+    return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
+  }
+
+  data class HMPPSEventType(val Value: String, val Type: String)
+  data class HMPPSMessageAttributes(val eventType: HMPPSEventType)
+  data class HMPPSMessage(
+    val Message: String,
+    val MessageId: String,
+    val MessageAttributes: HMPPSMessageAttributes
+  )
 }
