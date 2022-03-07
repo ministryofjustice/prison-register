@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import javax.validation.constraints.Size
@@ -73,10 +74,11 @@ class PrisonResource(private val prisonService: PrisonService) {
       )
     ]
   )
-  fun getPrisonsFromActiveAndTextSearch(
+  fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
-    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null
-  ): List<PrisonDto> = prisonService.findByActiveAndTextSearch(active, textSearch)
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "Genders to filter by", example = "MALE, FEMALE", required = false) @RequestParam genders: List<Gender>? = listOf(),
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders)
 }
 
 @JsonInclude(NON_NULL)
@@ -85,10 +87,12 @@ data class PrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
-  @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf()
+  @Schema(description = "Whether the prison has male prisoners") val male: Boolean? = null,
+  @Schema(description = "Whether the prison has female prisoners") val female: Boolean? = null,
+  @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
 ) {
   constructor(prison: Prison) : this(
-    prison.prisonId, prison.name, prison.active, prison.addresses.map { AddressDto(it) }
+    prison.prisonId, prison.name, prison.active, prison.male, prison.female, prison.addresses.map { AddressDto(it) }
   )
 }
 
@@ -100,8 +104,7 @@ data class AddressDto(
   @Schema(description = "County", example = "South Yorkshire", required = false) val county: String?,
   @Schema(description = "Postcode", example = "DN7 6BW", required = true) val postcode: String,
   @Schema(description = "Country", example = "England", required = true) val country: String,
-
-  ) {
+) {
   constructor(address: Address) : this(
     address.id!!, address.addressLine1, address.addressLine2, address.town, address.county, address.postcode, address.country
   )
