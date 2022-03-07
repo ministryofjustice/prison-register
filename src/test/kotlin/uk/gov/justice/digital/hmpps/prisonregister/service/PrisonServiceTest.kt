@@ -49,13 +49,14 @@ class PrisonServiceTest {
     fun `find prison`() {
       val prison = Prison("MDI", "A Prison", active = true)
       val address = Address(
-        addressLine1 = "Bawtry Road",
-        addressLine2 = "Hatfield Woodhouse",
-        town = "Doncaster",
-        county = "South Yorkshire",
-        country = "England",
-        postcode = "DN7 6BW",
-        prison = prison
+        21,
+        "Bawtry Road",
+        "Hatfield Woodhouse",
+        "Doncaster",
+        "South Yorkshire",
+        "DN7 6BW",
+        "England",
+        prison
       )
       prison.addresses = listOf(address)
       whenever(prisonRepository.findById(anyString())).thenReturn(

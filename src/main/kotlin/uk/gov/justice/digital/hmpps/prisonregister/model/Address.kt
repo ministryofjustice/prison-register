@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne
 data class Address(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = 0,
+  val id: Long? = null,
   var addressLine1: String? = null,
   var addressLine2: String? = null,
   var town: String,
