@@ -5,6 +5,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -51,10 +52,9 @@ class PrisonService(
   fun findByPrisonFilter(
     active: Boolean? = null,
     textSearch: String? = null,
-    male: Boolean? = null,
-    female: Boolean? = null,
+    genders: List<Gender>? = listOf(),
   ): List<PrisonDto> =
-    prisonRepository.findAll(PrisonFilter(active, textSearch, male, female)).map { PrisonDto(it) }
+    prisonRepository.findAll(PrisonFilter(active, textSearch, genders)).map { PrisonDto(it) }
 
   @Transactional
   fun insertPrison(prisonInsertRecord: InsertPrisonDto): String {

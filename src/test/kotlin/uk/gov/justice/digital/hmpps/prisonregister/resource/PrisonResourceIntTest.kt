@@ -87,7 +87,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   @Nested
   inner class getPrisonsBySearchFilter {
     @Test
-    fun `search by active , text , male and female flags`() {
+    fun `search by active , text , male flag`() {
       val prisons = listOf(
         Prison("MDI", "Moorland HMP", active = true, male = true, female = true)
       )
@@ -99,7 +99,7 @@ class PrisonResourceIntTest : IntegrationTest() {
             .path("/prisons/search")
             .queryParam("active", true)
             .queryParam("textSearch", "MDI")
-            .queryParam("male", true)
+            .queryParam("genders", listOf("MALE"))
             .queryParam("female", true)
             .build()
         }
@@ -110,7 +110,6 @@ class PrisonResourceIntTest : IntegrationTest() {
         .jsonPath("$[0].prisonName").isEqualTo("Moorland HMP")
         .jsonPath("$[0].active").isEqualTo(true)
         .jsonPath("$[0].male").isEqualTo(true)
-        .jsonPath("$[0].female").isEqualTo(true)
     }
 
     @Test

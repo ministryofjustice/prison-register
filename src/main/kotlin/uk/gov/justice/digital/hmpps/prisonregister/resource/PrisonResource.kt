@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
@@ -86,9 +87,8 @@ class PrisonResource(private val prisonService: PrisonService) {
   fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
-    @Parameter(description = "Male", example = "true", required = false) @RequestParam male: Boolean? = null,
-    @Parameter(description = "Female", example = "true", required = false) @RequestParam female: Boolean? = null,
-  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, male, female)
+    @Parameter(description = "Genders to filter by", example = "MALE, FEMALE", required = false) @RequestParam genders: List<Gender>? = listOf(),
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders)
 
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
