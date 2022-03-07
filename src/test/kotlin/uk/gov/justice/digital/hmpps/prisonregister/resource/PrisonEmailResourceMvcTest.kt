@@ -28,10 +28,10 @@ const val VCC_EMAIL_ADDRESS_PATH = "/secure/prisons/id/{prisonId}/videolink-conf
 /**
  * Spring MVC tests. Requests and responses for parameter binding, validation and exception handling
  */
-@WebMvcTest(PrisonResource::class)
+@WebMvcTest(PrisonEmailResource::class)
 @Import(JwtAuthHelper::class)
 @ActiveProfiles("test")
-class PrisonResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwtAuthHelper: JwtAuthHelper) {
+class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwtAuthHelper: JwtAuthHelper) {
 
   @MockBean
   lateinit var prisonService: PrisonService
