@@ -9,13 +9,17 @@ import javax.persistence.criteria.Root
 
 class PrisonFilter(
   val active: Boolean? = null,
-  val textSearch: String? = null
+  val textSearch: String? = null,
+  val genders: List<Gender>? = listOf(),
 ) : Specification<Prison> {
 
   override fun toPredicate(root: Root<Prison>, query: CriteriaQuery<*>, cb: CriteriaBuilder): Predicate? {
     val andBuilder = ImmutableList.builder<Predicate>()
     active?.let {
       andBuilder.add(cb.equal(root.get<Any>("active"), it))
+    }
+    genders?.forEach {
+      andBuilder.add(cb.equal(root.get<Any>(it.columnName), true))
     }
     if (!textSearch.isNullOrBlank()) {
       val orBuilder = ImmutableList.builder<Predicate>()

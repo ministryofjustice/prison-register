@@ -96,12 +96,12 @@ class PrisonServiceTest {
   }
 
   @Nested
-  inner class findByActiveAndTextSearch {
+  inner class findByPrisonFilter {
     @Test
     fun `find prison by active and text search`() {
       val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
       whenever(prisonRepository.findAll(any())).thenReturn(listOf(prison))
-      val results = prisonService.findByActiveAndTextSearch(true, "moorland")
+      val results = prisonService.findByPrisonFilter(true, "moorland")
 
       assertThat(results).containsOnly(PrisonDto(prison))
     }
@@ -319,7 +319,7 @@ class PrisonServiceTest {
 
       val updatedPrison =
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", true))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = false))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }

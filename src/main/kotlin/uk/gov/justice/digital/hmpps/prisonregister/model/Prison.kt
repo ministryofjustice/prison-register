@@ -49,3 +49,8 @@ data class Prison(
       " male = $male, female = $female )"
   }
 }
+
+enum class Gender(val columnName: String) {
+  MALE("male"),
+  FEMALE("female"),
+}
