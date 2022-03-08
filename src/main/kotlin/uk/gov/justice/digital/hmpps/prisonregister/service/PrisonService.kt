@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
+import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
 import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
@@ -53,6 +54,7 @@ class PrisonService(
     active: Boolean? = null,
     textSearch: String? = null,
     genders: List<Gender>? = listOf(),
+    prisonTypes: List<Type>? = listOf(),
   ): List<PrisonDto> =
     prisonRepository.findAll(PrisonFilter(active, textSearch, genders)).map { PrisonDto(it) }
 

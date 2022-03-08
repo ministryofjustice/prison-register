@@ -117,9 +117,34 @@ class PrisonRepositoryTest {
     }
 
     @Test
-    fun `should find prisons by active , text search , male flag`() {
-      val prisonsByMultipleFields = prisonRepository.findAll(PrisonFilter(active = true, textSearch = "vei", genders = listOf(Gender.MALE)))
-      assertThat(prisonsByMultipleFields.first()).isEqualTo(Prison("VEI", "The Verne (HMP)", active = true, male = true))
+    fun `should find prisons by prison type`() {
+      val hmpPrisons = prisonRepository.findAll(PrisonFilter(prisonTypes = listOf(Type.HMP)))
+      assertThat(hmpPrisons).hasSizeGreaterThan(100)
+
+      val yoiAndIrcPrisons = prisonRepository.findAll(PrisonFilter(prisonTypes = listOf(Type.YOI, Type.IRC)))
+      assertThat(yoiAndIrcPrisons).hasSizeGreaterThan(40)
+    }
+
+    @Test
+    fun `should find prisons by active , text search , male flag , prison type`() {
+      val prisonsByMultipleFields = prisonRepository.findAll(
+        PrisonFilter(
+          active = true,
+          textSearch = "vei",
+          genders = listOf(Gender.MALE),
+          prisonTypes = listOf(Type.HMP),
+        )
+      )
+      val veiPrison = prisonsByMultipleFields.first()
+      assertThat(veiPrison).isEqualTo(
+        Prison(
+          "VEI",
+          "The Verne (HMP)",
+          active = true,
+          male = true,
+        )
+      )
+      assertThat(veiPrison.prisonTypes.first().type).isEqualTo(Type.HMP)
     }
   }
 }
