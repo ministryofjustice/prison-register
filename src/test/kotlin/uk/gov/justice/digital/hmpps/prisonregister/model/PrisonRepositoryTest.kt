@@ -118,10 +118,10 @@ class PrisonRepositoryTest {
 
     @Test
     fun `should find prisons by prison type`() {
-      val hmpPrisons = prisonRepository.findAll(PrisonFilter(prisonTypes = listOf(Type.HMP)))
+      val hmpPrisons = prisonRepository.findAll(PrisonFilter(prisonTypeCodes = listOf(Type.HMP)))
       assertThat(hmpPrisons).hasSizeGreaterThan(100)
 
-      val yoiAndIrcPrisons = prisonRepository.findAll(PrisonFilter(prisonTypes = listOf(Type.YOI, Type.IRC)))
+      val yoiAndIrcPrisons = prisonRepository.findAll(PrisonFilter(prisonTypeCodes = listOf(Type.YOI, Type.IRC)))
       assertThat(yoiAndIrcPrisons).hasSizeGreaterThan(40)
     }
 
@@ -132,7 +132,7 @@ class PrisonRepositoryTest {
           active = true,
           textSearch = "vei",
           genders = listOf(Gender.MALE),
-          prisonTypes = listOf(Type.HMP),
+          prisonTypeCodes = listOf(Type.HMP),
         )
       )
       val veiPrison = prisonsByMultipleFields.first()

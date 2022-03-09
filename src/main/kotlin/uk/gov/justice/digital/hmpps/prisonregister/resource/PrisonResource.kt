@@ -80,8 +80,8 @@ class PrisonResource(private val prisonService: PrisonService) {
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
     @Parameter(description = "Genders to filter by", example = "MALE, FEMALE", required = false) @RequestParam genders: List<Gender>? = listOf(),
-    @Parameter(description = "Prison types to filter by", example = "HMP, YOI", required = false) @RequestParam prisonTypes: List<Type>? = listOf(),
-  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders, prisonTypes)
+    @Parameter(description = "Prison type codes to filter by", example = "HMP, YOI", required = false) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders, prisonTypeCodes)
 }
 
 @JsonInclude(NON_NULL)
@@ -101,7 +101,7 @@ data class PrisonDto(
     prison.active,
     prison.male,
     prison.female,
-    prison.prisonTypes.map{ PrisonTypeDto(it) },
+    prison.prisonTypes.map { PrisonTypeDto(it) },
     prison.addresses.map { AddressDto(it) }
   )
 }
@@ -121,8 +121,8 @@ data class AddressDto(
 }
 
 data class PrisonTypeDto(
-  @Schema(description = "Prison type code", example = "HMP", required = true) val code: String,
+  @Schema(description = "Prison type code", example = "HMP", required = true) val code: Type,
   @Schema(description = "Prison type description", example = "Her Majesty’s Prison", required = true) val description: String,
 ) {
-  constructor(prisonType: PrisonType) : this(prisonType.type.code, prisonType.type.description)
+  constructor(prisonType: PrisonType) : this(prisonType.type, prisonType.type.description)
 }

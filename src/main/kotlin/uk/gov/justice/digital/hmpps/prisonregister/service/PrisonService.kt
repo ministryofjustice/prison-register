@@ -54,9 +54,9 @@ class PrisonService(
     active: Boolean? = null,
     textSearch: String? = null,
     genders: List<Gender>? = listOf(),
-    prisonTypes: List<Type>? = listOf(),
+    prisonTypeCodes: List<Type>? = listOf(),
   ): List<PrisonDto> =
-    prisonRepository.findAll(PrisonFilter(active, textSearch, genders)).map { PrisonDto(it) }
+    prisonRepository.findAll(PrisonFilter(active, textSearch, genders, prisonTypeCodes)).map { PrisonDto(it) }
 
   @Transactional
   fun insertPrison(prisonInsertRecord: InsertPrisonDto): String {

@@ -11,7 +11,7 @@ class PrisonFilter(
   val active: Boolean? = null,
   val textSearch: String? = null,
   val genders: List<Gender>? = listOf(),
-  val prisonTypes: List<Type>? = listOf(),
+  val prisonTypeCodes: List<Type>? = listOf(),
 ) : Specification<Prison> {
 
   override fun toPredicate(root: Root<Prison>, query: CriteriaQuery<*>, cb: CriteriaBuilder): Predicate? {
@@ -22,9 +22,9 @@ class PrisonFilter(
     genders?.forEach {
       andBuilder.add(cb.equal(root.get<Any>(it.columnName), true))
     }
-    if (!prisonTypes.isNullOrEmpty()) {
+    if (!prisonTypeCodes.isNullOrEmpty()) {
       val prisonTypesPredicate =
-        root.join<Any, Any>("prisonTypes").get<Any>("type").`in`(prisonTypes.map { it })
+        root.join<Any, Any>("prisonTypes").get<Any>("type").`in`(prisonTypeCodes.map { it })
       andBuilder.add(prisonTypesPredicate)
     }
     if (!textSearch.isNullOrBlank()) {

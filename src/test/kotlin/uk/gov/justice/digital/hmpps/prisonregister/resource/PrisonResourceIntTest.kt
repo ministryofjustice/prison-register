@@ -91,7 +91,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   @Nested
   inner class getPrisonsBySearchFilter {
     @Test
-    fun `search by active , text search , male flag , prison type`() {
+    fun `search by active , text , male flag , prison type`() {
       val prisons = listOf(
         Prison(
           "MDI",
@@ -113,7 +113,7 @@ class PrisonResourceIntTest : IntegrationTest() {
             .queryParam("active", true)
             .queryParam("textSearch", "MDI")
             .queryParam("genders", listOf("MALE"))
-            .queryParam("prisonTypes", listOf("HMP"))
+            .queryParam("prisonTypeCodes", listOf("HMP"))
             .build()
         }
         .exchange()
