@@ -10,6 +10,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
+import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import java.util.Optional
 
 class PrisonResourceIntTest : IntegrationTest() {
@@ -89,9 +91,18 @@ class PrisonResourceIntTest : IntegrationTest() {
   @Nested
   inner class getPrisonsBySearchFilter {
     @Test
-    fun `search by active , text , male flag`() {
+    fun `search by active , text , male flag , prison type`() {
       val prisons = listOf(
-        Prison("MDI", "Moorland HMP", active = true, male = true, female = true)
+        Prison(
+          "MDI",
+          "Moorland HMP",
+          active = true,
+          male = true,
+          female = true,
+        ).apply {
+          val prison = this
+          prisonTypes = listOf(PrisonType(prison = prison, type = Type.HMP))
+        }
       )
       whenever(prisonRepository.findAll(any())).thenReturn(prisons)
 
@@ -102,7 +113,7 @@ class PrisonResourceIntTest : IntegrationTest() {
             .queryParam("active", true)
             .queryParam("textSearch", "MDI")
             .queryParam("genders", listOf("MALE"))
-            .queryParam("female", true)
+            .queryParam("prisonTypeCodes", listOf("HMP"))
             .build()
         }
         .exchange()
@@ -112,6 +123,8 @@ class PrisonResourceIntTest : IntegrationTest() {
         .jsonPath("$[0].prisonName").isEqualTo("Moorland HMP")
         .jsonPath("$[0].active").isEqualTo(true)
         .jsonPath("$[0].male").isEqualTo(true)
+        .jsonPath("$[0].female").isEqualTo(true)
+        .jsonPath("$[0].types").isEqualTo(mapOf("code" to "HMP", "description" to "Her Majesty’s Prison"))
     }
 
     @Test
