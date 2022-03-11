@@ -47,8 +47,7 @@ class PrisonAddressMaintenanceResource(
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Address Information Updated",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = AddressDto::class))]
+        description = "Address Information Updated"
       ),
       ApiResponse(
         responseCode = "400",

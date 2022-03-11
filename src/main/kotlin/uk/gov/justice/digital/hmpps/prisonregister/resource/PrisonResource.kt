@@ -13,6 +13,7 @@ import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
@@ -20,13 +21,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
+import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import javax.validation.constraints.Size
 
 @RestController
 @Validated
-class PrisonResource(private val prisonService: PrisonService) {
-  @GetMapping("/$PRISON_BY_ID", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/prisons", produces = [MediaType.APPLICATION_JSON_VALUE])
+class PrisonResource(private val prisonService: PrisonService, private val addressService: PrisonAddressService) {
+  @GetMapping("/id/{prisonId}")
   @Operation(summary = "Get specified prison", description = "Information on a specific prison")
   @ApiResponses(
     value = [
@@ -39,10 +42,10 @@ class PrisonResource(private val prisonService: PrisonService) {
   )
   fun getPrisonFromId(
     @Schema(description = "Prison ID", example = "MDI", required = true)
-    @PathVariable @Size(max = 12, min = 2) prisonId: String
+    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters") prisonId: String
   ): PrisonDto = prisonService.findById(prisonId)
 
-  @GetMapping("/$PRISONS", produces = [MediaType.APPLICATION_JSON_VALUE])
+  @GetMapping("")
   @Operation(summary = "Get all prisons", description = "All prisons")
   @ApiResponses(
     value = [
@@ -60,19 +63,31 @@ class PrisonResource(private val prisonService: PrisonService) {
   )
   fun getPrisons(): List<PrisonDto> = prisonService.findAll()
 
-  @GetMapping("/$PRISONS/search", produces = [MediaType.APPLICATION_JSON_VALUE])
-  @Operation(summary = "Get prisons from active and text search", description = "All prisons")
+  @GetMapping("/id/{prisonId}/address/id/{addressId}")
+  @Operation(summary = "Get specified prison", description = "Information on a specific prison address")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
         description = "Successful Operation",
-        content = arrayOf(
-          Content(
-            mediaType = "application/json",
-            array = ArraySchema(schema = Schema(implementation = PrisonDto::class))
-          )
-        )
+      )
+    ]
+  )
+  fun getAddressFromId(
+    @Schema(description = "Prison ID", example = "MDI", required = true)
+    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters") prisonId: String,
+    @Schema(description = "Address Id", example = "234231", required = true)
+    @PathVariable addressId: Long
+  ): AddressDto =
+    addressService.findById(prisonId, addressId)
+
+  @GetMapping("/search")
+  @Operation(summary = "Get prisons from active and text search", description = "All prisons")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation"
       )
     ]
   )

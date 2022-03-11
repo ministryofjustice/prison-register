@@ -54,7 +54,6 @@ class PrisonMaintenanceResource(
       ApiResponse(
         responseCode = "201",
         description = "Prison Information Inserted",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = PrisonDto::class))]
       ),
       ApiResponse(
         responseCode = "400",
@@ -105,8 +104,7 @@ class PrisonMaintenanceResource(
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Prison Information Updated",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = PrisonDto::class))]
+        description = "Prison Information Updated"
       ),
       ApiResponse(
         responseCode = "400",

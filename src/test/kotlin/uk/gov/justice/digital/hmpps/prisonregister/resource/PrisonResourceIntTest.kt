@@ -8,6 +8,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
@@ -17,6 +18,8 @@ import java.util.Optional
 class PrisonResourceIntTest : IntegrationTest() {
   @MockBean
   private lateinit var prisonRepository: PrisonRepository
+  @MockBean
+  private lateinit var addressRepository: AddressRepository
 
   @Suppress("ClassName")
   @Nested
@@ -146,6 +149,68 @@ class PrisonResourceIntTest : IntegrationTest() {
         .jsonPath("$[0].prisonId").isEqualTo("MDI")
         .jsonPath("$[0].prisonName").isEqualTo("Moorland HMP")
         .jsonPath("$[0].active").isEqualTo(true)
+    }
+  }
+
+  @Nested
+  inner class findPrisonAddressById {
+    @Test
+    fun `should find prison address by prison and address id`() {
+
+      val prison = Prison("MDI", "A Prison", active = true)
+      val address = Address(
+        id = 77,
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        country = "England",
+        postcode = "DN7 6BW",
+        prison = prison
+      )
+      prison.addresses = listOf(address)
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(address)
+      )
+
+      webTestClient.get().uri("/prisons/id/MDI/address/id/77")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("prison_address".loadJson())
+    }
+
+    @Test
+    fun `should not find an address not associated with the prison Id`() {
+      val prison = Prison("MDI", "Moorland HMP", active = true)
+      val mdiAddress = Address(
+        21,
+        "Bawtry Road",
+        "Hatfield Woodhouse",
+        "Doncaster",
+        "South Yorkshire",
+        "DN7 6BW",
+        "England",
+        prison
+      )
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(mdiAddress)
+      )
+      webTestClient.get().uri("/prisons/id/LEI/address/id/21")
+        .exchange()
+        .expectStatus().isNotFound
+        .expectBody()
+        .jsonPath("$.developerMessage").isEqualTo("Address 21 not in prison LEI")
+    }
+
+    @Test
+    fun `should not find an address if the address does not exist`() {
+      webTestClient.get().uri("/prisons/id/MDI/address/id/999")
+        .exchange()
+        .expectStatus().isNotFound
+        .expectBody()
+        .jsonPath("$.developerMessage").isEqualTo("Address 999 not found")
     }
   }
 
