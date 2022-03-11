@@ -59,7 +59,7 @@ class GpResourceTest : IntegrationTest() {
     webTestClient.get().uri("/gp/prison/1234561234561")
       .exchange()
       .expectStatus().isBadRequest
-      .expectBody().json("prison_id_badrequest_getPrisonFromId".loadJson())
+      .expectBody().json("prison_id_badrequest_getPrisonFromIdForGP".loadJson())
   }
 
   @Test
