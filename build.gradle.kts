@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.5-beta"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.0"
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
   idea
@@ -45,7 +45,7 @@ dependencies {
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-  testImplementation("org.mockito:mockito-inline:4.3.1")
+  testImplementation("org.mockito:mockito-inline:4.4.0")
   testImplementation("org.springframework.security:spring-security-test")
 }
 
