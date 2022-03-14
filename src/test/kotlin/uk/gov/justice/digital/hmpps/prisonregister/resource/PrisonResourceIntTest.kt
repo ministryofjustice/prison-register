@@ -174,7 +174,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         Optional.of(address)
       )
 
-      webTestClient.get().uri("/prisons/id/MDI/address/id/77")
+      webTestClient.get().uri("/prisons/id/MDI/address/77")
         .exchange()
         .expectStatus().isOk
         .expectBody().json("prison_address".loadJson())
@@ -197,7 +197,7 @@ class PrisonResourceIntTest : IntegrationTest() {
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(mdiAddress)
       )
-      webTestClient.get().uri("/prisons/id/LEI/address/id/21")
+      webTestClient.get().uri("/prisons/id/LEI/address/21")
         .exchange()
         .expectStatus().isNotFound
         .expectBody()
@@ -206,7 +206,7 @@ class PrisonResourceIntTest : IntegrationTest() {
 
     @Test
     fun `should not find an address if the address does not exist`() {
-      webTestClient.get().uri("/prisons/id/MDI/address/id/999")
+      webTestClient.get().uri("/prisons/id/MDI/address/999")
         .exchange()
         .expectStatus().isNotFound
         .expectBody()

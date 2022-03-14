@@ -45,7 +45,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters") prisonId: String
   ): PrisonDto = prisonService.findById(prisonId)
 
-  @GetMapping("")
+  @GetMapping
   @Operation(summary = "Get all prisons", description = "All prisons")
   @ApiResponses(
     value = [
@@ -63,7 +63,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisons(): List<PrisonDto> = prisonService.findAll()
 
-  @GetMapping("/id/{prisonId}/address/id/{addressId}")
+  @GetMapping("/id/{prisonId}/address/{addressId}")
   @Operation(summary = "Get specified prison", description = "Information on a specific prison address")
   @ApiResponses(
     value = [
