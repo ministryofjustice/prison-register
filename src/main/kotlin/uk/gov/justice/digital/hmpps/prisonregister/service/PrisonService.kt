@@ -79,6 +79,8 @@ class PrisonService(
     with(prisonUpdateRecord) {
       prison.name = prisonName
       prison.active = active
+      prison.male = male
+      prison.female = female
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
