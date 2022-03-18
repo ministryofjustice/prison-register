@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
 import java.util.Optional
@@ -103,12 +104,12 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
             user = "bobby.beans"
           )
         )
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false)))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, setOf(Type.YOI))))
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
 
-      verify(auditService).sendAuditEvent(eq("PRISON_REGISTER_UPDATE"), eq(Pair("MDI", UpdatePrisonDto("Updated Prison", false))), any())
+      verify(auditService).sendAuditEvent(eq("PRISON_REGISTER_UPDATE"), eq(Pair("MDI", UpdatePrisonDto("Updated Prison", false, setOf(Type.YOI)))), any())
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body

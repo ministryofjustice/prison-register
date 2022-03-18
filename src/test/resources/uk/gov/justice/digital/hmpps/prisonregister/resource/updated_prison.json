@@ -1,5 +1,14 @@
 {
   "prisonId": "MDI",
   "prisonName": "Updated Prison",
-  "active": false
+  "active": false,
+  "male": false,
+  "female": false,
+  "types": [
+    {
+      "code": "YOI",
+      "description": "Her Majesty’s Youth Offender Institution"
+    }
+  ],
+  "addresses": []
 }

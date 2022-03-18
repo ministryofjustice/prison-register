@@ -17,19 +17,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.prisonregister.model.Address
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
-import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.model.*
+import uk.gov.justice.digital.hmpps.prisonregister.resource.*
 import java.util.Optional
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
@@ -318,8 +307,8 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = false))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, prisonTypes = setOf(Type.YOI)))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = false, listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }

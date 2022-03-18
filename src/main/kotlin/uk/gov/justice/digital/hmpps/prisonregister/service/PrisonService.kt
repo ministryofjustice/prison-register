@@ -5,16 +5,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
-import uk.gov.justice.digital.hmpps.prisonregister.model.Type
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
+import uk.gov.justice.digital.hmpps.prisonregister.model.*
 import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
@@ -79,6 +70,9 @@ class PrisonService(
     with(prisonUpdateRecord) {
       prison.name = prisonName
       prison.active = active
+
+      prison.prisonTypes.clear()
+      prison.prisonTypes.addAll(prisonTypes.map { PrisonType(type = it, prison = prison) })
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
