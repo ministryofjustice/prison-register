@@ -170,5 +170,11 @@ data class UpdatePrisonDto(
   val prisonName: String,
 
   @Schema(description = "Whether the prison is still active", required = true)
-  val active: Boolean
+  val active: Boolean,
+
+  @Schema(description = "If this is a male prison", required = false)
+  val male: Boolean = false,
+
+  @Schema(description = "If this is a female prison", required = false)
+  val female: Boolean = false,
 )

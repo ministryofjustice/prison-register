@@ -1,5 +1,7 @@
 {
   "prisonId": "MDI",
   "prisonName": "Updated Prison",
-  "active": false
+  "active": false,
+  "male": true,
+  "female": true
 }

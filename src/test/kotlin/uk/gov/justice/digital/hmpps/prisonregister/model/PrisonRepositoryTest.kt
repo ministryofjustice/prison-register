@@ -147,4 +147,28 @@ class PrisonRepositoryTest {
       assertThat(veiPrison.prisonTypes.first().type).isEqualTo(Type.HMP)
     }
   }
+
+  @Test
+  fun `should update prison`() {
+    val prison = prisonRepository.findById("MDI").get()
+
+    prison.name = "HMP Moorland update"
+    prison.active = false
+    prison.female = true
+    prison.male = false
+    prisonRepository.save(prison)
+
+    TestTransaction.flagForCommit()
+    TestTransaction.end()
+
+    val savedPrison = prisonRepository.findById("MDI").get()
+
+    with(savedPrison) {
+      assertThat(prisonId).isEqualTo("MDI")
+      assertThat(name).isEqualTo("HMP Moorland update")
+      assertThat(active).isEqualTo(false)
+      assertThat(female).isEqualTo(true)
+      assertThat(male).isEqualTo(false)
+    }
+  }
 }
