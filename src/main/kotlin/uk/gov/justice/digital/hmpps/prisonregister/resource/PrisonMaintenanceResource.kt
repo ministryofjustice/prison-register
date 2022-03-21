@@ -167,6 +167,6 @@ data class UpdatePrisonDto(
   @Schema(description = "Whether the prison is still active", required = true)
   val active: Boolean,
 
-  @Schema(description = "List of types for this prison")
+  @Schema(description = "Set of types for this prison")
   val prisonTypes: Set<Type> = setOf()
 )

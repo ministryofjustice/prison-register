@@ -71,8 +71,9 @@ class PrisonService(
       prison.name = prisonName
       prison.active = active
 
-      prison.prisonTypes.clear()
-      prison.prisonTypes.addAll(prisonTypes.map { PrisonType(type = it, prison = prison) })
+      val updatedTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toSet()
+      prison.prisonTypes.retainAll(updatedTypes)
+      prison.prisonTypes.addAll(updatedTypes)
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)

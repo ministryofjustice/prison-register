@@ -104,7 +104,7 @@ class PrisonResourceIntTest : IntegrationTest() {
           female = true,
         ).apply {
           val prison = this
-          prisonTypes = mutableListOf(PrisonType(prison = prison, type = Type.HMP))
+          prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP))
         }
       )
       whenever(prisonRepository.findAll(any())).thenReturn(prisons)
