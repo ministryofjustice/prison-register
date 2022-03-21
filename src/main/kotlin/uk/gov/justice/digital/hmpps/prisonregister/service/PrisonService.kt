@@ -80,6 +80,8 @@ class PrisonService(
     with(prisonUpdateRecord) {
       prison.name = prisonName
       prison.active = active
+      prison.male = male
+      prison.female = female
 
       val updatedTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toSet()
       prison.prisonTypes.retainAll(updatedTypes)

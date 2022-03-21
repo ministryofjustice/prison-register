@@ -44,7 +44,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
       webTestClient.put()
         .uri("/prison-maintenance/id/MDI")
         .accept(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false)))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true)))
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -54,7 +54,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         .uri("/prison-maintenance/id/MDI")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_DUMMY"), scopes = listOf("write")))
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false)))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, female = true)))
         .exchange()
         .expectStatus().isForbidden
     }
@@ -104,12 +104,21 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
             user = "bobby.beans"
           )
         )
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, setOf(Type.YOI))))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, setOf(Type.YOI))))
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
 
-      verify(auditService).sendAuditEvent(eq("PRISON_REGISTER_UPDATE"), eq(Pair("MDI", UpdatePrisonDto("Updated Prison", false, setOf(Type.YOI)))), any())
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_UPDATE"),
+        eq(
+          Pair(
+            "MDI",
+            UpdatePrisonDto("Updated Prison", false, male = true, female = true, setOf(Type.YOI))
+          )
+        ),
+        any()
+      )
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body

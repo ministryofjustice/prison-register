@@ -2,8 +2,8 @@
   "prisonId": "MDI",
   "prisonName": "Updated Prison",
   "active": false,
-  "male": false,
-  "female": false,
+  "male": true,
+  "female": true,
   "types": [
     {
       "code": "YOI",
