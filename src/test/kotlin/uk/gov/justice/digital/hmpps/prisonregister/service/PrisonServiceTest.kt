@@ -23,12 +23,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitR
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
+import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
 import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import java.util.Optional
 import javax.persistence.EntityExistsException
@@ -312,14 +315,39 @@ class PrisonServiceTest {
     }
 
     @Test
-    fun `update a prison`() {
+    fun `update a prison adding new prison type`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
         Optional.of(Prison("MDI", "A prison 1", active = true, female = true))
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = true))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = true))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = true, prisonTypes = setOf(Type.YOI)))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = true, listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+      verify(prisonRepository).findById("MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+
+    @Test
+    fun `update a prison replacing existing prison type`() {
+      val prison = Prison("MDI", "A prison 1", active = true)
+      val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP), PrisonType(prison = prison, type = Type.IRC))
+      prison.prisonTypes = prisonTypes
+
+      whenever(prisonRepository.findById("MDI")).thenReturn(
+        Optional.of(prison)
+      )
+
+      val updatedPrison =
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, prisonTypes = setOf(Type.HMP, Type.YOI)))
+      assertThat(updatedPrison).isEqualTo(
+        PrisonDto(
+          "MDI", "A prison 1", active = true, male = false, female = false,
+          listOf(
+            PrisonTypeDto(Type.HMP, Type.HMP.description), PrisonTypeDto(Type.YOI, Type.YOI.description)
+          )
+        )
+      )
+
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }

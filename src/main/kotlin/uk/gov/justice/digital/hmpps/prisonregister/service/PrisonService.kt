@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitR
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
@@ -81,6 +82,10 @@ class PrisonService(
       prison.active = active
       prison.male = male
       prison.female = female
+
+      val updatedTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toSet()
+      prison.prisonTypes.retainAll(updatedTypes)
+      prison.prisonTypes.addAll(updatedTypes)
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
