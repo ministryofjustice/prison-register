@@ -65,7 +65,7 @@ spec:
             - name: DB_HOST_PREPROD
               valueFrom:
                 secretKeyRef:
-                  name: prison-rds-instance-output-preprod
+                  name: prisons-rds-instance-output-preprod
                   key: rds_instance_address
           restartPolicy: "Never"
           volumes:
