@@ -92,6 +92,46 @@ class PrisonAddressMaintenanceResource(
     return updatedAddress
   }
 
+  @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
+  @Operation(
+    summary = "Add Address to existing Prison",
+    description = "Adds an additional Address to an existing Prison, role required is MAINTAIN_REF_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdateAddressDto::class)
+        )
+      ]
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "New Address added to Prison"
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad Information request to update address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to add Prison address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Prison Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      )
+    ]
+  )
   @PostMapping("/id/{prisonId}/address")
   fun addAddress(
     @Schema(description = "Prison Id", example = "MDI", required = true)

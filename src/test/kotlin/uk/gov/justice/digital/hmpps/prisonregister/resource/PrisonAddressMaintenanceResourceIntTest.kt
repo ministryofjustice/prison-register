@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
 import java.util.Optional
@@ -30,6 +31,9 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
 
   @MockBean
   private lateinit var addressRepository: AddressRepository
+
+  @MockBean
+  private lateinit var prisonRepository: PrisonRepository
 
   @MockBean
   private lateinit var auditService: AuditService
@@ -179,6 +183,160 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
       assertThat(additionalInformation.prisonId).isEqualTo("MDI")
       assertThat(message.contains("A prison has been updated"))
       verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
+    }
+  }
+
+  @Nested
+  inner class AddPrisonAddress {
+    @Test
+    fun `requires a valid authentication token`() {
+      webTestClient.post()
+        .uri("/prison-maintenance/id/MDI/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .body(
+          BodyInserters.fromValue(
+            UpdateAddressDto(
+              "line1", "line2", "town", "county",
+              "postcode", "country"
+            )
+          )
+        )
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `correct permission is needed to add a new address to an existing prison`() {
+      webTestClient.post()
+        .uri("/prison-maintenance/id/MDI/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_DUMMY"), scopes = listOf("write")))
+        .body(
+          BodyInserters.fromValue(
+            UpdateAddressDto(
+              "line1", "line2", "town", "county",
+              "postcode", "country"
+            )
+          )
+        ).exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `correct scope is needed to add a new address to an existing prison`() {
+      webTestClient.post()
+        .uri("/prison-maintenance/id/MDI/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("read")))
+        .body(
+          BodyInserters.fromValue(
+            UpdateAddressDto(
+              "line1", "line2", "town", "county",
+              "postcode", "country"
+            )
+          )
+        )
+        .exchange().expectStatus().isForbidden
+    }
+
+    @Test
+    fun `add a new prison address with bad data`() {
+      webTestClient.post()
+        .uri("/prison-maintenance/id/MDI/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write")))
+        .body(
+          BodyInserters.fromValue(
+            mapOf(
+              "town" to "town",
+              "country" to "country"
+            )
+          )
+        )
+        .exchange()
+        .expectStatus().isBadRequest
+      verifyNoInteractions(auditService, telemetryClient, prisonRepository, addressRepository)
+    }
+
+    @Test
+    fun `add a new address to an existing prison`() {
+      val prison = Prison("MDI", "A Prison", active = true)
+
+      whenever(prisonRepository.findById(prison.prisonId)).thenReturn(Optional.of(prison))
+
+      val additionalAddressDetails = UpdateAddressDto(
+        "first line", "second line", "Sheffield", "South Yorkshire",
+        "S1 2AB", "England"
+      )
+
+      with(additionalAddressDetails) {
+        val address = Address(
+          addressLine1 = addressLine1,
+          addressLine2 = addressLine2,
+          town = town,
+          county = county,
+          country = country,
+          postcode = postcode,
+          prison = prison
+        )
+
+        val savedAddress = Address(
+          id = 21L,
+          addressLine1 = addressLine1,
+          addressLine2 = addressLine2,
+          town = town,
+          county = county,
+          country = country,
+          postcode = postcode,
+          prison = prison
+        )
+
+        whenever(addressRepository.save(address)).thenReturn(savedAddress)
+      }
+
+      webTestClient.post()
+        .uri("/prison-maintenance/id/MDI/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans"
+          )
+        )
+        .body(BodyInserters.fromValue(additionalAddressDetails))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("updated_prison_address".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_ADDRESS_INSERT"),
+        eq(
+          mapOf(
+            Pair("prisonId", "MDI"),
+            Pair(
+              "address",
+              AddressDto(
+                21, "first line", "second line", "Sheffield", "South Yorkshire",
+                "S1 2AB", "England"
+              )
+            )
+          )
+        ),
+        any()
+      )
+
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been updated"))
+      verify(telemetryClient).trackEvent(eq("prison-register-add-address"), any(), isNull())
     }
   }
 
