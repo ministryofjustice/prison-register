@@ -10,12 +10,14 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_ADDRESS_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
@@ -88,6 +90,24 @@ class PrisonAddressMaintenanceResource(
       now
     )
     return updatedAddress
+  }
+
+  @PostMapping("/id/{prisonId}/address")
+  fun addAddress(
+    @Schema(description = "Prison Id", example = "MDI", required = true)
+    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters") prisonId: String,
+    @RequestBody @Valid updateAddressDto: UpdateAddressDto
+  ): AddressDto {
+    val additionalAddress = addressService.addAddress(prisonId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAmendedEvent(prisonId, now)
+    auditService.sendAuditEvent(
+      PRISON_REGISTER_ADDRESS_INSERT.name,
+      mapOf("prisonId" to prisonId, "address" to additionalAddress),
+      now
+    )
+
+    return additionalAddress
   }
 }
 
