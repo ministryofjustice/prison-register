@@ -57,7 +57,7 @@ class PrisonAddressService(
         )
       )
 
-      recordPrisonAddressEditEvent("prison-register-add-address", prisonId, address.id?.toString(), additionalAddress)
+      recordPrisonAddressEditEvent("prison-register-address-add", prisonId, address.id?.toString(), additionalAddress)
       return AddressDto(address)
     }
   }

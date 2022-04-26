@@ -336,7 +336,7 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
       assertThat(eventType).isEqualTo("register.prison.amended")
       assertThat(additionalInformation.prisonId).isEqualTo("MDI")
       assertThat(message.contains("A prison has been updated"))
-      verify(telemetryClient).trackEvent(eq("prison-register-add-address"), any(), isNull())
+      verify(telemetryClient).trackEvent(eq("prison-register-address-add"), any(), isNull())
     }
   }
 

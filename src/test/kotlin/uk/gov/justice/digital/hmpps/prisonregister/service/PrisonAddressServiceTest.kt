@@ -236,7 +236,7 @@ class PrisonAddressServiceTest {
         val actualAddress = prisonAddressService.addAddress(prison.prisonId, additionalAddress)
 
         assertEquals(expectedAddress, actualAddress)
-        verify(telemetryClient).trackEvent(eq("prison-register-add-address"), eq(expectedTrackingAttributes), isNull())
+        verify(telemetryClient).trackEvent(eq("prison-register-address-add"), eq(expectedTrackingAttributes), isNull())
         verify(addressRepository).save(address)
       }
     }
