@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_ADDRESS_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
@@ -90,6 +92,58 @@ class PrisonAddressMaintenanceResource(
       now
     )
     return updatedAddress
+  }
+
+  @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
+  @Operation(
+    summary = "Delete specified address for specified Prison",
+    description = "Deletes address information for a Prison, role required is MAINTAIN_REF_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdateAddressDto::class)
+        )
+      ]
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Address Information Deleted"
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to make address update",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Address Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+      )
+    ]
+  )
+  @DeleteMapping("/id/{prisonId}/address/{addressId}")
+  fun deleteAddress(
+    @Schema(description = "Prison Id", example = "MDI", required = true)
+    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters") prisonId: String,
+    @Schema(description = "Address Id", example = "234231", required = true)
+    @PathVariable addressId: Long
+  ) {
+    val deletedAddress = addressService.deleteAddress(prisonId, addressId)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAmendedEvent(prisonId, now)
+    auditService.sendAuditEvent(
+      PRISON_REGISTER_ADDRESS_DELETE.name,
+      mapOf("prisonId" to prisonId, "address" to deletedAddress),
+      now
+    )
   }
 
   @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
