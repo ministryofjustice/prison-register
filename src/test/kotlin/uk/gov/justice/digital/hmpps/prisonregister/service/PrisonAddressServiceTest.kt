@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,6 +17,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import java.util.Optional
@@ -23,10 +25,11 @@ import javax.persistence.EntityNotFoundException
 
 class PrisonAddressServiceTest {
   private val addressRepository: AddressRepository = mock()
+  private val prisonRepository: PrisonRepository = mock()
   private val telemetryClient: TelemetryClient = mock()
 
   private val prisonAddressService =
-    PrisonAddressService(addressRepository, telemetryClient)
+    PrisonAddressService(addressRepository, prisonRepository, telemetryClient)
 
   @Nested
   inner class FindById {
@@ -165,15 +168,84 @@ class PrisonAddressServiceTest {
       val updatedAddress =
         prisonAddressService.updateAddress(
           "MDI", 21,
-          UpdateAddressDto(
-            "Line1", "line2", "town", "county",
-            "postcode", "country"
-          )
+          givenAddress()
         )
 
       assertThat(updatedAddress).isEqualTo(AddressDto(address))
       verify(addressRepository).findById(21)
       verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
     }
+  }
+
+  @Nested
+  inner class AddNewPrisonAddress {
+
+    @Test
+    fun `try to add an address to a prison that does not exist`() {
+      val prisonId = "MDI"
+      val address: UpdateAddressDto = mock()
+      whenever(prisonRepository.findById(prisonId)).thenReturn(Optional.empty())
+
+      assertThrows(EntityNotFoundException::class.java) {
+        prisonAddressService.addAddress(prisonId, address)
+      }
+
+      verifyNoInteractions(address, addressRepository, telemetryClient)
+    }
+
+    @Test
+    fun `add an address to an existing prison`() {
+      val prison = Prison("MDI", "A Prison", active = true)
+      whenever(prisonRepository.findById(prison.prisonId)).thenReturn(Optional.of(prison))
+      val additionalAddress = givenAddress()
+      with(additionalAddress) {
+        val address = Address(
+          addressLine1 = addressLine1,
+          addressLine2 = addressLine2,
+          town = town,
+          county = county,
+          country = country,
+          postcode = postcode,
+          prison = prison
+        )
+
+        val savedAddress = Address(
+          id = 1L,
+          addressLine1 = addressLine1,
+          addressLine2 = addressLine2,
+          town = town,
+          county = county,
+          country = country,
+          postcode = postcode,
+          prison = prison
+        )
+
+        whenever(addressRepository.save(address)).thenReturn(savedAddress)
+        val expectedAddress = AddressDto(savedAddress)
+        val expectedTrackingAttributes = mapOf(
+          "prisonId" to prison.prisonId,
+          "addressId" to savedAddress.id?.toString(),
+          "addressLine1" to addressLine1,
+          "addressLine2" to addressLine2,
+          "town" to town,
+          "county" to county,
+          "postcode" to postcode,
+          "country" to country,
+        )
+
+        val actualAddress = prisonAddressService.addAddress(prison.prisonId, additionalAddress)
+
+        assertEquals(expectedAddress, actualAddress)
+        verify(telemetryClient).trackEvent(eq("prison-register-address-add"), eq(expectedTrackingAttributes), isNull())
+        verify(addressRepository).save(address)
+      }
+    }
+  }
+
+  private fun givenAddress(): UpdateAddressDto {
+    return UpdateAddressDto(
+      "Line1", "line2", "town", "county",
+      "postcode", "country"
+    )
   }
 }
