@@ -274,7 +274,7 @@ class PrisonServiceTest {
   inner class CreatePrison {
 
     @Test
-    fun `try to create a prison that doesn't exist`() {
+    fun `try to create a prison that already exists`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
         Optional.of(Prison("MDI", "A Prison 1", active = true))
       )
@@ -286,12 +286,39 @@ class PrisonServiceTest {
     }
 
     @Test
-    fun `create a prison`() {
-      val prisonToSave = Prison("MDI", "A Prison 1", active = true)
-      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
-      whenever(prisonRepository.save(prisonToSave)).thenReturn(prisonToSave)
+    fun `create a prison with minimal data`() {
+      val prison = Prison("MDI", "A Prison 1", description = "A Prison for testing", active = true)
 
-      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true))
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
+      whenever(prisonRepository.save(prison)).thenReturn(prison)
+
+      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1"))
+      assertThat(createdPrisonId).isEqualTo("MDI")
+      verify(prisonRepository).findById("MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+    }
+
+    @Test
+    fun `create a prison`() {
+      val prison = Prison("MDI", "A Prison 1", description = "A Prison for testing", active = true, female = true, male = true)
+      val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP), PrisonType(prison = prison, type = Type.IRC))
+      val address = Address(
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        postcode = "DN7 6BW",
+        country = "England",
+        prison = prison
+      )
+      val addresses = mutableListOf(address)
+      prison.prisonTypes = prisonTypes
+      prison.addresses = addresses
+
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
+      whenever(prisonRepository.save(prison)).thenReturn(prison)
+
+      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", female = true, male = true))
       assertThat(createdPrisonId).isEqualTo("MDI")
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())

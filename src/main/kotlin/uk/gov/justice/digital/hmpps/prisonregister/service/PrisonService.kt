@@ -26,7 +26,7 @@ import javax.persistence.EntityNotFoundException
 const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
@@ -66,7 +66,12 @@ class PrisonService(
     }
 
     with(prisonInsertRecord) {
-      val prison = Prison(prisonId = prisonId, name = prisonName, active = active)
+      val prison = Prison(prisonId = prisonId, name = prisonName, active = true, male = male, female = female)
+
+      prison.prisonTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toMutableSet()
+      addresses.forEach {
+        prison.addAddress(it)
+      }
       telemetryClient.trackEvent("prison-register-insert", mapOf("prison" to prison.name), null)
       return prisonRepository.save(prison).prisonId
     }
