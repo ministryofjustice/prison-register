@@ -35,7 +35,7 @@ class PrisonAddressService(
       address.country = country
     }
 
-    recordPrisonAddressEditEvent("prison-register-address-update", prisonId, addressId.toString(), updateAddressRecord)
+    recordPrisonAddressEditEvent("prison-register-address-update", address)
     return AddressDto(address)
   }
 
@@ -57,16 +57,25 @@ class PrisonAddressService(
         )
       )
 
-      recordPrisonAddressEditEvent("prison-register-address-add", prisonId, address.id?.toString(), additionalAddress)
+      recordPrisonAddressEditEvent("prison-register-address-add", address)
       return AddressDto(address)
     }
   }
 
-  private fun recordPrisonAddressEditEvent(eventIdentifier: String, prisonId: String, addressId: String?, addressDetails: UpdateAddressDto) {
+  @Transactional
+  fun deleteAddress(prisonId: String, addressId: Long): AddressDto {
+    val address = getAddress(addressId, prisonId)
+    addressRepository.delete(address)
+
+    recordPrisonAddressEditEvent("prison-register-address-delete", address)
+    return AddressDto(address)
+  }
+
+  private fun recordPrisonAddressEditEvent(eventIdentifier: String, addressDetails: Address) {
     with(addressDetails) {
       val trackingAttributes = mapOf(
-        "prisonId" to prisonId,
-        "addressId" to addressId,
+        "prisonId" to prison.prisonId,
+        "addressId" to id.toString(),
         "addressLine1" to addressLine1,
         "addressLine2" to addressLine2,
         "town" to town,

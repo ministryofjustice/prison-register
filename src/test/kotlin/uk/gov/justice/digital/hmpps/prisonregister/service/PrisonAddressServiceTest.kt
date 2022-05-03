@@ -11,6 +11,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -174,6 +175,79 @@ class PrisonAddressServiceTest {
       assertThat(updatedAddress).isEqualTo(AddressDto(address))
       verify(addressRepository).findById(21)
       verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
+    }
+  }
+
+  @Nested
+  inner class DeletePrisonAddress {
+    @Test
+    fun `try to delete a prison address that does not exist`() {
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.empty()
+      )
+
+      assertThrows(EntityNotFoundException::class.java) {
+        prisonAddressService.deleteAddress(
+          "MDI", 12
+        )
+      }
+      verify(addressRepository).findById(12)
+
+      verify(addressRepository, never()).delete(any())
+      verifyNoInteractions(telemetryClient)
+    }
+
+    @Test
+    fun `try to delete a prison address that does not belong to the prison`() {
+      val prison = Prison("MDI", "A Prison", active = true)
+      val address = Address(
+        id = 21,
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        country = "England",
+        postcode = "DN7 6BW",
+        prison = prison
+      )
+      prison.addresses = listOf(address)
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(address)
+      )
+
+      assertThrows(EntityNotFoundException::class.java) { prisonAddressService.deleteAddress("PDI", 21) }
+
+      verify(addressRepository).findById(21)
+      verify(addressRepository, never()).delete(any())
+      verifyNoInteractions(telemetryClient)
+    }
+
+    @Test
+    fun `delete a prison address`() {
+      val prison = Prison("MDI", "A Prison", active = true)
+      val address = Address(
+        id = 21,
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        country = "England",
+        postcode = "DN7 6BW",
+        prison = prison
+      )
+      prison.addresses = listOf(address)
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(address)
+      )
+
+      val deletedAddress = prisonAddressService.deleteAddress("MDI", 21)
+
+      assertThat(deletedAddress).isEqualTo(AddressDto(address))
+      verify(addressRepository).findById(21)
+      verify(addressRepository).delete(address)
+      verify(telemetryClient).trackEvent(eq("prison-register-address-delete"), any(), isNull())
     }
   }
 
