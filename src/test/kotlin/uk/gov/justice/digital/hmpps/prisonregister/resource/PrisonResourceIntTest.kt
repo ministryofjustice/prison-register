@@ -26,7 +26,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class findAll {
     @Test
     fun `find prisons`() {
-      val prison = Prison("MDI", "Moorland HMP", active = true)
+      val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true)
       val address = Address(
         21,
         "Bawtry Road",
@@ -41,7 +41,7 @@ class PrisonResourceIntTest : IntegrationTest() {
 
       val prisons = listOf(
         prison,
-        Prison("LEI", "Leeds HMP", active = true)
+        Prison("LEI", "Leeds HMP", active = true, female = true)
       )
 
       whenever(prisonRepository.findAll()).thenReturn(
@@ -59,7 +59,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class findById {
     @Test
     fun `find prison`() {
-      val prison = Prison("MDI", "Moorland HMP", active = true)
+      val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true)
       val mdiAddress = Address(
         21,
         "Bawtry Road",
@@ -102,6 +102,7 @@ class PrisonResourceIntTest : IntegrationTest() {
           active = true,
           male = true,
           female = true,
+          contracted = true,
         ).apply {
           val prison = this
           prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP))
@@ -127,6 +128,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         .jsonPath("$[0].active").isEqualTo(true)
         .jsonPath("$[0].male").isEqualTo(true)
         .jsonPath("$[0].female").isEqualTo(true)
+        .jsonPath("$[0].contracted").isEqualTo(true)
         .jsonPath("$[0].types").isEqualTo(mapOf("code" to "HMP", "description" to "Her Majesty’s Prison"))
     }
 

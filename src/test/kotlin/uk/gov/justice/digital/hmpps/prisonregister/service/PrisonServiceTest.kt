@@ -50,7 +50,7 @@ class PrisonServiceTest {
   inner class findById {
     @Test
     fun `find prison`() {
-      val prison = Prison("MDI", "A Prison", active = true)
+      val prison = Prison("MDI", "A Prison", active = true, male = true, female = false, contracted = true)
       val address = Address(
         21,
         "Bawtry Road",
@@ -322,7 +322,7 @@ class PrisonServiceTest {
 
       val updatedPrison =
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = true, listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = true, contracted = false, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
@@ -341,8 +341,8 @@ class PrisonServiceTest {
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, prisonTypes = setOf(Type.HMP, Type.YOI)))
       assertThat(updatedPrison).isEqualTo(
         PrisonDto(
-          "MDI", "A prison 1", active = true, male = false, female = false,
-          listOf(
+          "MDI", "A prison 1", active = true, male = false, female = false, contracted = false,
+          types = listOf(
             PrisonTypeDto(Type.HMP, Type.HMP.description), PrisonTypeDto(Type.YOI, Type.YOI.description)
           )
         )
