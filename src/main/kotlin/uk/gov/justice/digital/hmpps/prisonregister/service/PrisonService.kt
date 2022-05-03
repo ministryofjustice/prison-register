@@ -26,7 +26,7 @@ import javax.persistence.EntityNotFoundException
 const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
