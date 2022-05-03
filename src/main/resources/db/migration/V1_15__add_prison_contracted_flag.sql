@@ -1,0 +1,1 @@
+ALTER TABLE prison ADD COLUMN contracted BOOLEAN NOT NULL DEFAULT false;
