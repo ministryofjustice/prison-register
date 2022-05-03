@@ -99,14 +99,6 @@ class PrisonAddressMaintenanceResource(
     summary = "Delete specified address for specified Prison",
     description = "Deletes address information for a Prison, role required is MAINTAIN_REF_DATA",
     security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
-    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
-      content = [
-        Content(
-          mediaType = "application/json",
-          schema = Schema(implementation = UpdateAddressDto::class)
-        )
-      ]
-    ),
     responses = [
       ApiResponse(
         responseCode = "200",
