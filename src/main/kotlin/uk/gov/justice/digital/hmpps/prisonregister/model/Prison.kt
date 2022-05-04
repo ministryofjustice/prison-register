@@ -19,6 +19,7 @@ data class Prison(
   var active: Boolean,
   var male: Boolean = false,
   var female: Boolean = false,
+  var contracted: Boolean = false,
 
   var inactiveDate: LocalDate? = null,
 
@@ -46,7 +47,7 @@ data class Prison(
   @Override
   override fun toString(): String {
     return this::class.simpleName + "(prisonId = $prisonId , name = $name , description = $description , active = $active ," +
-      " male = $male, female = $female )"
+      " male = $male, female = $female, contracted = $contracted )"
   }
 }
 
