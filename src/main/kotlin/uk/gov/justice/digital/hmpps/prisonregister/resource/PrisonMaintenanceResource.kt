@@ -80,6 +80,7 @@ class PrisonMaintenanceResource(
     val insertedPrison = prisonService.findById(prisonService.insertPrison(prisonInsertRecord))
 
     val now = Instant.now()
+
     snsService.sendPrisonRegisterInsertedEvent(insertedPrison.prisonId, now)
     auditService.sendAuditEvent(
       PRISON_REGISTER_INSERT.name,
@@ -157,9 +158,23 @@ data class InsertPrisonDto(
 
   @Schema(description = "Name of the prison", example = "HMP Moorland", required = true)
   @field:Size(min = 3, max = 40, message = "Prison name must be between 3 and 40 letters")
-  @field:NotBlank(message = "Prison name is required") val prisonName: String,
-  @Schema(description = "Whether the prison is still active", required = true)
-  val active: Boolean
+  @field:NotBlank(message = "Prison name is required")
+  val prisonName: String,
+
+  @Schema(description = "Whether the prison is still active", required = false)
+  val active: Boolean = true,
+
+  @Schema(description = "If this is a male prison", required = false)
+  val male: Boolean = false,
+
+  @Schema(description = "If this is a female prison", required = false)
+  val female: Boolean = false,
+
+  @Schema(description = "Set of types for this prison", example = "HMP")
+  val prisonTypes: Set<Type> = setOf(),
+
+  @Schema(description = "List of addresses for this prison", required = false)
+  val addresses: List<UpdateAddressDto> = listOf()
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
