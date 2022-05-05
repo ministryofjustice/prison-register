@@ -107,6 +107,7 @@ data class PrisonDto(
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
   @Schema(description = "Whether the prison has male prisoners") val male: Boolean,
   @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
+  @Schema(description = "Whether the prison is contracted") val contracted: Boolean,
   @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
 ) {
@@ -116,6 +117,7 @@ data class PrisonDto(
     prison.active,
     prison.male,
     prison.female,
+    prison.contracted,
     prison.prisonTypes.map { PrisonTypeDto(it) },
     prison.addresses.map { AddressDto(it) }
   )

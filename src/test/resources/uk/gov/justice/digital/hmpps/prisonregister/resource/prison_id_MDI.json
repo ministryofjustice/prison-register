@@ -2,6 +2,9 @@
   "prisonId": "MDI",
   "prisonName": "Moorland HMP",
   "active": true,
+  "male": true,
+  "female": false,
+  "contracted": true,
   "addresses": [
     {
       "id": 21,

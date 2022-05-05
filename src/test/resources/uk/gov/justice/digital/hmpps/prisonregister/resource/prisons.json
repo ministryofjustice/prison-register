@@ -3,12 +3,18 @@
     "prisonId": "LEI",
     "prisonName": "Leeds HMP",
     "active": true,
+    "male": false,
+    "female": true,
+    "contracted": false,
     "addresses": []
   },
   {
     "prisonId": "MDI",
     "prisonName": "Moorland HMP",
     "active": true,
+    "male": true,
+    "female": false,
+    "contracted": true,
     "addresses": [
       {
         "id": 21,
