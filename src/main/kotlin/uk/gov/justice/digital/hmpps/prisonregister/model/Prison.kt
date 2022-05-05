@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
 import org.hibernate.Hibernate
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -33,6 +34,21 @@ data class Prison(
   @OneToOne
   @JoinColumn(name = "prison_id")
   var gpPractice: PrisonGpPractice? = null
+
+  fun addAddress(dto: UpdateAddressDto): Address {
+    val building = Address(
+      prison = this,
+      addressLine1 = dto.addressLine1,
+      addressLine2 = dto.addressLine2,
+      town = dto.town,
+      county = dto.county,
+      postcode = dto.postcode,
+      country = dto.country,
+    )
+    addresses = addresses.plus(building)
+
+    return building
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

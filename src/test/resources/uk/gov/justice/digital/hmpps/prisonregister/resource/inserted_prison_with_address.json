@@ -1,0 +1,24 @@
+{
+  "prisonId": "MDI",
+  "prisonName": "Inserted Prison",
+  "active": false,
+  "male": false,
+  "female": true,
+  "types": [
+    {
+      "code": "YOI",
+      "description": "Her Majesty’s Youth Offender Institution"
+    }
+  ],
+  "addresses": [
+    {
+      "id": 21,
+      "addressLine1": "Bawtry Road",
+      "addressLine2": "Hatfield Woodhouse",
+      "town": "Doncaster",
+      "county": "South Yorkshire",
+      "postcode": "DN7 6BW",
+      "country": "England"
+    }
+  ]
+}

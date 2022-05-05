@@ -19,8 +19,10 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
@@ -188,10 +190,11 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
     }
 
     @Test
-    fun `insert a prison`() {
-      val prison = Prison("MDI", "Inserted Prison", active = false)
+    fun `insert a prison with minimal data`() {
+      val prison = Prison("MDI", "Inserted Prison", active = true)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
+      val insertDto = InsertPrisonDto("MDI", "Inserted Prison")
 
       webTestClient.post()
         .uri("/prison-maintenance")
@@ -203,14 +206,76 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
             user = "bobby.beans"
           )
         )
-        .body(BodyInserters.fromValue(InsertPrisonDto("MDI", "Inserted Prison", false)))
+        .body(BodyInserters.fromValue(insertDto))
         .exchange()
         .expectStatus().isCreated
         .expectBody().json("inserted_prison".loadJson())
 
       verify(auditService).sendAuditEvent(
         eq("PRISON_REGISTER_INSERT"),
-        eq(InsertPrisonDto("MDI", "Inserted Prison", false)), any()
+        eq(insertDto), any()
+      )
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.inserted")
+      assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been inserted"))
+      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+    }
+
+    @Test
+    fun `insert a prison`() {
+      val prison = Prison("MDI", "Inserted Prison", female = true, active = false)
+      val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.YOI))
+      prison.prisonTypes = prisonTypes
+      val address = Address(
+        id = 21,
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        postcode = "DN7 6BW",
+        country = "England",
+        prison = prison
+      )
+      prison.addresses = listOf(address)
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
+      whenever(prisonRepository.save(any())).thenReturn(prison)
+
+      val insertDto = InsertPrisonDto(
+        "MDI", "Inserted Prison", female = true, male = false, active = false,
+        prisonTypes = setOf(Type.YOI),
+        addresses = listOf(
+          UpdateAddressDto(
+            "Bawtry Road", "Hatfield Woodhouse", "Doncaster", "South Yorkshire",
+            "DN7 6BW", "England"
+          )
+        )
+      )
+
+      webTestClient.post()
+        .uri("/prison-maintenance")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans"
+          )
+        )
+        .body(BodyInserters.fromValue(insertDto))
+        .exchange()
+        .expectStatus().isCreated
+        .expectBody().json("inserted_prison_with_address".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_INSERT"),
+        eq(insertDto), any()
       )
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
