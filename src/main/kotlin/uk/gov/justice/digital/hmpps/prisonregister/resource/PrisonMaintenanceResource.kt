@@ -170,6 +170,9 @@ data class InsertPrisonDto(
   @Schema(description = "If this is a female prison", required = false)
   val female: Boolean = false,
 
+  @Schema(description = "If this is a contracted prison", required = true)
+  val contracted: Boolean = false,
+
   @Schema(description = "Set of types for this prison", example = "HMP")
   val prisonTypes: Set<Type> = setOf(),
 
