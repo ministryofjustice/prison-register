@@ -344,12 +344,12 @@ class PrisonServiceTest {
     @Test
     fun `update a prison adding new prison type`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A prison 1", active = true, female = true))
+        Optional.of(Prison("MDI", "A prison 1", active = true, female = true, male = false, contracted = false))
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = false, female = true, contracted = false, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }

@@ -106,7 +106,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
             user = "bobby.beans"
           )
         )
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, setOf(Type.YOI))))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI))))
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
@@ -116,7 +116,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         eq(
           Pair(
             "MDI",
-            UpdatePrisonDto("Updated Prison", false, male = true, female = true, setOf(Type.YOI))
+            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI))
           )
         ),
         any()
