@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @RestController
@@ -169,6 +170,10 @@ data class InsertPrisonDto(
 
   @Schema(description = "If this is a female prison", required = false)
   val female: Boolean = false,
+
+  @Schema(description = "If this is a contracted prison", required = true)
+  @field:NotNull(message = "Prison contracted status is required")
+  val contracted: Boolean,
 
   @Schema(description = "Set of types for this prison", example = "HMP")
   val prisonTypes: Set<Type> = setOf(),
