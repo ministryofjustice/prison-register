@@ -142,7 +142,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
       webTestClient.post()
         .uri("/prison-maintenance")
         .accept(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false)))
+        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false, contracted = false)))
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -153,7 +153,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         .uri("/prison-maintenance")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_DUMMY"), scopes = listOf("write")))
-        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false)))
+        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false, contracted = false)))
         .exchange()
         .expectStatus().isForbidden
     }
@@ -164,7 +164,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         .uri("/prison-maintenance")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("read")))
-        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false)))
+        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false, contracted = false)))
         .exchange().expectStatus().isForbidden
     }
 
@@ -194,7 +194,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
       val prison = Prison("MDI", "Inserted Prison", active = true)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
-      val insertDto = InsertPrisonDto("MDI", "Inserted Prison")
+      val insertDto = InsertPrisonDto("MDI", "Inserted Prison", contracted = false)
 
       webTestClient.post()
         .uri("/prison-maintenance")
@@ -248,7 +248,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
       whenever(prisonRepository.save(any())).thenReturn(prison)
 
       val insertDto = InsertPrisonDto(
-        "MDI", "Inserted Prison", female = true, male = false, active = false,
+        "MDI", "Inserted Prison", female = true, male = false, active = false, contracted = false,
         prisonTypes = setOf(Type.YOI),
         addresses = listOf(
           UpdateAddressDto(
