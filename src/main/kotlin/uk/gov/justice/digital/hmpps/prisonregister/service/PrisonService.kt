@@ -66,7 +66,7 @@ class PrisonService(
     }
 
     with(prisonInsertRecord) {
-      val prison = Prison(prisonId = prisonId, name = prisonName, active = true, male = male, female = female)
+      val prison = Prison(prisonId = prisonId, name = prisonName, active = true, male = male, female = female, contracted = contracted)
 
       prison.prisonTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toMutableSet()
       addresses.forEach {

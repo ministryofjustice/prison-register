@@ -6,9 +6,12 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.internal.matchers.apachecommons.ReflectionEquals
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
@@ -32,6 +35,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import java.util.Optional
 import javax.persistence.EntityExistsException
@@ -279,7 +283,7 @@ class PrisonServiceTest {
         Optional.of(Prison("MDI", "A Prison 1", active = true))
       )
       assertThrows(EntityExistsException::class.java) {
-        prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true))
+        prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true, contracted = false))
       }
       verify(prisonRepository).findById("MDI")
       verifyNoInteractions(telemetryClient)
@@ -292,7 +296,7 @@ class PrisonServiceTest {
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
       whenever(prisonRepository.save(prison)).thenReturn(prison)
 
-      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1"))
+      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", contracted = false))
       assertThat(createdPrisonId).isEqualTo("MDI")
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
@@ -300,8 +304,49 @@ class PrisonServiceTest {
 
     @Test
     fun `create a prison`() {
-      val prison = Prison("MDI", "A Prison 1", description = "A Prison for testing", active = true, female = true, male = true)
-      val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP), PrisonType(prison = prison, type = Type.IRC))
+      val prison = givenAPrison()
+
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
+      whenever(prisonRepository.save(prison)).thenReturn(prison)
+
+      val createdPrisonId = prisonService.insertPrison(givenAPrisonToInsert())
+      assertThat(createdPrisonId).isEqualTo("MDI")
+      verify(prisonRepository).findById("MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+    }
+
+    @Test
+    fun `persists all fields on Prison create`() {
+      val expectedPrison = givenAPrison()
+
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
+      whenever(prisonRepository.save(expectedPrison)).thenReturn(expectedPrison)
+      val newPrison = givenAPrisonToInsert()
+
+      prisonService.insertPrison(newPrison)
+
+      val prisonArgumentCaptor = ArgumentCaptor.forClass(Prison::class.java)
+      verify(prisonRepository).save(prisonArgumentCaptor.capture())
+      val actualPrison = prisonArgumentCaptor.value
+      assertTrue(ReflectionEquals(expectedPrison).matches(actualPrison))
+    }
+
+    private fun givenAPrisonToInsert(): InsertPrisonDto {
+      val address = UpdateAddressDto(
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        postcode = "DN7 6BW",
+        country = "England",
+      )
+
+      return InsertPrisonDto("MDI", "A Prison 1", active = true, female = true, male = true, contracted = true, prisonTypes = mutableSetOf(Type.YOI, Type.HMP), addresses = listOf(address))
+    }
+
+    private fun givenAPrison(): Prison {
+      val prison = Prison("MDI", "A Prison 1", active = true, female = true, male = true, contracted = true)
+      val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP), PrisonType(prison = prison, type = Type.YOI))
       val address = Address(
         addressLine1 = "Bawtry Road",
         addressLine2 = "Hatfield Woodhouse",
@@ -315,13 +360,7 @@ class PrisonServiceTest {
       prison.prisonTypes = prisonTypes
       prison.addresses = addresses
 
-      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty())
-      whenever(prisonRepository.save(prison)).thenReturn(prison)
-
-      val createdPrisonId = prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", female = true, male = true))
-      assertThat(createdPrisonId).isEqualTo("MDI")
-      verify(prisonRepository).findById("MDI")
-      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+      return prison
     }
   }
 
