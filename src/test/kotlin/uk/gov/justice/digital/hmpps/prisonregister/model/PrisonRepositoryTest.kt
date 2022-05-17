@@ -113,7 +113,7 @@ class PrisonRepositoryTest {
       assertThat(femalePrisons).hasSizeGreaterThan(10).allMatch { it.female }
 
       val bothMaleAndFemale = prisonRepository.findAll(PrisonFilter(genders = listOf(Gender.MALE, Gender.FEMALE)))
-      assertThat(bothMaleAndFemale.first()).isEqualTo(Prison("WYI", "Wetherby (HMPYOI)", active = true, male = true, female = true))
+      assertThat(bothMaleAndFemale.last()).isEqualTo(Prison("WYI", "Wetherby (HMPYOI)", active = true, male = true, female = true))
     }
 
     @Test
