@@ -8,6 +8,7 @@ import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 
@@ -27,8 +28,13 @@ data class Prison(
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var prisonTypes: MutableSet<PrisonType> = mutableSetOf(),
 
-  @OneToMany(mappedBy = "prisonOperatorId.prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  var prisonOperators: MutableSet<PrisonOperator> = mutableSetOf(),
+  @OneToMany
+  @JoinTable(
+    name = "PRISON_OPERATOR",
+    joinColumns = [JoinColumn(name = "prison_id")],
+    inverseJoinColumns = [JoinColumn(name = "operator_id", referencedColumnName = "id")]
+  )
+  var prisonOperators: List<Operator> = listOf(),
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var addresses: List<Address> = listOf(),

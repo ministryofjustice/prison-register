@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
+import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonOperator
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
@@ -150,5 +150,5 @@ data class PrisonTypeDto(
 data class PrisonOperatorDto(
   @Schema(description = "Prison operator name", example = "PSP, G4S", required = true) val name: String,
 ) {
-  constructor(prisonOperator: PrisonOperator) : this(prisonOperator.prisonOperatorId.operator.name)
+  constructor(prisonOperator: Operator) : this(prisonOperator.name)
 }

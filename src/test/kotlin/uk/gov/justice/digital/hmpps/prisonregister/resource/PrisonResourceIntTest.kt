@@ -11,8 +11,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonOperator
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonOperatorId
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
@@ -42,11 +40,9 @@ class PrisonResourceIntTest : IntegrationTest() {
       )
 
       val operator = Operator(1, "PSP")
-      val prisonOperatorId = PrisonOperatorId(prison, operator)
-      val prisonOperator = PrisonOperator(prisonOperatorId)
 
       prison.addresses = listOf(address)
-      prison.prisonOperators = mutableSetOf(prisonOperator)
+      prison.prisonOperators = listOf(operator)
 
       val prisons = listOf(
         prison,
@@ -81,11 +77,7 @@ class PrisonResourceIntTest : IntegrationTest() {
       )
 
       prison.addresses = listOf(mdiAddress)
-
-      val operator = Operator(1, "PSP")
-      val prisonOperatorId = PrisonOperatorId(prison, operator)
-      val prisonOperator = PrisonOperator(prisonOperatorId)
-      prison.prisonOperators = mutableSetOf(prisonOperator)
+      prison.prisonOperators = listOf(Operator(1, "PSP"))
 
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)
@@ -170,7 +162,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   }
 
   @Nested
-  inner class findPrisonAddressById {
+  inner class FindPrisonAddressById {
     @Test
     fun `should find prison address by prison and address id`() {
 
