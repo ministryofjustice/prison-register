@@ -13,7 +13,7 @@ VALUES ('PSP'),
 
 CREATE TABLE prison_operator
 (
-    prison_id VARCHAR(6),
+    prison_id VARCHAR(6) NOT NULL REFERENCES prison,
     operator_id INT NOT NULL REFERENCES operator,
     PRIMARY KEY (prison_id, operator_id)
 );
