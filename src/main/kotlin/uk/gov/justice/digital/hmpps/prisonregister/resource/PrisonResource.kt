@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonOperator
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
@@ -110,6 +111,7 @@ data class PrisonDto(
   @Schema(description = "Whether the prison is contracted") val contracted: Boolean,
   @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
+  @Schema(description = "List of operators for this prison") val operators: List<PrisonOperatorDto> = listOf(),
 ) {
   constructor(prison: Prison) : this(
     prison.prisonId,
@@ -119,7 +121,8 @@ data class PrisonDto(
     prison.female,
     prison.contracted,
     prison.prisonTypes.map { PrisonTypeDto(it) },
-    prison.addresses.map { AddressDto(it) }
+    prison.addresses.map { AddressDto(it) },
+    prison.prisonOperators.map { PrisonOperatorDto(it) },
   )
 }
 
@@ -142,4 +145,10 @@ data class PrisonTypeDto(
   @Schema(description = "Prison type description", example = "Her Majesty’s Prison", required = true) val description: String,
 ) {
   constructor(prisonType: PrisonType) : this(prisonType.type, prisonType.type.description)
+}
+
+data class PrisonOperatorDto(
+  @Schema(description = "Prison operator name", example = "PSP, G4S", required = true) val name: String,
+) {
+  constructor(prisonOperator: PrisonOperator) : this(prisonOperator.prisonOperatorId.operator.name)
 }

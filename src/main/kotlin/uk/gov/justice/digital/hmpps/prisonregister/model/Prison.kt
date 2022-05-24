@@ -27,6 +27,9 @@ data class Prison(
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var prisonTypes: MutableSet<PrisonType> = mutableSetOf(),
 
+  @OneToMany(mappedBy = "prisonOperatorId.prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+  var prisonOperators: MutableSet<PrisonOperator> = mutableSetOf(),
+
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var addresses: List<Address> = listOf(),
 ) {
