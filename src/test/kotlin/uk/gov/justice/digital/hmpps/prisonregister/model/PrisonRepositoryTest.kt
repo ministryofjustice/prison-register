@@ -49,6 +49,12 @@ class PrisonRepositoryTest {
   }
 
   @Test
+  fun `should find associated operator`() {
+    val prison = prisonRepository.findById("MDI").orElseThrow()
+    assertThat(prison.prisonOperators.first()).isEqualTo(Operator(1, "PSP"))
+  }
+
+  @Test
   fun `should find associated prison address`() {
     val prison = prisonRepository.findById("MDI").orElseThrow()
     assertThat(prison.addresses).size().isEqualTo(1)

@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
@@ -37,7 +38,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "England",
         prison
       )
+
+      val operator = Operator(1, "PSP")
+
       prison.addresses = listOf(address)
+      prison.prisonOperators = listOf(operator)
 
       val prisons = listOf(
         prison,
@@ -70,7 +75,9 @@ class PrisonResourceIntTest : IntegrationTest() {
         "England",
         prison
       )
+
       prison.addresses = listOf(mdiAddress)
+      prison.prisonOperators = listOf(Operator(1, "PSP"))
 
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison)
@@ -155,7 +162,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   }
 
   @Nested
-  inner class findPrisonAddressById {
+  inner class FindPrisonAddressById {
     @Test
     fun `should find prison address by prison and address id`() {
 
