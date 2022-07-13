@@ -9,3 +9,7 @@ generic-service:
     OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api-dev.hmpps.service.justice.gov.uk"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
+
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
+generic-prometheus-alerts:
+  alertSeverity: hmpps_tech_non_prod
