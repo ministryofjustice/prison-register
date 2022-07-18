@@ -10,3 +10,5 @@ generic-service:
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
   alertSeverity: hmpps_tech
+  rdsAlertsDatabases:
+    cloud-platform-41be406051604521: 'prison register'
