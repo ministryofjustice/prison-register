@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.2-beta"
   kotlin("plugin.spring") version "1.7.10"
   kotlin("plugin.jpa") version "1.7.10"
   idea
@@ -22,7 +22,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.1.8")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.1.10")
 
   runtimeOnly("com.h2database:h2:2.1.214")
   runtimeOnly("org.flywaydb:flyway-core")
@@ -39,7 +39,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
 
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.298"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.312"))
 
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
