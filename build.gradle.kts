@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.6.0-beta"
-  kotlin("plugin.spring") version "1.7.21"
-  kotlin("plugin.jpa") version "1.7.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.7.0"
+  kotlin("plugin.spring") version "1.7.22"
+  kotlin("plugin.jpa") version "1.7.22"
   idea
 }
 
@@ -26,27 +26,27 @@ dependencies {
 
   runtimeOnly("com.h2database:h2:2.1.214")
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("org.postgresql:postgresql:42.5.0")
+  runtimeOnly("org.postgresql:postgresql:42.5.1")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.google.code.gson:gson:2.10")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
 
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.12")
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.12")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.12")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.13")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
 
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.343"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.352"))
 
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
-  testImplementation("org.testcontainers:localstack:1.17.5")
+  testImplementation("org.testcontainers:localstack:1.17.6")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
   testImplementation("org.mockito:mockito-inline:4.9.0")
   testImplementation("org.springframework.security:spring-security-test")
 }
