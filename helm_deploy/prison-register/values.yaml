@@ -5,7 +5,7 @@ generic-service:
 
   image:
     repository: quay.io/hmpps/prison-register
-    tag: latest
+    tag: app_version    # override at deployment time
     port: 8080
 
   ingress:
