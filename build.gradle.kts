@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.1-beta-1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.2-beta"
   kotlin("plugin.spring") version "1.8.0"
   kotlin("plugin.jpa") version "1.8.0"
   idea
@@ -32,22 +32,22 @@ dependencies {
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.google.code.gson:gson:2.10.1")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
 
   implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.14")
   implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
 
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.383"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.397"))
 
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.1")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("org.testcontainers:localstack:1.17.6")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
-  testImplementation("org.mockito:mockito-inline:4.11.0")
+  testImplementation("org.mockito:mockito-inline:5.1.1")
   testImplementation("org.springframework.security:spring-security-test")
 }
 
