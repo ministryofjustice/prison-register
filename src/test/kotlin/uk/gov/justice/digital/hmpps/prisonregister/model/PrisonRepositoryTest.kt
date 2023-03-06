@@ -139,7 +139,7 @@ class PrisonRepositoryTest {
           textSearch = "vei",
           genders = listOf(Gender.MALE),
           prisonTypeCodes = listOf(Type.HMP),
-        )
+        ),
       )
       val veiPrison = prisonsByMultipleFields.first()
       assertThat(veiPrison).isEqualTo(
@@ -148,7 +148,7 @@ class PrisonRepositoryTest {
           "The Verne (HMP)",
           active = true,
           male = true,
-        )
+        ),
       )
       assertThat(veiPrison.prisonTypes.first().type).isEqualTo(Type.HMP)
     }

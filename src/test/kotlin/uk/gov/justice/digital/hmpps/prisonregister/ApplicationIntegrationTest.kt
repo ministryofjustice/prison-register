@@ -165,8 +165,8 @@ class ApplicationIntegrationTest() : IntegrationTest() {
       jwtAuthHelper.createJwt(
         subject = "A_USER",
         roles = listOf(),
-        clientId = "prison-register-client"
-      )
+        clientId = "prison-register-client",
+      ),
     )
   }
 
@@ -176,8 +176,8 @@ class ApplicationIntegrationTest() : IntegrationTest() {
         subject = "A_USER",
         roles = listOf("ROLE_MAINTAIN_REF_DATA"),
         scope = listOf("write"),
-        clientId = "prison-register-client"
-      )
+        clientId = "prison-register-client",
+      ),
     )
   }
 }

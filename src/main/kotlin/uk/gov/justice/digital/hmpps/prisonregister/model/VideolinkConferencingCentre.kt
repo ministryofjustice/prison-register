@@ -14,14 +14,14 @@ data class VideolinkConferencingCentre(
   @PrimaryKeyJoinColumn
   var prison: Prison,
 
-  var emailAddress: String
+  var emailAddress: String,
 ) {
   @Id
   @GeneratedValue(generator = "omuKeyGenerator")
   @GenericGenerator(
     name = "omuKeyGenerator",
     strategy = "foreign",
-    parameters = [Parameter(name = "property", value = "prison")]
+    parameters = [Parameter(name = "property", value = "prison")],
   )
   private var prisonId: String? = null
 }

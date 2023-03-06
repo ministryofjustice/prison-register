@@ -32,7 +32,7 @@ data class Prison(
   @JoinTable(
     name = "PRISON_OPERATOR",
     joinColumns = [JoinColumn(name = "prison_id")],
-    inverseJoinColumns = [JoinColumn(name = "operator_id", referencedColumnName = "id")]
+    inverseJoinColumns = [JoinColumn(name = "operator_id", referencedColumnName = "id")],
   )
   var prisonOperators: List<Operator> = listOf(),
 

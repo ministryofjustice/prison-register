@@ -21,7 +21,7 @@ class GpResourceTest : IntegrationTest() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findById(anyString())).thenReturn(
-      Optional.of(prison)
+      Optional.of(prison),
     )
     webTestClient.get().uri("/gp/prison/MDI")
       .exchange()
@@ -34,7 +34,7 @@ class GpResourceTest : IntegrationTest() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
     whenever(prisonRepository.findById(anyString())).thenReturn(
-      Optional.of(prison)
+      Optional.of(prison),
     )
     webTestClient.get().uri("/gp/prison/mdi")
       .exchange()
@@ -46,7 +46,7 @@ class GpResourceTest : IntegrationTest() {
   fun `find by id prison no gp practice mapped`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
     whenever(prisonRepository.findById(anyString())).thenReturn(
-      Optional.of(prison)
+      Optional.of(prison),
     )
     webTestClient.get().uri("/gp/prison/MDI")
       .exchange()

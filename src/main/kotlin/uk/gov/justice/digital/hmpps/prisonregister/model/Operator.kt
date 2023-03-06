@@ -12,7 +12,7 @@ data class Operator(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
 
-  val name: String
+  val name: String,
 ) {
 
   override fun equals(other: Any?): Boolean {

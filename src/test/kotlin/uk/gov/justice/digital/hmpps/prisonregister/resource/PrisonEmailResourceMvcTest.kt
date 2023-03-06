@@ -42,7 +42,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
-        .accept(MediaType.TEXT_PLAIN)
+        .accept(MediaType.TEXT_PLAIN),
     ).andExpect(status().isOk)
       .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
       .andExpect(content().string("a@b.com"))
@@ -54,7 +54,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
-        .accept(MediaType.TEXT_PLAIN)
+        .accept(MediaType.TEXT_PLAIN),
     ).andExpect(status().isNotFound)
   }
 
@@ -62,7 +62,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
   fun `get OMU email address - unauthorised`() {
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
-        .accept(MediaType.TEXT_PLAIN)
+        .accept(MediaType.TEXT_PLAIN),
     ).andExpect(status().isUnauthorized)
   }
 
@@ -74,7 +74,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isCreated)
   }
 
@@ -86,7 +86,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isNoContent)
   }
 
@@ -98,7 +98,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isNotFound)
   }
 
@@ -107,7 +107,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     mvc.perform(
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isUnauthorized)
   }
 
@@ -117,7 +117,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("xxxxxx")
+        .content("xxxxxx"),
     ).andExpect(status().is4xxClientError)
   }
 
@@ -125,14 +125,14 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
   fun `DELETE OMU email address`() {
     mvc.perform(
       delete(OMU_EMAIL_ADDRESS_PATH, "MDI")
-        .authorise()
+        .authorise(),
     ).andExpect(status().isNoContent)
   }
 
   @Test
   fun `DELETE OMU email address - unauthorised`() {
     mvc.perform(
-      delete(OMU_EMAIL_ADDRESS_PATH, "MDI")
+      delete(OMU_EMAIL_ADDRESS_PATH, "MDI"),
     ).andExpect(status().isUnauthorized)
   }
 
@@ -142,7 +142,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
-        .accept(MediaType.TEXT_PLAIN)
+        .accept(MediaType.TEXT_PLAIN),
     ).andExpect(status().isOk)
       .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
       .andExpect(content().string("a@b.com"))
@@ -154,7 +154,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
-        .accept(MediaType.TEXT_PLAIN)
+        .accept(MediaType.TEXT_PLAIN),
     ).andExpect(status().isNotFound)
   }
 
@@ -162,7 +162,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
   fun `get VCC email address - Unauthorised`() {
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
-        .accept(MediaType.TEXT_PLAIN)
+        .accept(MediaType.TEXT_PLAIN),
     ).andExpect(status().isUnauthorized)
   }
 
@@ -174,7 +174,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isCreated)
   }
 
@@ -186,7 +186,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isNoContent)
   }
 
@@ -198,7 +198,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isNotFound)
   }
 
@@ -207,7 +207,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     mvc.perform(
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .contentType(MediaType.TEXT_PLAIN)
-        .content("a@b.com")
+        .content("a@b.com"),
     ).andExpect(status().isUnauthorized)
   }
 
@@ -217,7 +217,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
         .contentType(MediaType.TEXT_PLAIN)
-        .content("xxxxxx")
+        .content("xxxxxx"),
     ).andExpect(status().is4xxClientError)
   }
 
@@ -225,14 +225,14 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
   fun `DELETE VCC email address`() {
     mvc.perform(
       delete(VCC_EMAIL_ADDRESS_PATH, "MDI")
-        .authorise()
+        .authorise(),
     ).andExpect(status().isNoContent)
   }
 
   @Test
   fun `DELETE VCC email address - unauthorised`() {
     mvc.perform(
-      delete(VCC_EMAIL_ADDRESS_PATH, "MDI")
+      delete(VCC_EMAIL_ADDRESS_PATH, "MDI"),
     ).andExpect(status().isUnauthorized)
   }
 
@@ -240,7 +240,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
     val token = jwtAuthHelper.createJwt(
       subject = "A_USER",
       roles = listOf(),
-      clientId = "prison-register"
+      clientId = "prison-register",
     )
 
     this.header(HttpHeaders.AUTHORIZATION, "Bearer $token")

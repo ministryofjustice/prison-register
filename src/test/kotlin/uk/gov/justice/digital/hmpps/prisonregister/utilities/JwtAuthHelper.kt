@@ -27,13 +27,13 @@ class JwtAuthHelper {
   fun setAuthorisation(
     user: String = "prison-register-api-client",
     roles: List<String> = listOf(),
-    scopes: List<String> = listOf()
+    scopes: List<String> = listOf(),
   ): (HttpHeaders) -> Unit {
     val token = createJwt(
       subject = user,
       scope = scopes,
       expiryTime = Duration.ofHours(1L),
-      roles = roles
+      roles = roles,
     )
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
   }

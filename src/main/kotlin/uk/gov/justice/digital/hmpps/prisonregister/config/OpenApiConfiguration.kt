@@ -17,6 +17,6 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
       Info().title("Prison Register service")
         .version(version)
         .description("A service that provides HMPPS Prison Information")
-        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk"))
+        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )
 }

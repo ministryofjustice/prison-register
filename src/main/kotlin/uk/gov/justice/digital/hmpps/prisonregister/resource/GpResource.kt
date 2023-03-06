@@ -30,18 +30,20 @@ class GpResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "400",
         description = "Bad request.  Wrong format for prison_id.",
-        content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
         description = "Prison not found.",
-        content = [Content(schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   fun getPrisonFromId(
     @Parameter(description = "Prison ID", example = "MDI")
-    @PathVariable @Size(min = 2, max = 12) prisonId: String
+    @PathVariable
+    @Size(min = 2, max = 12)
+    prisonId: String,
   ): GpDto = prisonService.findPrisonAndGpPracticeById(prisonId.uppercase())
 
   @GetMapping("/practice/{gpPracticeCode}")
@@ -51,18 +53,20 @@ class GpResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "400",
         description = "Bad request.  Wrong format for GP practice code.",
-        content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
         description = "No prison linked to the GP practice code.",
-        content = [Content(schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   fun getPrisonFromGpPrescriber(
     @Parameter(description = "GP Practice Code", example = "Y05537")
-    @PathVariable @Size(max = 6) gpPracticeCode: String
+    @PathVariable
+    @Size(max = 6)
+    gpPracticeCode: String,
   ): GpDto = prisonService.findByGpPractice(gpPracticeCode.uppercase())
 }
 
@@ -72,7 +76,7 @@ data class GpDto(
   @Schema(description = "Prison ID", example = "MDI") val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland (HMP & YOI)") val prisonName: String,
   @Schema(description = "Whether the prison is still active") val active: Boolean,
-  @Schema(description = "GP Practice Code", example = "Y05537") val gpPracticeCode: String?
+  @Schema(description = "GP Practice Code", example = "Y05537") val gpPracticeCode: String?,
 ) {
   constructor(prison: Prison) : this(prison.prisonId, prison.name, prison.active, prison.gpPractice?.gpPracticeCode)
 }

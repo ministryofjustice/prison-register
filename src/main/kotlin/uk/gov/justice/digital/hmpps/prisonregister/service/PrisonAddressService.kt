@@ -15,7 +15,7 @@ import javax.persistence.EntityNotFoundException
 class PrisonAddressService(
   private val addressRepository: AddressRepository,
   private val prisonRepository: PrisonRepository,
-  private val telemetryClient: TelemetryClient
+  private val telemetryClient: TelemetryClient,
 ) {
 
   fun findById(prisonId: String, addressId: Long): AddressDto {
@@ -53,8 +53,8 @@ class PrisonAddressService(
           county = county,
           postcode = postcode,
           country = country,
-          prison = prison
-        )
+          prison = prison,
+        ),
       )
 
       recordPrisonAddressEditEvent("prison-register-address-add", address)

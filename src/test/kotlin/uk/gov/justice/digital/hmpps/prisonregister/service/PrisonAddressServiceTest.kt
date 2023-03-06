@@ -45,12 +45,12 @@ class PrisonAddressServiceTest {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
       val prisonAddressDto = AddressDto(address)
 
@@ -62,7 +62,7 @@ class PrisonAddressServiceTest {
     @Test
     fun `find prison address not found`() {
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.empty()
+        Optional.empty(),
       )
 
       assertThatThrownBy { prisonAddressService.findById("MDI", 21) }
@@ -80,12 +80,12 @@ class PrisonAddressServiceTest {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
 
       assertThatThrownBy { prisonAddressService.findById("PDI", 21) }
@@ -99,16 +99,21 @@ class PrisonAddressServiceTest {
     @Test
     fun `try to update a prison address that doesn't exist`() {
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.empty()
+        Optional.empty(),
       )
 
       assertThrows(EntityNotFoundException::class.java) {
         prisonAddressService.updateAddress(
-          "MDI", 12,
+          "MDI",
+          12,
           UpdateAddressDto(
-            "Line1", "line2", "town", "county",
-            "postcode", "country"
-          )
+            "Line1",
+            "line2",
+            "town",
+            "county",
+            "postcode",
+            "country",
+          ),
         )
       }
       verify(addressRepository).findById(12)
@@ -126,21 +131,26 @@ class PrisonAddressServiceTest {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
 
       assertThrows(EntityNotFoundException::class.java) {
         prisonAddressService.updateAddress(
-          "PDI", 21,
+          "PDI",
+          21,
           UpdateAddressDto(
-            "Line1", "line2", "town", "county",
-            "postcode", "country"
-          )
+            "Line1",
+            "line2",
+            "town",
+            "county",
+            "postcode",
+            "country",
+          ),
         )
       }
       verify(addressRepository).findById(21)
@@ -158,18 +168,19 @@ class PrisonAddressServiceTest {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
 
       val updatedAddress =
         prisonAddressService.updateAddress(
-          "MDI", 21,
-          givenAddress()
+          "MDI",
+          21,
+          givenAddress(),
         )
 
       assertThat(updatedAddress).isEqualTo(AddressDto(address))
@@ -183,12 +194,13 @@ class PrisonAddressServiceTest {
     @Test
     fun `try to delete a prison address that does not exist`() {
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.empty()
+        Optional.empty(),
       )
 
       assertThrows(EntityNotFoundException::class.java) {
         prisonAddressService.deleteAddress(
-          "MDI", 12
+          "MDI",
+          12,
         )
       }
       verify(addressRepository).findById(12)
@@ -208,12 +220,12 @@ class PrisonAddressServiceTest {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
 
       assertThrows(EntityNotFoundException::class.java) { prisonAddressService.deleteAddress("PDI", 21) }
@@ -234,12 +246,12 @@ class PrisonAddressServiceTest {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
 
       val deletedAddress = prisonAddressService.deleteAddress("MDI", 21)
@@ -280,7 +292,7 @@ class PrisonAddressServiceTest {
           county = county,
           country = country,
           postcode = postcode,
-          prison = prison
+          prison = prison,
         )
 
         val savedAddress = Address(
@@ -291,7 +303,7 @@ class PrisonAddressServiceTest {
           county = county,
           country = country,
           postcode = postcode,
-          prison = prison
+          prison = prison,
         )
 
         whenever(addressRepository.save(address)).thenReturn(savedAddress)
@@ -318,8 +330,12 @@ class PrisonAddressServiceTest {
 
   private fun givenAddress(): UpdateAddressDto {
     return UpdateAddressDto(
-      "Line1", "line2", "town", "county",
-      "postcode", "country"
+      "Line1",
+      "line2",
+      "town",
+      "county",
+      "postcode",
+      "country",
     )
   }
 }

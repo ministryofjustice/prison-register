@@ -39,8 +39,8 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   fun `Authorised user can update OMU email`() {
     whenever(offenderManagementUnitRepository.findById(ArgumentMatchers.anyString())).thenReturn(
       Optional.of(
-        OffenderManagementUnit(Prison("MDI", "Moorland", active = true), "a@b.com")
-      )
+        OffenderManagementUnit(Prison("MDI", "Moorland", active = true), "a@b.com"),
+      ),
     )
     prisonService.setOmuEmailAddress("MDI", "a@b.com")
   }
@@ -50,8 +50,8 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   fun `An unauthorised user can not update OMU email`() {
     whenever(offenderManagementUnitRepository.findById(ArgumentMatchers.anyString())).thenReturn(
       Optional.of(
-        OffenderManagementUnit(Prison("MDI", "Moorland", active = true), "a@b.com")
-      )
+        OffenderManagementUnit(Prison("MDI", "Moorland", active = true), "a@b.com"),
+      ),
     )
     assertThatThrownBy { prisonService.setOmuEmailAddress("MDI", "a@b.com") }
       .isInstanceOf(AccessDeniedException::class.java)
@@ -75,8 +75,8 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   fun `Authorised user can update VCC email`() {
     whenever(videoLinkConferencingCentreRepository.findById(ArgumentMatchers.anyString())).thenReturn(
       Optional.of(
-        VideolinkConferencingCentre(Prison("MDI", "Moorland", active = true), "a@b.com")
-      )
+        VideolinkConferencingCentre(Prison("MDI", "Moorland", active = true), "a@b.com"),
+      ),
     )
     prisonService.setVccEmailAddress("MDI", "a@b.com")
   }
@@ -86,8 +86,8 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
   fun `An unauthorised user can not update VCC email`() {
     whenever(videoLinkConferencingCentreRepository.findById(ArgumentMatchers.anyString())).thenReturn(
       Optional.of(
-        VideolinkConferencingCentre(Prison("MDI", "Moorland", active = true), "a@b.com")
-      )
+        VideolinkConferencingCentre(Prison("MDI", "Moorland", active = true), "a@b.com"),
+      ),
     )
     assertThatThrownBy { prisonService.setOmuEmailAddress("MDI", "a@b.com") }
       .isInstanceOf(AccessDeniedException::class.java)

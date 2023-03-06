@@ -27,8 +27,8 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
         "register.prison.inserted",
         AdditionalInformation(prisonId),
         occurredAt,
-        "A prison has been inserted"
-      )
+        "A prison has been inserted",
+      ),
     )
   }
 
@@ -38,8 +38,8 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
         "register.prison.amended",
         AdditionalInformation(prisonId),
         occurredAt,
-        "A prison has been updated"
-      )
+        "A prison has been updated",
+      ),
     )
   }
 
@@ -49,16 +49,16 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
       PublishRequest(domaineventsTopic.arn, objectMapper.writeValueAsString(payload))
         .withMessageAttributes(
           mapOf(
-            "eventType" to MessageAttributeValue().withDataType("String").withStringValue(payload.eventType)
-          )
+            "eventType" to MessageAttributeValue().withDataType("String").withStringValue(payload.eventType),
+          ),
         )
-        .also { log.info("Published event $payload to outbound topic") }
+        .also { log.info("Published event $payload to outbound topic") },
     )
   }
 }
 
 data class AdditionalInformation(
-  val prisonId: String
+  val prisonId: String,
 )
 
 data class HMPPSDomainEvent(
@@ -66,19 +66,19 @@ data class HMPPSDomainEvent(
   val additionalInformation: AdditionalInformation,
   val version: Int,
   val occurredAt: String,
-  val description: String
+  val description: String,
 ) {
   constructor(
     eventType: String,
     additionalInformation: AdditionalInformation,
     occurredAt: Instant,
-    description: String
+    description: String,
   ) : this(
     eventType,
     additionalInformation,
     1,
     occurredAt.toOffsetDateFormat(),
-    description
+    description,
   )
 }
 fun Instant.toOffsetDateFormat(): String =

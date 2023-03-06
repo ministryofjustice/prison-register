@@ -37,13 +37,15 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       ApiResponse(
         responseCode = "200",
         description = "Successful Operation",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = PrisonDto::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = PrisonDto::class))],
+      ),
+    ],
   )
   fun getPrisonFromId(
     @Schema(description = "Prison ID", example = "MDI", required = true)
-    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters") prisonId: String
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
+    prisonId: String,
   ): PrisonDto = prisonService.findById(prisonId)
 
   @GetMapping
@@ -56,11 +58,11 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
         content = [
           Content(
             mediaType = "application/json",
-            array = ArraySchema(schema = Schema(implementation = PrisonDto::class))
-          )
-        ]
-      )
-    ]
+            array = ArraySchema(schema = Schema(implementation = PrisonDto::class)),
+          ),
+        ],
+      ),
+    ],
   )
   fun getPrisons(): List<PrisonDto> = prisonService.findAll()
 
@@ -71,14 +73,17 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       ApiResponse(
         responseCode = "200",
         description = "Successful Operation",
-      )
-    ]
+      ),
+    ],
   )
   fun getAddressFromId(
     @Schema(description = "Prison ID", example = "MDI", required = true)
-    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters") prisonId: String,
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
+    prisonId: String,
     @Schema(description = "Address Id", example = "234231", required = true)
-    @PathVariable addressId: Long
+    @PathVariable
+    addressId: Long,
   ): AddressDto =
     addressService.findById(prisonId, addressId)
 
@@ -88,9 +93,9 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Successful Operation"
-      )
-    ]
+        description = "Successful Operation",
+      ),
+    ],
   )
   fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
@@ -136,7 +141,13 @@ data class AddressDto(
   @Schema(description = "Country", example = "England", required = true) val country: String,
 ) {
   constructor(address: Address) : this(
-    address.id!!, address.addressLine1, address.addressLine2, address.town, address.county, address.postcode, address.country
+    address.id!!,
+    address.addressLine1,
+    address.addressLine2,
+    address.town,
+    address.county,
+    address.postcode,
+    address.country,
   )
 }
 

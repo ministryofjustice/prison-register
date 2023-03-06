@@ -50,6 +50,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         .exchange()
         .expectStatus().isUnauthorized
     }
+
     @Test
     fun `correct permission is needed to update prison data`() {
       webTestClient.put()
@@ -81,9 +82,9 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
           BodyInserters.fromValue(
             mapOf(
               "prisonName" to "A",
-              "active" to "true"
-            )
-          )
+              "active" to "true",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isBadRequest
@@ -94,7 +95,7 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
     @Test
     fun `update a prison`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A Prison 1", active = true))
+        Optional.of(Prison("MDI", "A Prison 1", active = true)),
       )
       webTestClient.put()
         .uri("/prison-maintenance/id/MDI")
@@ -103,8 +104,8 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI))))
         .exchange()
@@ -116,10 +117,10 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         eq(
           Pair(
             "MDI",
-            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI))
-          )
+            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI)),
+          ),
         ),
-        any()
+        any(),
       )
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
@@ -179,9 +180,9 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
             mapOf(
               "prisonId" to "MDA",
               "prisonName" to "A",
-              "active" to "true"
-            )
-          )
+              "active" to "true",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isBadRequest
@@ -203,8 +204,8 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .body(BodyInserters.fromValue(insertDto))
         .exchange()
@@ -213,7 +214,8 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
 
       verify(auditService).sendAuditEvent(
         eq("PRISON_REGISTER_INSERT"),
-        eq(insertDto), any()
+        eq(insertDto),
+        any(),
       )
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
@@ -241,21 +243,30 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
         county = "South Yorkshire",
         postcode = "DN7 6BW",
         country = "England",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
 
       val insertDto = InsertPrisonDto(
-        "MDI", "Inserted Prison", female = true, male = false, active = false, contracted = false,
+        "MDI",
+        "Inserted Prison",
+        female = true,
+        male = false,
+        active = false,
+        contracted = false,
         prisonTypes = setOf(Type.YOI),
         addresses = listOf(
           UpdateAddressDto(
-            "Bawtry Road", "Hatfield Woodhouse", "Doncaster", "South Yorkshire",
-            "DN7 6BW", "England"
-          )
-        )
+            "Bawtry Road",
+            "Hatfield Woodhouse",
+            "Doncaster",
+            "South Yorkshire",
+            "DN7 6BW",
+            "England",
+          ),
+        ),
       )
 
       webTestClient.post()
@@ -265,8 +276,8 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .body(BodyInserters.fromValue(insertDto))
         .exchange()
@@ -275,7 +286,8 @@ class PrisonMaintenanceResourceIntTest(@Autowired private val objectMapper: Obje
 
       verify(auditService).sendAuditEvent(
         eq("PRISON_REGISTER_INSERT"),
-        eq(insertDto), any()
+        eq(insertDto),
+        any(),
       )
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
