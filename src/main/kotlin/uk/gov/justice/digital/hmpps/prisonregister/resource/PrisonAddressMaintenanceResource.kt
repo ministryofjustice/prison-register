@@ -33,7 +33,7 @@ import javax.validation.constraints.Size
 class PrisonAddressMaintenanceResource(
   private val addressService: PrisonAddressService,
   private val snsService: SnsService,
-  private val auditService: AuditService
+  private val auditService: AuditService,
 ) {
   @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
   @Operation(
@@ -44,44 +44,48 @@ class PrisonAddressMaintenanceResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateAddressDto::class)
-        )
-      ]
+          schema = Schema(implementation = UpdateAddressDto::class),
+        ),
+      ],
     ),
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Address Information Updated"
+        description = "Address Information Updated",
       ),
       ApiResponse(
         responseCode = "400",
         description = "Bad Information request to update address",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "401",
         description = "Unauthorized to access this endpoint",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "403",
         description = "Incorrect permissions to make address update",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
         description = "Address Id not found",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   @PutMapping("/id/{prisonId}/address/{addressId}")
   fun updateAddress(
     @Schema(description = "Prison Id", example = "MDI", required = true)
-    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters") prisonId: String,
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters")
+    prisonId: String,
     @Schema(description = "Address Id", example = "234231", required = true)
-    @PathVariable addressId: Long,
-    @RequestBody @Valid updateAddressDto: UpdateAddressDto
+    @PathVariable
+    addressId: Long,
+    @RequestBody @Valid
+    updateAddressDto: UpdateAddressDto,
   ): AddressDto {
     val updatedAddress = addressService.updateAddress(prisonId, addressId, updateAddressDto)
     val now = Instant.now()
@@ -89,7 +93,7 @@ class PrisonAddressMaintenanceResource(
     auditService.sendAuditEvent(
       PRISON_REGISTER_ADDRESS_UPDATE.name,
       mapOf("prisonId" to prisonId, "address" to updatedAddress),
-      now
+      now,
     )
     return updatedAddress
   }
@@ -102,31 +106,34 @@ class PrisonAddressMaintenanceResource(
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Address Information Deleted"
+        description = "Address Information Deleted",
       ),
       ApiResponse(
         responseCode = "401",
         description = "Unauthorized to access this endpoint",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "403",
         description = "Incorrect permissions to make address update",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
         description = "Address Id not found",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   @DeleteMapping("/id/{prisonId}/address/{addressId}")
   fun deleteAddress(
     @Schema(description = "Prison Id", example = "MDI", required = true)
-    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters") prisonId: String,
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters")
+    prisonId: String,
     @Schema(description = "Address Id", example = "234231", required = true)
-    @PathVariable addressId: Long
+    @PathVariable
+    addressId: Long,
   ) {
     val deletedAddress = addressService.deleteAddress(prisonId, addressId)
     val now = Instant.now()
@@ -134,7 +141,7 @@ class PrisonAddressMaintenanceResource(
     auditService.sendAuditEvent(
       PRISON_REGISTER_ADDRESS_DELETE.name,
       mapOf("prisonId" to prisonId, "address" to deletedAddress),
-      now
+      now,
     )
   }
 
@@ -147,42 +154,45 @@ class PrisonAddressMaintenanceResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateAddressDto::class)
-        )
-      ]
+          schema = Schema(implementation = UpdateAddressDto::class),
+        ),
+      ],
     ),
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "New Address added to Prison"
+        description = "New Address added to Prison",
       ),
       ApiResponse(
         responseCode = "400",
         description = "Bad Information request to update address",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "401",
         description = "Unauthorized to access this endpoint",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "403",
         description = "Incorrect permissions to add Prison address",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
         description = "Prison Id not found",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   @PostMapping("/id/{prisonId}/address")
   fun addAddress(
     @Schema(description = "Prison Id", example = "MDI", required = true)
-    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters") prisonId: String,
-    @RequestBody @Valid updateAddressDto: UpdateAddressDto
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters")
+    prisonId: String,
+    @RequestBody @Valid
+    updateAddressDto: UpdateAddressDto,
   ): AddressDto {
     val additionalAddress = addressService.addAddress(prisonId, updateAddressDto)
     val now = Instant.now()
@@ -190,7 +200,7 @@ class PrisonAddressMaintenanceResource(
     auditService.sendAuditEvent(
       PRISON_REGISTER_ADDRESS_INSERT.name,
       mapOf("prisonId" to prisonId, "address" to additionalAddress),
-      now
+      now,
     )
 
     return additionalAddress
@@ -200,28 +210,40 @@ class PrisonAddressMaintenanceResource(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Address Update Record")
 data class UpdateAddressDto(
-  @Schema(description = "Address line 1", example = "Bawtry Road") @field:Size(
+  @Schema(description = "Address line 1", example = "Bawtry Road")
+  @field:Size(
     max = 80,
-    message = "Address line 1 must be no more than 80 characters"
-  ) val addressLine1: String?,
-  @Schema(description = "Address line 2", example = "Hatfield Woodhouse") @field:Size(
+    message = "Address line 1 must be no more than 80 characters",
+  )
+  val addressLine1: String?,
+  @Schema(description = "Address line 2", example = "Hatfield Woodhouse")
+  @field:Size(
     max = 80,
-    message = "Address line 2 must be no more than 80 characters"
-  ) val addressLine2: String?,
-  @Schema(description = "Village/Town/City", example = "Doncaster", required = true) @field:Size(
+    message = "Address line 2 must be no more than 80 characters",
+  )
+  val addressLine2: String?,
+  @Schema(description = "Village/Town/City", example = "Doncaster", required = true)
+  @field:Size(
     max = 80,
-    message = "Village/Town/City must be no more than 80 characters"
-  ) val town: String,
-  @Schema(description = "County", example = "South Yorkshire") @field:Size(
+    message = "Village/Town/City must be no more than 80 characters",
+  )
+  val town: String,
+  @Schema(description = "County", example = "South Yorkshire")
+  @field:Size(
     max = 80,
-    message = "County must be no more than 80 characters"
-  ) val county: String?,
-  @Schema(description = "Postcode", example = "DN7 6BW", required = true) @field:Size(
+    message = "County must be no more than 80 characters",
+  )
+  val county: String?,
+  @Schema(description = "Postcode", example = "DN7 6BW", required = true)
+  @field:Size(
     max = 8,
-    message = "Postcode must be no more than 8 characters"
-  ) val postcode: String,
-  @Schema(description = "Country", example = "England", required = true) @field:Size(
+    message = "Postcode must be no more than 8 characters",
+  )
+  val postcode: String,
+  @Schema(description = "Country", example = "England", required = true)
+  @field:Size(
     max = 16,
-    message = "Country must be no more than 16 characters"
-  ) val country: String
+    message = "Country must be no more than 16 characters",
+  )
+  val country: String,
 )

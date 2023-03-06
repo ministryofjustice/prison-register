@@ -36,6 +36,7 @@ abstract class IntegrationTest {
 
   @SpyBean
   protected lateinit var hmppsSqsPropertiesSpy: HmppsSqsProperties
+
   @Autowired
   protected lateinit var hmppsQueueService: HmppsQueueService
 
@@ -45,7 +46,7 @@ abstract class IntegrationTest {
   internal fun setAuthorisation(
     user: String = "prison-register-api-client",
     roles: List<String> = listOf(),
-    scopes: List<String> = listOf()
+    scopes: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
 
   internal val testQueue by lazy { hmppsQueueService.findByQueueId("domaineventstestqueue") ?: throw RuntimeException("Queue with name domaineventstestqueue doesn't exist") }
@@ -62,6 +63,6 @@ abstract class IntegrationTest {
   data class HMPPSMessage(
     val Message: String,
     val MessageId: String,
-    val MessageAttributes: HMPPSMessageAttributes
+    val MessageAttributes: HMPPSMessageAttributes,
   )
 }

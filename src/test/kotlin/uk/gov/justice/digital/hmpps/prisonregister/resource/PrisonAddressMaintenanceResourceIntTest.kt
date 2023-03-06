@@ -52,10 +52,14 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "line1", "line2", "town", "county",
-              "postcode", "country"
-            )
-          )
+              "line1",
+              "line2",
+              "town",
+              "county",
+              "postcode",
+              "country",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isUnauthorized
@@ -70,10 +74,14 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "line1", "line2", "town", "county",
-              "postcode", "country"
-            )
-          )
+              "line1",
+              "line2",
+              "town",
+              "county",
+              "postcode",
+              "country",
+            ),
+          ),
         ).exchange()
         .expectStatus().isForbidden
     }
@@ -87,10 +95,14 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "line1", "line2", "town", "county",
-              "postcode", "country"
-            )
-          )
+              "line1",
+              "line2",
+              "town",
+              "county",
+              "postcode",
+              "country",
+            ),
+          ),
         )
         .exchange().expectStatus().isForbidden
     }
@@ -105,9 +117,9 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           BodyInserters.fromValue(
             mapOf(
               "town" to "town",
-              "country" to "country"
-            )
-          )
+              "country" to "country",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isBadRequest
@@ -126,12 +138,12 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
       webTestClient.put()
         .uri("/prison-maintenance/id/MDI/address/21")
@@ -140,16 +152,20 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "first line", "second line", "Sheffield", "South Yorkshire",
-              "S1 2AB", "England"
-            )
-          )
+              "first line",
+              "second line",
+              "Sheffield",
+              "South Yorkshire",
+              "S1 2AB",
+              "England",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isOk
@@ -163,13 +179,18 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
             Pair(
               "address",
               AddressDto(
-                21, "first line", "second line", "Sheffield", "South Yorkshire",
-                "S1 2AB", "England"
-              )
-            )
-          )
+                21,
+                "first line",
+                "second line",
+                "Sheffield",
+                "South Yorkshire",
+                "S1 2AB",
+                "England",
+              ),
+            ),
+          ),
         ),
-        any()
+        any(),
       )
 
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
@@ -223,8 +244,8 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .exchange()
         .expectStatus().isNotFound
@@ -241,7 +262,7 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         county = "South Yorkshire",
         country = "England",
         postcode = "S1 2AB",
-        prison = prison
+        prison = prison,
       )
 
       whenever(addressRepository.findById(address.id as Long)).thenReturn(Optional.of(address))
@@ -252,8 +273,8 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .exchange()
         .expectStatus().isOk
@@ -266,13 +287,18 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
             Pair(
               "address",
               AddressDto(
-                21, "first line", "second line", "Sheffield", "South Yorkshire",
-                "S1 2AB", "England"
-              )
-            )
-          )
+                21,
+                "first line",
+                "second line",
+                "Sheffield",
+                "South Yorkshire",
+                "S1 2AB",
+                "England",
+              ),
+            ),
+          ),
         ),
-        any()
+        any(),
       )
 
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
@@ -299,10 +325,14 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "line1", "line2", "town", "county",
-              "postcode", "country"
-            )
-          )
+              "line1",
+              "line2",
+              "town",
+              "county",
+              "postcode",
+              "country",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isUnauthorized
@@ -317,10 +347,14 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "line1", "line2", "town", "county",
-              "postcode", "country"
-            )
-          )
+              "line1",
+              "line2",
+              "town",
+              "county",
+              "postcode",
+              "country",
+            ),
+          ),
         ).exchange()
         .expectStatus().isForbidden
     }
@@ -334,10 +368,14 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
         .body(
           BodyInserters.fromValue(
             UpdateAddressDto(
-              "line1", "line2", "town", "county",
-              "postcode", "country"
-            )
-          )
+              "line1",
+              "line2",
+              "town",
+              "county",
+              "postcode",
+              "country",
+            ),
+          ),
         )
         .exchange().expectStatus().isForbidden
     }
@@ -352,9 +390,9 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           BodyInserters.fromValue(
             mapOf(
               "town" to "town",
-              "country" to "country"
-            )
-          )
+              "country" to "country",
+            ),
+          ),
         )
         .exchange()
         .expectStatus().isBadRequest
@@ -368,8 +406,12 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
       whenever(prisonRepository.findById(prison.prisonId)).thenReturn(Optional.of(prison))
 
       val additionalAddressDetails = UpdateAddressDto(
-        "first line", "second line", "Sheffield", "South Yorkshire",
-        "S1 2AB", "England"
+        "first line",
+        "second line",
+        "Sheffield",
+        "South Yorkshire",
+        "S1 2AB",
+        "England",
       )
 
       with(additionalAddressDetails) {
@@ -380,7 +422,7 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           county = county,
           country = country,
           postcode = postcode,
-          prison = prison
+          prison = prison,
         )
 
         val savedAddress = Address(
@@ -391,7 +433,7 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           county = county,
           country = country,
           postcode = postcode,
-          prison = prison
+          prison = prison,
         )
 
         whenever(addressRepository.save(address)).thenReturn(savedAddress)
@@ -404,8 +446,8 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
             scopes = listOf("write"),
-            user = "bobby.beans"
-          )
+            user = "bobby.beans",
+          ),
         )
         .body(BodyInserters.fromValue(additionalAddressDetails))
         .exchange()
@@ -420,13 +462,18 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
             Pair(
               "address",
               AddressDto(
-                21, "first line", "second line", "Sheffield", "South Yorkshire",
-                "S1 2AB", "England"
-              )
-            )
-          )
+                21,
+                "first line",
+                "second line",
+                "Sheffield",
+                "South Yorkshire",
+                "S1 2AB",
+                "England",
+              ),
+            ),
+          ),
         ),
-        any()
+        any(),
       )
 
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }

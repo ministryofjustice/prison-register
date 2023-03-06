@@ -41,6 +41,6 @@ class PrisonFilter(
   private fun textSearchWildcardAndIgnoreCasePredicate(
     root: Root<Prison>,
     cb: CriteriaBuilder,
-    field: String
+    field: String,
   ) = cb.like(cb.upper(root.get(field)), "%${textSearch?.uppercase()}%")
 }

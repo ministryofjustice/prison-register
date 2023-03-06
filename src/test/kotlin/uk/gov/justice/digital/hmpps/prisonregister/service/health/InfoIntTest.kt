@@ -26,7 +26,7 @@ class InfoIntTest : IntegrationTest() {
       .value(
         Consumer<String> {
           assertThat(it).startsWith(LocalDateTime.now().format(ISO_DATE))
-        }
+        },
       )
   }
 }

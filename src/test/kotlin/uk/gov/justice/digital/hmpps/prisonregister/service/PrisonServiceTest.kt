@@ -63,11 +63,11 @@ class PrisonServiceTest {
         "South Yorkshire",
         "DN7 6BW",
         "England",
-        prison
+        prison,
       )
       prison.addresses = listOf(address)
       whenever(prisonRepository.findById(anyString())).thenReturn(
-        Optional.of(prison)
+        Optional.of(prison),
       )
       val prisonDto = PrisonDto(prison)
 
@@ -125,9 +125,9 @@ class PrisonServiceTest {
           Optional.of(
             VideolinkConferencingCentre(
               prison = Prison(prisonId, "Test", active = true),
-              emailAddress = "a@b.com"
-            )
-          )
+              emailAddress = "a@b.com",
+            ),
+          ),
         )
 
       assertThat(prisonService.getVccEmailAddress(prisonId)).contains("a@b.com")
@@ -207,9 +207,9 @@ class PrisonServiceTest {
           Optional.of(
             OffenderManagementUnit(
               prison = Prison(PRISON_ID, "Test", active = true),
-              emailAddress = "a@b.com"
-            )
-          )
+              emailAddress = "a@b.com",
+            ),
+          ),
         )
 
       assertThat(prisonService.getOmuEmailAddress(PRISON_ID)).contains("a@b.com")
@@ -280,7 +280,7 @@ class PrisonServiceTest {
     @Test
     fun `try to create a prison that already exists`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A Prison 1", active = true))
+        Optional.of(Prison("MDI", "A Prison 1", active = true)),
       )
       assertThrows(EntityExistsException::class.java) {
         prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true, contracted = false))
@@ -354,7 +354,7 @@ class PrisonServiceTest {
         county = "South Yorkshire",
         postcode = "DN7 6BW",
         country = "England",
-        prison = prison
+        prison = prison,
       )
       val addresses = mutableListOf(address)
       prison.prisonTypes = prisonTypes
@@ -370,7 +370,7 @@ class PrisonServiceTest {
     @Test
     fun `try to update a prison that doesn't exist`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.empty()
+        Optional.empty(),
       )
 
       assertThrows(EntityNotFoundException::class.java) {
@@ -383,7 +383,7 @@ class PrisonServiceTest {
     @Test
     fun `update a prison adding new prison type`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A prison 1", active = true, female = true, male = false, contracted = false))
+        Optional.of(Prison("MDI", "A prison 1", active = true, female = true, male = false, contracted = false)),
       )
 
       val updatedPrison =
@@ -400,18 +400,24 @@ class PrisonServiceTest {
       prison.prisonTypes = prisonTypes
 
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(prison)
+        Optional.of(prison),
       )
 
       val updatedPrison =
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, prisonTypes = setOf(Type.HMP, Type.YOI)))
       assertThat(updatedPrison).isEqualTo(
         PrisonDto(
-          "MDI", "A prison 1", active = true, male = false, female = false, contracted = false,
+          "MDI",
+          "A prison 1",
+          active = true,
+          male = false,
+          female = false,
+          contracted = false,
           types = listOf(
-            PrisonTypeDto(Type.HMP, Type.HMP.description), PrisonTypeDto(Type.YOI, Type.YOI.description)
-          )
-        )
+            PrisonTypeDto(Type.HMP, Type.HMP.description),
+            PrisonTypeDto(Type.YOI, Type.YOI.description),
+          ),
+        ),
       )
 
       verify(prisonRepository).findById("MDI")

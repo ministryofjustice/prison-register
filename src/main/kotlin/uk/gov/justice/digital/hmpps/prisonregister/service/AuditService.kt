@@ -30,13 +30,12 @@ class AuditService(
   }
 
   fun sendAuditEvent(auditType: String, details: Any, occurredAt: Instant) {
-
     val auditEvent = AuditEvent(
       what = auditType,
       `when` = occurredAt,
       who = securityUserContext.principal,
       service = serviceName,
-      details = objectMapper.writeValueAsString(details)
+      details = objectMapper.writeValueAsString(details),
     )
     log.debug("Audit {} ", auditEvent)
 
@@ -44,14 +43,14 @@ class AuditService(
       auditSqsClient.sendMessage(
         SendMessageRequest(
           auditQueueUrl,
-          auditEvent.toJson()
-        )
+          auditEvent.toJson(),
+        ),
       )
 
     telemetryClient.trackEvent(
       auditEvent.what,
       mapOf("messageId" to result.messageId),
-      null
+      null,
     )
   }
 

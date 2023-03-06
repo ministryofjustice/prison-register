@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.4-beta-1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.4-beta-2"
   kotlin("plugin.spring") version "1.8.10"
   kotlin("plugin.jpa") version "1.8.10"
   idea
@@ -39,7 +39,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
 
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.413"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.420"))
 
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.1")

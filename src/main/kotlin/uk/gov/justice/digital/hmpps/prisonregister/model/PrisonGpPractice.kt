@@ -7,5 +7,5 @@ import javax.persistence.Id
 data class PrisonGpPractice(
   @Id
   val prisonId: String,
-  val gpPracticeCode: String
+  val gpPracticeCode: String,
 )

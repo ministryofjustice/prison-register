@@ -36,7 +36,7 @@ import javax.validation.constraints.Size
 class PrisonMaintenanceResource(
   private val prisonService: PrisonService,
   private val snsService: SnsService,
-  private val auditService: AuditService
+  private val auditService: AuditService,
 ) {
   @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
   @ResponseStatus(HttpStatus.CREATED)
@@ -48,9 +48,9 @@ class PrisonMaintenanceResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = InsertPrisonDto::class)
-        )
-      ]
+          schema = Schema(implementation = InsertPrisonDto::class),
+        ),
+      ],
     ),
     responses = [
       ApiResponse(
@@ -60,23 +60,24 @@ class PrisonMaintenanceResource(
       ApiResponse(
         responseCode = "400",
         description = "Information request to add prison",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "401",
         description = "Unauthorized to access this endpoint",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "403",
         description = "Incorrect permissions to make prison insert",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   @PostMapping("")
   fun insertPrison(
-    @RequestBody @Valid prisonInsertRecord: InsertPrisonDto
+    @RequestBody @Valid
+    prisonInsertRecord: InsertPrisonDto,
   ): PrisonDto {
     val insertedPrison = prisonService.findById(prisonService.insertPrison(prisonInsertRecord))
 
@@ -86,7 +87,7 @@ class PrisonMaintenanceResource(
     auditService.sendAuditEvent(
       PRISON_REGISTER_INSERT.name,
       prisonInsertRecord,
-      now
+      now,
     )
     return insertedPrison
   }
@@ -100,42 +101,45 @@ class PrisonMaintenanceResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePrisonDto::class)
-        )
-      ]
+          schema = Schema(implementation = UpdatePrisonDto::class),
+        ),
+      ],
     ),
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Prison Information Updated"
+        description = "Prison Information Updated",
       ),
       ApiResponse(
         responseCode = "400",
         description = "Information request to update prison",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "401",
         description = "Unauthorized to access this endpoint",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "403",
         description = "Incorrect permissions to make prison update",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
         description = "Prison ID not found",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
   )
   @PutMapping("/id/{prisonId}")
   fun updatePrison(
     @Schema(description = "Prison Id", example = "MDI", required = true)
-    @PathVariable @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters") prisonId: String,
-    @RequestBody @Valid prisonUpdateRecord: UpdatePrisonDto
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
+    prisonId: String,
+    @RequestBody @Valid
+    prisonUpdateRecord: UpdatePrisonDto,
   ): PrisonDto {
     val updatedPrison = prisonService.updatePrison(prisonId, prisonUpdateRecord)
     val now = Instant.now()
@@ -143,7 +147,7 @@ class PrisonMaintenanceResource(
     auditService.sendAuditEvent(
       PRISON_REGISTER_UPDATE.name,
       prisonId to prisonUpdateRecord,
-      now
+      now,
     )
     return updatedPrison
   }
@@ -179,7 +183,7 @@ data class InsertPrisonDto(
   val prisonTypes: Set<Type> = setOf(),
 
   @Schema(description = "List of addresses for this prison", required = false)
-  val addresses: List<UpdateAddressDto> = listOf()
+  val addresses: List<UpdateAddressDto> = listOf(),
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -203,5 +207,5 @@ data class UpdatePrisonDto(
   val contracted: Boolean = false,
 
   @Schema(description = "Set of types for this prison")
-  val prisonTypes: Set<Type> = setOf()
+  val prisonTypes: Set<Type> = setOf(),
 )

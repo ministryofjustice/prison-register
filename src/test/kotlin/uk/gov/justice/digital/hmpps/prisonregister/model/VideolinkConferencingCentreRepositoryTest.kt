@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class VideolinkConferencingCentreRepositoryTest(
   @Autowired val prisonRepository: PrisonRepository,
-  @Autowired val vccRepository: VideoLinkConferencingCentreRepository
+  @Autowired val vccRepository: VideoLinkConferencingCentreRepository,
 ) {
   @Test
   fun lifecycle() {

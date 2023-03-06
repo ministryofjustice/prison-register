@@ -31,7 +31,7 @@ class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
   private val offenderManagementUnitRepository: OffenderManagementUnitRepository,
-  private val telemetryClient: TelemetryClient
+  private val telemetryClient: TelemetryClient,
 ) {
   fun findById(prisonId: String): PrisonDto {
     val prison = prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }

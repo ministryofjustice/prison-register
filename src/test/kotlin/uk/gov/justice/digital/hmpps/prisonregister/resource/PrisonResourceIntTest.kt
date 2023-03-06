@@ -19,6 +19,7 @@ import java.util.Optional
 class PrisonResourceIntTest : IntegrationTest() {
   @MockBean
   private lateinit var prisonRepository: PrisonRepository
+
   @MockBean
   private lateinit var addressRepository: AddressRepository
 
@@ -36,7 +37,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
-        prison
+        prison,
       )
 
       val operator = Operator(1, "PSP")
@@ -46,11 +47,11 @@ class PrisonResourceIntTest : IntegrationTest() {
 
       val prisons = listOf(
         prison,
-        Prison("LEI", "Leeds HMP", active = true, female = true)
+        Prison("LEI", "Leeds HMP", active = true, female = true),
       )
 
       whenever(prisonRepository.findAll()).thenReturn(
-        prisons
+        prisons,
       )
       webTestClient.get().uri("/prisons")
         .exchange()
@@ -73,14 +74,14 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
-        prison
+        prison,
       )
 
       prison.addresses = listOf(mdiAddress)
       prison.prisonOperators = listOf(Operator(1, "PSP"))
 
       whenever(prisonRepository.findById(anyString())).thenReturn(
-        Optional.of(prison)
+        Optional.of(prison),
       )
       webTestClient.get().uri("/prisons/id/MDI")
         .exchange()
@@ -113,7 +114,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         ).apply {
           val prison = this
           prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP))
-        }
+        },
       )
       whenever(prisonRepository.findAll(any())).thenReturn(prisons)
 
@@ -142,7 +143,7 @@ class PrisonResourceIntTest : IntegrationTest() {
     @Test
     fun `no search params provided`() {
       val prisons = listOf(
-        Prison("MDI", "Moorland HMP", active = true)
+        Prison("MDI", "Moorland HMP", active = true),
       )
       whenever(prisonRepository.findAll(any())).thenReturn(prisons)
 
@@ -165,7 +166,6 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class FindPrisonAddressById {
     @Test
     fun `should find prison address by prison and address id`() {
-
       val prison = Prison("MDI", "A Prison", active = true)
       val address = Address(
         id = 77,
@@ -175,12 +175,12 @@ class PrisonResourceIntTest : IntegrationTest() {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
-        prison = prison
+        prison = prison,
       )
       prison.addresses = listOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(address)
+        Optional.of(address),
       )
 
       webTestClient.get().uri("/prisons/id/MDI/address/77")
@@ -200,11 +200,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
-        prison
+        prison,
       )
 
       whenever(addressRepository.findById(any())).thenReturn(
-        Optional.of(mdiAddress)
+        Optional.of(mdiAddress),
       )
       webTestClient.get().uri("/prisons/id/LEI/address/21")
         .exchange()

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class OffenderManagementUnitRepositoryTest(
   @Autowired val prisonRepository: PrisonRepository,
-  @Autowired val omuRepository: OffenderManagementUnitRepository
+  @Autowired val omuRepository: OffenderManagementUnitRepository,
 ) {
 
   @Test
