@@ -22,7 +22,7 @@ services:
       - AWS_DEFAULT_REGION=eu-west-2
 
   prison-register-db:
-    image: postgres
+    image: postgres:15
     networks:
       - hmpps
     container_name: prison-register-db
