@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.6-beta-2"
-  kotlin("plugin.spring") version "1.8.10"
-  kotlin("plugin.jpa") version "1.8.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.6-beta-3"
+  kotlin("plugin.spring") version "1.8.21"
+  kotlin("plugin.jpa") version "1.8.21"
   idea
 }
 
@@ -32,14 +32,14 @@ dependencies {
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.google.code.gson:gson:2.10.1")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0")
 
   implementation("org.springdoc:springdoc-openapi-webmvc-core:1.7.0")
   implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.7.0")
 
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.451"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.455"))
 
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.37.0")
