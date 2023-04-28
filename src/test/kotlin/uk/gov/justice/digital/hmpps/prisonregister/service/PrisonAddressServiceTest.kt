@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import com.microsoft.applicationinsights.TelemetryClient
+import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,7 +23,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import java.util.Optional
-import javax.persistence.EntityNotFoundException
 
 class PrisonAddressServiceTest {
   private val addressRepository: AddressRepository = mock()

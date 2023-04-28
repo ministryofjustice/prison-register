@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
+import jakarta.persistence.OneToOne
+import jakarta.persistence.PrimaryKeyJoinColumn
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.OneToOne
-import javax.persistence.PrimaryKeyJoinColumn
 
 @Entity
 data class OffenderManagementUnit(

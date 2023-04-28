@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration
 
-import com.amazonaws.services.sqs.model.PurgeQueueRequest
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -8,10 +7,12 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
 import uk.gov.justice.hmpps.sqs.MissingTopicException
+import uk.gov.justice.hmpps.sqs.countMessagesOnQueue
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,7 +20,7 @@ import uk.gov.justice.hmpps.sqs.MissingTopicException
 abstract class IntegrationTest {
   @BeforeEach
   fun `clear queues`() {
-    testSqsClient.purgeQueue(PurgeQueueRequest(testQueueUrl))
+    testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
   }
 
   @Suppress("unused")
@@ -53,10 +54,7 @@ abstract class IntegrationTest {
   internal val testSqsClient by lazy { testQueue.sqsClient }
   internal val testQueueUrl by lazy { testQueue.queueUrl }
 
-  fun testQueueEventMessageCount(): Int? {
-    val queueAttributes = testSqsClient.getQueueAttributes(testQueueUrl, listOf("ApproximateNumberOfMessages"))
-    return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
-  }
+  fun testQueueEventMessageCount(): Int? = testSqsClient.countMessagesOnQueue(testQueueUrl).get()
 
   data class HMPPSEventType(val Value: String, val Type: String)
   data class HMPPSMessageAttributes(val eventType: HMPPSEventType)

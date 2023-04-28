@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import com.microsoft.applicationinsights.TelemetryClient
+import jakarta.persistence.EntityExistsException
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -20,8 +22,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
-import javax.persistence.EntityExistsException
-import javax.persistence.EntityNotFoundException
 
 const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 

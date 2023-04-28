@@ -3,6 +3,8 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import com.microsoft.applicationinsights.TelemetryClient
+import jakarta.persistence.EntityExistsException
+import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -38,8 +40,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import java.util.Optional
-import javax.persistence.EntityExistsException
-import javax.persistence.EntityNotFoundException
 
 class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()

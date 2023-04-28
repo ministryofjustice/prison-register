@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest.builder
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
@@ -195,8 +196,8 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
 
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
-      val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val requestJson = testSqsClient.receiveMessage(builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
@@ -303,7 +304,7 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
 
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
-      val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body
+      val requestJson = testSqsClient.receiveMessage(builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
       val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
 
@@ -478,7 +479,7 @@ class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMappe
 
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
-      val requestJson = testSqsClient.receiveMessage(testQueueUrl).messages[0].body
+      val requestJson = testSqsClient.receiveMessage(builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
       val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
 

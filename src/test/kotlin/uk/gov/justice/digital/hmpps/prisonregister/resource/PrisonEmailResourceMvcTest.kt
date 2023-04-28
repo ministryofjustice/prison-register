@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.whenever
@@ -20,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
-import javax.persistence.EntityNotFoundException
 
 const val OMU_EMAIL_ADDRESS_PATH = "/secure/prisons/id/{prisonId}/offender-management-unit/email-address"
 const val VCC_EMAIL_ADDRESS_PATH = "/secure/prisons/id/{prisonId}/videolink-conferencing-centre/email-address"

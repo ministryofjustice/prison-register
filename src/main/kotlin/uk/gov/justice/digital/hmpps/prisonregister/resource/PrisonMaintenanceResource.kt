@@ -6,6 +6,10 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
@@ -25,10 +29,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGI
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
-import javax.validation.Valid
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
 
 @RestController
 @Validated
