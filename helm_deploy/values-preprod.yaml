@@ -1,8 +1,15 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 generic-service:
+
+  replicaCount: 2
+
   ingress:
     host: prison-register-preprod.hmpps.service.justice.gov.uk
+
+  scheduledDowntime:
+    enabled: true
+    startup: '30 6 * * 1-5' # Start at 6:30am UTC Monday-Friday
+    shutdown: '30 21 * * 1-5' # Stop at 9:30pm UTC Monday-Friday
+
   env:
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api-preprod.hmpps.service.justice.gov.uk"
