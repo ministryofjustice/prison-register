@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
@@ -28,7 +31,14 @@ const val VCC_EMAIL_ADDRESS_PATH = "/secure/prisons/id/{prisonId}/videolink-conf
 /**
  * Spring MVC tests. Requests and responses for parameter binding, validation and exception handling
  */
-@WebMvcTest(PrisonEmailResource::class)
+@WebMvcTest(
+  PrisonEmailResource::class,
+  excludeAutoConfiguration = [
+    SecurityAutoConfiguration::class,
+    OAuth2ClientAutoConfiguration::class,
+    OAuth2ResourceServerAutoConfiguration::class,
+  ],
+)
 @Import(JwtAuthHelper::class)
 @ActiveProfiles("test")
 class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwtAuthHelper: JwtAuthHelper) {
