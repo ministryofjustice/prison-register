@@ -9,12 +9,12 @@ services:
       - "4566-4597:4566-4597"
     environment:
       - SERVICES=sqs,sns
-      - DATA_DIR=/tmp/localstack/data
+      - DATA_DIR=/var/lib/localstack/data
       - DOCKER_HOST=unix:///var/run/docker.sock
       - DEFAULT_REGION=eu-west-2
       - PORT_WEB_UI=${PORT_WEB_UI- }
     volumes:
-      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "${TMPDIR:-/var/lib/localstack}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
 networks:
