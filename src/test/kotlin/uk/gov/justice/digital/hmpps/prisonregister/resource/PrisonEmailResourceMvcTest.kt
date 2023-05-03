@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.prisonregister.config.ResourceServerConfiguration
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
@@ -39,7 +40,7 @@ const val VCC_EMAIL_ADDRESS_PATH = "/secure/prisons/id/{prisonId}/videolink-conf
     OAuth2ResourceServerAutoConfiguration::class,
   ],
 )
-@Import(JwtAuthHelper::class)
+@Import(JwtAuthHelper::class, ResourceServerConfiguration::class)
 @ActiveProfiles("test")
 class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwtAuthHelper: JwtAuthHelper) {
 
