@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import com.microsoft.applicationinsights.TelemetryClient
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
@@ -8,7 +9,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
-import javax.persistence.EntityNotFoundException
 
 @Service
 @Transactional(readOnly = true)
