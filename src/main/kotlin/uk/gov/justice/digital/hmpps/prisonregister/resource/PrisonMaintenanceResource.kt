@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
+import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_INSERT
@@ -184,6 +185,9 @@ data class InsertPrisonDto(
 
   @Schema(description = "List of addresses for this prison", required = false)
   val addresses: List<UpdateAddressDto> = listOf(),
+
+  @Schema(description = "Set of categories for this prison", required = false)
+  val categories: Set<Category> = setOf(),
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -208,4 +212,7 @@ data class UpdatePrisonDto(
 
   @Schema(description = "Set of types for this prison")
   val prisonTypes: Set<Type> = setOf(),
+
+  @Schema(description = "Set of categories for this prison", required = false)
+  val categories: Set<Category> = setOf(),
 )

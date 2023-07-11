@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.constraints.Size
+import org.hibernate.Hibernate
 import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -115,6 +117,7 @@ data class PrisonDto(
   @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
   @Schema(description = "Whether the prison is contracted") val contracted: Boolean,
   @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
+  @Schema(description = "List of the categories for this prison") val categories: Set<Category> = setOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
   @Schema(description = "List of operators for this prison") val operators: List<PrisonOperatorDto> = listOf(),
 ) {
@@ -126,6 +129,7 @@ data class PrisonDto(
     prison.female,
     prison.contracted,
     prison.prisonTypes.map { PrisonTypeDto(it) },
+    prison.categories.also { Hibernate.initialize(it) },
     prison.addresses.map { AddressDto(it) },
     prison.prisonOperators.map { PrisonOperatorDto(it) },
   )

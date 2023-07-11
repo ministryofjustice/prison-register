@@ -24,8 +24,7 @@ class PrisonRepositoryTest {
 
     val id = prisonRepository.save(prison).prisonId
 
-    TestTransaction.flagForCommit()
-    TestTransaction.end()
+    commitAndStartNewTx()
 
     val savedPrison = prisonRepository.findById(id).get()
 
@@ -34,6 +33,24 @@ class PrisonRepositoryTest {
       assertThat(name).isEqualTo("Sheffield Prison")
       assertThat(active).isEqualTo(true)
     }
+  }
+
+  @Test
+  fun `should insert prison categories`() {
+    val prison = Prison(
+      prisonId = "SHFCRT",
+      name = "Sheffield Prison",
+      active = true,
+      categories = mutableSetOf(Category.A, Category.B),
+    )
+
+    val id = prisonRepository.save(prison).prisonId
+
+    commitAndStartNewTx()
+
+    val savedPrison = prisonRepository.findById(id).get()
+
+    assertThat(savedPrison.categories).containsExactlyInAnyOrder(Category.A, Category.B)
   }
 
   @Test
@@ -164,8 +181,7 @@ class PrisonRepositoryTest {
     prison.male = false
     prisonRepository.save(prison)
 
-    TestTransaction.flagForCommit()
-    TestTransaction.end()
+    commitAndStartNewTx()
 
     val savedPrison = prisonRepository.findById("MDI").get()
 
@@ -177,4 +193,17 @@ class PrisonRepositoryTest {
       assertThat(male).isEqualTo(false)
     }
   }
+}
+
+/**
+ * Convenience function for committing a transaction and starting a new one.
+ * Without the call to TestTransaction.start() subsequent JPA operations operate outside a managed transaction
+ * (each op is wrapped by an autocommit) and the Hibernate session is absent.
+ * An absent (closed) session results in a LazyInitialisationException in the
+ * `should insert prison categories`() test above.
+ */
+private fun commitAndStartNewTx() {
+  TestTransaction.flagForCommit()
+  TestTransaction.end()
+  TestTransaction.start()
 }

@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -28,7 +29,16 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class findAll {
     @Test
     fun `find prisons`() {
-      val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true)
+      val prison = Prison(
+        prisonId = "MDI",
+        name = "Moorland HMP",
+        active = true,
+        male = true,
+        female = false,
+        contracted = true,
+        categories = mutableSetOf(Category.B, Category.C),
+      )
+
       val address = Address(
         21,
         "Bawtry Road",
@@ -65,7 +75,7 @@ class PrisonResourceIntTest : IntegrationTest() {
   inner class findById {
     @Test
     fun `find prison`() {
-      val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true)
+      val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true, categories = mutableSetOf(Category.D))
       val mdiAddress = Address(
         21,
         "Bawtry Road",
