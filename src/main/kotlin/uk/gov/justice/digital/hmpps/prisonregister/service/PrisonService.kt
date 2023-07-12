@@ -66,7 +66,17 @@ class PrisonService(
     }
 
     with(prisonInsertRecord) {
-      val prison = Prison(prisonId = prisonId, name = prisonName, active = true, male = male, female = female, contracted = contracted)
+      val prison = Prison(
+        prisonId = prisonId,
+        name = prisonName,
+        active = true,
+        male = male,
+        female = female,
+        contracted = contracted,
+      )
+
+      prison.categories.retainAll(categories)
+      prison.categories.addAll(categories)
 
       prison.prisonTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toMutableSet()
       addresses.forEach {
@@ -92,6 +102,9 @@ class PrisonService(
       val updatedTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toSet()
       prison.prisonTypes.retainAll(updatedTypes)
       prison.prisonTypes.addAll(updatedTypes)
+
+      prison.categories.retainAll(categories)
+      prison.categories.addAll(categories)
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)

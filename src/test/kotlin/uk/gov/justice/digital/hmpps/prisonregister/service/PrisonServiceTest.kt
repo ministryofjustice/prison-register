@@ -23,6 +23,7 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
 import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -54,7 +55,16 @@ class PrisonServiceTest {
   inner class findById {
     @Test
     fun `find prison`() {
-      val prison = Prison("MDI", "A Prison", active = true, male = true, female = false, contracted = true)
+      val prison = Prison(
+        prisonId = "MDI",
+        name = "A Prison",
+        active = true,
+        male = true,
+        female = false,
+        contracted = true,
+        categories = mutableSetOf(Category.C),
+      )
+
       val address = Address(
         21,
         "Bawtry Road",
@@ -73,6 +83,7 @@ class PrisonServiceTest {
 
       val actual = prisonService.findById("MDI")
       assertThat(actual).isEqualTo(prisonDto)
+      assertThat(actual.categories).containsExactly(Category.C)
       verify(prisonRepository).findById("MDI")
     }
 
@@ -341,7 +352,17 @@ class PrisonServiceTest {
         country = "England",
       )
 
-      return InsertPrisonDto("MDI", "A Prison 1", active = true, female = true, male = true, contracted = true, prisonTypes = mutableSetOf(Type.YOI, Type.HMP), addresses = listOf(address))
+      return InsertPrisonDto(
+        prisonId = "MDI",
+        prisonName = "A Prison 1",
+        active = true,
+        female = true,
+        male = true,
+        contracted = true,
+        prisonTypes = mutableSetOf(Type.YOI, Type.HMP),
+        addresses = listOf(address),
+        categories = mutableSetOf(Category.A, Category.D),
+      )
     }
 
     private fun givenAPrison(): Prison {
@@ -356,9 +377,9 @@ class PrisonServiceTest {
         country = "England",
         prison = prison,
       )
-      val addresses = mutableListOf(address)
       prison.prisonTypes = prisonTypes
-      prison.addresses = addresses
+      prison.addresses = mutableListOf(address)
+      prison.categories = mutableSetOf(Category.A, Category.D)
 
       return prison
     }
@@ -389,6 +410,38 @@ class PrisonServiceTest {
       val updatedPrison =
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
       assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+      verify(prisonRepository).findById("MDI")
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+
+    @Test
+    fun `update a prison adding new category`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(
+        Optional.of(Prison(prisonId = "MDI", name = "A prison 1", categories = mutableSetOf(Category.C), active = true, male = true, contracted = true)),
+      )
+
+      val updatedPrison = prisonService.updatePrison(
+        "MDI",
+        UpdatePrisonDto(
+          prisonName = "A prison 1",
+          active = true,
+          male = true,
+          contracted = true,
+          categories = setOf(Category.D),
+        ),
+      )
+      assertThat(updatedPrison).isEqualTo(
+        PrisonDto(
+          prisonId = "MDI",
+          prisonName = "A prison 1",
+          active = true,
+          male = true,
+          female = false,
+          contracted = true,
+          categories = setOf(Category.D),
+        ),
+      )
+
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
