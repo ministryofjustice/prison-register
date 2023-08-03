@@ -22,7 +22,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.0.1")
 
   runtimeOnly("com.h2database:h2:2.1.214")
   runtimeOnly("org.flywaydb:flyway-core")
@@ -38,10 +38,10 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.474"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.520"))
 
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.38.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.0.0")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
   testImplementation("org.testcontainers:localstack:1.18.1")
