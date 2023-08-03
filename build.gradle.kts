@@ -32,6 +32,8 @@ dependencies {
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.google.code.gson:gson:2.10.1")
 
+  implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.1")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
