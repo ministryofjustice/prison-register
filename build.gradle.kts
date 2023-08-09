@@ -29,8 +29,9 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql:42.6.0")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
-  implementation("javax.xml.bind:jaxb-api:2.3.1")
+  implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
   implementation("com.google.code.gson:gson:2.10.1")
+  implementation("com.google.guava:guava:32.1.2-jre")
 
   implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
@@ -39,7 +40,6 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
   implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.520"))
-  implementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.0.0")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
@@ -52,6 +52,9 @@ dependencies {
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(19))
+}
+repositories {
+  mavenCentral()
 }
 
 tasks {

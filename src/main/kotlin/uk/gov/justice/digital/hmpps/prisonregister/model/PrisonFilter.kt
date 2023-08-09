@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import com.google.common.collect.ImmutableList
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
-import wiremock.com.google.common.collect.ImmutableList
 
 class PrisonFilter(
   val active: Boolean? = null,
