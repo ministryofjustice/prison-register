@@ -33,13 +33,12 @@ dependencies {
   implementation("com.google.code.gson:gson:2.10.1")
   implementation("com.google.guava:guava:32.1.2-jre")
 
-  implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
-
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.1")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
   implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.520"))
+  testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.0.0")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
@@ -52,9 +51,6 @@ dependencies {
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(19))
-}
-repositories {
-  mavenCentral()
 }
 
 tasks {
