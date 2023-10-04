@@ -15,13 +15,16 @@ jobs:
       postgres_password: "admin_password"
     steps:
       - checkout
-      - hmpps/wait_till_ready
-      - hmpps/wait_till_ready_postgres
+      - run:
+          name: Wait for Postgres to be ready
+          command: ./postgres-check.sh
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
-      - run: ./gradlew check
+      - hmpps/wait_till_ready_postgres
+      - run:
+          command: ./gradlew check
       - save_cache:
           paths:
             - ~/.gradle
