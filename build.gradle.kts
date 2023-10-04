@@ -16,6 +16,9 @@ configurations {
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+  runtimeOnly("org.postgresql:postgresql:42.6.0")
+  runtimeOnly("org.flywaydb:flyway-core")
+
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
