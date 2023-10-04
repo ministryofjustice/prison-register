@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.3.0"
-  kotlin("plugin.spring") version "1.9.0"
-  kotlin("plugin.jpa") version "1.9.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.4.1"
+  kotlin("plugin.spring") version "1.9.10"
+  kotlin("plugin.jpa") version "1.9.10"
   idea
 }
 
@@ -28,7 +28,6 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.6.0")
 
-  implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
   implementation("com.google.code.gson:gson:2.10.1")
   implementation("com.google.guava:guava:32.1.2-jre")

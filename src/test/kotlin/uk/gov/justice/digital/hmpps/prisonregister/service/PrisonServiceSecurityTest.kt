@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -10,13 +9,13 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.OFFENDER_MANAGEMENT_UNIT
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
-import java.util.Optional
 
 @WithMockUser(authorities = ["ROLE_MAINTAIN_REF_DATA", "SCOPE_write"])
 annotation class WithMaintenanceMockUser
@@ -26,82 +25,45 @@ annotation class WithMaintenanceMockUser
 class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
 
   @MockBean
+  lateinit var contactDetailsRepository: ContactDetailsRepository
+
+  @MockBean
+  lateinit var emailAddressRepository: EmailAddressRepository
+
+  @MockBean
   lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
-  lateinit var offenderManagementUnitRepository: OffenderManagementUnitRepository
-
-  @MockBean
-  lateinit var videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository
-
   @Test
   @WithMaintenanceMockUser
-  fun `Authorised user can update OMU email`() {
-    whenever(offenderManagementUnitRepository.findById(ArgumentMatchers.anyString())).thenReturn(
-      Optional.of(
-        OffenderManagementUnit(Prison("MDI", "Moorland", active = true), "a@b.com"),
-      ),
+  fun `Authorised user can update email`() {
+    val contactDetails = ContactDetails(
+      "MDI",
+      Prison("MDI", "Moorland", active = true),
+      OFFENDER_MANAGEMENT_UNIT,
+      EmailAddress("a@b.com"),
     )
-    prisonService.setOmuEmailAddress("MDI", "a@b.com")
+
+    whenever(contactDetailsRepository.getByPrisonIdAndType("MDI", contactDetails.type)).thenReturn(contactDetails)
+    prisonService.setEmailAddress("MDI", "a@b.com", contactDetails.type)
   }
 
   @Test
   @WithMockUser
-  fun `An unauthorised user can not update OMU email`() {
-    whenever(offenderManagementUnitRepository.findById(ArgumentMatchers.anyString())).thenReturn(
-      Optional.of(
-        OffenderManagementUnit(Prison("MDI", "Moorland", active = true), "a@b.com"),
-      ),
-    )
-    assertThatThrownBy { prisonService.setOmuEmailAddress("MDI", "a@b.com") }
+  fun `An unauthorised user can not update email`() {
+    assertThatThrownBy { prisonService.setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT) }
       .isInstanceOf(AccessDeniedException::class.java)
   }
 
   @Test
   @WithMaintenanceMockUser
-  fun `Authorised user can delete OMU email`() {
-    prisonService.deleteOmuEmailAddress("MDI")
+  fun `Authorised user can delete email`() {
+    prisonService.deleteEmailAddress("MDI", OFFENDER_MANAGEMENT_UNIT)
   }
 
   @Test
   @WithMockUser
-  fun `An unauthorised user can not delete OMU email`() {
-    assertThatThrownBy { prisonService.deleteOmuEmailAddress("MDI") }
+  fun `An unauthorised user can not delete email`() {
+    assertThatThrownBy { prisonService.deleteEmailAddress("MDI", OFFENDER_MANAGEMENT_UNIT) }
       .isInstanceOf(AccessDeniedException::class.java)
-  }
-
-  @Test
-  @WithMaintenanceMockUser
-  fun `Authorised user can update VCC email`() {
-    whenever(videoLinkConferencingCentreRepository.findById(ArgumentMatchers.anyString())).thenReturn(
-      Optional.of(
-        VideolinkConferencingCentre(Prison("MDI", "Moorland", active = true), "a@b.com"),
-      ),
-    )
-    prisonService.setVccEmailAddress("MDI", "a@b.com")
-  }
-
-  @Test
-  @WithMockUser
-  fun `An unauthorised user can not update VCC email`() {
-    whenever(videoLinkConferencingCentreRepository.findById(ArgumentMatchers.anyString())).thenReturn(
-      Optional.of(
-        VideolinkConferencingCentre(Prison("MDI", "Moorland", active = true), "a@b.com"),
-      ),
-    )
-    assertThatThrownBy { prisonService.setOmuEmailAddress("MDI", "a@b.com") }
-      .isInstanceOf(AccessDeniedException::class.java)
-  }
-
-  @Test
-  @WithMaintenanceMockUser
-  fun `Authorised user can delete VCC email`() {
-    prisonService.deleteVccEmailAddress("MDI")
-  }
-
-  @Test
-  @WithMockUser
-  fun `An unauthorised user can not delete VCC email`() {
-    assertThatThrownBy { prisonService.deleteVccEmailAddress("MDI") }.isInstanceOf(AccessDeniedException::class.java)
   }
 }

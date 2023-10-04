@@ -3,21 +3,21 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnit
-import uk.gov.justice.digital.hmpps.prisonregister.model.OffenderManagementUnitRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideoLinkConferencingCentreRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.VideolinkConferencingCentre
 import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
@@ -29,17 +29,19 @@ const val CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') an
 @Transactional(readOnly = true)
 class PrisonService(
   private val prisonRepository: PrisonRepository,
-  private val videoLinkConferencingCentreRepository: VideoLinkConferencingCentreRepository,
-  private val offenderManagementUnitRepository: OffenderManagementUnitRepository,
+  private val contactDetailsRepository: ContactDetailsRepository,
+  private val emailAddressRepository: EmailAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
   fun findById(prisonId: String): PrisonDto {
-    val prison = prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
+    val prison =
+      prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
     return PrisonDto(prison)
   }
 
   fun findPrisonAndGpPracticeById(prisonId: String): GpDto {
-    val prison = prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
+    val prison =
+      prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
     return GpDto(prison)
   }
 
@@ -110,55 +112,54 @@ class PrisonService(
     return PrisonDto(prison)
   }
 
-  fun getVccEmailAddress(prisonId: String): String? = videoLinkConferencingCentreRepository
-    .findByIdOrNull(prisonId)
-    ?.run { emailAddress }
-
-  fun getOmuEmailAddress(prisonId: String): String? = offenderManagementUnitRepository
-    .findByIdOrNull(prisonId)
-    ?.run { emailAddress }
-
-  @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
-  fun setVccEmailAddress(prisonId: String, emailAddress: String): SetOutcome {
-    val vcc = videoLinkConferencingCentreRepository.findByIdOrNull(prisonId)
-    return if (vcc == null) {
-      val prison = prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException()
-      videoLinkConferencingCentreRepository.save(VideolinkConferencingCentre(prison, emailAddress))
-      SetOutcome.CREATED
-    } else {
-      vcc.emailAddress = emailAddress
-      SetOutcome.UPDATED
-    }
+  fun getEmailAddress(prisonId: String, contactPurposeType: ContactPurposeType): String? {
+    return contactDetailsRepository.getEmailAddressByPrisonerIdAndPurpose(prisonId, contactPurposeType)
   }
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
-  fun setOmuEmailAddress(prisonId: String, emailAddress: String): SetOutcome {
-    val omu = offenderManagementUnitRepository.findByIdOrNull(prisonId)
-    return if (omu != null) {
-      omu.emailAddress = emailAddress
-      SetOutcome.UPDATED
-    } else {
-      val prison = prisonRepository.findByIdOrNull(prisonId) ?: throw EntityNotFoundException()
-      offenderManagementUnitRepository.save(OffenderManagementUnit(prison, emailAddress))
-      SetOutcome.CREATED
+  fun setEmailAddress(prisonId: String, newEmailAddress: String, contactPurposeType: ContactPurposeType): SetOutcome {
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, contactPurposeType)
+    if (contactDetails == null) {
+      val prison = prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
+      val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
+      contactDetailsRepository.saveAndFlush(ContactDetails(prisonId, prison, contactPurposeType, persistedEmailAddress))
+      return SetOutcome.CREATED
     }
+    val oldEmailAddress = contactDetails.emailAddress.value
+    if (oldEmailAddress != newEmailAddress) {
+      val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
+
+      persistedEmailAddress.contactDetails.add(contactDetails)
+      contactDetails.emailAddress = persistedEmailAddress
+      contactDetailsRepository.saveAndFlush(contactDetails)
+
+      if (contactDetailsRepository.isEmailOrphaned(oldEmailAddress)) {
+        emailAddressRepository.delete(oldEmailAddress)
+      }
+    }
+    return SetOutcome.UPDATED
   }
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
-  fun deleteOmuEmailAddress(prisonId: String) {
-    if (offenderManagementUnitRepository.existsById(prisonId)) {
-      offenderManagementUnitRepository.deleteById(prisonId)
+  fun deleteEmailAddress(prisonId: String, contactPurposeType: ContactPurposeType) {
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, contactPurposeType)
+
+    contactDetails?.let {
+      contactDetailsRepository.delete(it)
+      if (contactDetailsRepository.isEmailOrphaned(it.emailAddress.value)) {
+        emailAddressRepository.delete(it.emailAddress.value)
+      }
     }
   }
 
-  @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
-  fun deleteVccEmailAddress(prisonId: String) {
-    if (videoLinkConferencingCentreRepository.existsById(prisonId)) {
-      videoLinkConferencingCentreRepository.deleteById(prisonId)
-    }
+  private fun createOrGetEmailAddress(
+    newEmailAddress: String,
+  ): EmailAddress {
+    val emailEntity = emailAddressRepository.getEmailAddress(newEmailAddress)
+    return emailEntity?.let {
+      emailEntity
+    } ?: emailAddressRepository.saveAndFlush(EmailAddress(newEmailAddress))
   }
 }

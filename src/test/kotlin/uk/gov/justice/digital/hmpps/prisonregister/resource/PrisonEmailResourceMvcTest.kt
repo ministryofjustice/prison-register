@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
@@ -22,6 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.prisonregister.config.ResourceServerConfiguration
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.OFFENDER_MANAGEMENT_UNIT
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.VIDEO_LINK_CONFERENCING
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
@@ -47,9 +49,13 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
   @MockBean
   lateinit var prisonService: PrisonService
 
+  private fun mockGetEmailAddressService(prisonID: String = "MDI", contactPurposeType: ContactPurposeType, email: String? = "a@b.com") {
+    whenever(prisonService.getEmailAddress(prisonID, contactPurposeType)).thenReturn(email)
+  }
+
   @Test
   fun `get OMU email address`() {
-    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn("a@b.com")
+    mockGetEmailAddressService(contactPurposeType = OFFENDER_MANAGEMENT_UNIT)
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
@@ -61,7 +67,8 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `get OMU email address - Not found`() {
-    whenever(prisonService.getOmuEmailAddress(anyString())).thenReturn(null)
+    mockGetEmailAddressService(contactPurposeType = OFFENDER_MANAGEMENT_UNIT, email = null)
+
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
@@ -79,7 +86,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `PUT OMU email address - created`() {
-    whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.CREATED)
+    whenever(prisonService.setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)).thenReturn(SetOutcome.CREATED)
 
     mvc.perform(
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
@@ -91,7 +98,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `PUT OMU email address - updated`() {
-    whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.UPDATED)
+    whenever(prisonService.setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)).thenReturn(SetOutcome.UPDATED)
 
     mvc.perform(
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
@@ -103,7 +110,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `PUT OMU email address - prison not found`() {
-    whenever(prisonService.setOmuEmailAddress(anyString(), anyString())).thenThrow(EntityNotFoundException::class.java)
+    whenever(prisonService.setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)).thenThrow(EntityNotFoundException::class.java)
 
     mvc.perform(
       put(OMU_EMAIL_ADDRESS_PATH, "MDI")
@@ -149,7 +156,8 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `get VCC email address`() {
-    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn("a@b.com")
+    mockGetEmailAddressService(contactPurposeType = VIDEO_LINK_CONFERENCING)
+
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
@@ -161,7 +169,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `get VCC email address - Not found`() {
-    whenever(prisonService.getVccEmailAddress(anyString())).thenReturn(null)
+    mockGetEmailAddressService(contactPurposeType = VIDEO_LINK_CONFERENCING, email = null)
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
@@ -179,7 +187,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `PUT VCC email address - created`() {
-    whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.CREATED)
+    whenever(prisonService.setEmailAddress("MDI", "a@b.com", VIDEO_LINK_CONFERENCING)).thenReturn(SetOutcome.CREATED)
 
     mvc.perform(
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
@@ -191,7 +199,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `PUT VCC email address - updated`() {
-    whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenReturn(SetOutcome.UPDATED)
+    whenever(prisonService.setEmailAddress("MDI", "a@b.com", VIDEO_LINK_CONFERENCING)).thenReturn(SetOutcome.UPDATED)
 
     mvc.perform(
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")
@@ -203,7 +211,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `PUT VCC email address - prison not found`() {
-    whenever(prisonService.setVccEmailAddress(anyString(), anyString())).thenThrow(EntityNotFoundException::class.java)
+    whenever(prisonService.setEmailAddress("MDI", "a@b.com", VIDEO_LINK_CONFERENCING)).thenThrow(EntityNotFoundException::class.java)
 
     mvc.perform(
       put(VCC_EMAIL_ADDRESS_PATH, "MDI")

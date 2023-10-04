@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
@@ -126,7 +127,7 @@ class PrisonResourceIntTest : IntegrationTest() {
           prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP))
         },
       )
-      whenever(prisonRepository.findAll(any())).thenReturn(prisons)
+      whenever(prisonRepository.findAll(any<PrisonFilter>())).thenReturn(prisons)
 
       webTestClient.get()
         .uri { uriBuilder ->
@@ -155,7 +156,7 @@ class PrisonResourceIntTest : IntegrationTest() {
       val prisons = listOf(
         Prison("MDI", "Moorland HMP", active = true),
       )
-      whenever(prisonRepository.findAll(any())).thenReturn(prisons)
+      whenever(prisonRepository.findAll(any<PrisonFilter>())).thenReturn(prisons)
 
       webTestClient.get()
         .uri { uriBuilder ->

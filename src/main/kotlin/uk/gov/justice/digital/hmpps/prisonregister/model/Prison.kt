@@ -58,6 +58,10 @@ data class Prison(
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   @Fetch(FetchMode.SUBSELECT)
   var addresses: List<Address> = listOf(),
+
+  @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+  @Fetch(FetchMode.JOIN)
+  var contactDetails: MutableList<ContactDetails> = mutableListOf(),
 ) {
 
   @OneToOne(fetch = FetchType.EAGER, optional = true)
