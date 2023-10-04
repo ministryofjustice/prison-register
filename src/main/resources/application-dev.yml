@@ -15,9 +15,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/prison-register-db
     username: admin
     password: admin_password
-  h2:
-    console:
-      enabled: true
   jpa:
     show-sql: true
 
