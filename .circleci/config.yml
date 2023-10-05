@@ -11,8 +11,9 @@ jobs:
       services: "sns,sqs"
       postgres_tag: "15"
       localstack_tag: "1.4"
-      postgres_username: "admin"
-      postgres_password: "admin_password"
+      postgres_username: "prison-register"
+      postgres_password: "prison-register"
+      postgres_db: "prison-register-db"
     steps:
       - checkout
       - run:
