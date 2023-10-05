@@ -73,11 +73,13 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
 
     // When
     val responseSpec1 = doStartAction(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec1Repeat = doStartAction(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
     val responseSpec2 = doStartAction(endPoint2, prisonId2, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
     val responseSpec3 = doStartAction(endPoint3, prisonId2, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec1.expectStatus().isCreated
+    responseSpec1Repeat.expectStatus().isNoContent
     responseSpec2.expectStatus().isCreated
     responseSpec3.expectStatus().isCreated
 
