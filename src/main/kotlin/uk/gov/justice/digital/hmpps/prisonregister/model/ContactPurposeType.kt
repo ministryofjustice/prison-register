@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.BadContactPurposeTypeException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedContactPurposeTypeException
 
 enum class ContactPurposeType(val value: String) {
   SOCIAL_VISIT("social-visit"),
@@ -10,7 +10,7 @@ enum class ContactPurposeType(val value: String) {
 
   companion object {
     fun getFromPathVariable(pathVariable: String): ContactPurposeType {
-      return entries.firstOrNull { it.value == pathVariable } ?: throw BadContactPurposeTypeException(pathVariable)
+      return entries.firstOrNull { it.value == pathVariable } ?: throw UnsupportedContactPurposeTypeException(pathVariable)
     }
   }
 }

@@ -175,7 +175,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
 
     val bodyText = getResponseBodyText(responseSpec)
     org.junit.jupiter.api.Assertions.assertEquals(
-      "Value for ContactPurposeType is not of a know type i-do-not-exist.",
+      "Value for ContactPurposeType is not of a known type i-do-not-exist.",
       bodyText,
     )
   }

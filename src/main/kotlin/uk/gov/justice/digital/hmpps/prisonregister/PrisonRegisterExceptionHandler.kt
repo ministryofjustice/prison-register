@@ -7,9 +7,22 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedContactPurposeTypeException
 
 @RestControllerAdvice
 class PrisonRegisterExceptionHandler {
+
+  @ExceptionHandler(UnsupportedContactPurposeTypeException::class)
+  fun handleAccessDeniedException(e: UnsupportedContactPurposeTypeException): ResponseEntity<String> {
+    val message = "Value for ContactPurposeType is not of a known type ${e.contactPurposeType}."
+    log.error(message)
+
+    return ResponseEntity<String>(
+      message,
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+
   @ExceptionHandler(EntityNotFoundException::class)
   fun handleNotFoundException(e: Exception): ResponseEntity<ErrorResponse> {
     log.debug("Prison not found exception: {}", e.message)

@@ -140,7 +140,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
       .isBadRequest
 
     val bodyText = getResponseBodyText(responseSpec)
-    assertEquals("Value for ContactPurposeType is not of a know type i-do-not-exist.", bodyText)
+    assertEquals("Value for ContactPurposeType is not of a known type i-do-not-exist.", bodyText)
   }
 
   @Test
