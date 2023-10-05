@@ -24,3 +24,5 @@ INSERT INTO contact_details_to_email_address(contact_details_id,email_address_id
 
 DROP TABLE offender_management_unit, videolink_conferencing_centre;
 
+DROP TABLE tmp_email_addresses;
+
