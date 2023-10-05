@@ -6,9 +6,10 @@ import jakarta.persistence.EntityNotFoundException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
@@ -112,18 +113,18 @@ class PrisonService(
     return PrisonDto(prison)
   }
 
-  fun getEmailAddress(prisonId: String, contactPurposeType: ContactPurposeType): String? {
-    return contactDetailsRepository.getEmailAddressByPrisonerIdAndPurpose(prisonId, contactPurposeType)
+  fun getEmailAddress(prisonId: String, departmentType: DepartmentType): String? {
+    return contactDetailsRepository.getEmailAddressByPrisonerIdAndDepartment(prisonId, departmentType)
   }
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
-  fun setEmailAddress(prisonId: String, newEmailAddress: String, contactPurposeType: ContactPurposeType): SetOutcome {
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, contactPurposeType)
+  fun setEmailAddress(prisonId: String, newEmailAddress: String, departmentType: DepartmentType): SetOutcome {
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     if (contactDetails == null) {
       val prison = prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
       val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
-      contactDetailsRepository.saveAndFlush(ContactDetails(prisonId, prison, contactPurposeType, persistedEmailAddress))
+      contactDetailsRepository.saveAndFlush(ContactDetails(prisonId, prison, departmentType, persistedEmailAddress))
       return SetOutcome.CREATED
     }
     val oldEmailAddress = contactDetails.emailAddress.value
@@ -143,13 +144,17 @@ class PrisonService(
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_EMAIL_ADDRESSES)
-  fun deleteEmailAddress(prisonId: String, contactPurposeType: ContactPurposeType) {
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, contactPurposeType)
+  fun deleteEmailAddress(prisonId: String, departmentType: DepartmentType, throwNotFound: Boolean = false) {
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
 
     contactDetails?.let {
       contactDetailsRepository.delete(it)
       if (contactDetailsRepository.isEmailOrphaned(it.emailAddress.value)) {
         emailAddressRepository.delete(it.emailAddress.value)
+      }
+    } ?: run {
+      if (throwNotFound) {
+        throw ContactNotFoundException(prisonId, departmentType)
       }
     }
   }

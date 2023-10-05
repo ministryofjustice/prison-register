@@ -7,14 +7,26 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedContactPurposeTypeException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedDepartmentTypeException
 
 @RestControllerAdvice
 class PrisonRegisterExceptionHandler {
 
-  @ExceptionHandler(UnsupportedContactPurposeTypeException::class)
-  fun handleAccessDeniedException(e: UnsupportedContactPurposeTypeException): ResponseEntity<String> {
-    val message = "Value for ContactPurposeType is not of a known type ${e.contactPurposeType}."
+  @ExceptionHandler(ContactNotFoundException::class)
+  fun handleException(e: ContactNotFoundException): ResponseEntity<String> {
+    val message = "Contact not found for prison ID ${e.prisonId} type ${e.departmentType.value}."
+    log.error(message)
+
+    return ResponseEntity<String>(
+      message,
+      HttpStatus.NOT_FOUND,
+    )
+  }
+
+  @ExceptionHandler(UnsupportedDepartmentTypeException::class)
+  fun handleException(e: UnsupportedDepartmentTypeException): ResponseEntity<String> {
+    val message = "Value for DepartmentType is not of a known type ${e.departmentType}."
     log.error(message)
 
     return ResponseEntity<String>(

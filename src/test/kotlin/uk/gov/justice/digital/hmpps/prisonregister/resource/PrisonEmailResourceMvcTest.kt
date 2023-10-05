@@ -21,9 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.prisonregister.config.ResourceServerConfiguration
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.OFFENDER_MANAGEMENT_UNIT
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.VIDEO_LINK_CONFERENCING
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEO_LINK_CONFERENCING
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
@@ -49,13 +49,13 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
   @MockBean
   lateinit var prisonService: PrisonService
 
-  private fun mockGetEmailAddressService(prisonID: String = "MDI", contactPurposeType: ContactPurposeType, email: String? = "a@b.com") {
-    whenever(prisonService.getEmailAddress(prisonID, contactPurposeType)).thenReturn(email)
+  private fun mockGetEmailAddressService(prisonID: String = "MDI", departmentType: DepartmentType, email: String? = "a@b.com") {
+    whenever(prisonService.getEmailAddress(prisonID, departmentType)).thenReturn(email)
   }
 
   @Test
   fun `get OMU email address`() {
-    mockGetEmailAddressService(contactPurposeType = OFFENDER_MANAGEMENT_UNIT)
+    mockGetEmailAddressService(departmentType = OFFENDER_MANAGEMENT_UNIT)
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()
@@ -67,7 +67,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `get OMU email address - Not found`() {
-    mockGetEmailAddressService(contactPurposeType = OFFENDER_MANAGEMENT_UNIT, email = null)
+    mockGetEmailAddressService(departmentType = OFFENDER_MANAGEMENT_UNIT, email = null)
 
     mvc.perform(
       get(OMU_EMAIL_ADDRESS_PATH, "MDI")
@@ -156,7 +156,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `get VCC email address`() {
-    mockGetEmailAddressService(contactPurposeType = VIDEO_LINK_CONFERENCING)
+    mockGetEmailAddressService(departmentType = VIDEO_LINK_CONFERENCING)
 
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
@@ -169,7 +169,7 @@ class PrisonEmailResourceMvcTest(@Autowired val mvc: MockMvc, @Autowired val jwt
 
   @Test
   fun `get VCC email address - Not found`() {
-    mockGetEmailAddressService(contactPurposeType = VIDEO_LINK_CONFERENCING, email = null)
+    mockGetEmailAddressService(departmentType = VIDEO_LINK_CONFERENCING, email = null)
     mvc.perform(
       get(VCC_EMAIL_ADDRESS_PATH, "MDI")
         .authorise()

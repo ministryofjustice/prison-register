@@ -8,14 +8,14 @@ import org.springframework.stereotype.Repository
 interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
 
   @Query(
-    "SELECT c.emailAddress.value FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:contactPurposeType",
+    "SELECT c.emailAddress.value FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:departmentType",
   )
-  fun getEmailAddressByPrisonerIdAndPurpose(prisonId: String, contactPurposeType: ContactPurposeType): String?
+  fun getEmailAddressByPrisonerIdAndDepartment(prisonId: String, departmentType: DepartmentType): String?
 
   @Query(
     "SELECT count(c) = 0 FROM ContactDetails c WHERE c.emailAddress.value=:emailAddress",
   )
   fun isEmailOrphaned(emailAddress: String): Boolean
 
-  fun getByPrisonIdAndType(prisonId: String, contactPurposeType: ContactPurposeType): ContactDetails?
+  fun getByPrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -23,11 +23,11 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When correct details are given for existing email, then email is returned`() {
     // Given
     val prisonId = "BRI"
-    val contactPurposeType = ContactPurposeType.SOCIAL_VISIT
+    val departmentType = DepartmentType.SOCIAL_VISIT
 
-    createDBData(prisonId, contactPurposeType)
+    createDBData(prisonId, departmentType)
 
-    val endPoint = "/secure/prisons/id/$prisonId/type/${contactPurposeType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, createAnyRole())
@@ -45,7 +45,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = "/secure/prisons/id/$prisonId/$OMU/email-address"
-    createDBData(prisonId, ContactPurposeType.OFFENDER_MANAGEMENT_UNIT)
+    createDBData(prisonId, DepartmentType.OFFENDER_MANAGEMENT_UNIT)
 
     // When
     val responseSpec = doStartAction(endPoint, createAnyRole())
@@ -63,7 +63,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = "/secure/prisons/id/$prisonId/$VCC/email-address"
-    createDBData(prisonId, ContactPurposeType.VIDEO_LINK_CONFERENCING)
+    createDBData(prisonId, DepartmentType.VIDEO_LINK_CONFERENCING)
 
     // When
     val responseSpec = doStartAction(endPoint, createAnyRole())
@@ -112,8 +112,8 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When email address cannot be found for prison, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val contactPurposeType = ContactPurposeType.SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${contactPurposeType.value}/email-address"
+    val departmentType = DepartmentType.SOCIAL_VISIT
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, createAnyRole())
@@ -127,7 +127,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   }
 
   @Test
-  fun `When purpose type does not exist, then appropriate error is show`() {
+  fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
     val endPoint = "/secure/prisons/id/$prisonId/type/i-do-not-exist/email-address"
@@ -140,7 +140,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
       .isBadRequest
 
     val bodyText = getResponseBodyText(responseSpec)
-    assertEquals("Value for ContactPurposeType is not of a known type i-do-not-exist.", bodyText)
+    assertEquals("Value for DepartmentType is not of a known type i-do-not-exist.", bodyText)
   }
 
   @Test
@@ -175,8 +175,8 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When no role is give to get email for given type, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
-    val contactPurposeType = ContactPurposeType.SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${contactPurposeType.value}/email-address"
+    val departmentType = DepartmentType.SOCIAL_VISIT
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
 
     // When
     val responseSpec = doStartActionNoRole(endPoint)
@@ -204,7 +204,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     return String(responseSpec.expectBody().returnResult().responseBody, StandardCharsets.UTF_8)
   }
 
-  private fun createDBData(prisonId: String, contactPurposeType: ContactPurposeType): Prison {
+  private fun createDBData(prisonId: String, departmentType: DepartmentType): Prison {
     val prison = Prison(prisonId, "$prisonId Prison", active = true)
     prisonRepository.save(prison)
 
@@ -213,7 +213,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
       ContactDetails(
         prison.prisonId,
         prison,
-        contactPurposeType,
+        departmentType,
         emailAddress,
       ),
     )

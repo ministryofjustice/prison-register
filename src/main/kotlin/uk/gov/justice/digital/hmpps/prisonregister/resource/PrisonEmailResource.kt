@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.OFFENDER_MANAGEMENT_UNIT
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactPurposeType.VIDEO_LINK_CONFERENCING
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEO_LINK_CONFERENCING
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
@@ -101,7 +101,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ?: ResponseEntity.notFound().build()
 
   @GetMapping(
-    "/$SECURE_PRISON_BY_ID/type/{contactPurposeType}/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/type/{departmentType}/$EMAIL_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Get a prison's email address")
@@ -118,7 +118,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a email address",
+        description = "The prison does not have a email address for this department",
       ),
     ],
   )
@@ -127,15 +127,15 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "ContactPurposeType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
-    @PathVariable("contactPurposeType")
-    contactPurposeType: String,
+    @Schema(description = "DepartmentType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
+    @PathVariable("departmentType")
+    departmentTypeStr: String,
   ): ResponseEntity<String> {
-    val purposeType = ContactPurposeType.getFromPathVariable(contactPurposeType)
-    val emailAddress = prisonService.getEmailAddress(prisonId, purposeType)
+    val departmentType = DepartmentType.getFromPathVariable(departmentTypeStr)
+    val emailAddress = prisonService.getEmailAddress(prisonId, departmentType)
     return emailAddress?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity<String>(
-        "Could not find email address for $prisonId and $contactPurposeType.",
+        "Could not find email address for $prisonId and ${departmentType.value}.",
         HttpStatus.NOT_FOUND,
       )
   }
@@ -227,7 +227,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
   }
 
   @PutMapping(
-    "/$SECURE_PRISON_BY_ID/type/{contactPurposeType}/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/type/{departmentType}/$EMAIL_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Set or change a prison's email address")
@@ -247,7 +247,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "No prison found for the supplied prison id",
+        description = "The prison does not have a email address for this department",
       ),
     ],
   )
@@ -261,12 +261,12 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Valid
     @Email
     emailAddress: String,
-    @Schema(description = "ContactPurposeType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
-    @PathVariable("contactPurposeType")
-    contactPurposeType: String,
+    @Schema(description = "DepartmentType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
+    @PathVariable("departmentType")
+    departmentTypeStr: String,
   ): ResponseEntity<Void> {
-    val contactPurposeType = ContactPurposeType.getFromPathVariable(contactPurposeType)
-    return when (prisonService.setEmailAddress(prisonId, emailAddress, contactPurposeType)) {
+    val departmentType = DepartmentType.getFromPathVariable(departmentTypeStr)
+    return when (prisonService.setEmailAddress(prisonId, emailAddress, departmentType)) {
       SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
       SetOutcome.UPDATED -> ResponseEntity.noContent()
     }.build()
@@ -320,7 +320,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     return ResponseEntity.noContent().build()
   }
 
-  @DeleteMapping("/$SECURE_PRISON_BY_ID/type/{contactPurposeType}/$EMAIL_ADDRESS")
+  @DeleteMapping("/$SECURE_PRISON_BY_ID/type/{departmentType}/$EMAIL_ADDRESS")
   @Operation(summary = "Remove a prison's email address")
   @ApiResponses(
     value = [
@@ -332,6 +332,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
         responseCode = "400",
         description = "Client error - invalid prisonId or similar",
       ),
+      ApiResponse(
+        responseCode = "404",
+        description = "The prison does not have a email address for this department",
+      ),
     ],
   )
   fun deleteEmailAddress(
@@ -339,11 +343,11 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "ContactPurposeType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
-    @PathVariable("contactPurposeType")
-    contactPurposeType: String,
+    @Schema(description = "DepartmentType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
+    @PathVariable("departmentType")
+    departmentType: String,
   ): ResponseEntity<Void> {
-    prisonService.deleteEmailAddress(prisonId, ContactPurposeType.getFromPathVariable(contactPurposeType))
+    prisonService.deleteEmailAddress(prisonId, DepartmentType.getFromPathVariable(departmentType), true)
     return ResponseEntity.noContent().build()
   }
 }

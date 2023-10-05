@@ -17,7 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "CONTACT_DETAILS", uniqueConstraints = [UniqueConstraint(columnNames = ["prison_id", "purpose_type"])])
+@Table(name = "CONTACT_DETAILS", uniqueConstraints = [UniqueConstraint(columnNames = ["prison_id", "department_type"])])
 class ContactDetails(
   @Column(name = "PRISON_ID", nullable = false)
   val prisonId: String,
@@ -27,8 +27,8 @@ class ContactDetails(
   val prison: Prison,
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "purpose_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEO_LINK_CONFERENCING','OFFENDER_MANAGEMENT_UNIT')", nullable = false)
-  var type: ContactPurposeType,
+  @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEO_LINK_CONFERENCING','OFFENDER_MANAGEMENT_UNIT')", nullable = false)
+  var type: DepartmentType,
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
   @JoinTable(
