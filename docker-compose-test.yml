@@ -30,9 +30,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=admin_password
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=prison-register-db
+      - POSTGRES_PASSWORD=prison-register
+      - POSTGRES_USER=prison-register
+      - POSTGRES_DB=prison-register
 
   hmpps-auth:
     image: quay.io/hmpps/hmpps-auth:latest

@@ -13,7 +13,6 @@ jobs:
       localstack_tag: "1.4"
       postgres_username: "prison-register"
       postgres_password: "prison-register"
-      postgres_db: "prison-register-db"
     steps:
       - checkout
       - run:

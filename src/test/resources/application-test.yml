@@ -16,9 +16,9 @@ spring:
     allow-bean-definition-overriding: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/prison-register-db
-    username: admin
-    password: admin_password
+    url: jdbc:postgresql://localhost:5432/prison-register
+    username: prison-register
+    password: prison-register
     hikari:
       maximum-pool-size: 2
 

@@ -20,9 +20,9 @@ object PostgresContainer {
     return PostgreSQLContainer<Nothing>("postgres:13.2").apply {
       withEnv("HOSTNAME_EXTERNAL", "localhost")
       withExposedPorts(5432)
-      withDatabaseName("prison-register-db")
-      withUsername("admin")
-      withPassword("admin_password")
+      withDatabaseName("prison-register")
+      withUsername("prison-register")
+      withPassword("prison-register")
       setWaitStrategy(Wait.forListeningPort())
       withReuse(true)
       start()
