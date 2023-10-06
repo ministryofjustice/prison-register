@@ -17,5 +17,15 @@ interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
   )
   fun isEmailOrphaned(emailAddress: String): Boolean
 
+  @Query(
+    "SELECT c.telephoneAddress.value FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:departmentType",
+  )
+  fun getTelephoneAddressByPrisonIdAndDepartment(prisonId: String, departmentType: DepartmentType): String?
+
+  @Query(
+    "SELECT count(c) = 0 FROM ContactDetails c WHERE c.telephoneAddress.value=:telephoneAddress",
+  )
+  fun isTelephoneAddressOrphaned(telephoneAddress: String): Boolean
+
   fun getByPrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
 }

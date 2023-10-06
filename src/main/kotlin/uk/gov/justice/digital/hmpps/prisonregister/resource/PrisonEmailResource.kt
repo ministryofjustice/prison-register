@@ -24,13 +24,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLIN
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
-const val OMU = "offender-management-unit"
-const val VCC = "videolink-conferencing-centre"
+private const val OMU = "offender-management-unit"
+private const val VCC = "videolink-conferencing-centre"
 
-const val EMAIL_ADDRESS = "email-address"
-const val PRISONS = "prisons"
-const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
-const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
+private const val EMAIL_ADDRESS = "email-address"
+private const val PRISONS = "prisons"
+private const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
+private const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
 
 @RestController
 @Validated

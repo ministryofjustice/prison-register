@@ -1,12 +1,12 @@
-package uk.gov.justice.digital.hmpps.prisonregister.integration
+package uk.gov.justice.digital.hmpps.prisonregister.integration.emailaddress
 
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verifyNoInteractions
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
@@ -17,10 +17,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import java.nio.charset.StandardCharsets
 
-private const val OMU_URI = "/secure/prisons/id/{prisonId}/offender-management-unit/email-address"
-private const val VCC_URI = "/secure/prisons/id/{prisonId}/videolink-conferencing-centre/email-address"
-private const val PRISON_ID = "LEI"
 class DeletePrisonEmailResourceTest : IntegrationTest() {
+
+  private val prisonId = "LEI"
 
   @SpyBean
   private lateinit var prisonRepository: PrisonRepository
@@ -32,9 +31,9 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
     createDBData(prisonId, departmentType, emailAddress)
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartAction(OMU_URI, prisonId, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -44,9 +43,9 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   @Test
   fun `When an email deletion has been requested for offender-management-unit without a role, status unauthorized is returned`() {
     // Given
-
+    val endPoint = getLegacyEndPoint(prisonId, OFFENDER_MANAGEMENT_UNIT)
     // When
-    val responseSpec = doStartActionNoRole(OMU_URI)
+    val responseSpec = doStartActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -58,9 +57,9 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   fun `When an email deletion has been requested for offender-management-unit with an incorrect role, status forbidden is returned`() {
     // Given
     val prisonId = "BRI"
-
+    val endPoint = getLegacyEndPoint(prisonId, OFFENDER_MANAGEMENT_UNIT)
     // When
-    val responseSpec = doStartAction(OMU_URI, prisonId, headers = createAnyRole())
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
@@ -73,8 +72,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
-
+    val endPoint = getEndPoint(prisonId, departmentType)
     // When
     val responseSpec = doStartAction(endPoint, headers = createMaintainRoleWithWriteScope())
 
@@ -82,7 +80,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     responseSpec.expectStatus().isNotFound
 
     val bodyText = getResponseBodyText(responseSpec)
-    assertEquals("Contact not found for prison ID BRI type social-visit.", bodyText)
+    Assertions.assertEquals("Contact not found for prison ID BRI type social-visit.", bodyText)
   }
 
   @Test
@@ -92,9 +90,10 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val emailAddress = "aled@aled.com"
     createDBData(prisonId, departmentType, emailAddress)
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
 
     // When
-    val responseSpec = doStartAction(VCC_URI, prisonId, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -104,9 +103,9 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   @Test
   fun `When an email deletion has been requested for video-link-conferencing without a role, status unauthorized is returned`() {
     // Given
-
+    val endPoint = getLegacyEndPoint(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
     // When
-    val responseSpec = doStartActionNoRole(VCC_URI)
+    val responseSpec = doStartActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -118,9 +117,9 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   fun `When an email deletion has been requested for video-link-conferencing with an incorrect role, status forbidden is returned`() {
     // Given
     val prisonId = "BRI"
-
+    val endPoint = getLegacyEndPoint(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
     // When
-    val responseSpec = doStartAction(VCC_URI, prisonId, headers = createAnyRole())
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
@@ -134,8 +133,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val emailAddress = "aled@aled.com"
-    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
-
+    val endPoint = getEndPoint(prisonId, departmentType)
     createDBData(prisonId, departmentType, emailAddress)
 
     // When
@@ -151,7 +149,8 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
+    val endPoint = getEndPoint(prisonId, departmentType)
+
     // When
     val responseSpec = doStartActionNoRole(endPoint)
 
@@ -166,7 +165,8 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
+    val endPoint = getEndPoint(prisonId, departmentType)
+
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 
@@ -190,27 +190,41 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
       .isBadRequest
 
     val bodyText = getResponseBodyText(responseSpec)
-    assertEquals(
+    Assertions.assertEquals(
       "Value for DepartmentType is not of a known type i-do-not-exist.",
       bodyText,
     )
   }
 
+  private fun getEndPoint(
+    prisonId: String,
+    departmentType: DepartmentType,
+  ): String {
+    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
+  }
+
+  private fun getLegacyEndPoint(
+    prisonId: String,
+    departmentType: DepartmentType,
+  ): String {
+    return "/secure/prisons/id/$prisonId/${departmentType.pathVariable}/email-address"
+  }
+
   private fun assertDBValuesHaveBeenDeleted(prisonId: String, newEmailAddress: String, type: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, type)
-    Assertions.assertThat(contactDetails).isNull()
+    org.assertj.core.api.Assertions.assertThat(contactDetails).isNull()
     val emailAddress = emailAddressRepository.getEmailAddress(newEmailAddress)
-    Assertions.assertThat(emailAddress).isNull()
+    org.assertj.core.api.Assertions.assertThat(emailAddress).isNull()
   }
 
   private fun doStartActionNoRole(endPoint: String): ResponseSpec {
     return webTestClient
       .delete()
-      .uri(endPoint, PRISON_ID)
+      .uri(endPoint, prisonId)
       .exchange()
   }
 
-  private fun doStartAction(endPoint: String, prisonID: String? = PRISON_ID, headers: (HttpHeaders) -> Unit): ResponseSpec {
+  private fun doStartAction(endPoint: String, prisonID: String? = prisonId, headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .delete()
       .uri(endPoint, prisonID)
@@ -224,7 +238,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
 
   private fun getResponseBodyText(responseSpec: ResponseSpec): String {
     val responseBody = responseSpec.expectBody().returnResult().responseBody
-    Assertions.assertThat(responseBody).isNotNull
+    org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull
     return String(responseBody, StandardCharsets.UTF_8)
   }
 

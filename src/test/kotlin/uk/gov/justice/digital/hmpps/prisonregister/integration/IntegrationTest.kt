@@ -11,8 +11,10 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.TelephoneAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestEmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestTelephoneAddressRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
 import uk.gov.justice.hmpps.sqs.MissingTopicException
@@ -38,7 +40,13 @@ abstract class IntegrationTest {
   lateinit var emailAddressRepository: EmailAddressRepository
 
   @SpyBean
+  lateinit var telephoneAddressRepository: TelephoneAddressRepository
+
+  @SpyBean
   lateinit var testEmailAddressRepository: TestEmailAddressRepository
+
+  @SpyBean
+  lateinit var testTelephoneAddressRepository: TestTelephoneAddressRepository
 
   @Suppress("unused")
   @Autowired
@@ -68,7 +76,9 @@ abstract class IntegrationTest {
     contactDetailsRepository.deleteAll()
     contactDetailsRepository.flush()
     emailAddressRepository.deleteAll()
-    contactDetailsRepository.flush()
+    emailAddressRepository.flush()
+    telephoneAddressRepository.deleteAll()
+    telephoneAddressRepository.flush()
   }
 
   fun HmppsSqsProperties.domaineventsTopicConfig() =

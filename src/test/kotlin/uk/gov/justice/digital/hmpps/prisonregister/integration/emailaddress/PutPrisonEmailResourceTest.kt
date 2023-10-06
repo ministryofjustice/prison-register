@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.integration
+package uk.gov.justice.digital.hmpps.prisonregister.integration.emailaddress
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
@@ -17,11 +18,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import java.nio.charset.StandardCharsets
 
-private const val OMU_URI = "/secure/prisons/id/{prisonId}/offender-management-unit/email-address"
-private const val VCC_URI = "/secure/prisons/id/{prisonId}/videolink-conferencing-centre/email-address"
-private const val PRISON_ID = "LEI"
-
 class PutPrisonEmailResourceTest : IntegrationTest() {
+
+  private val prisonId = "LEI"
 
   @SpyBean
   private lateinit var prisonRepository: PrisonRepository
@@ -148,9 +147,10 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val oldEmailAddress = "aled@aled.com"
     val newEmailAddress = "aled@moj.com"
     createDBData(prisonId, departmentType, oldEmailAddress)
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
 
     // When
-    val responseSpec = doStartAction(OMU_URI, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -163,9 +163,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val newEmailAddress = "aled@moj.com"
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartAction(OMU_URI, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isCreated
@@ -177,9 +177,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartActionNoRole(OMU_URI)
+    val responseSpec = doStartActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -193,9 +193,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartAction(OMU_URI, prisonId, headers = createAnyRole())
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
@@ -212,9 +212,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val oldEmailAddress = "aled@aled.com"
     val newEmailAddress = "aled@moj.com"
     createDBData(prisonId, departmentType, oldEmailAddress)
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartAction(VCC_URI, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -227,9 +227,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val prisonId = "BRI"
     val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val newEmailAddress = "aled@moj.com"
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartAction(VCC_URI, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isCreated
@@ -242,9 +242,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = VIDEOLINK_CONFERENCING_CENTRE
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartActionNoRole(VCC_URI)
+    val responseSpec = doStartActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -258,9 +258,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = VIDEOLINK_CONFERENCING_CENTRE
-
+    val endPoint = getLegacyEndPoint(prisonId, departmentType)
     // When
-    val responseSpec = doStartAction(VCC_URI, prisonId, headers = createAnyRole())
+    val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
@@ -276,6 +276,12 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
   }
 
+  private fun getLegacyEndPoint(
+    prisonId: String,
+    departmentType: DepartmentType,
+  ): String {
+    return "/secure/prisons/id/$prisonId/${departmentType.pathVariable}/email-address"
+  }
   private fun assertDBValues(prisonId: String, newEmailAddress: String, type: DepartmentType) {
     Assertions.assertThat(emailAddressRepository.getEmailAddress(newEmailAddress)).isNotNull
 
@@ -284,7 +290,10 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     contactDetails?.let {
       with(it) {
         Assertions.assertThat(prisonId).isEqualTo(prisonId)
-        Assertions.assertThat(emailAddress.value).isEqualTo(newEmailAddress)
+        Assertions.assertThat(emailAddress).isNotNull
+        emailAddress?.let {
+          Assertions.assertThat(it.value).isEqualTo(newEmailAddress)
+        }
       }
     }
   }
@@ -296,13 +305,13 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
   private fun doStartActionNoRole(endPoint: String): ResponseSpec {
     return webTestClient
       .put()
-      .uri(endPoint, PRISON_ID)
+      .uri(endPoint, prisonId)
       .contentType(MediaType.TEXT_PLAIN)
       .bodyValue("test@test.com")
       .exchange()
   }
 
-  private fun doStartAction(endPoint: String, prisonID: String? = PRISON_ID, emailAddress: String ? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
+  private fun doStartAction(endPoint: String, prisonID: String? = prisonId, emailAddress: String ? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonID)

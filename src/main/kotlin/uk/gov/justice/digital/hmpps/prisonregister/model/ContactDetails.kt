@@ -36,7 +36,15 @@ class ContactDetails(
     joinColumns = [JoinColumn(name = "contact_details_id")],
     inverseJoinColumns = [JoinColumn(name = "email_address_id")],
   )
-  var emailAddress: EmailAddress,
+  var emailAddress: EmailAddress? = null,
+
+  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
+  @JoinTable(
+    name = "CONTACT_DETAILS_TO_TELEPHONE_ADDRESS",
+    joinColumns = [JoinColumn(name = "contact_details_id")],
+    inverseJoinColumns = [JoinColumn(name = "telephone_address_id")],
+  )
+  var telephoneAddress: TelephoneAddress? = null,
 
 ) : AbstractIdEntity() {
 
