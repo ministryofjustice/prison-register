@@ -27,7 +27,7 @@ class ContactDetails(
   val prison: Prison,
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEO_LINK_CONFERENCING','OFFENDER_MANAGEMENT_UNIT')", nullable = false)
+  @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEOLINK_CONFERENCING_CENTRE','OFFENDER_MANAGEMENT_UNIT')", nullable = false)
   var type: DepartmentType,
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)

@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedDepartm
 
 enum class DepartmentType {
   SOCIAL_VISIT,
-  VIDEO_LINK_CONFERENCING,
+  VIDEOLINK_CONFERENCING_CENTRE,
   OFFENDER_MANAGEMENT_UNIT,
   ;
 

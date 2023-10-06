@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
-import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEO_LINK_CONFERENCING
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
@@ -36,6 +36,7 @@ const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
 @Validated
 class PrisonEmailResource(private val prisonService: PrisonService) {
 
+  @Suppress("KotlinDeprecation")
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE],
@@ -64,10 +65,11 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Size(max = 12, min = 2)
     prisonId: String,
   ): ResponseEntity<String> =
-    prisonService.getEmailAddress(prisonId, VIDEO_LINK_CONFERENCING)
+    prisonService.getEmailAddress(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
       ?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity.notFound().build()
 
+  @Suppress("KotlinDeprecation")
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE],
@@ -127,7 +129,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "DepartmentType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
+    @Schema(description = "DepartmentType", example = "social-visit", required = true)
     @PathVariable("departmentType")
     departmentTypeStr: String,
   ): ResponseEntity<String> {
@@ -140,6 +142,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       )
   }
 
+  @Suppress("KotlinDeprecation")
   @PutMapping(
     "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
@@ -177,12 +180,13 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Email
     emailAddress: String,
   ): ResponseEntity<Void> {
-    return when (prisonService.setEmailAddress(prisonId, emailAddress, VIDEO_LINK_CONFERENCING)) {
+    return when (prisonService.setEmailAddress(prisonId, emailAddress, VIDEOLINK_CONFERENCING_CENTRE)) {
       SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
       SetOutcome.UPDATED -> ResponseEntity.noContent()
     }.build()
   }
 
+  @Suppress("KotlinDeprecation")
   @PutMapping(
     "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
@@ -261,7 +265,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Valid
     @Email
     emailAddress: String,
-    @Schema(description = "DepartmentType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
+    @Schema(description = "DepartmentType", example = "social-visit", required = true)
     @PathVariable("departmentType")
     departmentTypeStr: String,
   ): ResponseEntity<Void> {
@@ -272,6 +276,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     }.build()
   }
 
+  @Suppress("KotlinDeprecation")
   @DeleteMapping("/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS")
   @Operation(summary = "Remove a prison's Videolink Conferencing Centre email address")
   @ApiResponses(
@@ -292,10 +297,11 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Size(max = 12, min = 2)
     prisonId: String,
   ): ResponseEntity<Void> {
-    prisonService.deleteEmailAddress(prisonId, VIDEO_LINK_CONFERENCING)
+    prisonService.deleteEmailAddress(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
     return ResponseEntity.noContent().build()
   }
 
+  @Suppress("KotlinDeprecation")
   @DeleteMapping("/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS")
   @Operation(summary = "Remove a prison's Offender Management Unit email address")
   @ApiResponses(
@@ -343,7 +349,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "DepartmentType", example = "social-visit or video-link-conferencing or offender-management-unit", required = true)
+    @Schema(description = "DepartmentType", example = "social-visit", required = true)
     @PathVariable("departmentType")
     departmentType: String,
   ): ResponseEntity<Void> {

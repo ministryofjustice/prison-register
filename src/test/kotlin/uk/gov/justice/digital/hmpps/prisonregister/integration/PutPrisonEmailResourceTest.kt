@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
-import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEO_LINK_CONFERENCING
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -31,7 +31,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = getEndPoint(prisonId, departmentType)
     val oldEmailAddress = "old.aled@moj.com"
     val newEmailAddress = "new.aled@moj.com"
     createDBData(prisonId, departmentType, oldEmailAddress)
@@ -50,7 +50,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val newEmailAddress = "aled@moj.com"
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = getEndPoint(prisonId, SOCIAL_VISIT)
 
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
@@ -67,9 +67,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "CFI"
 
-    val endPoint1 = "/secure/prisons/id/$prisonId1/type/${SOCIAL_VISIT.pathVariable}/email-address"
-    val endPoint2 = "/secure/prisons/id/$prisonId2/type/${SOCIAL_VISIT.pathVariable}/email-address"
-    val endPoint3 = "/secure/prisons/id/$prisonId2/type/${VIDEO_LINK_CONFERENCING.pathVariable}/email-address"
+    val endPoint1 = getEndPoint(prisonId1, SOCIAL_VISIT)
+    val endPoint2 = getEndPoint(prisonId2, SOCIAL_VISIT)
+    val endPoint3 = getEndPoint(prisonId2, VIDEOLINK_CONFERENCING_CENTRE)
 
     // When
     val responseSpec1 = doStartAction(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
@@ -111,7 +111,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = getEndPoint(prisonId, departmentType)
 
     // When
     val responseSpec = doStartActionNoRole(endPoint)
@@ -128,7 +128,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = getEndPoint(prisonId, departmentType)
 
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
@@ -208,7 +208,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
   fun `When an email is updated for video-link-conferencing, isNoContent is return and the data is persisted`() {
     // Given
     val prisonId = "BRI"
-    val departmentType = VIDEO_LINK_CONFERENCING
+    val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val oldEmailAddress = "aled@aled.com"
     val newEmailAddress = "aled@moj.com"
     createDBData(prisonId, departmentType, oldEmailAddress)
@@ -225,7 +225,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
   fun `When an email is created for video-link-conferencing, isCreated is return and the data is persisted`() {
     // Given
     val prisonId = "BRI"
-    val departmentType = VIDEO_LINK_CONFERENCING
+    val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val newEmailAddress = "aled@moj.com"
 
     // When
@@ -241,7 +241,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
   fun `When a new email request is sent for video-link-conferencing without a role, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
-    val departmentType = VIDEO_LINK_CONFERENCING
+    val departmentType = VIDEOLINK_CONFERENCING_CENTRE
 
     // When
     val responseSpec = doStartActionNoRole(VCC_URI)
@@ -257,7 +257,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
   fun `When a new email request is sent for video-link-conferencing with incorrect role, status forbidden is returned`() {
     // Given
     val prisonId = "BRI"
-    val departmentType = VIDEO_LINK_CONFERENCING
+    val departmentType = VIDEOLINK_CONFERENCING_CENTRE
 
     // When
     val responseSpec = doStartAction(VCC_URI, prisonId, headers = createAnyRole())
@@ -267,6 +267,13 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     verifyNoInteractions(contactDetailsRepository)
     verifyNoInteractions(emailAddressRepository)
     assertDBValuesAreNotPersisted(prisonId, departmentType)
+  }
+
+  private fun getEndPoint(
+    prisonId: String,
+    departmentType: DepartmentType,
+  ): String {
+    return "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
   }
 
   private fun assertDBValues(prisonId: String, newEmailAddress: String, type: DepartmentType) {

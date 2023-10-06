@@ -1,7 +1,7 @@
 CREATE TEMP TABLE tmp_email_addresses(id serial NOT NULL,prison_id VARCHAR(6)  NOT NULL,email_address varchar(100) NOT NULL, department_type varchar(40)  NOT NULL);
 
 INSERT INTO tmp_email_addresses(prison_id, email_address, department_type)
-    select prison_id, email_address, 'VIDEO_LINK_CONFERENCING'
+    select prison_id, email_address, 'VIDEOLINK_CONFERENCING_CENTRE'
     from videolink_conferencing_centre GROUP BY prison_id, email_address;
 
 INSERT INTO tmp_email_addresses(prison_id, email_address, department_type)

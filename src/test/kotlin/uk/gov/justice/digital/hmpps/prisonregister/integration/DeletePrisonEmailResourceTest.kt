@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
-import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEO_LINK_CONFERENCING
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -89,7 +89,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   fun `When an email is deleted for video-link-conferencing, isNoContent is returned and data is deleted`() {
     // Given
     val prisonId = "BRI"
-    val departmentType = VIDEO_LINK_CONFERENCING
+    val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val emailAddress = "aled@aled.com"
     createDBData(prisonId, departmentType, emailAddress)
 
