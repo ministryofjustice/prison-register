@@ -73,7 +73,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, headers = createMaintainRoleWithWriteScope())
@@ -134,7 +134,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val emailAddress = "aled@aled.com"
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
 
     createDBData(prisonId, departmentType, emailAddress)
 
@@ -151,7 +151,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
     // When
     val responseSpec = doStartActionNoRole(endPoint)
 
@@ -166,7 +166,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 
@@ -180,7 +180,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/type/i-do-not-exist/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, headers = createMaintainRoleWithWriteScope())

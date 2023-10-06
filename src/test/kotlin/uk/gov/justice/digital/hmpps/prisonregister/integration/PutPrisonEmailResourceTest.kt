@@ -90,7 +90,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/type/i-do-not-exist/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, headers = createMaintainRoleWithWriteScope())
@@ -273,7 +273,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     prisonId: String,
     departmentType: DepartmentType,
   ): String {
-    return "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
+    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
   }
 
   private fun assertDBValues(prisonId: String, newEmailAddress: String, type: DepartmentType) {

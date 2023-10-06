@@ -103,10 +103,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ?: ResponseEntity.notFound().build()
 
   @GetMapping(
-    "/$SECURE_PRISON_BY_ID/type/{departmentType}/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
-  @Operation(summary = "Get a prison's email address")
+  @Operation(summary = "Get a prison department's email address")
   @ApiResponses(
     value = [
       ApiResponse(
@@ -231,10 +231,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
   }
 
   @PutMapping(
-    "/$SECURE_PRISON_BY_ID/type/{departmentType}/$EMAIL_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
-  @Operation(summary = "Set or change a prison's email address")
+  @Operation(summary = "Set or change a prison department's email address")
   @ApiResponses(
     value = [
       ApiResponse(
@@ -326,8 +326,8 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     return ResponseEntity.noContent().build()
   }
 
-  @DeleteMapping("/$SECURE_PRISON_BY_ID/type/{departmentType}/$EMAIL_ADDRESS")
-  @Operation(summary = "Remove a prison's email address")
+  @DeleteMapping("/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS")
+  @Operation(summary = "Remove a prison department's email address")
   @ApiResponses(
     value = [
       ApiResponse(

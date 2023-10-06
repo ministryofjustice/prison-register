@@ -114,7 +114,7 @@ class PrisonService(
   }
 
   fun getEmailAddress(prisonId: String, departmentType: DepartmentType): String? {
-    return contactDetailsRepository.getEmailAddressByPrisonerIdAndDepartment(prisonId, departmentType)
+    return contactDetailsRepository.getEmailAddressByPrisonIdAndDepartment(prisonId, departmentType)
   }
 
   @Transactional
