@@ -135,7 +135,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     val emailAddress = prisonService.getEmailAddress(prisonId, departmentType)
     return emailAddress?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity<String>(
-        "Could not find email address for $prisonId and ${departmentType.value}.",
+        "Could not find email address for $prisonId and ${departmentType.pathVariable}.",
         HttpStatus.NOT_FOUND,
       )
   }

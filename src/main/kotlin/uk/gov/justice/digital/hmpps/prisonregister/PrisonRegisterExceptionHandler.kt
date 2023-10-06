@@ -15,7 +15,7 @@ class PrisonRegisterExceptionHandler {
 
   @ExceptionHandler(ContactNotFoundException::class)
   fun handleException(e: ContactNotFoundException): ResponseEntity<String> {
-    val message = "Contact not found for prison ID ${e.prisonId} type ${e.departmentType.value}."
+    val message = "Contact not found for prison ID ${e.prisonId} type ${e.departmentType.pathVariable}."
     log.error(message)
 
     return ResponseEntity<String>(

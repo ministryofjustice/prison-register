@@ -1,14 +1,15 @@
 CREATE TABLE email_address
 (
-    id      serial          NOT NULL PRIMARY KEY,
-    value   varchar(100)    NOT NULL
+    id          serial                      NOT NULL PRIMARY KEY,
+    value       varchar(100)                NOT NULL,
+    CONSTRAINT  email_unique_constraint     UNIQUE (value)
 );
 
 CREATE TABLE contact_details
 (
     id                  serial                              NOT NULL PRIMARY KEY,
     prison_id           varchar(6)                          NOT NULL,
-    department_type        varchar(40)                         NOT NULL,
+    department_type     varchar(40)                         NOT NULL,
     create_timestamp    timestamp default current_timestamp,
     modify_timestamp    timestamp default current_timestamp,
     CONSTRAINT          contact_details_unique_constraint   UNIQUE (prison_id, department_type),

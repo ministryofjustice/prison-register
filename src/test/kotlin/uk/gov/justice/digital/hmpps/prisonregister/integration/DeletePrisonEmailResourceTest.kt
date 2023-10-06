@@ -44,7 +44,6 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   @Test
   fun `When an email deletion has been requested for offender-management-unit without a role, status unauthorized is returned`() {
     // Given
-    val prisonId = "BRI"
 
     // When
     val responseSpec = doStartActionNoRole(OMU_URI)
@@ -74,7 +73,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, headers = createMaintainRoleWithWriteScope())
@@ -105,7 +104,6 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
   @Test
   fun `When an email deletion has been requested for video-link-conferencing without a role, status unauthorized is returned`() {
     // Given
-    val prisonId = "BRI"
 
     // When
     val responseSpec = doStartActionNoRole(VCC_URI)
@@ -136,7 +134,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val emailAddress = "aled@aled.com"
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     createDBData(prisonId, departmentType, emailAddress)
 
@@ -153,7 +151,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
     // When
     val responseSpec = doStartActionNoRole(endPoint)
 
@@ -168,7 +166,7 @@ class DeletePrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())
 

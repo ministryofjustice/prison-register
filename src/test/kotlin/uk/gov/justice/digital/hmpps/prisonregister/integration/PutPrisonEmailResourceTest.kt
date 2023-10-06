@@ -31,7 +31,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
     val oldEmailAddress = "old.aled@moj.com"
     val newEmailAddress = "new.aled@moj.com"
     createDBData(prisonId, departmentType, oldEmailAddress)
@@ -50,7 +50,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val newEmailAddress = "aled@moj.com"
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
@@ -67,9 +67,9 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "CFI"
 
-    val endPoint1 = "/secure/prisons/id/$prisonId1/type/${SOCIAL_VISIT.value}/email-address"
-    val endPoint2 = "/secure/prisons/id/$prisonId2/type/${SOCIAL_VISIT.value}/email-address"
-    val endPoint3 = "/secure/prisons/id/$prisonId2/type/${VIDEO_LINK_CONFERENCING.value}/email-address"
+    val endPoint1 = "/secure/prisons/id/$prisonId1/type/${SOCIAL_VISIT.pathVariable}/email-address"
+    val endPoint2 = "/secure/prisons/id/$prisonId2/type/${SOCIAL_VISIT.pathVariable}/email-address"
+    val endPoint3 = "/secure/prisons/id/$prisonId2/type/${VIDEO_LINK_CONFERENCING.pathVariable}/email-address"
 
     // When
     val responseSpec1 = doStartAction(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
@@ -111,7 +111,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartActionNoRole(endPoint)
@@ -128,7 +128,7 @@ class PutPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, prisonId, headers = createAnyRole())

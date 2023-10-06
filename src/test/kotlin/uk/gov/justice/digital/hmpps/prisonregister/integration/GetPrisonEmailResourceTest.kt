@@ -27,7 +27,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
 
     createDBData(prisonId, departmentType)
 
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, createAnyRole())
@@ -113,7 +113,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = DepartmentType.SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartAction(endPoint, createAnyRole())
@@ -176,7 +176,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = DepartmentType.SOCIAL_VISIT
-    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.value}/email-address"
+    val endPoint = "/secure/prisons/id/$prisonId/type/${departmentType.pathVariable}/email-address"
 
     // When
     val responseSpec = doStartActionNoRole(endPoint)

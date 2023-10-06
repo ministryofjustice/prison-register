@@ -10,7 +10,7 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "EMAIL_ADDRESS")
 data class EmailAddress(
-  @Column(name = "VALUE", nullable = false)
+  @Column(name = "VALUE", nullable = false, unique = true)
   val value: String,
 
 ) : AbstractIdEntity() {
