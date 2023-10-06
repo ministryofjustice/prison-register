@@ -1,0 +1,32 @@
+package uk.gov.justice.digital.hmpps.prisonregister.model
+
+import jakarta.persistence.Column
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.MappedSuperclass
+
+@MappedSuperclass
+abstract class AbstractIdEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  open var id: Long = -1
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null) return false
+    if (other::class != this::class) return false
+    if (id != (other as AbstractIdEntity).id) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+
+  override fun toString(): String {
+    return this::class.simpleName + "(id=$id)"
+  }
+}

@@ -12,10 +12,9 @@ management.endpoint:
 
 spring:
   datasource:
-    url: 'jdbc:h2:mem:prison-register-db;MODE=PostgreSQL'
-  h2:
-    console:
-      enabled: true
+    url: jdbc:postgresql://localhost:5432/prison-register
+    username: prison-register
+    password: prison-register
   jpa:
     show-sql: true
 

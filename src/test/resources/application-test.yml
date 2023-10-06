@@ -15,6 +15,13 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/prison-register
+    username: prison-register
+    password: prison-register
+    hikari:
+      maximum-pool-size: 2
+
   security:
     oauth2:
       resourceserver:
@@ -30,3 +37,4 @@ hmpps.sqs:
   topics:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
+
