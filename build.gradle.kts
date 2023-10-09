@@ -32,6 +32,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.2.0")
+  implementation("io.swagger:swagger-annotations:1.6.11")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("net.javacrumbs.shedlock:shedlock-spring:5.7.0")

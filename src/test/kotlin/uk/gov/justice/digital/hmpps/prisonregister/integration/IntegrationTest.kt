@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration
 
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -9,12 +8,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.TelephoneAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
-import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestEmailAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestTelephoneAddressRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
 import uk.gov.justice.hmpps.sqs.MissingTopicException
@@ -32,21 +26,6 @@ abstract class IntegrationTest {
     val MessageId: String,
     val MessageAttributes: HMPPSMessageAttributes,
   )
-
-  @SpyBean
-  lateinit var contactDetailsRepository: ContactDetailsRepository
-
-  @SpyBean
-  lateinit var emailAddressRepository: EmailAddressRepository
-
-  @SpyBean
-  lateinit var telephoneAddressRepository: TelephoneAddressRepository
-
-  @SpyBean
-  lateinit var testEmailAddressRepository: TestEmailAddressRepository
-
-  @SpyBean
-  lateinit var testTelephoneAddressRepository: TestTelephoneAddressRepository
 
   @Suppress("unused")
   @Autowired
@@ -69,16 +48,6 @@ abstract class IntegrationTest {
   @BeforeEach
   fun `clear queues`() {
     testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
-  }
-
-  @AfterEach
-  fun `clean up tests`() {
-    contactDetailsRepository.deleteAll()
-    contactDetailsRepository.flush()
-    emailAddressRepository.deleteAll()
-    emailAddressRepository.flush()
-    telephoneAddressRepository.deleteAll()
-    telephoneAddressRepository.flush()
   }
 
   fun HmppsSqsProperties.domaineventsTopicConfig() =

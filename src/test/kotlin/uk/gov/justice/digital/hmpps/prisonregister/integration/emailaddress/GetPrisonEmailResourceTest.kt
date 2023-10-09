@@ -2,33 +2,22 @@ package uk.gov.justice.digital.hmpps.prisonregister.integration.emailaddress
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.http.HttpHeaders
-import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
-import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
-import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
+import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsIntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import java.nio.charset.StandardCharsets
 
-class GetPrisonEmailResourceTest : IntegrationTest() {
-
-  @SpyBean
-  private lateinit var prisonRepository: PrisonRepository
+class GetPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
   fun `When correct details are given for existing email, then email is returned`() {
     // Given
     val prisonId = "BRI"
     val departmentType = DepartmentType.SOCIAL_VISIT
-    createDBData(prisonId, departmentType)
+    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk")
 
-    val endPoint = getEndPoint(prisonId, departmentType)
+    val endPoint = getEndPointEmail(prisonId, departmentType)
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -43,11 +32,11 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = DepartmentType.OFFENDER_MANAGEMENT_UNIT
-    val endPoint = getLegacyEndPoint(prisonId, departmentType)
-    createDBData(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk")
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -62,11 +51,11 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
-    val endPoint = getLegacyEndPoint(prisonId, departmentType)
-    createDBData(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk")
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -80,10 +69,10 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When email is not found for offender-management-unit , then a not found error is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getLegacyEndPoint(prisonId, DepartmentType.OFFENDER_MANAGEMENT_UNIT)
+    val endPoint = getLegacyEndPointEmail(prisonId, DepartmentType.OFFENDER_MANAGEMENT_UNIT)
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -95,10 +84,10 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When email is not found for videolink-conferencing-centre, then a not found error is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getLegacyEndPoint(prisonId, DepartmentType.VIDEOLINK_CONFERENCING_CENTRE)
+    val endPoint = getLegacyEndPointEmail(prisonId, DepartmentType.VIDEOLINK_CONFERENCING_CENTRE)
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -110,10 +99,10 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When email address cannot be found for prison, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getEndPoint(prisonId, DepartmentType.SOCIAL_VISIT)
+    val endPoint = getEndPointEmail(prisonId, DepartmentType.SOCIAL_VISIT)
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -130,7 +119,7 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/email-address"
 
     // When
-    val responseSpec = doStartAction(endPoint, createAnyRole())
+    val responseSpec = doGetAction(endPoint, createAnyRole())
 
     // Then
     responseSpec.expectStatus()
@@ -144,10 +133,10 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When no role is give to get email for videolink-conferencing-centre, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getLegacyEndPoint(prisonId, DepartmentType.VIDEOLINK_CONFERENCING_CENTRE)
+    val endPoint = getLegacyEndPointEmail(prisonId, DepartmentType.VIDEOLINK_CONFERENCING_CENTRE)
 
     // When
-    val responseSpec = doStartActionNoRole(endPoint)
+    val responseSpec = doGetActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus()
@@ -159,10 +148,10 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = DepartmentType.OFFENDER_MANAGEMENT_UNIT
-    val endPoint = getLegacyEndPoint(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
 
     // When
-    val responseSpec = doStartActionNoRole(endPoint)
+    val responseSpec = doGetActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus()
@@ -173,62 +162,13 @@ class GetPrisonEmailResourceTest : IntegrationTest() {
   fun `When no role is give to get email for given type, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getEndPoint(prisonId, DepartmentType.SOCIAL_VISIT)
+    val endPoint = getEndPointEmail(prisonId, DepartmentType.SOCIAL_VISIT)
 
     // When
-    val responseSpec = doStartActionNoRole(endPoint)
+    val responseSpec = doGetActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus()
       .isUnauthorized
-  }
-
-  private fun getEndPoint(
-    prisonId: String,
-    departmentType: DepartmentType,
-  ): String {
-    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
-  }
-
-  private fun getLegacyEndPoint(
-    prisonId: String,
-    departmentType: DepartmentType,
-  ): String {
-    return "/secure/prisons/id/$prisonId/${departmentType.pathVariable}/email-address"
-  }
-
-  private fun doStartActionNoRole(endPoint: String): ResponseSpec {
-    return webTestClient.get()
-      .uri(endPoint).exchange()
-  }
-
-  private fun doStartAction(endPoint: String, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient.get()
-      .uri(endPoint)
-      .headers(headers)
-      .exchange()
-  }
-
-  private fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))
-
-  private fun getResponseBodyText(responseSpec: ResponseSpec): String {
-    return String(responseSpec.expectBody().returnResult().responseBody, StandardCharsets.UTF_8)
-  }
-
-  private fun createDBData(prisonId: String, departmentType: DepartmentType): Prison {
-    val prison = Prison(prisonId, "$prisonId Prison", active = true)
-    prisonRepository.save(prison)
-
-    val emailAddress = emailAddressRepository.save(EmailAddress("aled@moj.gov.uk"))
-    contactDetailsRepository.saveAndFlush(
-      ContactDetails(
-        prison.prisonId,
-        prison,
-        departmentType,
-        emailAddress,
-      ),
-    )
-
-    return prison
   }
 }
