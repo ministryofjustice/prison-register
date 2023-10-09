@@ -37,11 +37,10 @@ private const val CONTACT_DETAILS_END_POINT_VVC = "/$SECURE_PRISON_BY_ID/$VCC/$E
 private const val CONTACT_DETAILS_END_POINT_OMU = "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS"
 private const val CONTACT_DETAILS_END_POINT_DEPARTMENT = "/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS"
 
-
 @RestController
 @Validated
 class PrisonEmailResource(private val prisonService: PrisonService) {
-  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point",ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @GetMapping(
     CONTACT_DETAILS_END_POINT_VVC,
@@ -75,7 +74,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity.notFound().build()
 
-  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point",ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @GetMapping(
     CONTACT_DETAILS_END_POINT_OMU,
@@ -148,7 +147,8 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
         HttpStatus.NOT_FOUND,
       )
   }
-  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point",ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
+
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @PutMapping(
     CONTACT_DETAILS_END_POINT_VVC,
@@ -193,7 +193,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     }.build()
   }
 
-  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point",ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @PutMapping(
     CONTACT_DETAILS_END_POINT_OMU,
@@ -284,7 +284,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     }.build()
   }
 
-  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point",ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @DeleteMapping(CONTACT_DETAILS_END_POINT_VVC)
   @Operation(summary = "Remove a prison's Videolink Conferencing Centre email address")
@@ -310,7 +310,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     return ResponseEntity.noContent().build()
   }
 
-  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point",ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @DeleteMapping(CONTACT_DETAILS_END_POINT_OMU)
   @Operation(summary = "Remove a prison's Offender Management Unit email address")
