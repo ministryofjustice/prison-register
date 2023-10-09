@@ -136,19 +136,27 @@ class PrisonService(
     }
     val oldEmailAddress = contactDetails.emailAddress?.value
     if (oldEmailAddress != newEmailAddress) {
-      val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
-
-      persistedEmailAddress.contactDetails.add(contactDetails)
-      contactDetails.emailAddress = persistedEmailAddress
-      contactDetailsRepository.saveAndFlush(contactDetails)
-
-      oldEmailAddress?.let {
-        if (contactDetailsRepository.isEmailOrphaned(oldEmailAddress)) {
-          emailAddressRepository.delete(oldEmailAddress)
-        }
-      }
+      updateEmailAddress(newEmailAddress, contactDetails, oldEmailAddress)
     }
     return SetOutcome.UPDATED
+  }
+
+  private fun updateEmailAddress(
+    newEmailAddress: String,
+    contactDetails: ContactDetails,
+    oldEmailAddress: String?,
+  ) {
+    val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
+
+    persistedEmailAddress.contactDetails.add(contactDetails)
+    contactDetails.emailAddress = persistedEmailAddress
+    contactDetailsRepository.saveAndFlush(contactDetails)
+
+    oldEmailAddress?.let {
+      if (contactDetailsRepository.isEmailOrphaned(oldEmailAddress)) {
+        emailAddressRepository.delete(oldEmailAddress)
+      }
+    }
   }
 
   @Transactional
@@ -163,19 +171,27 @@ class PrisonService(
     }
     val oldTelephoneAddress = contactDetails.emailAddress?.value
     if (oldTelephoneAddress != newTelephoneAddress) {
-      val persistedTelephoneAddress = createOrGetTelephoneAddress(newTelephoneAddress)
-
-      persistedTelephoneAddress.contactDetails.add(contactDetails)
-      contactDetails.telephoneAddress = persistedTelephoneAddress
-      contactDetailsRepository.saveAndFlush(contactDetails)
-
-      oldTelephoneAddress?.let {
-        if (contactDetailsRepository.isTelephoneAddressOrphaned(oldTelephoneAddress)) {
-          telephoneAddressRepository.delete(oldTelephoneAddress)
-        }
-      }
+      updateTelephoneAddress(newTelephoneAddress, contactDetails, oldTelephoneAddress)
     }
     return SetOutcome.UPDATED
+  }
+
+  private fun updateTelephoneAddress(
+    newTelephoneAddress: String,
+    contactDetails: ContactDetails,
+    oldTelephoneAddress: String?,
+  ) {
+    val persistedTelephoneAddress = createOrGetTelephoneAddress(newTelephoneAddress)
+
+    persistedTelephoneAddress.contactDetails.add(contactDetails)
+    contactDetails.telephoneAddress = persistedTelephoneAddress
+    contactDetailsRepository.saveAndFlush(contactDetails)
+
+    oldTelephoneAddress?.let {
+      if (contactDetailsRepository.isTelephoneAddressOrphaned(oldTelephoneAddress)) {
+        telephoneAddressRepository.delete(oldTelephoneAddress)
+      }
+    }
   }
 
   @Transactional
