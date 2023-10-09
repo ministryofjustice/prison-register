@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration.emailaddress
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verifyNoInteractions
@@ -42,6 +43,29 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     // Then
     responseSpec.expectStatus().isNoContent
     assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, telephoneAddress = telephoneAddress, department = departmentType)
+  }
+
+  @Test
+  fun `When an departments email is deleted but it is being used other departments, then it is only deleted for that department`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = OFFENDER_MANAGEMENT_UNIT
+    val otherDepartmentType = SOCIAL_VISIT
+    val emailAddress = "aled@aled.com"
+
+    createDBData(prisonId, departmentType, emailAddress = emailAddress)
+    createDBData(prisonId, otherDepartmentType, emailAddress = emailAddress)
+
+    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    // When
+    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isNoContent
+
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
+    assertThat(contactDetails).isNull()
+    assertDbContactDetailsExist(prisonId, emailAddress = emailAddress, department = otherDepartmentType)
   }
 
   @Test

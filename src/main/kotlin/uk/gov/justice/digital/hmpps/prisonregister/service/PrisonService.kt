@@ -184,14 +184,15 @@ class PrisonService(
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     contactDetails?.let {
       it.emailAddress?.let {
+        val emailAddressToBeDeleted = it.value
         if (contactDetails.telephoneAddress == null) {
           contactDetailsRepository.delete(contactDetails)
         }
         contactDetails.emailAddress = null
-        if (contactDetailsRepository.isEmailOrphaned(it.value)) {
-          emailAddressRepository.delete(it.value)
-          return
+        if (contactDetailsRepository.isEmailOrphaned(emailAddressToBeDeleted)) {
+          emailAddressRepository.delete(emailAddressToBeDeleted)
         }
+        return
       }
     }
     if (throwNotFound) {
@@ -205,14 +206,15 @@ class PrisonService(
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     contactDetails?.let {
       it.telephoneAddress?.let {
+        val telephoneAddressToBeDeleted = it.value
         if (contactDetails.emailAddress == null) {
           contactDetailsRepository.delete(contactDetails)
         }
         contactDetails.telephoneAddress = null
-        if (contactDetailsRepository.isTelephoneAddressOrphaned(it.value)) {
-          telephoneAddressRepository.delete(it.value)
-          return
+        if (contactDetailsRepository.isTelephoneAddressOrphaned(telephoneAddressToBeDeleted)) {
+          telephoneAddressRepository.delete(telephoneAddressToBeDeleted)
         }
+        return
       }
     }
     if (throwNotFound) {

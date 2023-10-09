@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration.telephoneaddress
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verifyNoInteractions
@@ -24,6 +25,29 @@ class DeletePrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest()
 
     val bodyText = getResponseBodyText(responseSpec)
     Assertions.assertEquals("Contact not found for prison ID BRI type social-visit.", bodyText)
+  }
+
+  @Test
+  fun `When an departments telephone is deleted but it is being used other departments, then it is only deleted for that department`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = SOCIAL_VISIT
+    val otherDepartmentType = OFFENDER_MANAGEMENT_UNIT
+    val telephoneAddress = "01348811539"
+
+    createDBData(prisonId, departmentType, telephoneAddress = telephoneAddress)
+    createDBData(prisonId, otherDepartmentType, telephoneAddress = telephoneAddress)
+
+    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    // When
+    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isNoContent
+
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
+    assertThat(contactDetails).isNull()
+    assertDbContactDetailsExist(prisonId, telephoneAddress = telephoneAddress, department = otherDepartmentType)
   }
 
   @Test

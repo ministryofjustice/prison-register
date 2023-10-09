@@ -67,13 +67,15 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
   fun createMaintainRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"))
 
   fun createDBData(prisonId: String, departmentType: DepartmentType, telephoneAddress: String? = null, emailAddress: String? = null): Prison {
-    val prison = Prison(prisonId, "$prisonId Prison", active = true)
-    prisonRepository.save(prison)
+    val prison = createOrGetDbPrison(prisonId)
+    val persistedTelephoneAddress = telephoneAddress?.let {
+      telephoneAddressRepository.getTelephoneAddress(telephoneAddress) ?: telephoneAddressRepository.save(TelephoneAddress(telephoneAddress))
+    }
+    val persistedEmailAddress = emailAddress?.let {
+      emailAddressRepository.getEmailAddress(emailAddress) ?: emailAddressRepository.save(EmailAddress(emailAddress))
+    }
 
-    val persistedTelephoneAddress = telephoneAddress?.let { telephoneAddressRepository.save(TelephoneAddress(telephoneAddress)) }
-    val persistedEmailAddress = emailAddress?.let { emailAddressRepository.save(EmailAddress(emailAddress)) }
-
-    contactDetailsRepository.saveAndFlush(
+    val contactDetails = contactDetailsRepository.saveAndFlush(
       ContactDetails(
         prison.prisonId,
         prison,
@@ -83,7 +85,19 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       ),
     )
 
+    prison.contactDetails.add(contactDetails)
+
     return prison
+  }
+
+  private fun createOrGetDbPrison(prisonId: String): Prison {
+    return prisonRepository.findByPrisonId(prisonId) ?: prisonRepository.saveAndFlush(
+      Prison(
+        prisonId,
+        "$prisonId Prison",
+        active = true,
+      ),
+    )
   }
 
   fun getEndPointEmail(

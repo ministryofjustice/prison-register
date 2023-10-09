@@ -22,6 +22,7 @@ import java.time.LocalDate
 @Entity
 data class Prison(
   @Id
+  @Column(unique = true)
   val prisonId: String,
   var name: String,
   var description: String? = null,
