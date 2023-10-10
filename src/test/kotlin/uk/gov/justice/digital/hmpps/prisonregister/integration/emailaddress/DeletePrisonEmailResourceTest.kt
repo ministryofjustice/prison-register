@@ -33,16 +33,16 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
-    val telephoneAddress = "01348811540"
+    val phoneNumber = "01348811540"
 
-    createDBData(prisonId, departmentType, emailAddress = emailAddress, telephoneAddress = telephoneAddress)
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber)
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, telephoneAddress = telephoneAddress, department = departmentType)
+    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
   }
 
   @Test
@@ -74,16 +74,16 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val emailAddress = "aled@aled.com"
-    val telephoneAddress = "01348811540"
+    val phoneNumber = "01348811540"
 
-    createDBData(prisonId, departmentType, emailAddress = emailAddress, telephoneAddress = telephoneAddress)
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber)
     val endPoint = getEndPointEmail(prisonId, departmentType)
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, telephoneAddress = telephoneAddress, department = departmentType)
+    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
   }
 
   @Test

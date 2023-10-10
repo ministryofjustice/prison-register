@@ -8,13 +8,13 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "TELEPHONE_ADDRESS")
-data class TelephoneAddress(
+@Table(name = "PHONE_NUMBER")
+data class PhoneNumber(
   @Column(name = "VALUE", nullable = false, unique = true)
   val value: String,
 
 ) : AbstractIdEntity() {
 
-  @OneToMany(mappedBy = "telephoneAddress", fetch = FetchType.LAZY, cascade = [CascadeType.DETACH])
+  @OneToMany(mappedBy = "phoneNumber", fetch = FetchType.LAZY, cascade = [CascadeType.DETACH])
   val contactDetails: MutableList<ContactDetails> = mutableListOf()
 }

@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
-import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidTelephoneAddress
+import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
-private const val TELEPHONE_ADDRESS = "telephone-number"
+private const val PHONE_NUMBER = "phone-number"
 private const val PRISONS = "prisons"
 private const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
 private const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
@@ -32,7 +32,7 @@ private const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
 class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
 
   @GetMapping(
-    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$TELEPHONE_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER",
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Get a prison department's telephone number")
@@ -53,7 +53,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
       ),
     ],
   )
-  fun getTelephoneAddress(
+  fun getPhoneNumber(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable
     @Size(max = 12, min = 2)
@@ -63,8 +63,8 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
     departmentTypeStr: String,
   ): ResponseEntity<String> {
     val departmentType = DepartmentType.getFromPathVariable(departmentTypeStr)
-    val telephoneAddress = prisonService.getTelephoneAddress(prisonId, departmentType)
-    return telephoneAddress?.let { ResponseEntity.ok(it) }
+    val phoneNumber = prisonService.getPhoneNumber(prisonId, departmentType)
+    return phoneNumber?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity<String>(
         "Could not find telephone number for $prisonId and ${departmentType.pathVariable}.",
         HttpStatus.NOT_FOUND,
@@ -72,7 +72,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
   }
 
   @PutMapping(
-    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$TELEPHONE_ADDRESS",
+    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Set or change a prison department's telephone number")
@@ -96,7 +96,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
       ),
     ],
   )
-  fun putTelephoneAddress(
+  fun putPhoneNumber(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable
     @Size(max = 12, min = 2)
@@ -104,20 +104,20 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
     @Schema(description = "A Valid telephone number", example = "01348811539", required = true)
     @RequestBody
     @Valid
-    @ValidTelephoneAddress
-    telephoneAddress: String,
+    @ValidPhoneNumber
+    phoneNumber: String,
     @Schema(description = "DepartmentType", example = "social-visit", required = true)
     @PathVariable("departmentType")
     departmentTypeStr: String,
   ): ResponseEntity<Void> {
     val departmentType = DepartmentType.getFromPathVariable(departmentTypeStr)
-    return when (prisonService.setTelephoneAddress(prisonId, telephoneAddress, departmentType)) {
+    return when (prisonService.setPhoneNumber(prisonId, phoneNumber, departmentType)) {
       SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
       SetOutcome.UPDATED -> ResponseEntity.noContent()
     }.build()
   }
 
-  @DeleteMapping("/$SECURE_PRISON_BY_ID/department/{departmentType}/$TELEPHONE_ADDRESS")
+  @DeleteMapping("/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER")
   @Operation(summary = "Remove a prison department's telephone number")
   @ApiResponses(
     value = [
@@ -135,7 +135,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
       ),
     ],
   )
-  fun deleteTelephoneAddress(
+  fun deletePhoneNumber(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable
     @Size(max = 12, min = 2)
@@ -144,7 +144,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
     @PathVariable("departmentType")
     departmentType: String,
   ): ResponseEntity<Void> {
-    prisonService.deleteTelephoneAddress(prisonId, DepartmentType.getFromPathVariable(departmentType), true)
+    prisonService.deletePhoneNumber(prisonId, DepartmentType.getFromPathVariable(departmentType), true)
     return ResponseEntity.noContent().build()
   }
 }

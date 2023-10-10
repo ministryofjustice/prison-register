@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.integration.telephoneaddress
+package uk.gov.justice.digital.hmpps.prisonregister.integration.phonenumber
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -12,9 +12,9 @@ class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    createDBData(prisonId, departmentType, telephoneAddress = "01348811540")
+    createDBData(prisonId, departmentType, phoneNumber = "01348811540")
 
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     // When
     val responseSpec = doGetAction(endPoint, createAnyRole())
@@ -28,10 +28,10 @@ class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When telephone address cannot be found for prison, then appropriate error is show`() {
+  fun `When phone number cannot be found for prison, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getEndPointTelephoneAddress(prisonId, SOCIAL_VISIT)
+    val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
 
     // When
     val responseSpec = doGetAction(endPoint, createAnyRole())
@@ -48,7 +48,7 @@ class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-number"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/phone-number"
 
     // When
     val responseSpec = doGetAction(endPoint, createAnyRole())
@@ -65,7 +65,7 @@ class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   fun `When no role is give to get telephone for given type, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getEndPointTelephoneAddress(prisonId, SOCIAL_VISIT)
+    val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
 
     // When
     val responseSpec = doGetActionNoRole(endPoint)

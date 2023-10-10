@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
- * Test logic in the TelephoneAddressValidator class.
+ * Test logic in the PhoneNumberValidator class.
  */
-class TelephoneAddressValidatorTest() {
+class PhoneNumberValidatorTest() {
 
-  private val telephoneAddressValidator: TelephoneAddressValidator = TelephoneAddressValidator()
+  private val phoneNumberValidator: PhoneNumberValidator = PhoneNumberValidator()
 
   @Test
   fun `valid numbers that should pass validation`() {
@@ -24,34 +24,34 @@ class TelephoneAddressValidatorTest() {
 
     // When
 
-    val results = phoneNumbers.map { telephoneAddressValidator.isValid(value = it, null) }
+    val results = phoneNumbers.map { phoneNumberValidator.isValid(value = it, null) }
 
     // Then
 
     results.forEachIndexed { index, result ->
       Assertions.assertTrue(
         result,
-        "Telephone Address is not valid, but it should be :${phoneNumbers[index]}",
+        "Phone Number is not valid, but it should be :${phoneNumbers[index]}",
       )
     }
   }
 
   @Test
-  fun `in-valid numbers that should fail validation`() {
+  fun `invalid numbers that should fail validation`() {
     // Given
 
     val phoneNumbers = arrayOf("", "a", "+44 as", "222", "+44", "@£", "aled@aled.com", "s", null)
 
     // When
 
-    val results = phoneNumbers.map { telephoneAddressValidator.isValid(value = it, null) }
+    val results = phoneNumbers.map { phoneNumberValidator.isValid(value = it, null) }
 
     // Then
 
     results.forEachIndexed { index, result ->
       Assertions.assertFalse(
         result,
-        "Telephone Address is valid, but it should not be : ${phoneNumbers[index]}",
+        "Phone Number is valid, but it should not be : ${phoneNumbers[index]}",
       )
     }
   }

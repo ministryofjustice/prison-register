@@ -13,12 +13,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.TelephoneAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.TelephoneAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestEmailAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestTelephoneAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestPhoneNumberRepository
 import java.nio.charset.StandardCharsets
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
@@ -38,13 +38,13 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
   lateinit var emailAddressRepository: EmailAddressRepository
 
   @SpyBean
-  lateinit var telephoneAddressRepository: TelephoneAddressRepository
+  lateinit var phoneNumberRepository: PhoneNumberRepository
 
   @SpyBean
   lateinit var testEmailAddressRepository: TestEmailAddressRepository
 
   @SpyBean
-  lateinit var testTelephoneAddressRepository: TestTelephoneAddressRepository
+  lateinit var testPhoneNumberRepository: TestPhoneNumberRepository
 
   @AfterEach
   fun `clean up tests`() {
@@ -52,8 +52,8 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
     contactDetailsRepository.flush()
     emailAddressRepository.deleteAll()
     emailAddressRepository.flush()
-    telephoneAddressRepository.deleteAll()
-    telephoneAddressRepository.flush()
+    phoneNumberRepository.deleteAll()
+    phoneNumberRepository.flush()
   }
 
   fun getResponseBodyText(responseSpec: ResponseSpec): String {
@@ -66,10 +66,10 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
 
   fun createMaintainRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"))
 
-  fun createDBData(prisonId: String, departmentType: DepartmentType, telephoneAddress: String? = null, emailAddress: String? = null): Prison {
+  fun createDBData(prisonId: String, departmentType: DepartmentType, phoneNumber: String? = null, emailAddress: String? = null): Prison {
     val prison = createOrGetDbPrison(prisonId)
-    val persistedTelephoneAddress = telephoneAddress?.let {
-      telephoneAddressRepository.getTelephoneAddress(telephoneAddress) ?: telephoneAddressRepository.save(TelephoneAddress(telephoneAddress))
+    val persistedPhoneNumber = phoneNumber?.let {
+      phoneNumberRepository.getPhoneNumber(phoneNumber) ?: phoneNumberRepository.save(PhoneNumber(phoneNumber))
     }
     val persistedEmailAddress = emailAddress?.let {
       emailAddressRepository.getEmailAddress(emailAddress) ?: emailAddressRepository.save(EmailAddress(emailAddress))
@@ -80,7 +80,7 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
         prison.prisonId,
         prison,
         departmentType,
-        telephoneAddress = persistedTelephoneAddress,
+        phoneNumber = persistedPhoneNumber,
         emailAddress = persistedEmailAddress,
       ),
     )
@@ -107,11 +107,11 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
     return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/email-address"
   }
 
-  fun getEndPointTelephoneAddress(
+  fun getEndPointPhoneNumber(
     prisonId: String,
     departmentType: DepartmentType,
   ): String {
-    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/telephone-number"
+    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/phone-number"
   }
 
   fun getLegacyEndPointEmail(
@@ -176,23 +176,23 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
-  fun doPutActionTelephone(endPoint: String, prisonID: String? = prisonId, telephoneAddress: String ? = "07505902221", headers: (HttpHeaders) -> Unit): ResponseSpec {
+  fun doPutActionTelephone(endPoint: String, prisonID: String? = prisonId, phoneNumber: String ? = "07505902221", headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonID)
       .contentType(MediaType.TEXT_PLAIN)
-      .bodyValue(telephoneAddress)
+      .bodyValue(phoneNumber)
       .headers(headers)
       .exchange()
   }
 
-  fun assertContactDetailsHaveBeenDeleted(prisonId: String, telephoneAddress: String ? = null, emailAddress: String ? = null, department: DepartmentType) {
+  fun assertContactDetailsHaveBeenDeleted(prisonId: String, phoneNumber: String ? = null, emailAddress: String ? = null, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
-    telephoneAddress?.let {
-      val telephoneAddressEntity = telephoneAddressRepository.getTelephoneAddress(telephoneAddress)
-      assertThat(telephoneAddressEntity).isNull()
+    phoneNumber?.let {
+      val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+      assertThat(phoneNumberEntity).isNull()
     }
 
     emailAddress?.let {
@@ -201,31 +201,31 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
     }
   }
 
-  fun assertOnlyEmailHasBeenDeleted(prisonId: String, telephoneAddress: String, emailAddress: String, department: DepartmentType) {
+  fun assertOnlyEmailHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
-    assertThat(contactDetails).isNotNull()
+    assertThat(contactDetails).isNotNull
 
-    val telephoneAddressEntity = telephoneAddressRepository.getTelephoneAddress(telephoneAddress)
-    assertThat(telephoneAddressEntity).isNotNull
+    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    assertThat(phoneNumberEntity).isNotNull
 
     val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
     assertThat(emailAddressEntity).isNull()
   }
 
-  fun assertOnlyTelephoneHasBeenDeleted(prisonId: String, telephoneAddress: String, emailAddress: String, department: DepartmentType) {
+  fun assertOnlyTelephoneHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
-    assertThat(contactDetails).isNotNull()
+    assertThat(contactDetails).isNotNull
 
-    val telephoneAddressEntity = telephoneAddressRepository.getTelephoneAddress(telephoneAddress)
-    assertThat(telephoneAddressEntity).isNull()
+    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    assertThat(phoneNumberEntity).isNull()
 
     val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
     assertThat(emailAddressEntity).isNotNull
   }
 
-  fun assertDbContactDetailsExist(prisonId: String, emailAddress: String? = null, telephoneAddress: String? = null, department: DepartmentType) {
-    telephoneAddress?.let {
-      assertThat(telephoneAddressRepository.getTelephoneAddress(telephoneAddress)).isNotNull
+  fun assertDbContactDetailsExist(prisonId: String, emailAddress: String? = null, phoneNumber: String? = null, department: DepartmentType) {
+    phoneNumber?.let {
+      assertThat(phoneNumberRepository.getPhoneNumber(phoneNumber)).isNotNull
     }
 
     emailAddress?.let {
@@ -235,9 +235,9 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNotNull
     assertThat(contactDetails!!.prisonId).isEqualTo(prisonId)
-    telephoneAddress?.let {
-      assertThat(contactDetails.telephoneAddress).isNotNull
-      assertThat(contactDetails.telephoneAddress?.value).isEqualTo(it)
+    phoneNumber?.let {
+      assertThat(contactDetails.phoneNumber).isNotNull
+      assertThat(contactDetails.phoneNumber?.value).isEqualTo(it)
     }
     emailAddress?.let {
       assertThat(contactDetails.emailAddress).isNotNull
