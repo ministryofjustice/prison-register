@@ -22,25 +22,25 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidTelephoneAddress
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
-private const val TELEPHONE_ADDRESS = "telephone-address"
+private const val TELEPHONE_ADDRESS = "telephone-number"
 private const val PRISONS = "prisons"
 private const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
 private const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
 
 @RestController
 @Validated
-class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
+class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
 
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/department/{departmentType}/$TELEPHONE_ADDRESS",
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
-  @Operation(summary = "Get a prison department's telephone address")
+  @Operation(summary = "Get a prison department's telephone number")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Returns the telephone address",
+        description = "Returns the telephone number",
         content = [Content(mediaType = MediaType.TEXT_PLAIN_VALUE)],
       ),
       ApiResponse(
@@ -49,7 +49,7 @@ class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a telephone address for this department",
+        description = "The prison does not have a telephone number for this department",
       ),
     ],
   )
@@ -66,7 +66,7 @@ class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
     val telephoneAddress = prisonService.getTelephoneAddress(prisonId, departmentType)
     return telephoneAddress?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity<String>(
-        "Could not find telephone address for $prisonId and ${departmentType.pathVariable}.",
+        "Could not find telephone number for $prisonId and ${departmentType.pathVariable}.",
         HttpStatus.NOT_FOUND,
       )
   }
@@ -75,24 +75,24 @@ class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
     "/$SECURE_PRISON_BY_ID/department/{departmentType}/$TELEPHONE_ADDRESS",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
-  @Operation(summary = "Set or change a prison department's telephone address")
+  @Operation(summary = "Set or change a prison department's telephone number")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "201",
-        description = "The telephone address was created",
+        description = "The telephone number was created",
       ),
       ApiResponse(
         responseCode = "204",
-        description = "The telephone address was updated",
+        description = "The telephone number was updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Client error - invalid prisonId, telephone address, media type or similar",
+        description = "Client error - invalid prisonId, telephone number, media type or similar",
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a telephone address for this department",
+        description = "The prison does not have a telephone number for this department",
       ),
     ],
   )
@@ -101,7 +101,7 @@ class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "A Valid telephone address", example = "01348811539", required = true)
+    @Schema(description = "A Valid telephone number", example = "01348811539", required = true)
     @RequestBody
     @Valid
     @ValidTelephoneAddress
@@ -118,12 +118,12 @@ class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
   }
 
   @DeleteMapping("/$SECURE_PRISON_BY_ID/department/{departmentType}/$TELEPHONE_ADDRESS")
-  @Operation(summary = "Remove a prison department's telephone address")
+  @Operation(summary = "Remove a prison department's telephone number")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "204",
-        description = "The telephone address was removed",
+        description = "The telephone number was removed",
       ),
       ApiResponse(
         responseCode = "400",
@@ -131,7 +131,7 @@ class PrisonTelephoneAddressResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a telephone address for this department",
+        description = "The prison does not have a telephone number for this department",
       ),
     ],
   )

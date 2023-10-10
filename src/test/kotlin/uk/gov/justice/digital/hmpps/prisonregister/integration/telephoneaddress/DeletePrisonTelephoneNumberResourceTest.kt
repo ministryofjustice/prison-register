@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsInt
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 
-class DeletePrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest() {
+class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
   fun `When telephone address cannot be found for prison, then appropriate error is show`() {
@@ -121,7 +121,7 @@ class DeletePrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest()
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-number"
 
     // When
     val responseSpec = doDeleteAction(endPoint, headers = createMaintainRoleWithWriteScope())

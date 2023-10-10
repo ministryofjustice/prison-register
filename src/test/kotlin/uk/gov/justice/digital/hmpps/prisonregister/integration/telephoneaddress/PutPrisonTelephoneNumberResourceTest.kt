@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsInt
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 
-class PutPrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest() {
+class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
   fun `When an telephone is updated, isNoContent is return and the data is persisted`() {
@@ -74,7 +74,7 @@ class PutPrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest() {
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-number"
 
     // When
     val responseSpec = doPutActionTelephone(endPoint, headers = createMaintainRoleWithWriteScope())

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsIntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 
-class GetPrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest() {
+class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
   fun `When correct details are given for existing telephone, then telephone is returned`() {
@@ -41,14 +41,14 @@ class GetPrisonTelephoneAddressResourceTest : ContactDetailsIntegrationTest() {
       .isNotFound
 
     val bodyText = getResponseBodyText(responseSpec)
-    Assertions.assertEquals("Could not find telephone address for BRI and social-visit.", bodyText)
+    Assertions.assertEquals("Could not find telephone number for BRI and social-visit.", bodyText)
   }
 
   @Test
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-address"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-number"
 
     // When
     val responseSpec = doGetAction(endPoint, createAnyRole())

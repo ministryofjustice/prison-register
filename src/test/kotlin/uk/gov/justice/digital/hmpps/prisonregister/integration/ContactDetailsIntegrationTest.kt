@@ -111,7 +111,7 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
     prisonId: String,
     departmentType: DepartmentType,
   ): String {
-    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/telephone-address"
+    return "/secure/prisons/id/$prisonId/department/${departmentType.pathVariable}/telephone-number"
   }
 
   fun getLegacyEndPointEmail(
