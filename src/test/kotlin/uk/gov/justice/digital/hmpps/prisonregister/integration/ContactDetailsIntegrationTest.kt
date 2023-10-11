@@ -148,7 +148,7 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
-  fun doPutActionTelephoneNoRole(endPoint: String): ResponseSpec {
+  fun doPutActionPhoneNoRole(endPoint: String): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonId)
@@ -176,7 +176,7 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
-  fun doPutActionTelephone(endPoint: String, prisonID: String? = prisonId, phoneNumber: String ? = "07505902221", headers: (HttpHeaders) -> Unit): ResponseSpec {
+  fun doPutActionPhoneNumber(endPoint: String, prisonID: String? = prisonId, phoneNumber: String ? = "07505902221", headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonID)
@@ -212,7 +212,7 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
     assertThat(emailAddressEntity).isNull()
   }
 
-  fun assertOnlyTelephoneHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, department: DepartmentType) {
+  fun assertOnlyPhoneHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNotNull
 

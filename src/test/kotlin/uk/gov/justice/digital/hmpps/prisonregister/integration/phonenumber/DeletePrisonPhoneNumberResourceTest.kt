@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsInt
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 
-class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
+class DeletePrisonPhoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
   fun `When phone number cannot be found for prison, then appropriate error is shown`() {
@@ -28,7 +28,7 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
   }
 
   @Test
-  fun `When an departments telephone is deleted but it is being used other departments, then it is only deleted for that department`() {
+  fun `When an departments phone is deleted but it is being used other departments, then it is only deleted for that department`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -51,7 +51,7 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
   }
 
   @Test
-  fun `When an telephone is deleted that has other contact information, only telephone is deleted`() {
+  fun `When an phone is deleted that has other contact information, only phone is deleted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
@@ -65,11 +65,11 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertOnlyTelephoneHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
+    assertOnlyPhoneHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
   }
 
   @Test
-  fun `When an telephone is deleted, isNoContent is returned and data is deleted`() {
+  fun `When an phone is deleted, isNoContent is returned and data is deleted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -87,7 +87,7 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
   }
 
   @Test
-  fun `When an telephone deletion has been requested without a role, status unauthorized is returned`() {
+  fun `When an phone deletion has been requested without a role, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -102,7 +102,7 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
   }
 
   @Test
-  fun `When an telephone deletion has been requested with an incorrect role, status forbidden is returned`() {
+  fun `When an phone deletion has been requested with an incorrect role, status forbidden is returned`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT

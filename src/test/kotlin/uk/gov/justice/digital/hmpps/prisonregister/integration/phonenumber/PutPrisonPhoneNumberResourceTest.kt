@@ -8,10 +8,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsInt
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 
-class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
+class PutPrisonPhoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
-  fun `When an telephone is updated, isNoContent is return and the data is persisted`() {
+  fun `When an phone is updated, isNoContent is return and the data is persisted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -21,7 +21,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     createDBData(prisonId, departmentType, phoneNumber = oldPhoneNumber)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec = doPutActionPhoneNumber(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -29,7 +29,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When an telephone is created, isCreated is return and persisted`() {
+  fun `When an phone is created, isCreated is return and persisted`() {
     // Given
     val newPhoneNumber = "07505902221"
     val prisonId = "BRI"
@@ -37,7 +37,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec = doPutActionPhoneNumber(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
 
     // Then
     responseSpec.expectStatus().isCreated
@@ -45,7 +45,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When an one telephone is added for more than one prison, only one telephone is persisted`() {
+  fun `When an one phone is added for more than one prison, only one phone is persisted`() {
     // Given
     val newPhoneNumber = "07505902221"
     val prisonId1 = "BRI"
@@ -56,10 +56,10 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     val endPoint3 = getEndPointPhoneNumber(prisonId2, VIDEOLINK_CONFERENCING_CENTRE)
 
     // When
-    val responseSpec1 = doPutActionTelephone(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
-    val responseSpec1Repeat = doPutActionTelephone(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
-    val responseSpec2 = doPutActionTelephone(endPoint2, prisonId2, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
-    val responseSpec3 = doPutActionTelephone(endPoint3, prisonId2, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec1 = doPutActionPhoneNumber(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec1Repeat = doPutActionPhoneNumber(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec2 = doPutActionPhoneNumber(endPoint2, prisonId2, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec3 = doPutActionPhoneNumber(endPoint3, prisonId2, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
 
     // Then
     responseSpec1.expectStatus().isCreated
@@ -77,7 +77,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/phone-number"
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doPutActionPhoneNumber(endPoint, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus()
@@ -97,7 +97,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, phoneNumber = "im-not-a-telephone-number@moj.gov.uk", headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doPutActionPhoneNumber(endPoint, phoneNumber = "im-not-a-phone-number@moj.gov.uk", headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus()
@@ -109,14 +109,14 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When a new telephone request is sent with without a role, status Unauthorized is returned`() {
+  fun `When a new phone request is sent with without a role, status Unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     // When
-    val responseSpec = doPutActionTelephoneNoRole(endPoint)
+    val responseSpec = doPutActionPhoneNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -126,14 +126,14 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When a new telephone request is sent with an incorrect role, status Forbidden is returned`() {
+  fun `When a new phone request is sent with an incorrect role, status Forbidden is returned`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createAnyRole())
+    val responseSpec = doPutActionPhoneNumber(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden

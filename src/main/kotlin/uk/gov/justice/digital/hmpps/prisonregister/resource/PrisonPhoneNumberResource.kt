@@ -29,18 +29,18 @@ private const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
 
 @RestController
 @Validated
-class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
+class PrisonPhoneNumberResource(private val prisonService: PrisonService) {
 
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER",
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
-  @Operation(summary = "Get a prison department's telephone number")
+  @Operation(summary = "Get a prison department's phone number")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Returns the telephone number",
+        description = "Returns the phone number",
         content = [Content(mediaType = MediaType.TEXT_PLAIN_VALUE)],
       ),
       ApiResponse(
@@ -49,7 +49,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a telephone number for this department",
+        description = "The prison does not have a phone number for this department",
       ),
     ],
   )
@@ -66,7 +66,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
     val phoneNumber = prisonService.getPhoneNumber(prisonId, departmentType)
     return phoneNumber?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity<String>(
-        "Could not find telephone number for $prisonId and ${departmentType.pathVariable}.",
+        "Could not find phone number for $prisonId and ${departmentType.pathVariable}.",
         HttpStatus.NOT_FOUND,
       )
   }
@@ -75,24 +75,24 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
     "/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER",
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
-  @Operation(summary = "Set or change a prison department's telephone number")
+  @Operation(summary = "Set or change a prison department's phone number")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "201",
-        description = "The telephone number was created",
+        description = "The phone number was created",
       ),
       ApiResponse(
         responseCode = "204",
-        description = "The telephone number was updated",
+        description = "The phone number was updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Client error - invalid prisonId, telephone number, media type or similar",
+        description = "Client error - invalid prisonId, phone number, media type or similar",
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a telephone number for this department",
+        description = "The prison does not have a phone number for this department",
       ),
     ],
   )
@@ -101,7 +101,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "A Valid telephone number", example = "01348811539", required = true)
+    @Schema(description = "A Valid phone number", example = "01348811539", required = true)
     @RequestBody
     @Valid
     @ValidPhoneNumber
@@ -118,12 +118,12 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
   }
 
   @DeleteMapping("/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER")
-  @Operation(summary = "Remove a prison department's telephone number")
+  @Operation(summary = "Remove a prison department's phone number")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "204",
-        description = "The telephone number was removed",
+        description = "The phone number was removed",
       ),
       ApiResponse(
         responseCode = "400",
@@ -131,7 +131,7 @@ class PrisonTelephoneNumberResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a telephone number for this department",
+        description = "The prison does not have a phone number for this department",
       ),
     ],
   )

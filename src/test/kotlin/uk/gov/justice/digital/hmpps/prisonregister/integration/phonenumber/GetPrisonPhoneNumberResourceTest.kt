@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsIntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 
-class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
+class GetPrisonPhoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
-  fun `When correct details are given for existing telephone, then telephone is returned`() {
+  fun `When correct details are given for existing phone, then phone is returned`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -41,7 +41,7 @@ class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
       .isNotFound
 
     val bodyText = getResponseBodyText(responseSpec)
-    Assertions.assertEquals("Could not find telephone number for BRI and social-visit.", bodyText)
+    Assertions.assertEquals("Could not find phone number for BRI and social-visit.", bodyText)
   }
 
   @Test
@@ -62,7 +62,7 @@ class GetPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When no role is give to get telephone for given type, status unauthorized is returned`() {
+  fun `When no role is give to get phone for given type, status unauthorized is returned`() {
     // Given
     val prisonId = "BRI"
     val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
