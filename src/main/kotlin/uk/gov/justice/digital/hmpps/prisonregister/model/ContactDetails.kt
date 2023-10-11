@@ -40,11 +40,11 @@ class ContactDetails(
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
   @JoinTable(
-    name = "CONTACT_DETAILS_TO_TELEPHONE_ADDRESS",
+    name = "CONTACT_DETAILS_TO_PHONE_NUMBER",
     joinColumns = [JoinColumn(name = "contact_details_id")],
-    inverseJoinColumns = [JoinColumn(name = "telephone_address_id")],
+    inverseJoinColumns = [JoinColumn(name = "phone_number_id")],
   )
-  var telephoneAddress: TelephoneAddress? = null,
+  var phoneNumber: PhoneNumber? = null,
 
 ) : AbstractIdEntity() {
 

@@ -13,13 +13,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
-import uk.gov.justice.digital.hmpps.prisonregister.model.TelephoneAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.TelephoneAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
@@ -34,7 +34,7 @@ class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val contactDetailsRepository: ContactDetailsRepository,
   private val emailAddressRepository: EmailAddressRepository,
-  private val telephoneAddressRepository: TelephoneAddressRepository,
+  private val phoneNumberRepository: PhoneNumberRepository,
   private val telemetryClient: TelemetryClient,
 ) {
   fun findById(prisonId: String): PrisonDto {
@@ -120,8 +120,8 @@ class PrisonService(
     return contactDetailsRepository.getEmailAddressByPrisonIdAndDepartment(prisonId, departmentType)
   }
 
-  fun getTelephoneAddress(prisonId: String, departmentType: DepartmentType): String? {
-    return contactDetailsRepository.getTelephoneAddressByPrisonIdAndDepartment(prisonId, departmentType)
+  fun getPhoneNumber(prisonId: String, departmentType: DepartmentType): String? {
+    return contactDetailsRepository.getPhoneNumberByPrisonIdAndDepartment(prisonId, departmentType)
   }
 
   @Transactional
@@ -161,35 +161,35 @@ class PrisonService(
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
-  fun setTelephoneAddress(prisonId: String, newTelephoneAddress: String, departmentType: DepartmentType): SetOutcome {
+  fun setPhoneNumber(prisonId: String, newPhoneNumber: String, departmentType: DepartmentType): SetOutcome {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     if (contactDetails == null) {
       val prison = prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
-      val persistedTelephoneAddress = createOrGetTelephoneAddress(newTelephoneAddress)
-      contactDetailsRepository.saveAndFlush(ContactDetails(prisonId, prison, departmentType, telephoneAddress = persistedTelephoneAddress))
+      val persistedPhoneNumber = createOrGetPhoneNumber(newPhoneNumber)
+      contactDetailsRepository.saveAndFlush(ContactDetails(prisonId, prison, departmentType, phoneNumber = persistedPhoneNumber))
       return SetOutcome.CREATED
     }
-    val oldTelephoneAddress = contactDetails.emailAddress?.value
-    if (oldTelephoneAddress != newTelephoneAddress) {
-      updateTelephoneAddress(newTelephoneAddress, contactDetails, oldTelephoneAddress)
+    val oldPhoneNumber = contactDetails.emailAddress?.value
+    if (oldPhoneNumber != newPhoneNumber) {
+      updatePhoneNumber(newPhoneNumber, contactDetails, oldPhoneNumber)
     }
     return SetOutcome.UPDATED
   }
 
-  private fun updateTelephoneAddress(
-    newTelephoneAddress: String,
+  private fun updatePhoneNumber(
+    newPhoneNumber: String,
     contactDetails: ContactDetails,
-    oldTelephoneAddress: String?,
+    oldPhoneNumber: String?,
   ) {
-    val persistedTelephoneAddress = createOrGetTelephoneAddress(newTelephoneAddress)
+    val persistedPhoneNumber = createOrGetPhoneNumber(newPhoneNumber)
 
-    persistedTelephoneAddress.contactDetails.add(contactDetails)
-    contactDetails.telephoneAddress = persistedTelephoneAddress
+    persistedPhoneNumber.contactDetails.add(contactDetails)
+    contactDetails.phoneNumber = persistedPhoneNumber
     contactDetailsRepository.saveAndFlush(contactDetails)
 
-    oldTelephoneAddress?.let {
-      if (contactDetailsRepository.isTelephoneAddressOrphaned(oldTelephoneAddress)) {
-        telephoneAddressRepository.delete(oldTelephoneAddress)
+    oldPhoneNumber?.let {
+      if (contactDetailsRepository.isPhoneNumberOrphaned(oldPhoneNumber)) {
+        phoneNumberRepository.delete(oldPhoneNumber)
       }
     }
   }
@@ -201,7 +201,7 @@ class PrisonService(
     contactDetails?.let {
       it.emailAddress?.let {
         val emailAddressToBeDeleted = it.value
-        if (contactDetails.telephoneAddress == null) {
+        if (contactDetails.phoneNumber == null) {
           contactDetailsRepository.delete(contactDetails)
         }
         contactDetails.emailAddress = null
@@ -218,17 +218,17 @@ class PrisonService(
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
-  fun deleteTelephoneAddress(prisonId: String, departmentType: DepartmentType, throwNotFound: Boolean = false) {
+  fun deletePhoneNumber(prisonId: String, departmentType: DepartmentType, throwNotFound: Boolean = false) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     contactDetails?.let {
-      it.telephoneAddress?.let {
-        val telephoneAddressToBeDeleted = it.value
+      it.phoneNumber?.let {
+        val phoneNumberToBeDeleted = it.value
         if (contactDetails.emailAddress == null) {
           contactDetailsRepository.delete(contactDetails)
         }
-        contactDetails.telephoneAddress = null
-        if (contactDetailsRepository.isTelephoneAddressOrphaned(telephoneAddressToBeDeleted)) {
-          telephoneAddressRepository.delete(telephoneAddressToBeDeleted)
+        contactDetails.phoneNumber = null
+        if (contactDetailsRepository.isPhoneNumberOrphaned(phoneNumberToBeDeleted)) {
+          phoneNumberRepository.delete(phoneNumberToBeDeleted)
         }
         return
       }
@@ -247,12 +247,12 @@ class PrisonService(
     } ?: emailAddressRepository.saveAndFlush(EmailAddress(newEmailAddress))
   }
 
-  private fun createOrGetTelephoneAddress(
-    newTelephoneAddress: String,
-  ): TelephoneAddress {
-    val telephoneAddressEntity = telephoneAddressRepository.getTelephoneAddress(newTelephoneAddress)
-    return telephoneAddressEntity?.let {
-      telephoneAddressEntity
-    } ?: telephoneAddressRepository.saveAndFlush(TelephoneAddress(newTelephoneAddress))
+  private fun createOrGetPhoneNumber(
+    newPhoneNumber: String,
+  ): PhoneNumber {
+    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(newPhoneNumber)
+    return phoneNumberEntity?.let {
+      phoneNumberEntity
+    } ?: phoneNumberRepository.saveAndFlush(PhoneNumber(newPhoneNumber))
   }
 }

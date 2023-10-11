@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.integration.telephoneaddress
+package uk.gov.justice.digital.hmpps.prisonregister.integration.phonenumber
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,51 +15,51 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
-    val oldTelephoneAddress = "01348811540"
-    val newTelephoneAddress = "07505902221"
-    createDBData(prisonId, departmentType, telephoneAddress = oldTelephoneAddress)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
+    val oldPhoneNumber = "01348811540"
+    val newPhoneNumber = "07505902221"
+    createDBData(prisonId, departmentType, phoneNumber = oldPhoneNumber)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), telephoneAddress = newTelephoneAddress)
+    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertDbContactDetailsExist(prisonId, telephoneAddress = newTelephoneAddress, department = departmentType)
+    assertDbContactDetailsExist(prisonId, phoneNumber = newPhoneNumber, department = departmentType)
   }
 
   @Test
   fun `When an telephone is created, isCreated is return and persisted`() {
     // Given
-    val newTelephoneAddress = "07505902221"
+    val newPhoneNumber = "07505902221"
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointTelephoneAddress(prisonId, SOCIAL_VISIT)
+    val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), telephoneAddress = newTelephoneAddress)
+    val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
 
     // Then
     responseSpec.expectStatus().isCreated
-    assertDbContactDetailsExist(prisonId, telephoneAddress = newTelephoneAddress, department = departmentType)
+    assertDbContactDetailsExist(prisonId, phoneNumber = newPhoneNumber, department = departmentType)
   }
 
   @Test
   fun `When an one telephone is added for more than one prison, only one telephone is persisted`() {
     // Given
-    val newTelephoneAddress = "07505902221"
+    val newPhoneNumber = "07505902221"
     val prisonId1 = "BRI"
     val prisonId2 = "CFI"
 
-    val endPoint1 = getEndPointTelephoneAddress(prisonId1, SOCIAL_VISIT)
-    val endPoint2 = getEndPointTelephoneAddress(prisonId2, SOCIAL_VISIT)
-    val endPoint3 = getEndPointTelephoneAddress(prisonId2, VIDEOLINK_CONFERENCING_CENTRE)
+    val endPoint1 = getEndPointPhoneNumber(prisonId1, SOCIAL_VISIT)
+    val endPoint2 = getEndPointPhoneNumber(prisonId2, SOCIAL_VISIT)
+    val endPoint3 = getEndPointPhoneNumber(prisonId2, VIDEOLINK_CONFERENCING_CENTRE)
 
     // When
-    val responseSpec1 = doPutActionTelephone(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), telephoneAddress = newTelephoneAddress)
-    val responseSpec1Repeat = doPutActionTelephone(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), telephoneAddress = newTelephoneAddress)
-    val responseSpec2 = doPutActionTelephone(endPoint2, prisonId2, headers = createMaintainRoleWithWriteScope(), telephoneAddress = newTelephoneAddress)
-    val responseSpec3 = doPutActionTelephone(endPoint3, prisonId2, headers = createMaintainRoleWithWriteScope(), telephoneAddress = newTelephoneAddress)
+    val responseSpec1 = doPutActionTelephone(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec1Repeat = doPutActionTelephone(endPoint1, prisonId1, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec2 = doPutActionTelephone(endPoint2, prisonId2, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
+    val responseSpec3 = doPutActionTelephone(endPoint3, prisonId2, headers = createMaintainRoleWithWriteScope(), phoneNumber = newPhoneNumber)
 
     // Then
     responseSpec1.expectStatus().isCreated
@@ -67,14 +67,14 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     responseSpec2.expectStatus().isCreated
     responseSpec3.expectStatus().isCreated
 
-    Assertions.assertThat(testTelephoneAddressRepository.getTelephoneAddressCount(newTelephoneAddress)).isEqualTo(1)
+    Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(newPhoneNumber)).isEqualTo(1)
   }
 
   @Test
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-number"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/phone-number"
 
     // When
     val responseSpec = doPutActionTelephone(endPoint, headers = createMaintainRoleWithWriteScope())
@@ -91,13 +91,13 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When incorrect format for telephone address is used, then appropriate error is show`() {
+  fun `When incorrect format for phone number is used, then appropriate error is shown`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getEndPointTelephoneAddress(prisonId, SOCIAL_VISIT)
+    val endPoint = getEndPointPhoneNumber(prisonId, SOCIAL_VISIT)
 
     // When
-    val responseSpec = doPutActionTelephone(endPoint, telephoneAddress = "im-not-a-telephone-number@moj.gov.uk", headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doPutActionTelephone(endPoint, phoneNumber = "im-not-a-telephone-number@moj.gov.uk", headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus()
@@ -105,7 +105,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
     responseSpec.expectBody()
       .jsonPath("$.developerMessage")
-      .isEqualTo("putTelephoneAddress.telephoneAddress:  telephone address is an incorrect format")
+      .isEqualTo("putPhoneNumber.phoneNumber:  Phone number is an incorrect format")
   }
 
   @Test
@@ -113,7 +113,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     // When
     val responseSpec = doPutActionTelephoneNoRole(endPoint)
@@ -121,7 +121,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     // Then
     responseSpec.expectStatus().isUnauthorized
     verifyNoInteractions(contactDetailsRepository)
-    verifyNoInteractions(telephoneAddressRepository)
+    verifyNoInteractions(phoneNumberRepository)
     assertContactDetailsHaveBeenDeleted(prisonId, department = departmentType)
   }
 
@@ -130,7 +130,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     // When
     val responseSpec = doPutActionTelephone(endPoint, prisonId, headers = createAnyRole())
@@ -138,7 +138,7 @@ class PutPrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
     // Then
     responseSpec.expectStatus().isForbidden
     verifyNoInteractions(contactDetailsRepository)
-    verifyNoInteractions(telephoneAddressRepository)
+    verifyNoInteractions(phoneNumberRepository)
     assertContactDetailsHaveBeenDeleted(prisonId, department = departmentType)
   }
 }

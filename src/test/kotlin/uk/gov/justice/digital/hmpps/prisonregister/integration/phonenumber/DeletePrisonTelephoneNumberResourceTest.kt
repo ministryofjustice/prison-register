@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.prisonregister.integration.telephoneaddress
+package uk.gov.justice.digital.hmpps.prisonregister.integration.phonenumber
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
@@ -11,11 +11,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_V
 class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() {
 
   @Test
-  fun `When telephone address cannot be found for prison, then appropriate error is show`() {
+  fun `When phone number cannot be found for prison, then appropriate error is shown`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     // When
     val responseSpec = doDeleteAction(endPoint, headers = createMaintainRoleWithWriteScope())
@@ -33,12 +33,12 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val otherDepartmentType = OFFENDER_MANAGEMENT_UNIT
-    val telephoneAddress = "01348811539"
+    val phoneNumber = "01348811539"
 
-    createDBData(prisonId, departmentType, telephoneAddress = telephoneAddress)
-    createDBData(prisonId, otherDepartmentType, telephoneAddress = telephoneAddress)
+    createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
+    createDBData(prisonId, otherDepartmentType, phoneNumber = phoneNumber)
 
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
@@ -47,7 +47,7 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
 
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     assertThat(contactDetails).isNull()
-    assertDbContactDetailsExist(prisonId, telephoneAddress = telephoneAddress, department = otherDepartmentType)
+    assertDbContactDetailsExist(prisonId, phoneNumber = phoneNumber, department = otherDepartmentType)
   }
 
   @Test
@@ -56,16 +56,16 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
-    val telephoneAddress = "01348811540"
+    val phoneNumber = "01348811540"
 
-    createDBData(prisonId, departmentType, emailAddress = emailAddress, telephoneAddress = telephoneAddress)
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertOnlyTelephoneHasBeenDeleted(prisonId, emailAddress = emailAddress, telephoneAddress = telephoneAddress, department = departmentType)
+    assertOnlyTelephoneHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
   }
 
   @Test
@@ -73,17 +73,17 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val telephoneAddress = "01348811540"
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val phoneNumber = "01348811540"
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
-    createDBData(prisonId, departmentType, telephoneAddress = telephoneAddress)
+    createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
 
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertContactDetailsHaveBeenDeleted(prisonId, telephoneAddress = telephoneAddress, department = departmentType)
+    assertContactDetailsHaveBeenDeleted(prisonId, phoneNumber = phoneNumber, department = departmentType)
   }
 
   @Test
@@ -91,14 +91,14 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
     // When
     val responseSpec = doDeleteActionNoRole(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
     verifyNoInteractions(contactDetailsRepository)
-    verifyNoInteractions(telephoneAddressRepository)
+    verifyNoInteractions(phoneNumberRepository)
   }
 
   @Test
@@ -107,21 +107,21 @@ class DeletePrisonTelephoneNumberResourceTest : ContactDetailsIntegrationTest() 
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     // When
-    val endPoint = getEndPointTelephoneAddress(prisonId, departmentType)
+    val endPoint = getEndPointPhoneNumber(prisonId, departmentType)
 
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
     verifyNoInteractions(contactDetailsRepository)
-    verifyNoInteractions(telephoneAddressRepository)
+    verifyNoInteractions(phoneNumberRepository)
   }
 
   @Test
   fun `When department type does not exist, then appropriate error is show`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/telephone-number"
+    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/phone-number"
 
     // When
     val responseSpec = doDeleteAction(endPoint, headers = createMaintainRoleWithWriteScope())
