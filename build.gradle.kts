@@ -15,7 +15,7 @@ configurations {
 
 dependencies {
   implementation("com.google.guava:guava:32.1.2-jre")
-
+  implementation("com.googlecode.libphonenumber:libphonenumber:8.2.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
@@ -32,6 +32,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.2.0")
+  implementation("io.swagger:swagger-annotations:1.6.11")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("net.javacrumbs.shedlock:shedlock-spring:5.7.0")

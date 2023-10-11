@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
@@ -43,9 +44,10 @@ class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
   private val contactDetailsRepository: ContactDetailsRepository = mock()
   private val emailAddressRepository: EmailAddressRepository = mock()
+  private val phoneNumberRepository: PhoneNumberRepository = mock()
   private val telemetryClient: TelemetryClient = mock()
 
-  private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, emailAddressRepository, telemetryClient)
+  private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, emailAddressRepository, phoneNumberRepository, telemetryClient)
 
   @Nested
   inner class findById {

@@ -23,22 +23,27 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
+import kotlin.DeprecationLevel.WARNING
 
-const val OMU = "offender-management-unit"
-const val VCC = "videolink-conferencing-centre"
+private const val OMU = "offender-management-unit"
+private const val VCC = "videolink-conferencing-centre"
 
-const val EMAIL_ADDRESS = "email-address"
-const val PRISONS = "prisons"
-const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
-const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
+private const val EMAIL_ADDRESS = "email-address"
+private const val PRISONS = "prisons"
+private const val PRISON_BY_ID = "$PRISONS/id/{prisonId}"
+private const val SECURE_PRISON_BY_ID = "secure/$PRISON_BY_ID"
+
+private const val CONTACT_DETAILS_END_POINT_VVC = "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS"
+private const val CONTACT_DETAILS_END_POINT_OMU = "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS"
+private const val CONTACT_DETAILS_END_POINT_DEPARTMENT = "/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS"
 
 @RestController
 @Validated
 class PrisonEmailResource(private val prisonService: PrisonService) {
-
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @GetMapping(
-    "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
+    CONTACT_DETAILS_END_POINT_VVC,
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Get a prison's Videolink Conferencing Centre email address")
@@ -69,9 +74,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity.notFound().build()
 
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @GetMapping(
-    "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
+    CONTACT_DETAILS_END_POINT_OMU,
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Get a prison's Offender Management Unit email address")
@@ -103,7 +109,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       ?: ResponseEntity.notFound().build()
 
   @GetMapping(
-    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS",
+    CONTACT_DETAILS_END_POINT_DEPARTMENT,
     produces = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Get a prison department's email address")
@@ -142,9 +148,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
       )
   }
 
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @PutMapping(
-    "/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS",
+    CONTACT_DETAILS_END_POINT_VVC,
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Set or change a prison's Videolink Conferencing Centre email address")
@@ -174,7 +181,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Size(max = 12, min = 2)
     prisonId: String,
 
-    @Schema(description = "Email address", example = "a@b.com", required = true)
+    @Schema(description = "Email address", example = "aled.wynevans@digital.justice.gov.uk", required = true)
     @RequestBody
     @Valid
     @Email
@@ -186,9 +193,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     }.build()
   }
 
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
   @PutMapping(
-    "/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS",
+    CONTACT_DETAILS_END_POINT_OMU,
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Set or change a prison's Offender Management Unit email address")
@@ -231,7 +239,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
   }
 
   @PutMapping(
-    "/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS",
+    CONTACT_DETAILS_END_POINT_DEPARTMENT,
     consumes = [MediaType.TEXT_PLAIN_VALUE],
   )
   @Operation(summary = "Set or change a prison department's email address")
@@ -276,8 +284,9 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     }.build()
   }
 
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
-  @DeleteMapping("/$SECURE_PRISON_BY_ID/$VCC/$EMAIL_ADDRESS")
+  @DeleteMapping(CONTACT_DETAILS_END_POINT_VVC)
   @Operation(summary = "Remove a prison's Videolink Conferencing Centre email address")
   @ApiResponses(
     value = [
@@ -301,8 +310,9 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     return ResponseEntity.noContent().build()
   }
 
+  @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
-  @DeleteMapping("/$SECURE_PRISON_BY_ID/$OMU/$EMAIL_ADDRESS")
+  @DeleteMapping(CONTACT_DETAILS_END_POINT_OMU)
   @Operation(summary = "Remove a prison's Offender Management Unit email address")
   @ApiResponses(
     value = [
@@ -326,7 +336,7 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     return ResponseEntity.noContent().build()
   }
 
-  @DeleteMapping("/$SECURE_PRISON_BY_ID/department/{departmentType}/$EMAIL_ADDRESS")
+  @DeleteMapping(CONTACT_DETAILS_END_POINT_DEPARTMENT)
   @Operation(summary = "Remove a prison department's email address")
   @ApiResponses(
     value = [

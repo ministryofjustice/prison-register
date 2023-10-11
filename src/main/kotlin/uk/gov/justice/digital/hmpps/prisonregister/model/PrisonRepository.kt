@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository
 interface PrisonRepository : JpaRepository<Prison, String>, JpaSpecificationExecutor<Prison> {
   fun findByActiveOrderByPrisonId(active: Boolean): List<Prison>
 
+  fun findByPrisonId(prisonCode: String): Prison?
+
   fun findByGpPracticeGpPracticeCode(gpPracticeCode: String): Prison?
 }
