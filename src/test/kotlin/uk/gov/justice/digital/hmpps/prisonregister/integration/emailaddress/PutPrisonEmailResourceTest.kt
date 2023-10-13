@@ -135,7 +135,7 @@ class PutPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
 
     // When
-    val responseSpec = doPutActionEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -150,7 +150,7 @@ class PutPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val newEmailAddress = "aled@moj.com"
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
     // When
-    val responseSpec = doPutActionEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isCreated
@@ -180,7 +180,7 @@ class PutPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
     // When
-    val responseSpec = doPutActionEmail(endPoint, prisonId, headers = createAnyRole())
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
@@ -199,7 +199,7 @@ class PutPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     createDBData(prisonId, departmentType, emailAddress = oldEmailAddress)
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
     // When
-    val responseSpec = doPutActionEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -214,7 +214,7 @@ class PutPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val newEmailAddress = "aled@moj.com"
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
     // When
-    val responseSpec = doPutActionEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isCreated
@@ -245,7 +245,7 @@ class PutPrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
     // When
-    val responseSpec = doPutActionEmail(endPoint, prisonId, headers = createAnyRole())
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden

@@ -33,7 +33,7 @@ class PrisonPhoneNumberResource(private val prisonService: PrisonService) {
 
   @GetMapping(
     "/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER",
-    produces = [MediaType.TEXT_PLAIN_VALUE],
+    produces = [MediaType.APPLICATION_JSON_VALUE],
   )
   @Operation(summary = "Get a prison department's phone number")
   @ApiResponses(
@@ -41,7 +41,7 @@ class PrisonPhoneNumberResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "200",
         description = "Returns the phone number",
-        content = [Content(mediaType = MediaType.TEXT_PLAIN_VALUE)],
+        content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
       ),
       ApiResponse(
         responseCode = "400",
@@ -73,7 +73,7 @@ class PrisonPhoneNumberResource(private val prisonService: PrisonService) {
 
   @PutMapping(
     "/$SECURE_PRISON_BY_ID/department/{departmentType}/$PHONE_NUMBER",
-    consumes = [MediaType.TEXT_PLAIN_VALUE],
+    consumes = [MediaType.APPLICATION_JSON_VALUE],
   )
   @Operation(summary = "Set or change a prison department's phone number")
   @ApiResponses(

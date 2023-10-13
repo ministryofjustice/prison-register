@@ -148,15 +148,6 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
-  fun doPutActionPhoneNoRole(endPoint: String): ResponseSpec {
-    return webTestClient
-      .put()
-      .uri(endPoint, prisonId)
-      .contentType(MediaType.TEXT_PLAIN)
-      .bodyValue("07505902221")
-      .exchange()
-  }
-
   fun doPutActionEmailNoRole(endPoint: String): ResponseSpec {
     return webTestClient
       .put()
@@ -166,7 +157,7 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
-  fun doPutActionEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String ? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
+  fun doPutActionLegacyEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String ? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonID)
@@ -176,11 +167,30 @@ abstract class ContactDetailsIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
+  fun doPutActionEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String ? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
+    return webTestClient
+      .put()
+      .uri(endPoint, prisonID)
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(emailAddress)
+      .headers(headers)
+      .exchange()
+  }
+
+  fun doPutActionPhoneNoRole(endPoint: String, phoneNumber: String ? = "07505902221"): ResponseSpec {
+    return webTestClient
+      .put()
+      .uri(endPoint, prisonId)
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(phoneNumber)
+      .exchange()
+  }
+
   fun doPutActionPhoneNumber(endPoint: String, prisonID: String? = prisonId, phoneNumber: String ? = "07505902221", headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonID)
-      .contentType(MediaType.TEXT_PLAIN)
+      .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(phoneNumber)
       .headers(headers)
       .exchange()
