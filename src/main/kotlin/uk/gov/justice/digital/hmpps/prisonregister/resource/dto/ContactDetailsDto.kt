@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidWebAd
 
 @Schema(description = "Contact information for a prison department")
 class ContactDetailsDto(
-  @Schema(description = "Department Type", example = "SOCIAL_VISIT", required = true)
+  @Schema(description = "Department Type", example = "SOCIAL_VISIT or PRISON", required = true)
   @field:NotNull
   val type: DepartmentType,
   @Schema(description = "email address", example = "aled.evans@moj.gov.uk", required = false)
