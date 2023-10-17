@@ -237,6 +237,11 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "204",
         description = "The contact details were removed",
+        content = [
+          Content(
+            mediaType = "text/plain",
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "400",
