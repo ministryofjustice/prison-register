@@ -49,15 +49,16 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
   }
 
   @Test
-  fun `When contact details are deleted that has other contact information, only phone is deleted`() {
+  fun `When contact details are deleted but web address and email address are used by others, only phone is deleted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
     val phoneNumber = "01348811540"
+    val webAddress = "www.test.com"
 
-    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = "www.test.com")
-    createDBData(prisonId, SOCIAL_VISIT, emailAddress = emailAddress, webAddress = "www.test.com")
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
+    createDBData(prisonId, SOCIAL_VISIT, emailAddress = emailAddress, webAddress = webAddress)
 
     val endPoint = getContactDetailsEndPoint(prisonId)
 
@@ -66,7 +67,51 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertOnlyPhoneHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = "www.test.com", department = departmentType)
+    assertOnlyPhoneHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress, department = departmentType)
+  }
+
+  @Test
+  fun `When contact details are deleted but phone number and email address are used by others, only web address is deleted`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = OFFENDER_MANAGEMENT_UNIT
+    val emailAddress = "aled@aled.com"
+    val phoneNumber = "01348811540"
+    val webAddress = "www.test.com"
+
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
+    createDBData(prisonId, SOCIAL_VISIT, emailAddress = emailAddress, phoneNumber = phoneNumber)
+
+    val endPoint = getContactDetailsEndPoint(prisonId)
+
+    // When
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isNoContent
+    assertOnlyWebAddressHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress, department = departmentType)
+  }
+
+  @Test
+  fun `When contact details are deleted but phone number and email address are used by others, only email address is deleted`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = OFFENDER_MANAGEMENT_UNIT
+    val emailAddress = "aled@aled.com"
+    val phoneNumber = "01348811540"
+    val webAddress = "www.test.com"
+
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
+    createDBData(prisonId, SOCIAL_VISIT, webAddress = webAddress, phoneNumber = phoneNumber)
+
+    val endPoint = getContactDetailsEndPoint(prisonId)
+
+    // When
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isNoContent
+    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress, department = departmentType)
   }
 
   @Test

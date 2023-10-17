@@ -33,15 +33,24 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
     val phoneNumber = "01348811540"
+    val webAddress = "www.aled.com"
 
-    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber)
+    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
     val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
-    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
+
+    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    assertThat(phoneNumberEntity).isNotNull
+
+    val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+    assertThat(emailAddressEntity).isNull()
+
+    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    assertThat(webAddressAddressEntity).isNotNull
   }
 
   @Test

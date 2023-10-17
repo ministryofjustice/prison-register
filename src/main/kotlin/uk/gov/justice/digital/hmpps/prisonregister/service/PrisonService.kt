@@ -329,7 +329,7 @@ class PrisonService(
 
     contactDetails.webAddress?.let {
       if (contactDetailsRepository.isWebAddressOrphaned(it.value)) {
-        emailAddressRepository.delete(it.value)
+        webAddressRepository.delete(it.value)
       }
     }
   }

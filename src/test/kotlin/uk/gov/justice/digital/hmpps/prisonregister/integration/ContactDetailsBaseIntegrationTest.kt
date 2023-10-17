@@ -272,15 +272,18 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     }
   }
 
-  fun assertOnlyEmailHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, department: DepartmentType) {
+  fun assertOnlyEmailHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, webAddress: String, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
-    assertThat(contactDetails).isNotNull
+    assertThat(contactDetails).isNull()
 
     val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
     assertThat(phoneNumberEntity).isNotNull
 
     val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
     assertThat(emailAddressEntity).isNull()
+
+    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    assertThat(webAddressAddressEntity).isNotNull
   }
 
   fun assertOnlyPhoneHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, webAddress: String, department: DepartmentType) {
@@ -295,6 +298,20 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
     val webAddressAddressEntity = webAddressRepository.get(webAddress)
     assertThat(webAddressAddressEntity).isNotNull
+  }
+
+  fun assertOnlyWebAddressHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, webAddress: String, department: DepartmentType) {
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
+    assertThat(contactDetails).isNull()
+
+    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    assertThat(phoneNumberEntity).isNotNull
+
+    val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+    assertThat(emailAddressEntity).isNotNull
+
+    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    assertThat(webAddressAddressEntity).isNull()
   }
 
   fun assertDbContactDetailsExist(prisonId: String, dto: ContactDetailsDto) {
