@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_V
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 
-class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
+class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
   @Test
   fun `When contact details are updated, then http 200 is returned with persisted updated contact details`() {
@@ -18,18 +18,18 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val departmentType = SOCIAL_VISIT
     val endPoint = getContactDetailsEndPoint(prisonId)
     createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.moj.gov.uk")
-    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val updateRequest = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, dto, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isOk
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     assertNotNull(contactDetailsDto)
-    assertContactDetailsEquals(dto, contactDetailsDto)
+    assertContactDetailsEquals(updateRequest, contactDetailsDto)
 
-    assertDbContactDetailsExist(prisonId, dto)
+    assertDbContactDetailsExist(prisonId, updateRequest)
   }
 
   @Test
@@ -41,23 +41,23 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint1 = getContactDetailsEndPoint(prisonId1)
     val endPoint2 = getContactDetailsEndPoint(prisonId2)
 
-    val dto1 = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
-    val dto2 = ContactDetailsDto(OFFENDER_MANAGEMENT_UNIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val updateRequest1 = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
+    val updateRequest2 = ContactDetailsDto(OFFENDER_MANAGEMENT_UNIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
 
-    createDBData(prisonId1, dto1)
-    createDBData(prisonId2, dto2)
+    createDBData(prisonId1, updateRequest1)
+    createDBData(prisonId2, updateRequest2)
 
     // When
-    val responseSpec1 = doUpdateContactDetailsAction(endPoint1, dto1, headers = createMaintainRoleWithWriteScope())
-    val responseSpec2 = doUpdateContactDetailsAction(endPoint2, dto2, headers = createMaintainRoleWithWriteScope())
+    val responseSpec1 = doUpdateContactDetailsAction(endPoint1, updateRequest1, headers = createMaintainRoleWithWriteScope())
+    val responseSpec2 = doUpdateContactDetailsAction(endPoint2, updateRequest2, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec1.expectStatus().isOk
     responseSpec2.expectStatus().isOk
 
-    Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(dto1.phoneNumber!!)).isEqualTo(1)
-    Assertions.assertThat(testEmailAddressRepository.getEmailCount(dto1.emailAddress!!)).isEqualTo(1)
-    Assertions.assertThat(testWebAddressRepository.getWebAddressCount(dto1.webAddress!!)).isEqualTo(1)
+    Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(updateRequest1.phoneNumber!!)).isEqualTo(1)
+    Assertions.assertThat(testEmailAddressRepository.getEmailCount(updateRequest1.emailAddress!!)).isEqualTo(1)
+    Assertions.assertThat(testWebAddressRepository.getWebAddressCount(updateRequest1.webAddress!!)).isEqualTo(1)
   }
 
   @Test
@@ -66,17 +66,17 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "BRI"
     val endPoint1 = getContactDetailsEndPoint(prisonId1, removeIfNull = true)
-    val createRequest = ContactDetailsDto(SOCIAL_VISIT, phoneNumber = "01348811539")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, phoneNumber = "01348811539")
     val persisted = createDBData(prisonId1, SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, createRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
 
-    assertContactDetailsEquals(createRequest, contactDetailsDto)
+    assertContactDetailsEquals(updateRequest, contactDetailsDto)
 
     Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(persisted.phoneNumber!!)).isEqualTo(1)
     Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
@@ -89,17 +89,19 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "BRI"
     val endPoint1 = getContactDetailsEndPoint(prisonId1, removeIfNull = true)
-    val createRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk")
     val persisted = createDBData(prisonId1, SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, createRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
 
-    assertContactDetailsEquals(createRequest, contactDetailsDto)
+    assertContactDetailsEquals(updateRequest, contactDetailsDto)
+
+    Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
 
     Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(persisted.phoneNumber!!)).isEqualTo(1)
     Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
@@ -112,17 +114,17 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "BRI"
     val endPoint1 = getContactDetailsEndPoint(prisonId1, removeIfNull = true)
-    val createRequest = ContactDetailsDto(SOCIAL_VISIT, webAddress = "www.aled.blog.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, webAddress = "www.aled.blog.gov.uk")
     val persisted = createDBData(prisonId1, SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, createRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
 
-    assertContactDetailsEquals(createRequest, contactDetailsDto)
+    assertContactDetailsEquals(updateRequest, contactDetailsDto)
 
     Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(persisted.phoneNumber!!)).isEqualTo(1)
     Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
@@ -135,12 +137,12 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "BRI"
     val endPoint1 = getContactDetailsEndPoint(prisonId1, removeIfNull = false)
-    val createRequest = ContactDetailsDto(SOCIAL_VISIT, phoneNumber = "01348811539")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, phoneNumber = "01348811539")
     val persisted = createDBData(prisonId1, SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, createRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -148,7 +150,7 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     Assertions.assertThat(persisted.type).isEqualTo(contactDetailsDto.type)
     Assertions.assertThat(persisted.emailAddress).isEqualTo(contactDetailsDto.emailAddress)
     Assertions.assertThat(persisted.webAddress).isEqualTo(contactDetailsDto.webAddress)
-    Assertions.assertThat(createRequest.phoneNumber).isEqualTo(contactDetailsDto.phoneNumber)
+    Assertions.assertThat(updateRequest.phoneNumber).isEqualTo(contactDetailsDto.phoneNumber)
   }
 
   @Test
@@ -157,20 +159,56 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "BRI"
     val endPoint1 = getContactDetailsEndPoint(prisonId1, removeIfNull = false)
-    val createRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk")
     val persisted = createDBData(prisonId1, SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, createRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
 
     Assertions.assertThat(persisted.type).isEqualTo(contactDetailsDto.type)
-    Assertions.assertThat(createRequest.emailAddress).isEqualTo(contactDetailsDto.emailAddress)
+    Assertions.assertThat(updateRequest.emailAddress).isEqualTo(contactDetailsDto.emailAddress)
     Assertions.assertThat(persisted.webAddress).isEqualTo(contactDetailsDto.webAddress)
     Assertions.assertThat(persisted.phoneNumber).isEqualTo(contactDetailsDto.phoneNumber)
+  }
+
+  @Test
+  fun `When only contact details are orphaned and false, orphaned details are removed`() {
+    // Given
+    val endPoint = getContactDetailsEndPoint(prisonId, removeIfNull = false)
+    val originalData = createDBData(prisonId, SOCIAL_VISIT, emailAddress = "delete-me@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.deleteMe.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk", phoneNumber = "01348811540", webAddress = "www.aled.gov.uk")
+
+    // When
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isOk
+
+    Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(originalData.phoneNumber!!)).isEqualTo(0)
+    Assertions.assertThat(testEmailAddressRepository.getEmailCount(originalData.emailAddress!!)).isEqualTo(0)
+    Assertions.assertThat(testWebAddressRepository.getWebAddressCount(originalData.webAddress!!)).isEqualTo(0)
+  }
+
+  @Test
+  fun `When only contact details are orphaned and true, orphaned details are removed`() {
+    // Given
+    val endPoint = getContactDetailsEndPoint(prisonId, removeIfNull = true)
+    val originalData = createDBData(prisonId, SOCIAL_VISIT, emailAddress = "delete-me@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.deleteMe.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk", phoneNumber = "01348811540", webAddress = "www.aled.gov.uk")
+
+    // When
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isOk
+
+    Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(originalData.phoneNumber!!)).isEqualTo(0)
+    Assertions.assertThat(testEmailAddressRepository.getEmailCount(originalData.emailAddress!!)).isEqualTo(0)
+    Assertions.assertThat(testWebAddressRepository.getWebAddressCount(originalData.webAddress!!)).isEqualTo(0)
   }
 
   @Test
@@ -179,19 +217,19 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId1 = "BRI"
     val prisonId2 = "BRI"
     val endPoint1 = getContactDetailsEndPoint(prisonId1, removeIfNull = false)
-    val createRequest = ContactDetailsDto(SOCIAL_VISIT, webAddress = "www.aled.blog.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, webAddress = "www.aled.blog.gov.uk")
     val persisted = createDBData(prisonId1, SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, createRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
 
     Assertions.assertThat(persisted.type).isEqualTo(contactDetailsDto.type)
     Assertions.assertThat(persisted.emailAddress).isEqualTo(contactDetailsDto.emailAddress)
-    Assertions.assertThat(createRequest.webAddress).isEqualTo(contactDetailsDto.webAddress)
+    Assertions.assertThat(updateRequest.webAddress).isEqualTo(contactDetailsDto.webAddress)
     Assertions.assertThat(persisted.phoneNumber).isEqualTo(contactDetailsDto.phoneNumber)
   }
 
@@ -200,10 +238,10 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "I am not an email", phoneNumber = "I an bit a phone number", webAddress = "I am not a web address")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "I am not an email", phoneNumber = "I an bit a phone number", webAddress = "I am not a web address")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, dto, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus()
@@ -219,16 +257,16 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, dto)
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
     verifyNoInteractions(contactDetailsRepository)
     verifyNoInteractions(phoneNumberRepository)
-    assertContactDetailsHaveBeenDeleted(prisonId, department = dto.type)
+    assertContactDetailsHaveBeenDeleted(prisonId, department = updateRequest.type)
   }
 
   @Test
@@ -236,16 +274,16 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, dto, headers = createAnyRole())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createAnyRole())
 
     // Then
     responseSpec.expectStatus().isForbidden
     verifyNoInteractions(contactDetailsRepository)
     verifyNoInteractions(phoneNumberRepository)
-    assertContactDetailsHaveBeenDeleted(prisonId, department = dto.type)
+    assertContactDetailsHaveBeenDeleted(prisonId, department = updateRequest.type)
   }
 
   @Test
@@ -254,10 +292,10 @@ class UpdatContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "AWE"
     val departmentType = SOCIAL_VISIT
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val updateRequest = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, dto, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNotFound

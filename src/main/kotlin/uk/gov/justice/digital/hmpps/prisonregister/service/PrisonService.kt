@@ -274,6 +274,8 @@ class PrisonService(
       )
 
     if (haveContactDetailsChanged(updateContactDetailsDto, contactDetails)) {
+      val originalDetails = ContactDetailsDto(contactDetails)
+
       updateContactDetailsDto.emailAddress?.let {
         val emailAddress = createOrGetEmailAddress(it)
         emailAddress.contactDetails.add(contactDetails)
@@ -293,7 +295,9 @@ class PrisonService(
       } ?: run { if (removeIfNull) contactDetails.phoneNumber = null }
 
       val persistedEntity = contactDetailsRepository.saveAndFlush(contactDetails)
-      removeOrphanedContactDetails(contactDetails)
+
+      removeOrphanedContactDetails(originalDetails)
+
       return ContactDetailsDto(persistedEntity)
     }
 
@@ -311,25 +315,25 @@ class PrisonService(
 
     contactDetailsRepository.delete(contactDetails)
 
-    removeOrphanedContactDetails(contactDetails)
+    removeOrphanedContactDetails(ContactDetailsDto(contactDetails))
   }
 
-  private fun removeOrphanedContactDetails(contactDetails: ContactDetails) {
+  private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {
     contactDetails.emailAddress?.let {
-      if (contactDetailsRepository.isEmailOrphaned(it.value)) {
-        emailAddressRepository.delete(it.value)
+      if (contactDetailsRepository.isEmailOrphaned(it)) {
+        emailAddressRepository.delete(it)
       }
     }
 
     contactDetails.phoneNumber?.let {
-      if (contactDetailsRepository.isPhoneNumberOrphaned(it.value)) {
-        phoneNumberRepository.delete(it.value)
+      if (contactDetailsRepository.isPhoneNumberOrphaned(it)) {
+        phoneNumberRepository.delete(it)
       }
     }
 
     contactDetails.webAddress?.let {
-      if (contactDetailsRepository.isWebAddressOrphaned(it.value)) {
-        webAddressRepository.delete(it.value)
+      if (contactDetailsRepository.isWebAddressOrphaned(it)) {
+        webAddressRepository.delete(it)
       }
     }
   }
