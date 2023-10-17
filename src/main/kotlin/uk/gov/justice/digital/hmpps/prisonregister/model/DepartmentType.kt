@@ -6,7 +6,7 @@ enum class DepartmentType {
   VIDEOLINK_CONFERENCING_CENTRE,
   OFFENDER_MANAGEMENT_UNIT,
   ;
-  override fun toString(): String {
+  fun toMessage(): String {
     return this.name.lowercase().replace("_", " ")
   }
 }

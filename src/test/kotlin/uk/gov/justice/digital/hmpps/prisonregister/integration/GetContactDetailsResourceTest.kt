@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 
 class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
@@ -28,7 +26,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     responseSpec.expectStatus()
       .isOk
 
-    val contactDetailsDto = getResults(responseSpec.expectBody())
+    val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     Assertions.assertNotNull(contactDetailsDto)
     Assertions.assertEquals(contactDetailsDto.emailAddress, "aled@moj.gov.uk")
     Assertions.assertEquals(contactDetailsDto.phoneNumber, "01348811539")
@@ -51,7 +49,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     responseSpec.expectStatus()
       .isOk
 
-    val contactDetailsDto = getResults(responseSpec.expectBody())
+    val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     assertNotNull(contactDetailsDto)
     assertEquals(contactDetailsDto.emailAddress, "aled@moj.gov.uk")
     assertNull(contactDetailsDto.phoneNumber)
@@ -74,7 +72,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     responseSpec.expectStatus()
       .isOk
 
-    val contactDetailsDto = getResults(responseSpec.expectBody())
+    val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     assertNotNull(contactDetailsDto)
     assertNull(contactDetailsDto.emailAddress)
     assertNull(contactDetailsDto.phoneNumber)
@@ -97,7 +95,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     responseSpec.expectStatus()
       .isOk
 
-    val contactDetailsDto = getResults(responseSpec.expectBody())
+    val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     assertNotNull(contactDetailsDto)
     assertNull(contactDetailsDto.emailAddress)
     assertEquals(contactDetailsDto.phoneNumber, "01348811539")
@@ -132,9 +130,5 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Then
     responseSpec.expectStatus()
       .isUnauthorized
-  }
-
-  private fun getResults(returnResult: WebTestClient.BodyContentSpec): ContactDetailsDto {
-    return objectMapper.readValue(returnResult.returnResult().responseBody, ContactDetailsDto::class.java)
   }
 }

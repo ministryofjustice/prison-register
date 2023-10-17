@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsAlre
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedDepartmentTypeException
 
 @RestControllerAdvice
 class PrisonRegisterExceptionHandler {
@@ -37,7 +36,7 @@ class PrisonRegisterExceptionHandler {
 
   @ExceptionHandler(ContactDetailsAlreadyExistException::class)
   fun handleException(e: ContactDetailsAlreadyExistException): ResponseEntity<ErrorResponse> {
-    val message = "Contact details already exist for ${e.prisonId} / ${e.departmentType} department."
+    val message = "Contact details already exist for ${e.prisonId} / ${e.departmentType.toMessage()} department."
     log.error(message)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
@@ -46,22 +45,12 @@ class PrisonRegisterExceptionHandler {
 
   @ExceptionHandler(ContactDetailsNotFoundException::class)
   fun handleException(e: ContactDetailsNotFoundException): ResponseEntity<ErrorResponse> {
-    val message = "Contact details not found for prison ID ${e.prisonId} for ${e.departmentType} department."
+    val message = "Contact details not found for prison ID ${e.prisonId} for ${e.departmentType.toMessage()} department."
     log.error(message)
 
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
       .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = message, userMessage = message))
-  }
-
-  @ExceptionHandler(UnsupportedDepartmentTypeException::class)
-  fun handleException(e: UnsupportedDepartmentTypeException): ResponseEntity<ErrorResponse> {
-    val message = "Value for DepartmentType is not of a known for ${e.departmentType} department."
-    log.error(message)
-
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = message, userMessage = message))
   }
 
   @ExceptionHandler(EntityNotFoundException::class)

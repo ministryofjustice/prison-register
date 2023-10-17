@@ -32,7 +32,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.UpdateContactDetailsDto
 
 const val CLIENT_CAN_MAINTAIN_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
@@ -265,7 +264,7 @@ class PrisonService(
 
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
-  fun updateContactDetails(prisonId: String, updateContactDetailsDto: UpdateContactDetailsDto, removeIfNull: Boolean = true): ContactDetailsDto {
+  fun updateContactDetails(prisonId: String, updateContactDetailsDto: ContactDetailsDto, removeIfNull: Boolean = true): ContactDetailsDto {
     prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
 
     val contactDetails =
@@ -276,15 +275,21 @@ class PrisonService(
 
     if (haveContactDetailsChanged(updateContactDetailsDto, contactDetails)) {
       updateContactDetailsDto.emailAddress?.let {
-        createOrGetEmailAddress(it).contactDetails.add(contactDetails)
+        val emailAddress = createOrGetEmailAddress(it)
+        emailAddress.contactDetails.add(contactDetails)
+        contactDetails.emailAddress = emailAddress
       } ?: run { if (removeIfNull) contactDetails.emailAddress = null }
 
       updateContactDetailsDto.webAddress?.let {
-        createOrGetWebAddress(it).contactDetails.add(contactDetails)
+        val webAddress = createOrGetWebAddress(it)
+        webAddress.contactDetails.add(contactDetails)
+        contactDetails.webAddress = webAddress
       } ?: run { if (removeIfNull) contactDetails.webAddress = null }
 
       updateContactDetailsDto.phoneNumber?.let {
-        createOrGetPhoneNumber(it).contactDetails.add(contactDetails)
+        val phoneNumber = createOrGetPhoneNumber(it)
+        phoneNumber.contactDetails.add(contactDetails)
+        contactDetails.phoneNumber = phoneNumber
       } ?: run { if (removeIfNull) contactDetails.phoneNumber = null }
 
       val persistedEntity = contactDetailsRepository.saveAndFlush(contactDetails)
@@ -329,7 +334,7 @@ class PrisonService(
     }
   }
 
-  private fun haveContactDetailsChanged(updateContactDetailsDto: UpdateContactDetailsDto, contactDetails: ContactDetails): Boolean {
+  private fun haveContactDetailsChanged(updateContactDetailsDto: ContactDetailsDto, contactDetails: ContactDetails): Boolean {
     return updateContactDetailsDto.type != contactDetails.type ||
       updateContactDetailsDto.emailAddress != contactDetails.emailAddress?.value ||
       updateContactDetailsDto.webAddress != contactDetails.webAddress?.value ||

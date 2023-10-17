@@ -3,11 +3,9 @@ package uk.gov.justice.digital.hmpps.prisonregister.integration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verifyNoInteractions
-import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 
 class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
@@ -120,9 +118,5 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     responseSpec.expectStatus().isForbidden
     verifyNoInteractions(contactDetailsRepository)
     verifyNoInteractions(phoneNumberRepository)
-  }
-
-  private fun getResults(returnResult: WebTestClient.BodyContentSpec): ContactDetailsDto {
-    return objectMapper.readValue(returnResult.returnResult().responseBody, ContactDetailsDto::class.java)
   }
 }

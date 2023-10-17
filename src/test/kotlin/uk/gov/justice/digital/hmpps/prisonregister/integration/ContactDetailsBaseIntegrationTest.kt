@@ -3,12 +3,14 @@ package uk.gov.justice.digital.hmpps.prisonregister.integration
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
@@ -70,6 +72,8 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     emailAddressRepository.flush()
     phoneNumberRepository.deleteAll()
     phoneNumberRepository.flush()
+    testWebAddressRepository.deleteAll()
+    testWebAddressRepository.flush()
   }
 
   fun getResponseBodyText(responseSpec: ResponseSpec): String {
@@ -86,6 +90,12 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
   fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))
 
   fun createMaintainRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"))
+
+  fun createDBData(prisonId: String, dto: ContactDetailsDto): ContactDetailsDto {
+    return with(dto) {
+      createDBData(prisonId, departmentType = type, phoneNumber = phoneNumber, emailAddress = emailAddress, webAddress = webAddress)
+    }
+  }
 
   fun createDBData(prisonId: String, departmentType: DepartmentType, phoneNumber: String? = null, emailAddress: String? = null, webAddress: String? = null): ContactDetailsDto {
     val prison = createOrGetDbPrison(prisonId)
@@ -127,8 +137,11 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
   fun getContactDetailsEndPoint(
     prisonId: String,
+    removeIfNull: Boolean? = null,
   ): String {
-    return "/secure/prisons/id/$prisonId/department/contact-details"
+    return removeIfNull?.let {
+      "/secure/prisons/id/$prisonId/department/contact-details?removeIfNull=$removeIfNull"
+    } ?: "/secure/prisons/id/$prisonId/department/contact-details"
   }
 
   fun getLegacyEndPointEmail(
@@ -197,10 +210,29 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
+  fun doUpdateContactDetailsAction(endPoint: String, bodyValue: ContactDetailsDto, headers: (HttpHeaders) -> Unit): ResponseSpec {
+    return webTestClient
+      .put()
+      .uri(endPoint)
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(BodyInserters.fromValue(bodyValue))
+      .headers(headers)
+      .exchange()
+  }
+
   fun doCreateContactDetailsAction(endPoint: String, prisonID: String? = prisonId, bodyValue: ContactDetailsDto): ResponseSpec {
     return webTestClient
       .post()
       .uri(endPoint, prisonID)
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(BodyInserters.fromValue(bodyValue))
+      .exchange()
+  }
+
+  fun doUpdateContactDetailsAction(endPoint: String, bodyValue: ContactDetailsDto): ResponseSpec {
+    return webTestClient
+      .post()
+      .uri(endPoint)
       .contentType(MediaType.APPLICATION_JSON)
       .body(BodyInserters.fromValue(bodyValue))
       .exchange()
@@ -299,5 +331,16 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
       assertThat(contactDetails.webAddress).isNotNull
       assertThat(contactDetails.webAddress?.value).isEqualTo(it)
     }
+  }
+
+  fun getContactDetailsDtoResults(returnResult: WebTestClient.BodyContentSpec): ContactDetailsDto {
+    return objectMapper.readValue(returnResult.returnResult().responseBody, ContactDetailsDto::class.java)
+  }
+
+  fun assertContactDetailsEquals(dto1: ContactDetailsDto, dto2: ContactDetailsDto) {
+    assertEquals(dto1.type, dto2.type)
+    assertEquals(dto1.emailAddress, dto2.emailAddress)
+    assertEquals(dto1.webAddress, dto2.webAddress)
+    assertEquals(dto1.phoneNumber, dto2.phoneNumber)
   }
 }

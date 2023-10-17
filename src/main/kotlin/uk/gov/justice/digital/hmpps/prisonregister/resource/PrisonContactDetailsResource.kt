@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsRequestDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.UpdateContactDetailsDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
 private const val SECURE_PRISON_BY_ID = "secure/prisons/id/{prisonId}"
@@ -109,7 +108,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a phone number for this department",
+        description = "The prison does not exist",
       ),
     ],
   )
@@ -136,7 +135,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateContactDetailsDto::class),
+          schema = Schema(implementation = ContactDetailsDto::class),
         ),
       ],
     ),
@@ -144,20 +143,16 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
   @ApiResponses(
     value = [
       ApiResponse(
-        responseCode = "201",
-        description = "The phone number was created",
-      ),
-      ApiResponse(
-        responseCode = "204",
-        description = "The phone number was updated",
+        responseCode = "200",
+        description = "The Contact details have been updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Client error - invalid prisonId, phone number, media type or similar",
+        description = "Client error - invalid prisonId, contact details, media type or similar",
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a phone number for this department",
+        description = "The given prison or contact details for this prison cannot be found.",
       ),
     ],
   )
@@ -167,12 +162,12 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
     @Size(max = 12, min = 2)
     prisonId: String,
     @RequestBody @Valid
-    updateContactDetailsDto: UpdateContactDetailsDto,
+    updateContactDetailsDto: ContactDetailsDto,
     @Schema(description = "if true individual contact details are removed if null", example = "true", defaultValue = "true", required = false)
     @RequestParam
     removeIfNull: Boolean = true,
-  ): ContactDetailsDto {
-    return prisonService.updateContactDetails(prisonId, updateContactDetailsDto, removeIfNull)
+  ): ResponseEntity<ContactDetailsDto> {
+    return ResponseEntity<ContactDetailsDto>(prisonService.updateContactDetails(prisonId, updateContactDetailsDto, removeIfNull), HttpStatus.OK)
   }
 
   @DeleteMapping(
@@ -194,7 +189,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "The prison does not have a phone number for this department",
+        description = "The contact details for this prison cannot be found.",
       ),
     ],
   )
