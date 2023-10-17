@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsRequestDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
 private const val SECURE_PRISON_BY_ID = "secure/prisons/id/{prisonId}"
@@ -40,14 +39,6 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
   )
   @Operation(
     summary = "Get a prison department's contact details",
-    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
-      content = [
-        Content(
-          mediaType = "application/json",
-          schema = Schema(implementation = ContactDetailsRequestDto::class),
-        ),
-      ],
-    ),
   )
   @ApiResponses(
     value = [
@@ -237,11 +228,6 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "204",
         description = "The contact details were removed",
-        content = [
-          Content(
-            mediaType = "text/plain",
-          ),
-        ],
       ),
       ApiResponse(
         responseCode = "400",
