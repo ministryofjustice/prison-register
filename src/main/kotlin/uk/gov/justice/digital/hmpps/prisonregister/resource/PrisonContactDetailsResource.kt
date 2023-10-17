@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsRequestDto
@@ -53,15 +54,32 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "200",
         description = "Returns the departments contact details",
-        content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ContactDetailsDto::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "400",
         description = "Client error - invalid prisonId or similar",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "404",
         description = "The prison does not have contact details for this department",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
     ],
   )
@@ -101,14 +119,32 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "201",
         description = "Contact details have been created",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ContactDetailsDto::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "400",
         description = "Client error - invalid prisonId, contact details, media type or similar",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "404",
         description = "The prison does not exist",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
     ],
   )
@@ -145,14 +181,32 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "200",
         description = "The Contact details have been updated",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ContactDetailsDto::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "400",
         description = "Client error - invalid prisonId, contact details, media type or similar",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "404",
         description = "The given prison or contact details for this prison cannot be found.",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
     ],
   )
@@ -172,6 +226,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
 
   @DeleteMapping(
     END_POINT,
+    produces = [MediaType.APPLICATION_JSON_VALUE],
   )
   @Operation(
     summary = "Remove a prison department's contact details",
@@ -186,10 +241,22 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
       ApiResponse(
         responseCode = "400",
         description = "Client error - invalid prisonId or similar",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "404",
         description = "The contact details for this prison cannot be found.",
+        content = [
+          Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ErrorResponse::class),
+          ),
+        ],
       ),
     ],
   )
