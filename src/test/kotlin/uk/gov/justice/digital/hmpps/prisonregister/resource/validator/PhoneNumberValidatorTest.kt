@@ -40,7 +40,7 @@ class PhoneNumberValidatorTest() {
   fun `invalid numbers that should fail validation`() {
     // Given
 
-    val phoneNumbers = arrayOf("", "a", "+44 as", "222", "+44", "@£", "aled@aled.com", "s", null)
+    val phoneNumbers = arrayOf("", "a", "+44 as", "222", "+44", "@£", "aled@aled.com", "s")
 
     // When
 

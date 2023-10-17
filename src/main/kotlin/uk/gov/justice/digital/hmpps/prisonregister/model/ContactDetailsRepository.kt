@@ -18,14 +18,19 @@ interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
   fun isEmailOrphaned(emailAddress: String): Boolean
 
   @Query(
-    "SELECT c.phoneNumber.value FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:departmentType",
+    "SELECT c FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:departmentType",
   )
-  fun getPhoneNumberByPrisonIdAndDepartment(prisonId: String, departmentType: DepartmentType): String?
+  fun get(prisonId: String, departmentType: DepartmentType): ContactDetails?
 
   @Query(
     "SELECT count(c) = 0 FROM ContactDetails c WHERE c.phoneNumber.value=:phoneNumber",
   )
   fun isPhoneNumberOrphaned(phoneNumber: String): Boolean
+
+  @Query(
+    "SELECT count(c) = 0 FROM ContactDetails c WHERE c.webAddress.value=:webAddress",
+  )
+  fun isWebAddressOrphaned(webAddress: String): Boolean
 
   fun getByPrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
 }

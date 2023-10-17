@@ -46,6 +46,14 @@ class ContactDetails(
   )
   var phoneNumber: PhoneNumber? = null,
 
+  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
+  @JoinTable(
+    name = "CONTACT_DETAILS_TO_WEB_ADDRESS",
+    joinColumns = [JoinColumn(name = "contact_details_id")],
+    inverseJoinColumns = [JoinColumn(name = "web_address_id")],
+  )
+  var webAddress: WebAddress? = null,
+
 ) : AbstractIdEntity() {
 
   @CreationTimestamp

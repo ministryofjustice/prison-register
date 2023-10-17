@@ -5,34 +5,63 @@ import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsAlreadyExistException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.UnsupportedDepartmentTypeException
 
 @RestControllerAdvice
 class PrisonRegisterExceptionHandler {
 
-  @ExceptionHandler(ContactNotFoundException::class)
-  fun handleException(e: ContactNotFoundException): ResponseEntity<String> {
-    val message = "Contact not found for prison ID ${e.prisonId} type ${e.departmentType.pathVariable}."
+  @ExceptionHandler(ItemNotFoundException::class)
+  fun handleException(e: ItemNotFoundException): ResponseEntity<ErrorResponse> {
+    log.error(e.message)
+
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message))
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException::class)
+  fun handleException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
+    val message = e.allErrors.filterNotNull().map { it.defaultMessage.replaceFirstChar { it.uppercase() } }.sorted().joinToString(separator = ", ")
+    log.error(message)
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message, userMessage = message))
+  }
+
+  @ExceptionHandler(ContactDetailsAlreadyExistException::class)
+  fun handleException(e: ContactDetailsAlreadyExistException): ResponseEntity<ErrorResponse> {
+    val message = "Contact details already exist for ${e.prisonId} / ${e.departmentType} department."
+    log.error(message)
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = message, userMessage = message))
+  }
+
+  @ExceptionHandler(ContactDetailsNotFoundException::class)
+  fun handleException(e: ContactDetailsNotFoundException): ResponseEntity<ErrorResponse> {
+    val message = "Contact details not found for prison ID ${e.prisonId} for ${e.departmentType} department."
     log.error(message)
 
-    return ResponseEntity<String>(
-      message,
-      HttpStatus.NOT_FOUND,
-    )
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = message, userMessage = message))
   }
 
   @ExceptionHandler(UnsupportedDepartmentTypeException::class)
-  fun handleException(e: UnsupportedDepartmentTypeException): ResponseEntity<String> {
-    val message = "Value for DepartmentType is not of a known type ${e.departmentType}."
+  fun handleException(e: UnsupportedDepartmentTypeException): ResponseEntity<ErrorResponse> {
+    val message = "Value for DepartmentType is not of a known for ${e.departmentType} department."
     log.error(message)
 
-    return ResponseEntity<String>(
-      message,
-      HttpStatus.BAD_REQUEST,
-    )
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = message, userMessage = message))
   }
 
   @ExceptionHandler(EntityNotFoundException::class)
@@ -40,7 +69,16 @@ class PrisonRegisterExceptionHandler {
     log.debug("Prison not found exception: {}", e.message)
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
-      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message))
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message, userMessage = "Prison not found exception"))
+  }
+
+  @ExceptionHandler(PrisonNotFoundException::class)
+  fun handleException(e: PrisonNotFoundException): ResponseEntity<ErrorResponse> {
+    val message = "Prison not found exception: ${e.prisonId}"
+    log.debug(message)
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message, userMessage = message))
   }
 
   @ExceptionHandler(ValidationException::class)

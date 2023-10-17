@@ -1,15 +1,14 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration.emailaddress
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verifyNoInteractions
-import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsIntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.ContactDetailsBaseIntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_VISIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 
-class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
+class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() {
 
   @Test
   fun `When an email is deleted for offender-management-unit, isNoContent is returned and data is deleted`() {
@@ -18,7 +17,7 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
     createDBData(prisonId, departmentType, emailAddress = emailAddress)
-    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
@@ -36,7 +35,7 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     val phoneNumber = "01348811540"
 
     createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber)
-    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
@@ -56,7 +55,7 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     createDBData(prisonId, departmentType, emailAddress = emailAddress)
     createDBData(prisonId, otherDepartmentType, emailAddress = emailAddress)
 
-    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
 
@@ -69,29 +68,11 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When an email is deleted that has other contact information, only email is deleted`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val emailAddress = "aled@aled.com"
-    val phoneNumber = "01348811540"
-
-    createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber)
-    val endPoint = getEndPointEmail(prisonId, departmentType)
-    // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
-
-    // Then
-    responseSpec.expectStatus().isNoContent
-    assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, department = departmentType)
-  }
-
-  @Test
   fun `When an email deletion has been requested for offender-management-unit without a role, status unauthorized is returned`() {
     // Given
-    val endPoint = getLegacyEndPointEmail(prisonId, OFFENDER_MANAGEMENT_UNIT)
+    val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
-    val responseSpec = doDeleteActionNoRole(endPoint)
+    val responseSpec = doDeleteActionNoRoleLegacy(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -103,7 +84,7 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
   fun `When an email deletion has been requested for offender-management-unit with an incorrect role, status forbidden is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getLegacyEndPointEmail(prisonId, OFFENDER_MANAGEMENT_UNIT)
+    val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createAnyRole())
 
@@ -114,29 +95,13 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
   }
 
   @Test
-  fun `When email address cannot be found for prison, then appropriate error is show`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointEmail(prisonId, departmentType)
-    // When
-    val responseSpec = doDeleteAction(endPoint, headers = createMaintainRoleWithWriteScope())
-
-    // Then
-    responseSpec.expectStatus().isNotFound
-
-    val bodyText = getResponseBodyText(responseSpec)
-    Assertions.assertEquals("Contact not found for prison ID BRI type social-visit.", bodyText)
-  }
-
-  @Test
   fun `When an email is deleted for video-link-conferencing, isNoContent is returned and data is deleted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = VIDEOLINK_CONFERENCING_CENTRE
     val emailAddress = "aled@aled.com"
     createDBData(prisonId, departmentType, emailAddress = emailAddress)
-    val endPoint = getLegacyEndPointEmail(prisonId, departmentType)
+    val endPoint = getLegacyEndPointEmail(prisonId, "videolink-conferencing-centre")
 
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
@@ -149,9 +114,9 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
   @Test
   fun `When an email deletion has been requested for video-link-conferencing without a role, status unauthorized is returned`() {
     // Given
-    val endPoint = getLegacyEndPointEmail(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
+    val endPoint = getLegacyEndPointEmail(prisonId, "videolink-conferencing-centre")
     // When
-    val responseSpec = doDeleteActionNoRole(endPoint)
+    val responseSpec = doDeleteActionNoRoleLegacy(endPoint)
 
     // Then
     responseSpec.expectStatus().isUnauthorized
@@ -163,7 +128,7 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
   fun `When an email deletion has been requested for video-link-conferencing with an incorrect role, status forbidden is returned`() {
     // Given
     val prisonId = "BRI"
-    val endPoint = getLegacyEndPointEmail(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
+    val endPoint = getLegacyEndPointEmail(prisonId, "videolink-conferencing-centre")
     // When
     val responseSpec = doDeleteAction(endPoint, prisonId, headers = createAnyRole())
 
@@ -171,74 +136,5 @@ class DeletePrisonEmailResourceTest : ContactDetailsIntegrationTest() {
     responseSpec.expectStatus().isForbidden
     verifyNoInteractions(contactDetailsRepository)
     verifyNoInteractions(emailAddressRepository)
-  }
-
-  @Test
-  fun `When an email is deleted, isNoContent is returned and data is deleted`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val emailAddress = "aled@aled.com"
-    val endPoint = getEndPointEmail(prisonId, departmentType)
-    createDBData(prisonId, departmentType, emailAddress = emailAddress)
-
-    // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
-
-    // Then
-    responseSpec.expectStatus().isNoContent
-    assertContactDetailsHaveBeenDeleted(prisonId, emailAddress = emailAddress, department = departmentType)
-  }
-
-  @Test
-  fun `When an email deletion has been requested without a role, status unauthorized is returned`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointEmail(prisonId, departmentType)
-
-    // When
-    val responseSpec = doDeleteActionNoRole(endPoint)
-
-    // Then
-    responseSpec.expectStatus().isUnauthorized
-    verifyNoInteractions(contactDetailsRepository)
-    verifyNoInteractions(emailAddressRepository)
-  }
-
-  @Test
-  fun `When an email deletion has been requested with an incorrect role, status forbidden is returned`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val endPoint = getEndPointEmail(prisonId, departmentType)
-
-    // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createAnyRole())
-
-    // Then
-    responseSpec.expectStatus().isForbidden
-    verifyNoInteractions(contactDetailsRepository)
-    verifyNoInteractions(emailAddressRepository)
-  }
-
-  @Test
-  fun `When department type does not exist, then appropriate error is show`() {
-    // Given
-    val prisonId = "BRI"
-    val endPoint = "/secure/prisons/id/$prisonId/department/i-do-not-exist/email-address"
-
-    // When
-    val responseSpec = doDeleteAction(endPoint, headers = createMaintainRoleWithWriteScope())
-
-    // Then
-    responseSpec.expectStatus()
-      .isBadRequest
-
-    val bodyText = getResponseBodyText(responseSpec)
-    Assertions.assertEquals(
-      "Value for DepartmentType is not of a known type i-do-not-exist.",
-      bodyText,
-    )
   }
 }
