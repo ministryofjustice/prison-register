@@ -15,8 +15,8 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val endPoint = getContactDetailsEndPoint(prisonId)
-    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.moj.gov.uk")
-    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.moj.gov.uk")
+    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
     val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())
@@ -32,7 +32,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
     val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())
@@ -51,8 +51,8 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint1 = getContactDetailsEndPoint(prisonId1)
     val endPoint2 = getContactDetailsEndPoint(prisonId2)
 
-    val dto1 = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.mojdigital.blog.gov.uk")
-    val dto2 = ContactDetailsDto(OFFENDER_MANAGEMENT_UNIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val dto1 = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
+    val dto2 = ContactDetailsDto(OFFENDER_MANAGEMENT_UNIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
     val responseSpec1 = doCreateContactDetailsAction(endPoint1, prisonId1, dto1, headers = createMaintainRoleWithWriteScope())
@@ -95,7 +95,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
     val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto)
@@ -112,7 +112,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
     val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createAnyRole())
@@ -130,7 +130,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "AWE"
     val departmentType = SOCIAL_VISIT
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01348811540", webAddress = "https://mojdigital.blog.gov.uk")
+    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
     val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())

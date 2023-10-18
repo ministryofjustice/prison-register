@@ -15,7 +15,7 @@ class PhoneNumberValidatorTest() {
     // Given
 
     val phoneNumbers = arrayOf(
-      "+44 01348811540",
+      "+44 01234567880",
       "+1 (415) 555‑0132",
       "07505902221",
       "(020) 3123 1234",

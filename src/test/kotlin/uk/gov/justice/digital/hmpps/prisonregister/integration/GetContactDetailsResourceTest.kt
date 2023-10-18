@@ -15,7 +15,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk", phoneNumber = "01348811539", webAddress = "www.moj.gov.uk")
+    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.moj.gov.uk")
 
     val endPoint = getContactDetailsEndPoint(prisonId)
 
@@ -29,7 +29,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     Assertions.assertNotNull(contactDetailsDto)
     Assertions.assertEquals(contactDetailsDto.emailAddress, "aled@moj.gov.uk")
-    Assertions.assertEquals(contactDetailsDto.phoneNumber, "01348811539")
+    Assertions.assertEquals(contactDetailsDto.phoneNumber, "01234567890")
     Assertions.assertEquals(contactDetailsDto.webAddress, "www.moj.gov.uk")
   }
 
@@ -84,7 +84,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    createDBData(prisonId, departmentType, phoneNumber = "01348811539")
+    createDBData(prisonId, departmentType, phoneNumber = "01234567890")
 
     val endPoint = getContactDetailsEndPoint(prisonId)
 
@@ -98,7 +98,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
     assertNotNull(contactDetailsDto)
     assertNull(contactDetailsDto.emailAddress)
-    assertEquals(contactDetailsDto.phoneNumber, "01348811539")
+    assertEquals(contactDetailsDto.phoneNumber, "01234567890")
     assertNull(contactDetailsDto.webAddress)
   }
 

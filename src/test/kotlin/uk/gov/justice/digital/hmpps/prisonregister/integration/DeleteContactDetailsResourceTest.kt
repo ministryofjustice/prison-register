@@ -30,7 +30,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
     val otherDepartmentType = OFFENDER_MANAGEMENT_UNIT
-    val phoneNumber = "01348811539"
+    val phoneNumber = "01234567890"
 
     createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
     createDBData(prisonId, otherDepartmentType, phoneNumber = phoneNumber)
@@ -54,7 +54,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
-    val phoneNumber = "01348811540"
+    val phoneNumber = "01234567880"
     val webAddress = "www.test.com"
 
     createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
@@ -76,7 +76,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
-    val phoneNumber = "01348811540"
+    val phoneNumber = "01234567880"
     val webAddress = "www.test.com"
 
     createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
@@ -98,7 +98,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
-    val phoneNumber = "01348811540"
+    val phoneNumber = "01234567880"
     val webAddress = "www.test.com"
 
     createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
@@ -119,7 +119,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
-    val phoneNumber = "01348811540"
+    val phoneNumber = "01234567880"
 
     createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
     val endPoint = getContactDetailsEndPoint(prisonId)

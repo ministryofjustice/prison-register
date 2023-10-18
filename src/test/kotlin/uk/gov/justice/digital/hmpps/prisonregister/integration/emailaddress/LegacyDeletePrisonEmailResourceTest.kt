@@ -32,7 +32,7 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
     val prisonId = "BRI"
     val departmentType = OFFENDER_MANAGEMENT_UNIT
     val emailAddress = "aled@aled.com"
-    val phoneNumber = "01348811540"
+    val phoneNumber = "01234567880"
     val webAddress = "www.aled.com"
 
     createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
