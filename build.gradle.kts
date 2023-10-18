@@ -15,6 +15,7 @@ configurations {
 
 dependencies {
   implementation("com.google.guava:guava:32.1.2-jre")
+  implementation("commons-validator:commons-validator:1.4.1")
   implementation("com.googlecode.libphonenumber:libphonenumber:8.2.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")

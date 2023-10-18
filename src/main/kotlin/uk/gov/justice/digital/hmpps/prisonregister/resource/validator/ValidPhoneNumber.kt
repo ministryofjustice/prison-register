@@ -12,14 +12,15 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @Constraint(validatedBy = [PhoneNumberValidator::class])
 annotation class ValidPhoneNumber(
-  val message: String = " Phone number is an incorrect format",
+  val message: String = "Phone number is in an incorrect format",
   val groups: Array<KClass<*>> = [],
   val payload: Array<KClass<out Payload>> = [],
 )
 
 class PhoneNumberValidator : ConstraintValidator<ValidPhoneNumber, String> {
   override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
-    if (value.isNullOrBlank()) return false
+    if (value == null) return true
+    if (value.isBlank()) return false
     return this.isValidPhoneNumber(value)
   }
   private fun isValidPhoneNumber(value: String): Boolean {
