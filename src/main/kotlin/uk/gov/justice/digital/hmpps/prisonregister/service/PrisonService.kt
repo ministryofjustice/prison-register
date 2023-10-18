@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,6 +47,11 @@ class PrisonService(
   private val webAddressRepository: WebAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
+
+  companion object {
+    val LOG: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   fun findById(prisonId: String): PrisonDto {
     val prison =
       prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
@@ -126,6 +133,7 @@ class PrisonService(
 
   @Transactional(readOnly = true)
   fun getEmailAddress(prisonId: String, departmentType: DepartmentType): String? {
+    LOG.debug("Enter getEmailAddress $prisonId / ${departmentType.toMessage()}")
     return contactDetailsRepository.getEmailAddressByPrisonIdAndDepartment(prisonId, departmentType)
   }
 
@@ -143,6 +151,8 @@ class PrisonService(
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun setEmailAddress(prisonId: String, newEmailAddress: String, departmentType: DepartmentType): SetOutcome {
+    LOG.debug("Enter setEmailAddress $prisonId / ${departmentType.toMessage()}")
+
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     if (contactDetails == null) {
       val prison = prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
@@ -178,6 +188,8 @@ class PrisonService(
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun deleteEmailAddress(prisonId: String, departmentType: DepartmentType, throwNotFound: Boolean = false) {
+    LOG.debug("Enter deleteEmailAddress $prisonId / ${departmentType.toMessage()}")
+
     contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)?.let { contactDetails ->
       contactDetails.emailAddress?.let { emailAddressToBeDeleted ->
         contactDetails.emailAddress = null
@@ -235,6 +247,8 @@ class PrisonService(
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
+    LOG.debug("Enter createContactDetails $prisonId / ${contactDetailsDto.type.toMessage()}")
+
     val prison = prisonRepository.getReferenceById(prisonId) ?: throw PrisonNotFoundException(prisonId)
     if (contactDetailsRepository.getByPrisonIdAndType(prisonId, contactDetailsDto.type) != null) {
       throw ContactDetailsAlreadyExistException(prisonId, contactDetailsDto.type)
@@ -265,6 +279,8 @@ class PrisonService(
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun updateContactDetails(prisonId: String, updateContactDetailsDto: ContactDetailsDto, removeIfNull: Boolean = true): ContactDetailsDto {
+    LOG.debug("Enter updateContactDetails $prisonId / ${updateContactDetailsDto.type.toMessage()}")
+
     prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
 
     val contactDetails =
@@ -307,6 +323,8 @@ class PrisonService(
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun deleteContactDetails(prisonId: String, type: DepartmentType) {
+    LOG.debug("Enter deleteContactDetails $prisonId / ${type.toMessage()}")
+
     val contactDetails =
       contactDetailsRepository.getByPrisonIdAndType(prisonId, type) ?: throw ContactDetailsNotFoundException(
         prisonId,

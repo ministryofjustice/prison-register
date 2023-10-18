@@ -115,7 +115,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     responseSpec.expectStatus()
       .isNotFound
 
-    assertDeveloperMessage(responseSpec, "Contact details not found for prison ID BRI for social visit department.")
+    assertDeveloperMessage(responseSpec, "Contact details not found for BRI / social visit department.")
   }
 
   @Test

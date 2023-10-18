@@ -79,7 +79,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-    @Schema(description = "Department type", example = "SOCIAL_VISIT", defaultValue = "true", required = false)
+    @Schema(description = "Department type", example = "SOCIAL_VISIT", required = false)
     @RequestParam
     @NotNull
     departmentType: DepartmentType,

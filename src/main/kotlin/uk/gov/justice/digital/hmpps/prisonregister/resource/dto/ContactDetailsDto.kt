@@ -13,13 +13,13 @@ class ContactDetailsDto(
   @Schema(description = "Department Type", example = "SOCIAL_VISIT or PRISON", required = true)
   @field:NotNull
   val type: DepartmentType,
-  @Schema(description = "email address", example = "aled.evans@moj.gov.uk", required = false)
+  @Schema(description = "email address", example = "example@example.com", required = false)
   @field:Email
   val emailAddress: String? = null,
   @Schema(description = "Phone Number", example = "01348811539", required = false)
   @field:ValidPhoneNumber
   val phoneNumber: String? = null,
-  @Schema(description = "Web address", example = "https://www.gov.uk/guidance/bristol-prison", required = false)
+  @Schema(description = "Web address", example = "https://www.example.co.uk", required = false)
   @field:ValidWebAddress
   val webAddress: String? = null,
 ) {

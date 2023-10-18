@@ -45,7 +45,7 @@ class PrisonRegisterExceptionHandler {
 
   @ExceptionHandler(ContactDetailsNotFoundException::class)
   fun handleException(e: ContactDetailsNotFoundException): ResponseEntity<ErrorResponse> {
-    val message = "Contact details not found for prison ID ${e.prisonId} for ${e.departmentType.toMessage()} department."
+    val message = "Contact details not found for ${e.prisonId} / ${e.departmentType.toMessage()} department."
     log.error(message)
 
     return ResponseEntity
