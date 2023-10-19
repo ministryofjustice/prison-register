@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
@@ -105,6 +106,23 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     @Parameter(description = "Genders to filter by", example = "MALE, FEMALE", required = false) @RequestParam genders: List<Gender>? = listOf(),
     @Parameter(description = "Prison type codes to filter by", example = "HMP, YOI", required = false) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
   ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders, prisonTypeCodes)
+
+  @GetMapping(
+    "/names",
+    produces = [MediaType.APPLICATION_JSON_VALUE],
+  )
+  @Operation(summary = "Get prison names", description = "prison id and full name")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getPrisonNames(): List<PrisonNameDto> {
+    return prisonService.getPrisonNames()
+  }
 }
 
 @JsonInclude(NON_NULL)

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
@@ -14,7 +13,6 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
@@ -28,7 +26,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
 import java.util.Optional
 
-class PrisonAddressMaintenanceResourceIntTest(@Autowired private val objectMapper: ObjectMapper) : IntegrationTest() {
+class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
 
   @MockBean
   private lateinit var addressRepository: AddressRepository

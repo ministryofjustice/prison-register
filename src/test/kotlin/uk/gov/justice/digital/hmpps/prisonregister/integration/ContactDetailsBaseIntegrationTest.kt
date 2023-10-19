@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
@@ -36,9 +34,6 @@ import java.nio.charset.StandardCharsets
 abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
   val prisonId = "LEI"
-
-  @Autowired
-  protected lateinit var objectMapper: ObjectMapper
 
   @SpyBean
   lateinit var prisonRepository: PrisonRepository

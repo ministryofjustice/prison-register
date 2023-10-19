@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 
 const val CLIENT_CAN_MAINTAIN_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
 
@@ -244,7 +245,7 @@ class PrisonService(
     } ?: webAddressRepository.saveAndFlush(WebAddress(value))
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
     LOG.debug("Enter createContactDetails $prisonId / ${contactDetailsDto.type.toMessage()}")
@@ -334,6 +335,11 @@ class PrisonService(
     contactDetailsRepository.delete(contactDetails)
 
     removeOrphanedContactDetails(ContactDetailsDto(contactDetails))
+  }
+
+  @Transactional(readOnly = true)
+  fun getPrisonNames(): List<PrisonNameDto> {
+    return prisonRepository.getPrisonNames()
   }
 
   private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {
