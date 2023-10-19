@@ -139,7 +139,7 @@ class PrisonService(
   }
 
   @Transactional(readOnly = true)
-  fun get(prisonId: String, type: DepartmentType): ContactDetailsDto {
+  fun getContactDetails(prisonId: String, type: DepartmentType): ContactDetailsDto {
     val contactDetails = contactDetailsRepository.get(prisonId, type)
     return contactDetails?.let {
       ContactDetailsDto(contactDetails)
@@ -245,7 +245,7 @@ class PrisonService(
     } ?: webAddressRepository.saveAndFlush(WebAddress(value))
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
     LOG.debug("Enter createContactDetails $prisonId / ${contactDetailsDto.type.toMessage()}")
