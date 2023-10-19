@@ -84,7 +84,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
     @NotNull
     departmentType: DepartmentType,
   ): ResponseEntity<ContactDetailsDto> {
-    val contactDetails = prisonService.get(prisonId, departmentType)
+    val contactDetails = prisonService.getContactDetails(prisonId, departmentType)
     return ResponseEntity.ok(contactDetails)
   }
 
