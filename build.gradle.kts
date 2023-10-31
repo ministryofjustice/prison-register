@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.4.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.7.0"
   kotlin("plugin.spring") version "1.9.10"
   kotlin("plugin.jpa") version "1.9.10"
   idea
@@ -15,8 +15,8 @@ configurations {
 
 dependencies {
   implementation("com.google.guava:guava:32.1.2-jre")
-  implementation("commons-validator:commons-validator:1.4.1")
-  implementation("com.googlecode.libphonenumber:libphonenumber:8.2.0")
+  implementation("commons-validator:commons-validator:1.7")
+  implementation("com.googlecode.libphonenumber:libphonenumber:8.13.12")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
@@ -63,6 +63,9 @@ dependencies {
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(19))
+}
+repositories {
+  mavenCentral()
 }
 
 tasks {
