@@ -72,9 +72,9 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
     // When
     val responseSpec1 = doCreateContactDetailsAction(endPoint1, prisonId1, dto1, headers = createMaintainRefRoleWithWriteScope())
-    val responseSpec2 = doCreateContactDetailsAction(endPoint1, prisonId1, dto2, headers = createMaintainRefRoleWithWriteScope())
+    val responseSpec2 = doCreateContactDetailsAction(endPoint1, prisonId1, dto2, headers = createMaintainPrisonRoleWithWriteScope())
     val responseSpec3 = doCreateContactDetailsAction(endPoint2, prisonId2, dto1, headers = createMaintainRefRoleWithWriteScope())
-    val responseSpec4 = doCreateContactDetailsAction(endPoint2, prisonId2, dto2, headers = createMaintainRefRoleWithWriteScope())
+    val responseSpec4 = doCreateContactDetailsAction(endPoint2, prisonId2, dto2, headers = createMaintainPrisonRoleWithWriteScope())
 
     // Then
     responseSpec1.expectStatus().isCreated

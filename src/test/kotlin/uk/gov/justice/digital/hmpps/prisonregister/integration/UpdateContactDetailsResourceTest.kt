@@ -70,7 +70,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
     // When
     val responseSpec1 = doUpdateContactDetailsAction(endPoint1, updateRequest1, headers = createMaintainRefRoleWithWriteScope())
-    val responseSpec2 = doUpdateContactDetailsAction(endPoint2, updateRequest2, headers = createMaintainRefRoleWithWriteScope())
+    val responseSpec2 = doUpdateContactDetailsAction(endPoint2, updateRequest2, headers = createMaintainPrisonRoleWithWriteScope())
 
     // Then
     responseSpec1.expectStatus().isOk
