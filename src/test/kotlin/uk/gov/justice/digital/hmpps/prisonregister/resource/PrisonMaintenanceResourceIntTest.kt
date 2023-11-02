@@ -92,7 +92,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
     }
 
     @Test
-    fun `update a prison`() {
+    fun `update a prison with maintain ref data role`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
         Optional.of(Prison("MDI", "A Prison 1", active = true)),
       )
@@ -102,6 +102,49 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .headers(
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI))))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("updated_prison".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_UPDATE"),
+        eq(
+          Pair(
+            "MDI",
+            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI)),
+          ),
+        ),
+        any(),
+      )
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been updated"))
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+
+    @Test
+    fun `update a prison with maintain prison data role`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(
+        Optional.of(Prison("MDI", "A Prison 1", active = true)),
+      )
+      webTestClient.put()
+        .uri("/prison-maintenance/id/MDI")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_PRISON_DATA"),
             scopes = listOf("write"),
             user = "bobby.beans",
           ),
@@ -230,7 +273,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
     }
 
     @Test
-    fun `insert a prison`() {
+    fun `insert a prison with maintain ref data role`() {
       val prison = Prison("MDI", "Inserted Prison", female = true, active = false)
       val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.YOI))
       prison.prisonTypes = prisonTypes
@@ -274,6 +317,78 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .headers(
           setAuthorisation(
             roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(BodyInserters.fromValue(insertDto))
+        .exchange()
+        .expectStatus().isCreated
+        .expectBody().json("inserted_prison_with_address".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_INSERT"),
+        eq(insertDto),
+        any(),
+      )
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.inserted")
+      assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been inserted"))
+      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+    }
+
+    @Test
+    fun `insert a prison with maintain prison data roles`() {
+      val prison = Prison("MDI", "Inserted Prison", female = true, active = false)
+      val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.YOI))
+      prison.prisonTypes = prisonTypes
+      val address = Address(
+        id = 21,
+        addressLine1 = "Bawtry Road",
+        addressLine2 = "Hatfield Woodhouse",
+        town = "Doncaster",
+        county = "South Yorkshire",
+        postcode = "DN7 6BW",
+        country = "England",
+        prison = prison,
+      )
+      prison.addresses = listOf(address)
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
+      whenever(prisonRepository.save(any())).thenReturn(prison)
+
+      val insertDto = InsertPrisonDto(
+        "MDI",
+        "Inserted Prison",
+        female = true,
+        male = false,
+        active = false,
+        contracted = false,
+        prisonTypes = setOf(Type.YOI),
+        addresses = listOf(
+          UpdateAddressDto(
+            "Bawtry Road",
+            "Hatfield Woodhouse",
+            "Doncaster",
+            "South Yorkshire",
+            "DN7 6BW",
+            "England",
+          ),
+        ),
+      )
+
+      webTestClient.post()
+        .uri("/prison-maintenance")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_PRISON_DATA"),
             scopes = listOf("write"),
             user = "bobby.beans",
           ),

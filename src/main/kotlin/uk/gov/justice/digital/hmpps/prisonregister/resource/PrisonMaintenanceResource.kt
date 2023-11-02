@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.CLIENT_CAN_MAINTAIN_PRISON_DETAILS
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
@@ -39,7 +40,7 @@ class PrisonMaintenanceResource(
   private val snsService: SnsService,
   private val auditService: AuditService,
 ) {
-  @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
     summary = "Adds a new prison",
@@ -93,7 +94,7 @@ class PrisonMaintenanceResource(
     return insertedPrison
   }
 
-  @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @Operation(
     summary = "Update specified prison details",
     description = "Updates prison information, role required is MAINTAIN_REF_DATA",

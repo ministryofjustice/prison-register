@@ -19,7 +19,7 @@ class LegacyPutPrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
 
     // When
-    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -34,7 +34,7 @@ class LegacyPutPrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() {
     val newEmailAddress = "aled@moj.com"
     val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
-    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isCreated
@@ -83,7 +83,7 @@ class LegacyPutPrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId, departmentType, emailAddress = oldEmailAddress)
     val endPoint = getLegacyEndPointEmail(prisonId, "videolink-conferencing-centre")
     // When
-    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -98,7 +98,7 @@ class LegacyPutPrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() {
     val newEmailAddress = "aled@moj.com"
     val endPoint = getLegacyEndPointEmail(prisonId, "videolink-conferencing-centre")
     // When
-    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRoleWithWriteScope(), emailAddress = newEmailAddress)
+    val responseSpec = doPutActionLegacyEmail(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope(), emailAddress = newEmailAddress)
 
     // Then
     responseSpec.expectStatus().isCreated

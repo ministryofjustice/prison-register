@@ -10,13 +10,49 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.SOCIAL_V
 class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
   @Test
+  fun `When contact details have been deleted with maintain ref data role, isNoContent is returned and data is deleted`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = SOCIAL_VISIT
+    val phoneNumber = "01234567880"
+
+    createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
+    val endPoint = getContactDetailsEndPoint(prisonId)
+
+    // When
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRefRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isNoContent
+    assertContactDetailsHaveBeenDeleted(prisonId, phoneNumber = phoneNumber, department = departmentType)
+  }
+
+  @Test
+  fun `When contact details have been deleted with maintain prison data role, isNoContent is returned and data is deleted`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = SOCIAL_VISIT
+    val phoneNumber = "01234567880"
+
+    createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
+    val endPoint = getContactDetailsEndPoint(prisonId)
+
+    // When
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainPrisonRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isNoContent
+    assertContactDetailsHaveBeenDeleted(prisonId, phoneNumber = phoneNumber, department = departmentType)
+  }
+
+  @Test
   fun `When contact details cannot be found for prison, then appropriate error is shown`() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
 
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, DepartmentType.SOCIAL_VISIT, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, DepartmentType.SOCIAL_VISIT, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNotFound
@@ -38,7 +74,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint = getContactDetailsEndPoint(prisonId)
 
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -63,7 +99,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint = getContactDetailsEndPoint(prisonId)
 
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -85,7 +121,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint = getContactDetailsEndPoint(prisonId)
 
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -107,29 +143,11 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val endPoint = getContactDetailsEndPoint(prisonId)
 
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
     assertOnlyEmailHasBeenDeleted(prisonId, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress, department = departmentType)
-  }
-
-  @Test
-  fun `When contact details have been deleted, isNoContent is returned and data is deleted`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val phoneNumber = "01234567880"
-
-    createDBData(prisonId, departmentType, phoneNumber = phoneNumber)
-    val endPoint = getContactDetailsEndPoint(prisonId)
-
-    // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, departmentType, headers = createMaintainRoleWithWriteScope())
-
-    // Then
-    responseSpec.expectStatus().isNoContent
-    assertContactDetailsHaveBeenDeleted(prisonId, phoneNumber = phoneNumber, department = departmentType)
   }
 
   @Test

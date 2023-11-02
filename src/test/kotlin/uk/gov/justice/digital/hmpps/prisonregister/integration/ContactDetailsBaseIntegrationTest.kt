@@ -84,7 +84,9 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
   fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))
 
-  fun createMaintainRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"))
+  fun createMaintainRefRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"))
+
+  fun createMaintainPrisonRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_PRISON_DATA"), scopes = listOf("write"))
 
   fun createDBData(prisonId: String, dto: ContactDetailsDto): ContactDetailsDto {
     return with(dto) {
