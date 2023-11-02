@@ -39,8 +39,8 @@ class PrisonAddressMaintenanceResource(
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @Operation(
     summary = "Update specified address details",
-    description = "Updates address information, role required is MAINTAIN_REF_DATA",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    description = "Updates address information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -102,8 +102,8 @@ class PrisonAddressMaintenanceResource(
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @Operation(
     summary = "Delete specified address for specified Prison",
-    description = "Deletes address information for a Prison, role required is MAINTAIN_REF_DATA",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    description = "Deletes address information for a Prison, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     responses = [
       ApiResponse(
         responseCode = "200",
@@ -149,8 +149,8 @@ class PrisonAddressMaintenanceResource(
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @Operation(
     summary = "Add Address to existing Prison",
-    description = "Adds an additional Address to an existing Prison, role required is MAINTAIN_REF_DATA",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    description = "Adds an additional Address to an existing Prison, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(

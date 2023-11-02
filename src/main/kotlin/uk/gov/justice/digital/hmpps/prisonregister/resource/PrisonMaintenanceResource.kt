@@ -44,8 +44,8 @@ class PrisonMaintenanceResource(
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
     summary = "Adds a new prison",
-    description = "Adds new prison information, role required is MAINTAIN_REF_DATA",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    description = "Adds new prison information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -97,8 +97,8 @@ class PrisonMaintenanceResource(
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @Operation(
     summary = "Update specified prison details",
-    description = "Updates prison information, role required is MAINTAIN_REF_DATA",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    description = "Updates prison information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
