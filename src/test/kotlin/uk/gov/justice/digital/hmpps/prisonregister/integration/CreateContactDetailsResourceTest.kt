@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDt
 class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
   @Test
-  fun `When an contact details are created with maintain ref date role , isCreated is return and persisted`() {
+  fun `When contact details are created with maintain ref date role , isCreated is return and persisted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -26,7 +26,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
   }
 
   @Test
-  fun `When an contact details are created with maintain prison data role, isCreated is return and persisted`() {
+  fun `When contact details are created with maintain prison data role, isCreated is return and persisted`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
