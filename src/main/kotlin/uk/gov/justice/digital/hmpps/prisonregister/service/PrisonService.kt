@@ -36,7 +36,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 
-const val CLIENT_CAN_MAINTAIN_ADDRESSES = "hasRole('MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')"
+const val CLIENT_CAN_MAINTAIN_PRISON_DETAILS = "hasAnyRole('ROLE_MAINTAIN_REF_DATA','ROLE_MAINTAIN_PRISON_DATA') and hasAuthority('SCOPE_write')"
 
 @Service
 @Transactional(readOnly = true)
@@ -150,7 +150,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun setEmailAddress(prisonId: String, newEmailAddress: String, departmentType: DepartmentType): SetOutcome {
     LOG.debug("Enter setEmailAddress $prisonId / ${departmentType.toMessage()}")
 
@@ -187,7 +187,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun deleteEmailAddress(prisonId: String, departmentType: DepartmentType, throwNotFound: Boolean = false) {
     LOG.debug("Enter deleteEmailAddress $prisonId / ${departmentType.toMessage()}")
 
@@ -246,7 +246,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
     LOG.debug("Enter createContactDetails $prisonId / ${contactDetailsDto.type.toMessage()}")
 
@@ -278,7 +278,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun updateContactDetails(prisonId: String, updateContactDetailsDto: ContactDetailsDto, removeIfNull: Boolean = true): ContactDetailsDto {
     LOG.debug("Enter updateContactDetails $prisonId / ${updateContactDetailsDto.type.toMessage()}")
 
@@ -322,7 +322,7 @@ class PrisonService(
   }
 
   @Transactional
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_ADDRESSES)
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun deleteContactDetails(prisonId: String, type: DepartmentType) {
     LOG.debug("Enter deleteContactDetails $prisonId / ${type.toMessage()}")
 

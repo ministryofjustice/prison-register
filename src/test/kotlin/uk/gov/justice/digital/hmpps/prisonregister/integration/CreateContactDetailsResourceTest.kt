@@ -10,6 +10,38 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDt
 class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
   @Test
+  fun `When contact details are created with maintain ref date role , isCreated is return and persisted`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = SOCIAL_VISIT
+    val endPoint = getContactDetailsEndPoint(prisonId)
+    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
+
+    // When
+    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRefRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isCreated
+    assertDbContactDetailsExist(prisonId, dto)
+  }
+
+  @Test
+  fun `When contact details are created with maintain prison data role, isCreated is return and persisted`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = SOCIAL_VISIT
+    val endPoint = getContactDetailsEndPoint(prisonId)
+    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
+
+    // When
+    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainPrisonRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isCreated
+    assertDbContactDetailsExist(prisonId, dto)
+  }
+
+  @Test
   fun `When contact details already exist, then bad request is returned`() {
     // Given
     val prisonId = "BRI"
@@ -19,27 +51,11 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isBadRequest
     assertDeveloperMessage(responseSpec, "Contact details already exist for BRI / social visit department.")
-  }
-
-  @Test
-  fun `When an contact details are created, isCreated is return and persisted`() {
-    // Given
-    val prisonId = "BRI"
-    val departmentType = SOCIAL_VISIT
-    val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
-
-    // When
-    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())
-
-    // Then
-    responseSpec.expectStatus().isCreated
-    assertDbContactDetailsExist(prisonId, dto)
   }
 
   @Test
@@ -55,10 +71,10 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val dto2 = ContactDetailsDto(OFFENDER_MANAGEMENT_UNIT, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec1 = doCreateContactDetailsAction(endPoint1, prisonId1, dto1, headers = createMaintainRoleWithWriteScope())
-    val responseSpec2 = doCreateContactDetailsAction(endPoint1, prisonId1, dto2, headers = createMaintainRoleWithWriteScope())
-    val responseSpec3 = doCreateContactDetailsAction(endPoint2, prisonId2, dto1, headers = createMaintainRoleWithWriteScope())
-    val responseSpec4 = doCreateContactDetailsAction(endPoint2, prisonId2, dto2, headers = createMaintainRoleWithWriteScope())
+    val responseSpec1 = doCreateContactDetailsAction(endPoint1, prisonId1, dto1, headers = createMaintainRefRoleWithWriteScope())
+    val responseSpec2 = doCreateContactDetailsAction(endPoint1, prisonId1, dto2, headers = createMaintainPrisonRoleWithWriteScope())
+    val responseSpec3 = doCreateContactDetailsAction(endPoint2, prisonId2, dto1, headers = createMaintainRefRoleWithWriteScope())
+    val responseSpec4 = doCreateContactDetailsAction(endPoint2, prisonId2, dto2, headers = createMaintainPrisonRoleWithWriteScope())
 
     // Then
     responseSpec1.expectStatus().isCreated
@@ -79,7 +95,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "I am not an email", phoneNumber = "I an bit a phone number", webAddress = "I am not a web address")
 
     // When
-    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus()
@@ -133,7 +149,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val dto = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNotFound

@@ -19,7 +19,7 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
     createDBData(prisonId, departmentType, emailAddress = emailAddress)
     val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -38,7 +38,7 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
     createDBData(prisonId, departmentType, emailAddress = emailAddress, phoneNumber = phoneNumber, webAddress = webAddress)
     val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -66,7 +66,7 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
 
     val endPoint = getLegacyEndPointEmail(prisonId, "offender-management-unit")
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent
@@ -113,7 +113,7 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
     val endPoint = getLegacyEndPointEmail(prisonId, "videolink-conferencing-centre")
 
     // When
-    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doDeleteAction(endPoint, prisonId, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNoContent

@@ -95,7 +95,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
   )
   @Operation(
     summary = "Create a prison department's contact details",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -157,7 +157,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
   )
   @Operation(
     summary = "Change a prison department's contact details",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -221,7 +221,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
   )
   @Operation(
     summary = "Remove a prison department's contact details",
-    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"])],
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
   )
   @ApiResponses(
     value = [

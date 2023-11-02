@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDt
 class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
   @Test
-  fun `When contact details are updated, then http 200 is returned with persisted updated contact details`() {
+  fun `When contact details are updated with maintain ref data role, then http 200 is returned with persisted updated contact details`() {
     // Given
     val prisonId = "BRI"
     val departmentType = SOCIAL_VISIT
@@ -21,7 +21,28 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val updateRequest = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRefRoleWithWriteScope())
+
+    // Then
+    responseSpec.expectStatus().isOk
+    val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
+    assertNotNull(contactDetailsDto)
+    assertContactDetailsEquals(updateRequest, contactDetailsDto)
+
+    assertDbContactDetailsExist(prisonId, updateRequest)
+  }
+
+  @Test
+  fun `When contact details are updated with maintain prison data role, then http 200 is returned with persisted updated contact details`() {
+    // Given
+    val prisonId = "BRI"
+    val departmentType = SOCIAL_VISIT
+    val endPoint = getContactDetailsEndPoint(prisonId)
+    createDBData(prisonId, departmentType, emailAddress = "aled@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.moj.gov.uk")
+    val updateRequest = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
+
+    // When
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainPrisonRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isOk
@@ -48,8 +69,8 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, updateRequest2)
 
     // When
-    val responseSpec1 = doUpdateContactDetailsAction(endPoint1, updateRequest1, headers = createMaintainRoleWithWriteScope())
-    val responseSpec2 = doUpdateContactDetailsAction(endPoint2, updateRequest2, headers = createMaintainRoleWithWriteScope())
+    val responseSpec1 = doUpdateContactDetailsAction(endPoint1, updateRequest1, headers = createMaintainRefRoleWithWriteScope())
+    val responseSpec2 = doUpdateContactDetailsAction(endPoint2, updateRequest2, headers = createMaintainPrisonRoleWithWriteScope())
 
     // Then
     responseSpec1.expectStatus().isOk
@@ -71,7 +92,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -94,7 +115,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -119,7 +140,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -142,7 +163,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -164,7 +185,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -183,7 +204,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk", phoneNumber = "01234567880", webAddress = "www.aled.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isOk
@@ -201,7 +222,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "aled@moj.gov.uk", phoneNumber = "01234567880", webAddress = "www.aled.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isOk
@@ -222,7 +243,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     createDBData(prisonId2, VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567890", webAddress = "www.mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint1, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
@@ -241,7 +262,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val updateRequest = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "I am not an email", phoneNumber = "I an bit a phone number", webAddress = "I am not a web address")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus()
@@ -295,7 +316,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val updateRequest = ContactDetailsDto(departmentType, emailAddress = "tom@moj.gov.uk", phoneNumber = "01234567880", webAddress = "https://mojdigital.blog.gov.uk")
 
     // When
-    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRoleWithWriteScope())
+    val responseSpec = doUpdateContactDetailsAction(endPoint, updateRequest, headers = createMaintainRefRoleWithWriteScope())
 
     // Then
     responseSpec.expectStatus().isNotFound
