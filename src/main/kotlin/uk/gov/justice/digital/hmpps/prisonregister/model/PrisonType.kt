@@ -37,8 +37,8 @@ data class PrisonType(
 }
 
 enum class Type(val code: String, val description: String) {
-  HMP("HMP", "Her Majesty’s Prison"),
-  YOI("YOI", "Her Majesty’s Youth Offender Institution"),
+  HMP("HMP", "His Majesty’s Prison"),
+  YOI("YOI", "His Majesty’s Youth Offender Institution"),
   IRC("IRC", "Immigration Removal Centre"),
   STC("STC", "Secure Training Centre"),
   YCS("YCS", "Youth Custody Service"),
