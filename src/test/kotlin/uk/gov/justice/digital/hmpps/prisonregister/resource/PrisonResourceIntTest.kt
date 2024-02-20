@@ -148,7 +148,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         .jsonPath("$[0].male").isEqualTo(true)
         .jsonPath("$[0].female").isEqualTo(true)
         .jsonPath("$[0].contracted").isEqualTo(true)
-        .jsonPath("$[0].types").isEqualTo(mapOf("code" to "HMP", "description" to "Her Majesty’s Prison"))
+        .jsonPath("$[0].types").isEqualTo(mapOf("code" to "HMP", "description" to "His Majesty’s Prison"))
     }
 
     @Test
