@@ -15,13 +15,14 @@ configurations {
 
 dependencies {
   implementation("com.google.guava:guava:32.1.2-jre")
-  implementation("commons-validator:commons-validator:1.8.0")
+  implementation("commons-validator:commons-validator:1.7")
   implementation("com.googlecode.libphonenumber:libphonenumber:8.13.12")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.2.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
+  implementation("com.jayway.jsonpath:json-path:2.9.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -29,7 +30,7 @@ dependencies {
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:1.30.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
-  implementation("org.springframework.data:spring-data-commons:3.1.3")
+  implementation("org.springframework.data:spring-data-commons:3.2.3")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.2.0")
@@ -62,7 +63,7 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(19))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 repositories {
   mavenCentral()
@@ -71,7 +72,7 @@ repositories {
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "19"
+      jvmTarget = "21"
     }
   }
 }

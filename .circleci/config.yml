@@ -7,7 +7,7 @@ jobs:
   validate:
     executor:
       name: hmpps/java_localstack_postgres
-      jdk_tag: "19.0"
+      jdk_tag: "21.0"
       services: "sns,sqs"
       postgres_tag: "15"
       localstack_tag: "1.4"
