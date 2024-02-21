@@ -136,7 +136,6 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-
     @Schema(description = "Email address", example = "aled.wynevans@digital.justice.gov.uk", required = true)
     @RequestBody
     @Valid
@@ -181,7 +180,6 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-
     @Schema(description = "Email address", example = "a@b.com", required = true)
     @RequestBody
     @Valid

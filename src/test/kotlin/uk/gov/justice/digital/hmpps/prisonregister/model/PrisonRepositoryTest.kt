@@ -98,7 +98,7 @@ class PrisonRepositoryTest {
   }
 
   @Nested
-  inner class prisonFilter {
+  inner class PrisonFilterTests {
     @Test
     fun `should find all prisons when no params provided`() {
       val allPrisons = prisonRepository.findAll(PrisonFilter())
