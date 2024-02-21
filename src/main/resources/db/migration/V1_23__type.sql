@@ -5,8 +5,8 @@ CREATE TABLE type
 );
 
 INSERT INTO type
-VALUES ('HMP', 'Her Majesty’s Prison (HMP)'),
-       ('YOI', 'Her Majesty’s Youth Offender Institution (YOI)'),
+VALUES ('HMP', 'His Majesty’s Prison (HMP)'),
+       ('YOI', 'His Majesty’s Youth Offender Institution (YOI)'),
        ('IRC', 'Immigration Removal Centre (IRC)'),
        ('STC', 'Secure Training Centre (STC)'),
        ('YCS', 'Youth Custody Service (YCS)');
