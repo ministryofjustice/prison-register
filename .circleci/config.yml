@@ -92,6 +92,7 @@ workflows:
           jira_update: true
           jira_env_type: production
           slack_notification: true
+          slack_channel_name: "move-a-prisoner-digital"
           context:
             - hmpps-common-vars
             - prison-register-prod
@@ -108,16 +109,16 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
-          jdk_tag: "19.0"
-          slack_channel: hmpps_tech_alerts_security
+          jdk_tag: "21.0"
+          slack_channel: move-a-prisoner-alerts
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: move-a-prisoner-alerts
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: move-a-prisoner-alerts
           context:
             - hmpps-common-vars
             - veracode-credentials
@@ -131,7 +132,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: move-a-prisoner-alerts
           context:
             - veracode-credentials
             - hmpps-common-vars
