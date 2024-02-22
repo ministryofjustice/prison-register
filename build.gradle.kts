@@ -56,7 +56,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:postgresql:1.19.0")
+  testImplementation("org.testcontainers:postgresql:1.19.5")
   testImplementation("org.testcontainers:localstack:1.19.5")
   testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.662")
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0")
