@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -32,6 +33,9 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) {
 
   @MockBean
   lateinit var prisonRepository: PrisonRepository
+
+  @MockBean
+  lateinit var telemetryClient: TelemetryClient
 
   @Test
   @WithMaintenanceMockUser
