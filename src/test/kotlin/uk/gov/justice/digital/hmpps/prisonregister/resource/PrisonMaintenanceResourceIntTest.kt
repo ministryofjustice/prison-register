@@ -406,7 +406,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)

@@ -244,17 +244,17 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
       .exchange()
   }
 
-  fun doPutActionLegacyEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String ? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
+  fun doPutActionLegacyEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
     return webTestClient
       .put()
       .uri(endPoint, prisonID)
       .contentType(MediaType.TEXT_PLAIN)
-      .bodyValue(emailAddress)
+      .bodyValue(emailAddress as Any)
       .headers(headers)
       .exchange()
   }
 
-  fun assertContactDetailsHaveBeenDeleted(prisonId: String, phoneNumber: String ? = null, emailAddress: String ? = null, department: DepartmentType) {
+  fun assertContactDetailsHaveBeenDeleted(prisonId: String, phoneNumber: String? = null, emailAddress: String? = null, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 

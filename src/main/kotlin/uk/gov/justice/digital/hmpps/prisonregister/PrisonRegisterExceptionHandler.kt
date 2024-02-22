@@ -27,7 +27,7 @@ class PrisonRegisterExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException::class)
   fun handleException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-    val message = e.allErrors.filterNotNull().map { it.defaultMessage.replaceFirstChar { it.uppercase() } }.sorted().joinToString(separator = ", ")
+    val message = e.allErrors.filterNotNull().map { it.defaultMessage!!.replaceFirstChar { it.uppercase() } }.sorted().joinToString(separator = ", ")
     log.error(message)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
