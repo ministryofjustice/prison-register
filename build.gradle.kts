@@ -42,7 +42,7 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.10.0")
   implementation("org.freemarker:freemarker:2.3.32")
 
-  runtimeOnly("org.postgresql:postgresql:42.6.0")
+  runtimeOnly("org.postgresql:postgresql:42.7.2")
   runtimeOnly("org.flywaydb:flyway-core")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
