@@ -14,6 +14,8 @@ interface PrisonRepository : JpaRepository<Prison, String>, JpaSpecificationExec
 
   fun findByGpPracticeGpPracticeCode(gpPracticeCode: String): Prison?
 
+  fun findAllByPrisonIdIsIn(ids: List<String>): List<Prison>
+
   @Query(
     "SELECT new uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto(p.prisonId, p.name) " +
       "FROM Prison p ORDER BY p.name",

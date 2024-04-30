@@ -368,4 +368,6 @@ class PrisonService(
       updateContactDetailsDto.webAddress != contactDetails.webAddress?.value ||
       updateContactDetailsDto.phoneNumber != contactDetails.phoneNumber?.value
   }
+
+  fun findPrisonsByIds(ids: List<String>): List<PrisonDto> = prisonRepository.findAllByPrisonIdIsIn(ids).map { PrisonDto(it) }
 }

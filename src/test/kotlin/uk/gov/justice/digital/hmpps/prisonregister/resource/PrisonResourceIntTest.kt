@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
+import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import java.util.Optional
 
 class PrisonResourceIntTest : IntegrationTest() {
@@ -27,9 +28,9 @@ class PrisonResourceIntTest : IntegrationTest() {
 
   @Suppress("ClassName")
   @Nested
-  inner class findAll {
+  inner class `find prisons` {
     @Test
-    fun `find prisons`() {
+    fun `find all prisons`() {
       val prison = Prison(
         prisonId = "MDI",
         name = "Moorland HMP",
@@ -69,13 +70,9 @@ class PrisonResourceIntTest : IntegrationTest() {
         .expectStatus().isOk
         .expectBody().json("prisons".loadJson())
     }
-  }
 
-  @Suppress("ClassName")
-  @Nested
-  inner class findById {
     @Test
-    fun `find prison`() {
+    fun `find prison by id`() {
       val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true, categories = mutableSetOf(Category.D))
       val mdiAddress = Address(
         21,
@@ -98,6 +95,51 @@ class PrisonResourceIntTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
         .expectBody().json("prison_id_MDI".loadJson())
+    }
+
+    @Test
+    fun `find prisons by ids`() {
+      val prison = Prison(
+        prisonId = "MDI",
+        name = "Moorland HMP",
+        active = true,
+        male = true,
+        female = false,
+        contracted = true,
+        categories = mutableSetOf(Category.B, Category.C),
+      )
+
+      val address = Address(
+        21,
+        "Bawtry Road",
+        "Hatfield Woodhouse",
+        "Doncaster",
+        "South Yorkshire",
+        "DN7 6BW",
+        "England",
+        prison,
+      )
+
+      val operator = Operator(1, "PSP")
+
+      prison.addresses = listOf(address)
+      prison.prisonOperators = listOf(operator)
+
+      val prisons = listOf(
+        prison,
+        Prison("LEI", "Leeds HMP", active = true, female = true),
+      )
+
+      val prisonsList = listOf("MDI", "LEI")
+      whenever(prisonRepository.findAllByPrisonIdIsIn(prisonsList)).thenReturn(
+        prisons,
+      )
+      webTestClient.post().uri("/prisons/prisonsByIds")
+        .header("Content-Type", "application/json")
+        .bodyValue(PrisonRequest(prisonsList))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("prisons".loadJson())
     }
 
     @Test
