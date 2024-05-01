@@ -9,12 +9,15 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import org.hibernate.Hibernate
 import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -26,6 +29,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
@@ -102,9 +106,21 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
-    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
-    @Parameter(description = "Genders to filter by", example = "MALE, FEMALE", required = false) @RequestParam genders: List<Gender>? = listOf(),
-    @Parameter(description = "Prison type codes to filter by", example = "HMP, YOI", required = false) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
+    @Parameter(
+      description = "Text search",
+      example = "Sheffield",
+      required = false,
+    ) @RequestParam textSearch: String? = null,
+    @Parameter(
+      description = "Genders to filter by",
+      example = "MALE, FEMALE",
+      required = false,
+    ) @RequestParam genders: List<Gender>? = listOf(),
+    @Parameter(
+      description = "Prison type codes to filter by",
+      example = "HMP, YOI",
+      required = false,
+    ) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
   ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders, prisonTypeCodes)
 
   @GetMapping(
@@ -123,6 +139,26 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   fun getPrisonNames(): List<PrisonNameDto> {
     return prisonService.getPrisonNames()
   }
+
+  @PostMapping("/prisonsByIds", consumes = ["application/json"])
+  @Operation(summary = "Get prisons by IDs", description = "Get prisons based on their IDs")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful operation",
+        content = [
+          Content(
+            mediaType = "application/json",
+            array = ArraySchema(schema = Schema(implementation = PrisonDto::class)),
+          ),
+        ],
+      ),
+    ],
+  )
+  fun getPrisonsByIds(
+    @RequestBody @Valid prisonRequest: PrisonRequest,
+  ) = prisonService.findPrisonsByIds(prisonRequest.prisonIds)
 }
 
 @JsonInclude(NON_NULL)
@@ -175,7 +211,11 @@ data class AddressDto(
 
 data class PrisonTypeDto(
   @Schema(description = "Prison type code", example = "HMP", required = true) val code: Type,
-  @Schema(description = "Prison type description", example = "His Majesty’s Prison", required = true) val description: String,
+  @Schema(
+    description = "Prison type description",
+    example = "His Majesty’s Prison",
+    required = true,
+  ) val description: String,
 ) {
   constructor(prisonType: PrisonType) : this(prisonType.type, prisonType.type.description)
 }
