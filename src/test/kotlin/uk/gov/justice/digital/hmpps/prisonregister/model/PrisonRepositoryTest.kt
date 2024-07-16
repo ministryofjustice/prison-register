@@ -4,16 +4,19 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.transaction.TestTransaction
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.integration.TestBase
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
-class PrisonRepositoryTest {
+class PrisonRepositoryTest : TestBase() {
 
   @Autowired
   lateinit var prisonRepository: PrisonRepository
@@ -136,7 +139,15 @@ class PrisonRepositoryTest {
       assertThat(femalePrisons).hasSizeGreaterThan(10).allMatch { it.female }
 
       val bothMaleAndFemale = prisonRepository.findAll(PrisonFilter(genders = listOf(Gender.MALE, Gender.FEMALE)))
-      assertThat(bothMaleAndFemale.last()).isEqualTo(Prison("WYI", "Wetherby (HMPYOI)", active = true, male = true, female = true))
+      assertThat(bothMaleAndFemale.last()).isEqualTo(
+          Prison(
+              "WYI",
+              "Wetherby (HMPYOI)",
+              active = true,
+              male = true,
+              female = true,
+          ),
+      )
     }
 
     @Test
