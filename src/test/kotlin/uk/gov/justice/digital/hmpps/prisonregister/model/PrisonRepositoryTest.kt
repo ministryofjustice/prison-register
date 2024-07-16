@@ -6,9 +6,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.transaction.TestTransaction
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.integration.TestBase
@@ -140,13 +137,13 @@ class PrisonRepositoryTest : TestBase() {
 
       val bothMaleAndFemale = prisonRepository.findAll(PrisonFilter(genders = listOf(Gender.MALE, Gender.FEMALE)))
       assertThat(bothMaleAndFemale.last()).isEqualTo(
-          Prison(
-              "WYI",
-              "Wetherby (HMPYOI)",
-              active = true,
-              male = true,
-              female = true,
-          ),
+        Prison(
+          "WYI",
+          "Wetherby (HMPYOI)",
+          active = true,
+          male = true,
+          female = true,
+        ),
       )
     }
 
