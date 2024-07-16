@@ -14,7 +14,6 @@ jobs:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
-      - hmpps/wait_till_ready_postgres
       - run:
           command: ./gradlew check
       - save_cache:
