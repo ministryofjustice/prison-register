@@ -7,8 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
+import uk.gov.justice.digital.hmpps.prisonregister.config.LocalStackContainer
+import uk.gov.justice.digital.hmpps.prisonregister.config.LocalStackContainer.setLocalStackProperties
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
@@ -18,7 +22,7 @@ import uk.gov.justice.hmpps.sqs.countMessagesOnQueue
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-abstract class IntegrationTest {
+abstract class IntegrationTest : TestBase() {
 
   data class HMPPSEventType(val Value: String, val Type: String)
   data class HMPPSMessageAttributes(val eventType: HMPPSEventType)
@@ -27,6 +31,16 @@ abstract class IntegrationTest {
     val MessageId: String,
     val MessageAttributes: HMPPSMessageAttributes,
   )
+  companion object {
+    private val localStackContainer = LocalStackContainer.instance
+
+    @Suppress("unused")
+    @JvmStatic
+    @DynamicPropertySource
+    fun testcontainers(registry: DynamicPropertyRegistry) {
+      localStackContainer?.also { setLocalStackProperties(it, registry) }
+    }
+  }
 
   @Autowired
   protected lateinit var objectMapper: ObjectMapper
