@@ -122,3 +122,14 @@ diff old_gp_practice.sql new_gp_practice.sql
 If you wish to run localstack manually (as is done in the Circle build) then you must:
 * start localstack with command `TMPDIR=/private$TMPDIR docker-compose up localstack`
 * run the tests with command `AWS_PROVIDER=localstack ./gradlew check`
+
+
+## Test coverage report
+
+Run:
+
+```
+./gradlew koverHtmlReport
+```
+
+Then view output file for coverage report.
