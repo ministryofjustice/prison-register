@@ -122,7 +122,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       example = "HMP, YOI",
       required = false,
     ) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
-  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, ltshe, textSearch, genders, prisonTypeCodes)
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, lthse, textSearch, genders, prisonTypeCodes)
 
   @GetMapping(
     "/names",
