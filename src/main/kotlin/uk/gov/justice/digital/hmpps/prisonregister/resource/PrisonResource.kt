@@ -106,6 +106,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Long Term High Security Estate", example = "true", required = false) @RequestParam lthse: Boolean? = null,
     @Parameter(
       description = "Text search",
       example = "Sheffield",
@@ -121,7 +122,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       example = "HMP, YOI",
       required = false,
     ) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
-  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders, prisonTypeCodes)
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, ltshe, textSearch, genders, prisonTypeCodes)
 
   @GetMapping(
     "/names",
