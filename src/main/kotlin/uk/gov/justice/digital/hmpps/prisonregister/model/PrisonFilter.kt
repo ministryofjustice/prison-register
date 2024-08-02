@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification
 
 class PrisonFilter(
   val active: Boolean? = null,
+  val lthse: Boolean? = null,
   val textSearch: String? = null,
   val genders: List<Gender>? = listOf(),
   val prisonTypeCodes: List<Type>? = listOf(),
@@ -18,6 +19,9 @@ class PrisonFilter(
     val andBuilder = ImmutableList.builder<Predicate>()
     active?.let {
       andBuilder.add(cb.equal(root.get<Any>("active"), it))
+    }
+    lthse?.let {
+      andBuilder.add(cb.equal(root.get<Any>("ltshe"), it))
     }
     genders?.forEach {
       andBuilder.add(cb.equal(root.get<Any>(it.columnName), true))

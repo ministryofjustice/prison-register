@@ -181,6 +181,9 @@ data class InsertPrisonDto(
   @field:NotNull(message = "Prison contracted status is required")
   val contracted: Boolean,
 
+  @Schema(description = "If this prison is part of the long term high security estate", required = false)
+  val lthse: Boolean = false,
+
   @Schema(description = "Set of types for this prison", example = "HMP")
   val prisonTypes: Set<Type> = setOf(),
 
@@ -209,6 +212,9 @@ data class UpdatePrisonDto(
   val female: Boolean = false,
 
   @Schema(description = "If this is a contracted prison", required = false)
+  val contracted: Boolean = false,
+
+  @Schema(description = "If this prison is part of the long term high security estate", required = false)
   val contracted: Boolean = false,
 
   @Schema(description = "Set of types for this prison")

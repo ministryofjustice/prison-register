@@ -78,8 +78,9 @@ class PrisonService(
     textSearch: String? = null,
     genders: List<Gender>? = listOf(),
     prisonTypeCodes: List<Type>? = listOf(),
+    ltshe: Boolean? = null,
   ): List<PrisonDto> =
-    prisonRepository.findAll(PrisonFilter(active, textSearch, genders, prisonTypeCodes)).map { PrisonDto(it) }
+    prisonRepository.findAll(PrisonFilter(active, textSearch, genders, prisonTypeCodes, )).map { PrisonDto(it) }
 
   @Transactional
   fun insertPrison(prisonInsertRecord: InsertPrisonDto): String {
@@ -95,6 +96,7 @@ class PrisonService(
         male = male,
         female = female,
         contracted = contracted,
+        lthse = lthse,
       )
 
       prison.categories.retainAll(categories)

@@ -30,6 +30,7 @@ data class Prison(
   var male: Boolean = false,
   var female: Boolean = false,
   var contracted: Boolean = false,
+  var lthse: Boolean = false,
 
   var inactiveDate: LocalDate? = null,
 
