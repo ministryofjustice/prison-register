@@ -215,7 +215,7 @@ data class UpdatePrisonDto(
   val contracted: Boolean = false,
 
   @Schema(description = "If this prison is part of the long term high security estate", required = false)
-  val contracted: Boolean = false,
+  val lthse: Boolean = false,
 
   @Schema(description = "Set of types for this prison")
   val prisonTypes: Set<Type> = setOf(),
