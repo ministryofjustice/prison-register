@@ -116,7 +116,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         eq(
           Pair(
             "MDI",
-            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI)),
+            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI)),
           ),
         ),
         any(),
@@ -149,7 +149,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
             user = "bobby.beans",
           ),
         )
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI))))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI))))
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
@@ -159,7 +159,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         eq(
           Pair(
             "MDI",
-            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, setOf(Type.YOI)),
+            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI)),
           ),
         ),
         any(),
