@@ -59,7 +59,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
   }
 
   @Test
-  fun `When more than one contactmdetails are created for more than one prison, only one of phone, email, web address is persisted`() {
+  fun `When more than one contact details are created for more than one prison, only one of phone, email, web address is persisted`() {
     // Given
     val prisonId1 = "BRI"
     val prisonId2 = "CFI"
@@ -92,7 +92,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     // Given
     val prisonId = "BRI"
     val endPoint = getContactDetailsEndPoint(prisonId)
-    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "I am not an email", phoneNumber = "I an bit a phone number", webAddress = "I am not a web address")
+    val dto = ContactDetailsDto(SOCIAL_VISIT, emailAddress = "I am not an email", phoneNumber = "I am bit a phone number", webAddress = "I am not a web address")
 
     // When
     val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRefRoleWithWriteScope())

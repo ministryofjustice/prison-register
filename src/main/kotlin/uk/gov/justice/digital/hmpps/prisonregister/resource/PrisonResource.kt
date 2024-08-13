@@ -106,6 +106,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonsBySearchFilter(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Long Term High Security Estate", example = "true", required = false) @RequestParam lthse: Boolean? = null,
     @Parameter(
       description = "Text search",
       example = "Sheffield",
@@ -121,7 +122,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       example = "HMP, YOI",
       required = false,
     ) @RequestParam prisonTypeCodes: List<Type>? = listOf(),
-  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, textSearch, genders, prisonTypeCodes)
+  ): List<PrisonDto> = prisonService.findByPrisonFilter(active, lthse, textSearch, genders, prisonTypeCodes)
 
   @GetMapping(
     "/names",
@@ -170,6 +171,7 @@ data class PrisonDto(
   @Schema(description = "Whether the prison has male prisoners") val male: Boolean,
   @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
   @Schema(description = "Whether the prison is contracted") val contracted: Boolean,
+  @Schema(description = "Whether the prison is part of long term high security estate") val lthse: Boolean,
   @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
   @Schema(description = "List of the categories for this prison") val categories: Set<Category> = setOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
@@ -182,6 +184,7 @@ data class PrisonDto(
     prison.male,
     prison.female,
     prison.contracted,
+    prison.lthse,
     prison.prisonTypes.map { PrisonTypeDto(it) },
     prison.categories.also { Hibernate.initialize(it) },
     prison.addresses.map { AddressDto(it) },

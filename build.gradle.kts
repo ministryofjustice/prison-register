@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.1"
-  kotlin("plugin.spring") version "1.9.22"
-  kotlin("plugin.jpa") version "1.9.22"
-  id("org.jetbrains.kotlinx.kover") version "0.8.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  kotlin("plugin.spring") version "2.0.10"
+  kotlin("plugin.jpa") version "2.0.10"
+  id("org.jetbrains.kotlinx.kover") version "0.8.3"
   idea
 }
 
@@ -45,7 +45,8 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.11.0")
   implementation("org.freemarker:freemarker:2.3.33")
 
-  runtimeOnly("org.postgresql:postgresql:42.7.3")
+  runtimeOnly("org.postgresql:postgresql")
+  runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

@@ -82,8 +82,6 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
       .jsonPath("$.developerMessage").isEqualTo(developersMessage)
   }
 
-  fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))
-
   fun createMaintainRefRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"))
 
   fun createMaintainPrisonRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_PRISON_DATA"), scopes = listOf("write"))

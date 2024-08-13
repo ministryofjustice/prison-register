@@ -187,6 +187,7 @@ class PrisonRepositoryTest : TestBase() {
     prison.active = false
     prison.female = true
     prison.male = false
+    prison.lthse = true
     prisonRepository.save(prison)
 
     commitAndStartNewTx()
@@ -199,6 +200,7 @@ class PrisonRepositoryTest : TestBase() {
       assertThat(active).isEqualTo(false)
       assertThat(female).isEqualTo(true)
       assertThat(male).isEqualTo(false)
+      assertThat(lthse).isEqualTo(true)
     }
   }
 }

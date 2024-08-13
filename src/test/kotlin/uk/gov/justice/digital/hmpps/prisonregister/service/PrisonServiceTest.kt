@@ -119,7 +119,7 @@ class PrisonServiceTest {
     fun `find prison by active and text search`() {
       val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
       whenever(prisonRepository.findAll(any<PrisonFilter>())).thenReturn(listOf(prison))
-      val results = prisonService.findByPrisonFilter(true, "moorland")
+      val results = prisonService.findByPrisonFilter(active = true, textSearch = "moorland")
 
       assertThat(results).containsOnly(PrisonDto(prison))
     }
@@ -244,12 +244,12 @@ class PrisonServiceTest {
     @Test
     fun `update a prison adding new prison type`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
-        Optional.of(Prison("MDI", "A prison 1", active = true, female = true, male = false, contracted = false)),
+        Optional.of(Prison("MDI", "A prison 1", active = true, lthse = false, female = true, male = false, contracted = false)),
       )
 
       val updatedPrison =
         prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
@@ -265,6 +265,7 @@ class PrisonServiceTest {
         UpdatePrisonDto(
           prisonName = "A prison 1",
           active = true,
+          lthse = false,
           male = true,
           contracted = true,
           categories = setOf(Category.D),
@@ -275,6 +276,7 @@ class PrisonServiceTest {
           prisonId = "MDI",
           prisonName = "A prison 1",
           active = true,
+          lthse = false,
           male = true,
           female = false,
           contracted = true,
@@ -303,6 +305,7 @@ class PrisonServiceTest {
           "MDI",
           "A prison 1",
           active = true,
+          lthse = false,
           male = false,
           female = false,
           contracted = false,

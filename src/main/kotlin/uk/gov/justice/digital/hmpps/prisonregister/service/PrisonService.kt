@@ -75,11 +75,12 @@ class PrisonService(
 
   fun findByPrisonFilter(
     active: Boolean? = null,
+    lthse: Boolean? = null,
     textSearch: String? = null,
     genders: List<Gender>? = listOf(),
     prisonTypeCodes: List<Type>? = listOf(),
   ): List<PrisonDto> =
-    prisonRepository.findAll(PrisonFilter(active, textSearch, genders, prisonTypeCodes)).map { PrisonDto(it) }
+    prisonRepository.findAll(PrisonFilter(active, lthse, textSearch, genders, prisonTypeCodes)).map { PrisonDto(it) }
 
   @Transactional
   fun insertPrison(prisonInsertRecord: InsertPrisonDto): String {
@@ -95,6 +96,7 @@ class PrisonService(
         male = male,
         female = female,
         contracted = contracted,
+        lthse = lthse,
       )
 
       prison.categories.retainAll(categories)
@@ -120,6 +122,7 @@ class PrisonService(
       prison.male = male
       prison.female = female
       prison.contracted = contracted
+      prison.lthse = lthse
 
       val updatedTypes = prisonTypes.map { PrisonType(type = it, prison = prison) }.toSet()
       prison.prisonTypes.retainAll(updatedTypes)

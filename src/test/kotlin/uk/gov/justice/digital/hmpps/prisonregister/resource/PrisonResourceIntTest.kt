@@ -164,6 +164,7 @@ class PrisonResourceIntTest : IntegrationTest() {
           male = true,
           female = true,
           contracted = true,
+          lthse = true,
         ).apply {
           val prison = this
           prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.HMP))
@@ -179,6 +180,7 @@ class PrisonResourceIntTest : IntegrationTest() {
             .queryParam("textSearch", "MDI")
             .queryParam("genders", listOf("MALE"))
             .queryParam("prisonTypeCodes", listOf("HMP"))
+            .queryParam("lthse", true)
             .build()
         }
         .exchange()
@@ -190,6 +192,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         .jsonPath("$[0].male").isEqualTo(true)
         .jsonPath("$[0].female").isEqualTo(true)
         .jsonPath("$[0].contracted").isEqualTo(true)
+        .jsonPath("$[0].lthse").isEqualTo(true)
         .jsonPath("$[0].types").isEqualTo(mapOf("code" to "HMP", "description" to "His Majesty’s Prison"))
     }
 
