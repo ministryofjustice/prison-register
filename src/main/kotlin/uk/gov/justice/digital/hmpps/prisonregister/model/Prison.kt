@@ -98,7 +98,7 @@ data class Prison(
   @Override
   override fun toString(): String {
     return this::class.simpleName + "(prisonId = $prisonId, name = $name, description = $description, active = $active," +
-      " male = $male, female = $female, contracted = $contracted, categories = $categories )"
+      " male = $male, female = $female, contracted = $contracted, lthse = $lthse, categories = $categories )"
   }
 }
 

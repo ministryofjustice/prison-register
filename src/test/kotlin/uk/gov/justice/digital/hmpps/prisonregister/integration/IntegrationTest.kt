@@ -68,6 +68,8 @@ abstract class IntegrationTest : TestBase() {
     testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
   }
 
+  fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))
+
   fun HmppsSqsProperties.domaineventsTopicConfig() =
     topics["domainevents"] ?: throw MissingTopicException("domainevents has not been loaded from configuration properties")
 

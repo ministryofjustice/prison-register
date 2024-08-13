@@ -21,7 +21,7 @@ class PrisonFilter(
       andBuilder.add(cb.equal(root.get<Any>("active"), it))
     }
     lthse?.let {
-      andBuilder.add(cb.equal(root.get<Any>("ltshe"), it))
+      andBuilder.add(cb.equal(root.get<Any>("lthse"), it))
     }
     genders?.forEach {
       andBuilder.add(cb.equal(root.get<Any>(it.columnName), true))
