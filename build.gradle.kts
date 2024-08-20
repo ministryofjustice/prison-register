@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.3"
   kotlin("plugin.spring") version "2.0.10"
   kotlin("plugin.jpa") version "2.0.10"
   id("org.jetbrains.kotlinx.kover") version "0.8.3"
