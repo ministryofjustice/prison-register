@@ -1,27 +1,8 @@
-server.shutdown: immediate
-
-oauth:
-  endpoint.url: http://localhost:9090/auth
-
-aws:
-  provider: localstack
-
-logging:
-  level:
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: error
-
 hmpps.sqs:
   provider: localstack
   queues:
     audit:
-      queueName: hmpps_audit_queue
+      queueName: ${random.uuid}
   topics:
     domainevents:
-      arn: arn:aws:sns:eu-west-2:000000000000:hmpps_domain_events
-
-spring:
-  jpa:
-    show-sql: true
+      arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
