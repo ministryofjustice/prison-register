@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/prison-register
-    username: prison-register
-    password: prison-register
-
