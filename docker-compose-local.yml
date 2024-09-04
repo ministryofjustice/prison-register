@@ -1,0 +1,47 @@
+services:
+
+  localstack:
+    image: localstack/localstack:3
+    networks:
+      - hmpps
+    container_name: localstack
+    ports:
+      - "4566:4566"
+      - "8999:8080"
+    environment:
+      - DEBUG=${DEBUG- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  hmpps-auth:
+    image: quay.io/hmpps/hmpps-auth:latest
+    networks:
+      - hmpps
+    container_name: hmpps-auth
+    ports:
+      - "9090:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health/ping"]
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
+      - DELIUS_ENABLED=false
+      - NOMIS_ENABLED=false
+
+  prison-register-db:
+    image: postgres
+    networks:
+      - hmpps
+    container_name: prison-register-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=prison-register
+      - POSTGRES_USER=prison-register
+      - POSTGRES_DB=prison-register
+
+networks:
+  hmpps:

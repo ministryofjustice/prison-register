@@ -8,6 +8,8 @@ spring:
 
   profiles:
     group:
+      dev:
+        - "localstack"
       test:
         - "dev"
 
@@ -41,7 +43,6 @@ spring:
 
   datasource:
     url: jdbc:postgresql://${DATABASE_ENDPOINT}/${DATABASE_NAME}?sslmode=verify-full
-    continue-on-error: true
     hikari:
       pool-name: PrisonRegister-CP
       connectionTimeout: 1000
@@ -53,6 +54,9 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   thymeleaf.render-hidden-markers-before-checkboxes: true
+  sql:
+    init:
+      continue-on-error: true
 
 server:
   port: 8080
