@@ -123,6 +123,15 @@ class PrisonServiceTest {
 
       assertThat(results).containsOnly(PrisonDto(prison))
     }
+
+    @Test
+    fun `find prison by non active and non text search`() {
+      val prison = Prison("MNI", "Thameside (HMP)", active = false)
+      whenever(prisonRepository.findAll(any<PrisonFilter>())).thenReturn(listOf(prison))
+      val results = prisonService.findByPrisonFilter()
+
+      assertThat(results).containsOnly(PrisonDto(prison))
+    }
   }
 
   @Nested
