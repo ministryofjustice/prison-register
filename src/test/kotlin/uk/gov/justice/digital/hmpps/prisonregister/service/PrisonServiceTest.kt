@@ -40,6 +40,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import java.util.Optional
+import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 
 class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
@@ -327,6 +330,20 @@ class PrisonServiceTest {
 
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+  }
+
+  @Nested
+  inner class DeleteEmail {
+
+    @Test
+    fun `delete email not found`() {
+      val throwNotFound = true
+
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+
+      assertThatThrownBy { prisonService.deleteEmailAddress("XXX",DepartmentType.OFFENDER_MANAGEMENT_UNIT,throwNotFound) }
+        .isInstanceOf(ContactDetailsNotFoundException::class.java)
     }
   }
 }
