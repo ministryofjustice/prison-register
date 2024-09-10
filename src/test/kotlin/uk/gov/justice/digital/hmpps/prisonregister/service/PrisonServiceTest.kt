@@ -332,7 +332,7 @@ class PrisonServiceTest {
   }
 
   @Nested
-  inner class DeleteEmail {
+  inner class DeleteEmailAddress {
 
     @Test
     fun `delete email not found`() {
