@@ -21,9 +21,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -40,9 +42,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import java.util.Optional
-import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
-import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 
 class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
@@ -132,7 +131,6 @@ class PrisonServiceTest {
       val prison = Prison("MNI", "Thameside (HMP)", active = false)
       whenever(prisonRepository.findAll(any<PrisonFilter>())).thenReturn(listOf(prison))
       val results = prisonService.findByPrisonFilter()
-
       assertThat(results).containsOnly(PrisonDto(prison))
     }
   }
@@ -339,10 +337,8 @@ class PrisonServiceTest {
     @Test
     fun `delete email not found`() {
       val throwNotFound = true
-
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
-
-      assertThatThrownBy { prisonService.deleteEmailAddress("XXX",DepartmentType.OFFENDER_MANAGEMENT_UNIT,throwNotFound) }
+      assertThatThrownBy { prisonService.deleteEmailAddress("XXX", DepartmentType.OFFENDER_MANAGEMENT_UNIT, throwNotFound) }
         .isInstanceOf(ContactDetailsNotFoundException::class.java)
     }
   }
