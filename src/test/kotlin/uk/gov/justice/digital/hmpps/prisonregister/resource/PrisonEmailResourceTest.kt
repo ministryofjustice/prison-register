@@ -18,22 +18,22 @@ class PrisonEmailResourceTest {
   private val prisonService: PrisonService = mock()
   private val prisonEmailResource = PrisonEmailResource(prisonService)
   private val prisonId = "MDI"
-  val expectedEmail = "email@example.com"
+  private val emailAddress = "a@b.com"
 
   @Test
   fun `put email - create`() {
-    whenever(prisonService.setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)).thenReturn(SetOutcome.CREATED)
-    val response = prisonEmailResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
+    whenever(prisonService.setEmailAddress(prisonId, emailAddress, OFFENDER_MANAGEMENT_UNIT)).thenReturn(SetOutcome.CREATED)
+    val response = prisonEmailResource.putEmailAddressForOffenderManagementUnit(prisonId, emailAddress)
     assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-    verify(prisonService).setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)
+    verify(prisonService).setEmailAddress(prisonId, emailAddress, OFFENDER_MANAGEMENT_UNIT)
   }
 
   @Test
   fun `put email - update`() {
-    whenever(prisonService.setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)).thenReturn(SetOutcome.UPDATED)
-    val response = prisonEmailResource.putEmailAddressForOffenderManagementUnit("MDI", "a@b.com")
+    whenever(prisonService.setEmailAddress(prisonId, emailAddress, OFFENDER_MANAGEMENT_UNIT)).thenReturn(SetOutcome.UPDATED)
+    val response = prisonEmailResource.putEmailAddressForOffenderManagementUnit(prisonId, emailAddress)
     assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-    verify(prisonService).setEmailAddress("MDI", "a@b.com", OFFENDER_MANAGEMENT_UNIT)
+    verify(prisonService).setEmailAddress(prisonId, emailAddress, OFFENDER_MANAGEMENT_UNIT)
   }
 
   @Test
@@ -48,7 +48,7 @@ class PrisonEmailResourceTest {
   @Test
   fun `get email - Videolink conferencing centre`() {
     whenever(prisonService.getEmailAddress(prisonId, VIDEOLINK_CONFERENCING_CENTRE))
-      .thenReturn(expectedEmail)
+      .thenReturn(emailAddress)
     val response = prisonEmailResource.getEmailForVideoConferencingCentre(prisonId)
     assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     verify(prisonService).getEmailAddress(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
