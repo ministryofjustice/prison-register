@@ -348,13 +348,28 @@ class PrisonServiceTest {
   @Nested
   inner class UpdateContactDetails {
 
+    private val prisonRepository2: PrisonRepository = mock()
+    private val contactDetailsRepository2: ContactDetailsRepository = mock()
+
+    @Test
+    fun `should throw ContactDetailsNotFoundException when getByPrisonIdAndType contactDetail not found`() {
+      val removeIfNull = true
+      val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
+      val prison = Prison("BRI", "Bri Prison", active = true)
+
+      whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
+        .isInstanceOf(ContactDetailsNotFoundException::class.java)
+    }
+
     @Test
     fun `should throw EntityNotFoundException when prisonId or reference is not found`() {
       val removeIfNull = true
       val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
 
-      whenever(prisonRepository.getReferenceById(any())).thenThrow(EntityNotFoundException::class.java)
-      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      whenever(prisonRepository2.getReferenceById(any())).thenThrow(EntityNotFoundException::class.java)
+      whenever(contactDetailsRepository2.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
 
       assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
         .isInstanceOf(EntityNotFoundException::class.java)
