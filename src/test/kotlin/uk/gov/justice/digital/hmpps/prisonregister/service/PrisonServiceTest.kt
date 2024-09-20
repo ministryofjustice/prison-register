@@ -22,8 +22,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
@@ -41,6 +43,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 import java.util.Optional
 
 class PrisonServiceTest {
@@ -340,6 +343,47 @@ class PrisonServiceTest {
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
       assertThatThrownBy { prisonService.deleteEmailAddress("XXX", DepartmentType.OFFENDER_MANAGEMENT_UNIT, throwNotFound) }
         .isInstanceOf(ContactDetailsNotFoundException::class.java)
+    }
+  }
+
+  @Nested
+  inner class CreateContactDetails {
+
+    private val prisonRepository2: PrisonRepository = mock()
+
+    @Test
+    fun `should throw PrisonNotFoundException when getReferenceById not found`() {
+      val contactDetailDto = ContactDetailsDto(
+        DepartmentType.VIDEOLINK_CONFERENCING_CENTRE,
+        emailAddress = "xxx@moj.gov.uk",
+        phoneNumber = "01234567899",
+        webAddress = "www.xxxmojdigital.blog.gov.uk",
+      )
+      whenever(prisonRepository2.getReferenceById(any())).thenThrow(PrisonNotFoundException::class.java)
+      assertThatThrownBy { prisonService.createContactDetails("XXX", contactDetailDto) }
+        .isInstanceOf(PrisonNotFoundException::class.java)
+    }
+
+    @Test
+    fun `CreateContactDetails ContactDetailsDto not found`() {
+      val contactDetailDto = ContactDetailsDto(DepartmentType.VIDEOLINK_CONFERENCING_CENTRE, null, null, null)
+      val prison = Prison("BRI", "Bri Prison", active = true)
+      val contactDetailEntity = ContactDetails(
+        prison.prisonId,
+        prison,
+        contactDetailDto.type,
+        emailAddress = null,
+        webAddress = null,
+        phoneNumber = null,
+      )
+
+      whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
+      whenever(contactDetailsRepository.saveAndFlush(any())).thenReturn(contactDetailEntity)
+      val gotContactDetailDto = prisonService.createContactDetails(prison.prisonId, contactDetailDto)
+      assertThat(gotContactDetailDto.type).isEqualTo(contactDetailDto.type)
+      assertThat(gotContactDetailDto.emailAddress).isNull()
+      assertThat(gotContactDetailDto.phoneNumber).isNull()
+      assertThat(gotContactDetailDto.webAddress).isNull()
     }
   }
 }
