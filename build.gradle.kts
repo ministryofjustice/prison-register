@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
   kotlin("plugin.spring") version "2.0.20"
   kotlin("plugin.jpa") version "2.0.20"
-  id("org.jetbrains.kotlinx.kover") version "0.8.3"
+  id("org.jetbrains.kotlinx.kover") version "0.9.0-RC"
   idea
 }
 
@@ -19,12 +19,12 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:32.1.2-jre")
   implementation("commons-validator:commons-validator:1.9.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:8.13.41")
+  implementation("com.googlecode.libphonenumber:libphonenumber:8.13.45")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.4.3")
   implementation("com.jayway.jsonpath:json-path:2.9.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
@@ -52,9 +52,9 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.22")
-  testImplementation("org.wiremock:wiremock-standalone:3.8.0")
+  testImplementation("org.wiremock:wiremock-standalone:3.9.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.12.6")
