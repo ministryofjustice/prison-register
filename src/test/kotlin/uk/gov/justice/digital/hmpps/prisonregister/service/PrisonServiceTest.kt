@@ -391,8 +391,9 @@ class PrisonServiceTest {
       assertThat(gotContactDetailDto.emailAddress).isNull()
       assertThat(gotContactDetailDto.phoneNumber).isNull()
       assertThat(gotContactDetailDto.webAddress).isNull()
+    }
   }
-  
+
   @Nested
   inner class UpdateContactDetails {
 
