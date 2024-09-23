@@ -357,8 +357,6 @@ class PrisonServiceTest {
   @Nested
   inner class CreateContactDetails {
 
-    private val prisonRepository2: PrisonRepository = mock()
-
     @Test
     fun `should throw PrisonNotFoundException when getReferenceById not found`() {
       val contactDetailDto = ContactDetailsDto(
@@ -367,7 +365,7 @@ class PrisonServiceTest {
         phoneNumber = "01234567899",
         webAddress = "www.xxxmojdigital.blog.gov.uk",
       )
-      whenever(prisonRepository2.getReferenceById(any())).thenThrow(PrisonNotFoundException::class.java)
+      whenever(prisonRepository.getReferenceById(any())).thenThrow(PrisonNotFoundException::class.java)
       assertThatThrownBy { prisonService.createContactDetails("XXX", contactDetailDto) }
         .isInstanceOf(PrisonNotFoundException::class.java)
     }
