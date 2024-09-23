@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
@@ -18,6 +19,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -26,6 +28,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -41,6 +44,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 import java.util.Optional
 
 class PrisonServiceTest {
@@ -52,6 +56,12 @@ class PrisonServiceTest {
   private val telemetryClient: TelemetryClient = mock()
 
   private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, emailAddressRepository, phoneNumberRepository, webAddressRepository, telemetryClient)
+
+  @BeforeEach
+  fun resetMocks() {
+    reset(contactDetailsRepository)
+    reset(prisonRepository)
+  }
 
   @Nested
   inner class findById {
@@ -340,6 +350,34 @@ class PrisonServiceTest {
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
       assertThatThrownBy { prisonService.deleteEmailAddress("XXX", DepartmentType.OFFENDER_MANAGEMENT_UNIT, throwNotFound) }
         .isInstanceOf(ContactDetailsNotFoundException::class.java)
+    }
+  }
+
+  @Nested
+  inner class UpdateContactDetails {
+
+    @Test
+    fun `should throw ContactDetailsNotFoundException when getByPrisonIdAndType contactDetail not found`() {
+      val removeIfNull = true
+      val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
+      val prison = Prison("BRI", "Bri Prison", active = true)
+
+      whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
+        .isInstanceOf(ContactDetailsNotFoundException::class.java)
+    }
+
+    @Test
+    fun `should throw EntityNotFoundException when prisonId or reference is not found`() {
+      val removeIfNull = true
+      val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
+
+      whenever(prisonRepository.getReferenceById(any())).thenThrow(EntityNotFoundException::class.java)
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+
+      assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
+        .isInstanceOf(EntityNotFoundException::class.java)
     }
   }
 }
