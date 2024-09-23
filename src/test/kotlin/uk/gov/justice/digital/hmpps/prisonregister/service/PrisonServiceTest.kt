@@ -354,13 +354,11 @@ class PrisonServiceTest {
   @Nested
   inner class SetEmailAddress {
 
-    private val prisonRepository2: PrisonRepository = mock()
-
     @Test
     fun `prison getReferenceById not found`() {
       val throwNotFound = true
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
-      whenever(prisonRepository2.getReferenceById(anyString())).thenThrow(EntityNotFoundException::class.java)
+      whenever(prisonRepository.getReferenceById(anyString())).thenThrow(EntityNotFoundException::class.java)
       assertThatThrownBy { prisonService.setEmailAddress("XXX", "email@gov.uk", DepartmentType.OFFENDER_MANAGEMENT_UNIT) }
         .isInstanceOf(EntityNotFoundException::class.java)
     }
