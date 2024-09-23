@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -390,6 +391,33 @@ class PrisonServiceTest {
       assertThat(gotContactDetailDto.emailAddress).isNull()
       assertThat(gotContactDetailDto.phoneNumber).isNull()
       assertThat(gotContactDetailDto.webAddress).isNull()
+  }
+  
+  @Nested
+  inner class UpdateContactDetails {
+
+    @Test
+    fun `should throw ContactDetailsNotFoundException when getByPrisonIdAndType contactDetail not found`() {
+      val removeIfNull = true
+      val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
+      val prison = Prison("BRI", "Bri Prison", active = true)
+
+      whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
+        .isInstanceOf(ContactDetailsNotFoundException::class.java)
+    }
+
+    @Test
+    fun `should throw EntityNotFoundException when prisonId or reference is not found`() {
+      val removeIfNull = true
+      val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
+
+      whenever(prisonRepository.getReferenceById(any())).thenThrow(EntityNotFoundException::class.java)
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+
+      assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
+        .isInstanceOf(EntityNotFoundException::class.java)
     }
   }
 }
