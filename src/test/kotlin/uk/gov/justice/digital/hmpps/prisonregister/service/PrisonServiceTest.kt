@@ -421,4 +421,16 @@ class PrisonServiceTest {
         .isInstanceOf(EntityNotFoundException::class.java)
     }
   }
+
+  @Nested
+  inner class SetEmailAddress {
+
+    @Test
+    fun `prison getReferenceById not found`() {
+      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      whenever(prisonRepository.getReferenceById(anyString())).thenThrow(EntityNotFoundException::class.java)
+      assertThatThrownBy { prisonService.setEmailAddress("XXX", "email@gov.uk", DepartmentType.OFFENDER_MANAGEMENT_UNIT) }
+        .isInstanceOf(EntityNotFoundException::class.java)
+    }
+  }
 }
