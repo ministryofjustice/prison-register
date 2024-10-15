@@ -21,5 +21,4 @@ interface PrisonRepository : JpaRepository<Prison, String>, JpaSpecificationExec
     "SELECT new uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto(p.prisonId, p.name) FROM Prison p WHERE (:active IS NULL OR p.active = :active) ORDER BY p.name",
   )
   fun getPrisonNames(@Param("active") active: Boolean?): List<PrisonNameDto>
-
 }

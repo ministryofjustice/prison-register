@@ -139,7 +139,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonNames(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
-    ): List<PrisonNameDto> {
+  ): List<PrisonNameDto> {
     return prisonService.getPrisonNames(active)
   }
 
