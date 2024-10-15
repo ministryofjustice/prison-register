@@ -137,8 +137,10 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       ),
     ],
   )
-  fun getPrisonNames(): List<PrisonNameDto> {
-    return prisonService.getPrisonNames()
+  fun getPrisonNames(
+    @Parameter(description = "If active is not set, return all prisons, otherwise return only the active or inactive ones based on the value", example = "true", required = false) @RequestParam active: Boolean?,
+  ): List<PrisonNameDto> {
+    return prisonService.getPrisonNames(active)
   }
 
   @PostMapping("/prisonsByIds", consumes = ["application/json"])
