@@ -3,6 +3,14 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@10
 
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: PIPELINE_SECURITY_SLACK_CHANNEL
+  releases-slack-channel:
+    type: string
+    default: SLACK_RELEASES_CHANNEL
+
 jobs:
   validate:
     executor:
@@ -73,36 +81,44 @@ workflows:
             - validate
             - helm_lint
             - build_docker
-      - request-preprod-approval:
-          type: approval
-          requires:
-            - deploy_dev
-      - hmpps/deploy_env:
-          name: deploy_preprod
-          env: "preprod"
-          jira_update: true
-          jira_env_type: staging
-          context:
-            - hmpps-common-vars
-            - prison-register-preprod
-          requires:
-            - request-preprod-approval
-      - request-prod-approval:
-          type: approval
-          requires:
-            - deploy_preprod
-      - hmpps/deploy_env:
-          name: deploy_prod
-          env: "prod"
-          jira_update: true
-          jira_env_type: production
-          slack_notification: true
-          slack_channel_name: "move-a-prisoner-digital"
-          context:
-            - hmpps-common-vars
-            - prison-register-prod
-          requires:
-            - request-prod-approval
+            - helm_lint
+          helm_timeout: 5m
+  #      - request-preprod-approval:
+  #          type: approval
+  #          requires:
+  #            - deploy_dev
+  #      - hmpps/deploy_env:
+  #          name: deploy_preprod
+  #          env: "preprod"
+  #          jira_update: true
+  #          jira_env_type: staging
+  #          pipeline_id: <<pipeline.id>>
+  #          pipeline_number: <<pipeline.number>>
+  #          context:
+  #            - hmpps-common-vars
+  #            - hmpps-template-kotlin-preprod
+  #          requires:
+  #            - request-preprod-approval
+  #          helm_timeout: 5m
+  #      - request-prod-approval:
+  #          type: approval
+  #          requires:
+  #            - deploy_preprod
+  #      - hmpps/deploy_env:
+  #          name: deploy_prod
+  #          env: "prod"
+  #          jira_update: true
+  #          jira_env_type: production
+  #          pipeline_id: <<pipeline.id>>
+  #          pipeline_number: <<pipeline.number>>
+  #          slack_notification: true
+  #          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+  #          context:
+  #            - hmpps-common-vars
+  #            - hmpps-template-kotlin-prod
+  #          requires:
+  #            - request-prod-approval
+  #          helm_timeout: 5m
 
   security:
     triggers:
@@ -114,6 +130,7 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          cache_key: "v2_0"
           jdk_tag: "21.0"
           slack_channel: move-a-prisoner-alerts
           context:
@@ -123,10 +140,11 @@ workflows:
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          jdk_tag: "21.0"
           slack_channel: move-a-prisoner-alerts
           context:
-            - hmpps-common-vars
             - veracode-credentials
+            - hmpps-common-vars
   security-weekly:
     triggers:
       - schedule:
@@ -141,4 +159,5 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
+
 
