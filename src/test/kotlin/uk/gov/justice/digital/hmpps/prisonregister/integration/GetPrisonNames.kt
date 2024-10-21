@@ -78,6 +78,26 @@ class GetPrisonNames : IntegrationTest() {
     }
   }
 
+  @Test
+  fun `should return prison active name id only`() {
+    // Given
+    val endPoint = "/prisons/names?name=WDI"
+
+    // When
+    val responseSpec = webTestClient.get().uri(endPoint)
+      .exchange()
+
+    // Then
+    responseSpec.expectStatus().isOk
+
+    val prisonNames = getPrisonNames(responseSpec.expectBody())
+    Assertions.assertThat(prisonNames).isNotEmpty
+    with(prisonNames[0]) {
+      Assertions.assertThat(prisonId).isEqualTo("WDI")
+      Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
+    }
+  }
+
   fun getPrisonNames(returnResult: WebTestClient.BodyContentSpec): Array<PrisonNameDto> {
     return objectMapper.readValue(returnResult.returnResult().responseBody, Array<PrisonNameDto>::class.java)
   }
