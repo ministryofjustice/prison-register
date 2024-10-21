@@ -18,7 +18,7 @@ interface PrisonRepository : JpaRepository<Prison, String>, JpaSpecificationExec
   fun findAllByPrisonIdIsIn(ids: List<String>): List<Prison>
 
   @Query(
-    "SELECT new uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto(p.prisonId, p.name) FROM Prison p WHERE (:active IS NULL OR p.active = :active) ORDER BY p.name",
+    "SELECT new uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto(p.prisonId, p.name) FROM Prison p WHERE (:active IS NULL OR p.active = :active) AND (:name IS NULL OR p.name = :name)ORDER BY p.name",
   )
-  fun getPrisonNames(@Param("active") active: Boolean?): List<PrisonNameDto>
+  fun getPrisonNames(@Param("active") active: Boolean?, @Param("name") name: String?): List<PrisonNameDto>
 }

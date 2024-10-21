@@ -341,8 +341,8 @@ class PrisonService(
   }
 
   @Transactional(readOnly = true)
-  fun getPrisonNames(active: Boolean?): List<PrisonNameDto> {
-    return prisonRepository.getPrisonNames(active)
+  fun getPrisonNames(active: Boolean?, name: String?): List<PrisonNameDto> {
+    return prisonRepository.getPrisonNames(active, name)
   }
 
   private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {
