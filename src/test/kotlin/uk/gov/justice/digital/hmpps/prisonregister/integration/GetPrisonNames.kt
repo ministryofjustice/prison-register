@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.integration
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 
@@ -96,6 +98,66 @@ class GetPrisonNames : IntegrationTest() {
       Assertions.assertThat(prisonId).isEqualTo("WDI")
       Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
     }
+  }
+
+  // Different combinations of 'active' and 'name por positive scenarios'
+  @ParameterizedTest
+  @CsvSource(
+    "true, WDI",
+    "null, WDI",
+    "false, WOI",
+    "null, WOI",
+  )
+  fun `should return prison names based on any kind of active value, name, positive scenarios`(active: String?, name: String?) {
+    val queryParams = mutableListOf<String>()
+    if (active != "null") {
+      queryParams.add("active=$active")
+    }
+
+    if (name != "null") {
+      queryParams.add("name=$name")
+    }
+
+    val endPoint = "/prisons/names?" + queryParams.joinToString("&")
+
+    // When
+    val responseSpec = webTestClient.get().uri(endPoint)
+      .exchange()
+
+    // Then
+    responseSpec.expectStatus().isOk
+
+    val prisonNames = getPrisonNames(responseSpec.expectBody())
+    Assertions.assertThat(prisonNames).isNotEmpty
+  }
+
+  // Different combinations of 'active' and 'name por positive scenarios'
+  @ParameterizedTest
+  @CsvSource(
+    "false, WDI",
+    "true, WOI",
+  )
+  fun `should not return prison names based on any kind of active value, name, negative scenarios`(active: String?, name: String?) {
+    val queryParams = mutableListOf<String>()
+    if (active != "null") {
+      queryParams.add("active=$active")
+    }
+
+    if (name != "null") {
+      queryParams.add("name=$name")
+    }
+
+    val endPoint = "/prisons/names?" + queryParams.joinToString("&")
+
+    // When
+    val responseSpec = webTestClient.get().uri(endPoint)
+      .exchange()
+
+    // Then
+    responseSpec.expectStatus().isOk
+
+    val prisonNames = getPrisonNames(responseSpec.expectBody())
+    Assertions.assertThat(prisonNames).isEmpty()
   }
 
   fun getPrisonNames(returnResult: WebTestClient.BodyContentSpec): Array<PrisonNameDto> {
