@@ -62,7 +62,7 @@ class PrisonRepositoryTest : TestBase() {
   @Test
   fun `should find associated gp practice`() {
     val prison = prisonRepository.findById("MDI").orElseThrow()
-    assertThat(prison.gpPractice).isEqualTo(PrisonGpPractice("MDI", "Y05537"))
+    assertThat(prison.gpPractice).isEqualTo("Y05537")
   }
 
   @Test
@@ -93,7 +93,7 @@ class PrisonRepositoryTest : TestBase() {
 
   @Test
   fun `should find prison by gp practice code`() {
-    val prison = prisonRepository.findByGpPracticeGpPracticeCode("Y05537")
+    val prison = prisonRepository.findOneByGpPractice("Y05537")
     assertThat(prison).isEqualTo(Prison("MDI", "Moorland (HMP & YOI)", active = true))
   }
 

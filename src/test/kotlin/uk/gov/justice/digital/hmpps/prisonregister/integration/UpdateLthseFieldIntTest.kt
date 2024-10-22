@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import kotlin.jvm.optionals.getOrNull
 
 class UpdateLthseFieldIntTest : IntegrationTest() {
 
@@ -39,7 +40,7 @@ class UpdateLthseFieldIntTest : IntegrationTest() {
       contracted = true,
       lthse = false,
     )
-    prisonRepository.saveAndFlush(lthsePrison)
+    prisonRepository.save(lthsePrison)
   }
 
   @Test
@@ -60,7 +61,7 @@ class UpdateLthseFieldIntTest : IntegrationTest() {
     val response = updateLthseField(endpoint, headers, body)
     assertThat(response.lthse).isTrue
 
-    val dataFromDB = prisonRepository.findByPrisonId(prisonId)
+    val dataFromDB = prisonRepository.findById(prisonId).getOrNull()
     assertThat(dataFromDB!!.lthse).isTrue
 
     verify(auditService).sendAuditEvent(

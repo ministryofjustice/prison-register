@@ -66,7 +66,7 @@ class PrisonService(
   }
 
   fun findByGpPractice(gpPracticeCode: String): GpDto {
-    val prison = prisonRepository.findByGpPracticeGpPracticeCode(gpPracticeCode)
+    val prison = prisonRepository.findOneByGpPractice(gpPracticeCode)
       ?: throw EntityNotFoundException("Prison with gp practice $gpPracticeCode not found")
     return GpDto(prison)
   }
@@ -161,7 +161,7 @@ class PrisonService(
     if (contactDetails == null) {
       val prison = prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
       val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
-      contactDetailsRepository.saveAndFlush(ContactDetails(prisonId, prison, departmentType, persistedEmailAddress))
+      contactDetailsRepository.save(ContactDetails(prisonId, prison, departmentType, persistedEmailAddress))
       return CREATED
     }
     val oldEmailAddress = contactDetails.emailAddress?.value
@@ -180,7 +180,7 @@ class PrisonService(
 
     persistedEmailAddress.contactDetails.add(contactDetails)
     contactDetails.emailAddress = persistedEmailAddress
-    contactDetailsRepository.saveAndFlush(contactDetails)
+    contactDetailsRepository.save(contactDetails)
 
     oldEmailAddress?.let {
       if (contactDetailsRepository.isEmailOrphaned(oldEmailAddress)) {
@@ -227,7 +227,7 @@ class PrisonService(
     val emailEntity = emailAddressRepository.getEmailAddress(newEmailAddress)
     return emailEntity?.let {
       emailEntity
-    } ?: emailAddressRepository.saveAndFlush(EmailAddress(newEmailAddress))
+    } ?: emailAddressRepository.save(EmailAddress(newEmailAddress))
   }
 
   private fun createOrGetPhoneNumber(
@@ -236,7 +236,7 @@ class PrisonService(
     val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(newPhoneNumber)
     return phoneNumberEntity?.let {
       phoneNumberEntity
-    } ?: phoneNumberRepository.saveAndFlush(PhoneNumber(newPhoneNumber))
+    } ?: phoneNumberRepository.save(PhoneNumber(newPhoneNumber))
   }
 
   private fun createOrGetWebAddress(
@@ -245,7 +245,7 @@ class PrisonService(
     val entity = webAddressRepository.get(value)
     return entity?.let {
       entity
-    } ?: webAddressRepository.saveAndFlush(WebAddress(value))
+    } ?: webAddressRepository.save(WebAddress(value))
   }
 
   @Transactional
@@ -277,7 +277,7 @@ class PrisonService(
       phoneNumber = persistedPhoneNumber,
     )
 
-    return ContactDetailsDto(contactDetailsRepository.saveAndFlush(entity))
+    return ContactDetailsDto(contactDetailsRepository.save(entity))
   }
 
   @Transactional
@@ -314,7 +314,7 @@ class PrisonService(
         contactDetails.phoneNumber = phoneNumber
       } ?: run { if (removeIfNull) contactDetails.phoneNumber = null }
 
-      val persistedEntity = contactDetailsRepository.saveAndFlush(contactDetails)
+      val persistedEntity = contactDetailsRepository.save(contactDetails)
 
       removeOrphanedContactDetails(originalDetails)
 
@@ -342,7 +342,7 @@ class PrisonService(
 
   @Transactional(readOnly = true)
   fun getPrisonNames(active: Boolean?): List<PrisonNameDto> {
-    return prisonRepository.getPrisonNames(active)
+    return prisonRepository.findByActiveOrderByPrisonId(active = active).map { PrisonNameDto(it.prisonId, it.name) }
   }
 
   private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {

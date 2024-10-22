@@ -15,6 +15,9 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  jpa:
+    show-sql: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/prison-register
     username: prison-register
