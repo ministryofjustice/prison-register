@@ -100,7 +100,7 @@ class GetPrisonNames : IntegrationTest() {
     }
   }
 
-  // Different combinations of 'active' and 'name por positive scenarios'
+  // Different combinations of 'active' and 'name' for positive scenarios'
   @ParameterizedTest
   @CsvSource(
     "true, WDI",
@@ -129,13 +129,28 @@ class GetPrisonNames : IntegrationTest() {
 
     val prisonNames = getPrisonNames(responseSpec.expectBody())
     Assertions.assertThat(prisonNames).isNotEmpty
+
+    if (name != "null" && name == "WDI") {
+      with(prisonNames.last()) {
+        Assertions.assertThat(prisonId).isEqualTo("WDI")
+        Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
+      }
+    } else {
+      with(prisonNames.last()) {
+        Assertions.assertThat(prisonId).isEqualTo("WOI")
+        Assertions.assertThat(prisonName).isEqualTo("Wolds (HMP)")
+      }
+    }
   }
 
-  // Different combinations of 'active' and 'name por positive scenarios'
+  // Different combinations of 'active' and 'name' for negative scenarios'
   @ParameterizedTest
   @CsvSource(
     "false, WDI",
     "true, WOI",
+    "false, XXX",
+    "true, XXX",
+    "null, XXX",
   )
   fun `should not return prison names based on any kind of active value, name, negative scenarios`(active: String?, name: String?) {
     val queryParams = mutableListOf<String>()
