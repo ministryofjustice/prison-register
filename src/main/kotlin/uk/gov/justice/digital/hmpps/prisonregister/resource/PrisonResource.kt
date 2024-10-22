@@ -128,7 +128,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     "/names",
     produces = [MediaType.APPLICATION_JSON_VALUE],
   )
-  @Operation(summary = "Get prison names", description = "prison id and full name")
+  @Operation(summary = "Get prison name(s)", description = "prison id and full name")
   @ApiResponses(
     value = [
       ApiResponse(
@@ -139,8 +139,9 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonNames(
     @Parameter(description = "If active is not set, return all prisons, otherwise return only the active or inactive ones based on the value", example = "true", required = false) @RequestParam active: Boolean?,
+    @Parameter(description = "If parameter prisonId is not set, return the names all prisons, otherwise return only the one corresponding to the prisonId code.  filtering on active still applies", example = "WDI", required = false) @RequestParam prison_id: String?,
   ): List<PrisonNameDto> {
-    return prisonService.getPrisonNames(active)
+    return prisonService.getPrisonNames(active, prison_id)
   }
 
   @PostMapping("/prisonsByIds", consumes = ["application/json"])
