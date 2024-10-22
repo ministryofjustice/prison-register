@@ -35,7 +35,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
@@ -113,9 +112,9 @@ class PrisonServiceTest {
     @Test
     fun `find prison from gp practice`() {
       val prison = Prison("MDI", "Name", active = true)
-      prison.gpPractice = PrisonGpPractice("MDI", "A12345")
+      prison.gpPractice = "A12345"
       val prisonGpPracticeDto = GpDto(prison)
-      whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
+      whenever(prisonRepository.findOneByGpPractice(anyString())).thenReturn(prison)
       val prisonDto = prisonService.findByGpPractice("MDI")
       assertThat(prisonDto).isEqualTo(prisonGpPracticeDto)
     }
@@ -385,7 +384,7 @@ class PrisonServiceTest {
       )
 
       whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
-      whenever(contactDetailsRepository.saveAndFlush(any())).thenReturn(contactDetailEntity)
+      whenever(contactDetailsRepository.save(any())).thenReturn(contactDetailEntity)
       val gotContactDetailDto = prisonService.createContactDetails(prison.prisonId, contactDetailDto)
       assertThat(gotContactDetailDto.type).isEqualTo(contactDetailDto.type)
       assertThat(gotContactDetailDto.emailAddress).isNull()

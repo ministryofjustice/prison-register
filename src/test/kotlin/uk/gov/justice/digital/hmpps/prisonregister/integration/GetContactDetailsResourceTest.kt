@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration
 
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -27,10 +26,10 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
       .isOk
 
     val contactDetailsDto = getContactDetailsDtoResults(responseSpec.expectBody())
-    Assertions.assertNotNull(contactDetailsDto)
-    Assertions.assertEquals(contactDetailsDto.emailAddress, "aled@moj.gov.uk")
-    Assertions.assertEquals(contactDetailsDto.phoneNumber, "01234567890")
-    Assertions.assertEquals(contactDetailsDto.webAddress, "www.moj.gov.uk")
+    assertNotNull(contactDetailsDto)
+    assertEquals(contactDetailsDto.emailAddress, "aled@moj.gov.uk")
+    assertEquals(contactDetailsDto.phoneNumber, "01234567890")
+    assertEquals(contactDetailsDto.webAddress, "www.moj.gov.uk")
   }
 
   @Test

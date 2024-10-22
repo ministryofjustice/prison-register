@@ -12,10 +12,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.OneToMany
-import jakarta.persistence.OneToOne
 import org.hibernate.Hibernate
-import org.hibernate.annotations.Fetch
-import org.hibernate.annotations.FetchMode
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import java.time.LocalDate
 
@@ -35,7 +32,6 @@ data class Prison(
   var inactiveDate: LocalDate? = null,
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  @Fetch(FetchMode.SUBSELECT)
   var prisonTypes: MutableSet<PrisonType> = mutableSetOf(),
 
   @ElementCollection(fetch = FetchType.LAZY)
@@ -45,7 +41,6 @@ data class Prison(
   )
   @Column(name = "category")
   @Enumerated(EnumType.STRING)
-  @Fetch(FetchMode.SUBSELECT)
   var categories: MutableSet<Category> = mutableSetOf(),
 
   @OneToMany
@@ -54,21 +49,17 @@ data class Prison(
     joinColumns = [JoinColumn(name = "prison_id")],
     inverseJoinColumns = [JoinColumn(name = "operator_id", referencedColumnName = "id")],
   )
-  @Fetch(FetchMode.SUBSELECT)
   var prisonOperators: List<Operator> = listOf(),
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  @Fetch(FetchMode.SUBSELECT)
   var addresses: List<Address> = listOf(),
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  @Fetch(FetchMode.JOIN)
   var contactDetails: MutableList<ContactDetails> = mutableListOf(),
 ) {
 
-  @OneToOne(fetch = FetchType.EAGER, optional = true)
-  @JoinColumn(name = "prison_id")
-  var gpPractice: PrisonGpPractice? = null
+  @Column(name = "gp_practice_code", nullable = true)
+  var gpPractice: String? = null
 
   fun addAddress(dto: UpdateAddressDto): Address {
     val building = Address(
