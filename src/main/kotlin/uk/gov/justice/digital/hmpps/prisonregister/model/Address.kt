@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import org.hibernate.Hibernate
 
 @Entity
 data class Address(
@@ -23,4 +24,14 @@ data class Address(
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "PRISON_ID", nullable = false)
   var prison: Prison,
-)
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+
+    other as Address
+    return (id == other.id)
+  }
+
+  override fun hashCode(): Int = id.hashCode()
+}

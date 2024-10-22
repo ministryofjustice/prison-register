@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestEmailAddressRep
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestPhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestWebAddressRepository
 import java.nio.charset.StandardCharsets
+import kotlin.jvm.optionals.getOrNull
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -117,7 +118,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
   }
 
   private fun createOrGetDbPrison(prisonId: String): Prison {
-    return prisonRepository.findByPrisonIdWithContactDetails(prisonId) ?: prisonRepository.save(
+    return prisonRepository.findById(prisonId).getOrNull() ?: prisonRepository.save(
       Prison(
         prisonId,
         "$prisonId Prison",

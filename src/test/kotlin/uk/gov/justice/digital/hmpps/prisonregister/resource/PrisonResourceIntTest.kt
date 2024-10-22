@@ -54,8 +54,8 @@ class PrisonResourceIntTest : IntegrationTest() {
 
       val operator = Operator(1, "PSP")
 
-      prison.addresses = listOf(address)
-      prison.prisonOperators = listOf(operator)
+      prison.addresses = setOf(address)
+      prison.prisonOperators = setOf(operator)
 
       val prisons = listOf(
         prison,
@@ -85,8 +85,8 @@ class PrisonResourceIntTest : IntegrationTest() {
         prison,
       )
 
-      prison.addresses = listOf(mdiAddress)
-      prison.prisonOperators = listOf(Operator(1, "PSP"))
+      prison.addresses = setOf(mdiAddress)
+      prison.prisonOperators = setOf(Operator(1, "PSP"))
 
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison),
@@ -122,8 +122,8 @@ class PrisonResourceIntTest : IntegrationTest() {
 
       val operator = Operator(1, "PSP")
 
-      prison.addresses = listOf(address)
-      prison.prisonOperators = listOf(operator)
+      prison.addresses = setOf(address)
+      prison.prisonOperators = setOf(operator)
 
       val prisons = listOf(
         prison,
@@ -233,7 +233,7 @@ class PrisonResourceIntTest : IntegrationTest() {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),

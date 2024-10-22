@@ -341,8 +341,8 @@ class PrisonService(
   }
 
   @Transactional(readOnly = true)
-  fun getPrisonNames(active: Boolean?, prisonId: String?): List<PrisonNameDto> {
-    return prisonRepository.findByActiveOrderByPrisonId(active = active)
+  fun getPrisonNames(active: Boolean? = null, prisonId: String? = null): List<PrisonNameDto> {
+    return prisonRepository.findByActiveOrderByPrisonName(active = active)
       .filter { prisonId == null || it.prisonId == prisonId }
       .map { PrisonNameDto(it.prisonId, it.name) }
   }

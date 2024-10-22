@@ -9,6 +9,22 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 
 class GetPrisonNames : IntegrationTest() {
   @Test
+  fun `should return prisons`() {
+    // Given
+    val endpoint = "/prisons"
+
+    // When
+    val responseSpec = webTestClient.get().uri(endpoint)
+      .exchange()
+
+    // Then
+    responseSpec.expectStatus().isOk
+
+    val prisonNames = getPrisonNames(responseSpec.expectBody())
+    Assertions.assertThat(prisonNames).isNotEmpty
+  }
+
+  @Test
   fun `should return prison names and ids by name order`() {
     // Given
     val endPont = "/prisons/names"
