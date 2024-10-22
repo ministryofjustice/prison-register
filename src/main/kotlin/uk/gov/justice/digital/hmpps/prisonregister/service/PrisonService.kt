@@ -341,8 +341,10 @@ class PrisonService(
   }
 
   @Transactional(readOnly = true)
-  fun getPrisonNames(active: Boolean?): List<PrisonNameDto> {
-    return prisonRepository.findByActiveOrderByPrisonId(active = active).map { PrisonNameDto(it.prisonId, it.name) }
+  fun getPrisonNames(active: Boolean?, prisonId: String?): List<PrisonNameDto> {
+    return prisonRepository.findByActiveOrderByPrisonId(active = active)
+      .filter { prisonId == null || it.prisonId == prisonId }
+      .map { PrisonNameDto(it.prisonId, it.name) }
   }
 
   private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {
