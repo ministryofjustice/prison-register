@@ -8,7 +8,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonGpPractice
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import java.util.Optional
 
@@ -19,7 +18,7 @@ class GpResourceTest : IntegrationTest() {
   @Test
   fun `find by id prison`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
-    prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
+    prison.gpPractice = "Y05537"
     whenever(prisonRepository.findById(anyString())).thenReturn(
       Optional.of(prison),
     )
@@ -32,7 +31,7 @@ class GpResourceTest : IntegrationTest() {
   @Test
   fun `find by id prison case insensitive match`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
-    prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
+    prison.gpPractice = "Y05537"
     whenever(prisonRepository.findById(anyString())).thenReturn(
       Optional.of(prison),
     )
@@ -72,8 +71,8 @@ class GpResourceTest : IntegrationTest() {
   @Test
   fun `find by gp practice prison`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
-    prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
-    whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
+    prison.gpPractice = "Y05537"
+    whenever(prisonRepository.findOneByGpPractice(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/Y05537")
       .exchange()
       .expectStatus().isOk
@@ -83,8 +82,8 @@ class GpResourceTest : IntegrationTest() {
   @Test
   fun `find by gp practice prison case insensitive match`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
-    prison.gpPractice = PrisonGpPractice("MDI", "Y05537")
-    whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
+    prison.gpPractice = "Y05537"
+    whenever(prisonRepository.findOneByGpPractice(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/y05537")
       .exchange()
       .expectStatus().isOk
@@ -94,7 +93,7 @@ class GpResourceTest : IntegrationTest() {
   @Test
   fun `find by gp practice find prison no gp practice mapped`() {
     val prison = Prison("MDI", "Moorland (HMP & YOI)", active = true)
-    whenever(prisonRepository.findByGpPracticeGpPracticeCode(anyString())).thenReturn(prison)
+    whenever(prisonRepository.findOneByGpPractice(anyString())).thenReturn(prison)
     webTestClient.get().uri("/gp/practice/Y05537")
       .exchange()
       .expectStatus().isOk

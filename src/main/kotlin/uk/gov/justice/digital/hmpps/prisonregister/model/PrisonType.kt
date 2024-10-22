@@ -18,11 +18,11 @@ data class PrisonType(
   val id: Long = 0,
 
   @Enumerated(EnumType.STRING)
-  var type: Type,
+  val type: Type,
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "PRISON_ID", nullable = false)
-  var prison: Prison,
+  val prison: Prison,
 ) {
 
   override fun equals(other: Any?): Boolean {

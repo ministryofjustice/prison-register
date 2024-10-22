@@ -62,13 +62,9 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
   @AfterEach
   fun `clean up tests`() {
     contactDetailsRepository.deleteAll()
-    contactDetailsRepository.flush()
     emailAddressRepository.deleteAll()
-    emailAddressRepository.flush()
     phoneNumberRepository.deleteAll()
-    phoneNumberRepository.flush()
     testWebAddressRepository.deleteAll()
-    testWebAddressRepository.flush()
   }
 
   fun getResponseBodyText(responseSpec: ResponseSpec): String {
@@ -104,7 +100,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
       webAddressRepository.get(webAddress) ?: webAddressRepository.save(WebAddress(webAddress))
     }
 
-    val contactDetails = contactDetailsRepository.saveAndFlush(
+    val contactDetails = contactDetailsRepository.save(
       ContactDetails(
         prison.prisonId,
         prison,
@@ -121,7 +117,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
   }
 
   private fun createOrGetDbPrison(prisonId: String): Prison {
-    return prisonRepository.findByPrisonId(prisonId) ?: prisonRepository.saveAndFlush(
+    return prisonRepository.findByPrisonIdWithContactDetails(prisonId) ?: prisonRepository.save(
       Prison(
         prisonId,
         "$prisonId Prison",

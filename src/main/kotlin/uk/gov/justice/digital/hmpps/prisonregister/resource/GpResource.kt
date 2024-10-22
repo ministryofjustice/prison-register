@@ -78,5 +78,5 @@ data class GpDto(
   @Schema(description = "Whether the prison is still active") val active: Boolean,
   @Schema(description = "GP Practice Code", example = "Y05537") val gpPracticeCode: String?,
 ) {
-  constructor(prison: Prison) : this(prison.prisonId, prison.name, prison.active, prison.gpPractice?.gpPracticeCode)
+  constructor(prison: Prison) : this(prison.prisonId, prison.name, prison.active, prison.gpPractice)
 }
