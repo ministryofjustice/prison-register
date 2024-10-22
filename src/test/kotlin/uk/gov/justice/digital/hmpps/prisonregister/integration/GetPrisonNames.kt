@@ -80,40 +80,30 @@ class GetPrisonNames : IntegrationTest() {
     }
   }
 
-  @Test
-  fun `should return prison active name id only`() {
-    // Given
-    val endPoint = "/prisons/names?name=WDI"
-
-    // When
-    val responseSpec = webTestClient.get().uri(endPoint)
-      .exchange()
-
-    // Then
-    responseSpec.expectStatus().isOk
-
-    val prisonNames = getPrisonNames(responseSpec.expectBody())
-    Assertions.assertThat(prisonNames).isNotEmpty
-    with(prisonNames[0]) {
-      Assertions.assertThat(prisonId).isEqualTo("WDI")
-      Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
-    }
-  }
-
-  // Different combinations of 'active' and 'name' for positive scenarios'
+  /**
+   * Different combinations of 'active' and 'name' for positive (is not empty result) and negative (is empty result) scenarios,
+   * CVS(active,prisonId,isNotEmpty)
+   *
+   * WDI : active prisonID with name "Wakefield (HMP)"
+   * WOI : non active prisonID with name "Wolds (HMP)"
+   */
   @ParameterizedTest
   @CsvSource(
-    "true, WDI",
-    "null, WDI",
-    "false, WOI",
-    "null, WOI",
+    "true,WDI,true",
+    "null,WDI,true",
+    "false,WOI,true",
+    "null,WOI,true",
+    "false,WDI,false",
+    "true,WOI,false",
+    "false,XXX,false",
+    "true,XXX,false",
+    "null,XXX,false",
   )
-  fun `should return prison names based on any kind of active value, name, positive scenarios`(active: String?, name: String?) {
+  fun `should return prison names based on any kind of active value, name, positive scenarios`(active: String?, name: String?, isNotEmpty: Boolean) {
     val queryParams = mutableListOf<String>()
     if (active != "null") {
       queryParams.add("active=$active")
     }
-
     if (name != "null") {
       queryParams.add("name=$name")
     }
@@ -128,51 +118,23 @@ class GetPrisonNames : IntegrationTest() {
     responseSpec.expectStatus().isOk
 
     val prisonNames = getPrisonNames(responseSpec.expectBody())
-    Assertions.assertThat(prisonNames).isNotEmpty
 
-    if (name != "null" && name == "WDI") {
-      with(prisonNames.last()) {
-        Assertions.assertThat(prisonId).isEqualTo("WDI")
-        Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
+    when (isNotEmpty) {
+      true -> {
+        Assertions.assertThat(prisonNames).isNotEmpty
+        when (name) {
+          "WDI" -> with(prisonNames.last()) {
+            Assertions.assertThat(prisonId).isEqualTo("WDI")
+            Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
+          }
+          "WOI" -> with(prisonNames.last()) {
+            Assertions.assertThat(prisonId).isEqualTo("WOI")
+            Assertions.assertThat(prisonName).isEqualTo("Wolds (HMP)")
+          }
+        }
       }
-    } else {
-      with(prisonNames.last()) {
-        Assertions.assertThat(prisonId).isEqualTo("WOI")
-        Assertions.assertThat(prisonName).isEqualTo("Wolds (HMP)")
-      }
+      false -> Assertions.assertThat(prisonNames).isEmpty()
     }
-  }
-
-  // Different combinations of 'active' and 'name' for negative scenarios'
-  @ParameterizedTest
-  @CsvSource(
-    "false, WDI",
-    "true, WOI",
-    "false, XXX",
-    "true, XXX",
-    "null, XXX",
-  )
-  fun `should not return prison names based on any kind of active value, name, negative scenarios`(active: String?, name: String?) {
-    val queryParams = mutableListOf<String>()
-    if (active != "null") {
-      queryParams.add("active=$active")
-    }
-
-    if (name != "null") {
-      queryParams.add("name=$name")
-    }
-
-    val endPoint = "/prisons/names?" + queryParams.joinToString("&")
-
-    // When
-    val responseSpec = webTestClient.get().uri(endPoint)
-      .exchange()
-
-    // Then
-    responseSpec.expectStatus().isOk
-
-    val prisonNames = getPrisonNames(responseSpec.expectBody())
-    Assertions.assertThat(prisonNames).isEmpty()
   }
 
   fun getPrisonNames(returnResult: WebTestClient.BodyContentSpec): Array<PrisonNameDto> {
