@@ -99,13 +99,13 @@ class GetPrisonNames : IntegrationTest() {
     "true,XXX,false",
     "null,XXX,false",
   )
-  fun `should return prison names based on any kind of active value, name, positive scenarios`(active: String?, name: String?, isNotEmpty: Boolean) {
+  fun `should return prison names based on any kind of active value, name, positive scenarios`(active: String?, prison_id: String?, isNotEmpty: Boolean) {
     val queryParams = mutableListOf<String>()
     if (active != "null") {
       queryParams.add("active=$active")
     }
-    if (name != "null") {
-      queryParams.add("name=$name")
+    if (prison_id != "null") {
+      queryParams.add("prison_id=$prison_id")
     }
 
     val endPoint = "/prisons/names?" + queryParams.joinToString("&")
@@ -122,7 +122,7 @@ class GetPrisonNames : IntegrationTest() {
     when (isNotEmpty) {
       true -> {
         Assertions.assertThat(prisonNames).isNotEmpty
-        when (name) {
+        when (prison_id) {
           "WDI" -> with(prisonNames.last()) {
             Assertions.assertThat(prisonId).isEqualTo("WDI")
             Assertions.assertThat(prisonName).isEqualTo("Wakefield (HMP)")
