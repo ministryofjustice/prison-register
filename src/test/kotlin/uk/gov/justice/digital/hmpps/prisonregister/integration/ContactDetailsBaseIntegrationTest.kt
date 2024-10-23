@@ -92,27 +92,24 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
   fun createDBData(prisonId: String, departmentType: DepartmentType, phoneNumber: String? = null, emailAddress: String? = null, webAddress: String? = null): ContactDetailsDto {
     val prison = createOrGetDbPrison(prisonId)
     val persistedPhoneNumber = phoneNumber?.let {
-      phoneNumberRepository.getPhoneNumber(phoneNumber) ?: phoneNumberRepository.save(PhoneNumber(phoneNumber))
+      phoneNumberRepository.getByValue(phoneNumber) ?: phoneNumberRepository.save(PhoneNumber(phoneNumber))
     }
     val persistedEmailAddress = emailAddress?.let {
-      emailAddressRepository.getEmailAddress(emailAddress) ?: emailAddressRepository.save(EmailAddress(emailAddress))
+      emailAddressRepository.getByValue(emailAddress) ?: emailAddressRepository.save(EmailAddress(emailAddress))
     }
     val webAddressRepository = webAddress?.let {
-      webAddressRepository.get(webAddress) ?: webAddressRepository.save(WebAddress(webAddress))
+      webAddressRepository.getByValue(webAddress) ?: webAddressRepository.save(WebAddress(webAddress))
     }
 
     val contactDetails = contactDetailsRepository.save(
       ContactDetails(
         prison.prisonId,
-        prison,
         departmentType,
         phoneNumber = persistedPhoneNumber,
         emailAddress = persistedEmailAddress,
         webAddress = webAddressRepository,
       ),
     )
-
-    prison.contactDetails.add(contactDetails)
 
     return ContactDetailsDto(contactDetails)
   }
@@ -254,12 +251,12 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     assertThat(contactDetails).isNull()
 
     phoneNumber?.let {
-      val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+      val phoneNumberEntity = phoneNumberRepository.getByValue(phoneNumber)
       assertThat(phoneNumberEntity).isNull()
     }
 
     emailAddress?.let {
-      val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+      val emailAddressEntity = emailAddressRepository.getByValue(emailAddress)
       assertThat(emailAddressEntity).isNull()
     }
   }
@@ -268,13 +265,13 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
-    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    val phoneNumberEntity = phoneNumberRepository.getByValue(phoneNumber)
     assertThat(phoneNumberEntity).isNotNull
 
-    val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+    val emailAddressEntity = emailAddressRepository.getByValue(emailAddress)
     assertThat(emailAddressEntity).isNull()
 
-    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    val webAddressAddressEntity = webAddressRepository.getByValue(webAddress)
     assertThat(webAddressAddressEntity).isNotNull
   }
 
@@ -282,13 +279,13 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
-    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    val phoneNumberEntity = phoneNumberRepository.getByValue(phoneNumber)
     assertThat(phoneNumberEntity).isNull()
 
-    val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+    val emailAddressEntity = emailAddressRepository.getByValue(emailAddress)
     assertThat(emailAddressEntity).isNotNull
 
-    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    val webAddressAddressEntity = webAddressRepository.getByValue(webAddress)
     assertThat(webAddressAddressEntity).isNotNull
   }
 
@@ -296,13 +293,13 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
-    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    val phoneNumberEntity = phoneNumberRepository.getByValue(phoneNumber)
     assertThat(phoneNumberEntity).isNotNull
 
-    val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+    val emailAddressEntity = emailAddressRepository.getByValue(emailAddress)
     assertThat(emailAddressEntity).isNotNull
 
-    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    val webAddressAddressEntity = webAddressRepository.getByValue(webAddress)
     assertThat(webAddressAddressEntity).isNull()
   }
 
@@ -314,15 +311,15 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
   fun assertDbContactDetailsExist(prisonId: String, emailAddress: String? = null, phoneNumber: String? = null, webAddress: String? = null, department: DepartmentType) {
     phoneNumber?.let {
-      assertThat(phoneNumberRepository.getPhoneNumber(phoneNumber)).isNotNull
+      assertThat(phoneNumberRepository.getByValue(phoneNumber)).isNotNull
     }
 
     emailAddress?.let {
-      assertThat(emailAddressRepository.getEmailAddress(emailAddress)).isNotNull
+      assertThat(emailAddressRepository.getByValue(emailAddress)).isNotNull
     }
 
     webAddress?.let {
-      assertThat(webAddressRepository.get(webAddress)).isNotNull
+      assertThat(webAddressRepository.getByValue(webAddress)).isNotNull
     }
 
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)

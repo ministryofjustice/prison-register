@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository
 interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
 
   @Query(
-    "SELECT c.emailAddress.value FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:departmentType",
+    "SELECT e.value FROM ContactDetails c join c.emailAddress e WHERE c.prisonId=:prisonId AND c.type=:departmentType",
   )
   fun getEmailAddressByPrisonIdAndDepartment(prisonId: String, departmentType: DepartmentType): String?
 
@@ -16,11 +17,6 @@ interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
     "SELECT count(c) = 0 FROM ContactDetails c WHERE c.emailAddress.value=:emailAddress",
   )
   fun isEmailOrphaned(emailAddress: String): Boolean
-
-  @Query(
-    "SELECT c FROM ContactDetails c WHERE c.prisonId=:prisonId AND c.type=:departmentType",
-  )
-  fun get(prisonId: String, departmentType: DepartmentType): ContactDetails?
 
   @Query(
     "SELECT count(c) = 0 FROM ContactDetails c WHERE c.phoneNumber.value=:phoneNumber",
@@ -32,5 +28,6 @@ interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
   )
   fun isWebAddressOrphaned(webAddress: String): Boolean
 
+  @EntityGraph(value = "contact-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   fun getByPrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
 }

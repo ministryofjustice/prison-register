@@ -43,13 +43,13 @@ class LegacyDeletePrisonEmailResourceTest : ContactDetailsBaseIntegrationTest() 
     // Then
     responseSpec.expectStatus().isNoContent
 
-    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(phoneNumber)
+    val phoneNumberEntity = phoneNumberRepository.getByValue(phoneNumber)
     assertThat(phoneNumberEntity).isNotNull
 
-    val emailAddressEntity = emailAddressRepository.getEmailAddress(emailAddress)
+    val emailAddressEntity = emailAddressRepository.getByValue(emailAddress)
     assertThat(emailAddressEntity).isNull()
 
-    val webAddressAddressEntity = webAddressRepository.get(webAddress)
+    val webAddressAddressEntity = webAddressRepository.getByValue(webAddress)
     assertThat(webAddressAddressEntity).isNotNull
   }
 

@@ -9,7 +9,8 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.PreRemove
+import jakarta.persistence.NamedAttributeNode
+import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import org.hibernate.Hibernate
@@ -18,14 +19,18 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 
 @Entity
+@NamedEntityGraph(
+  name = "contact-entity-graph",
+  attributeNodes = [
+    NamedAttributeNode("emailAddress"),
+    NamedAttributeNode("webAddress"),
+    NamedAttributeNode("phoneNumber"),
+  ],
+)
 @Table(name = "CONTACT_DETAILS", uniqueConstraints = [UniqueConstraint(columnNames = ["prison_id", "department_type"])])
 class ContactDetails(
   @Column(name = "PRISON_ID", nullable = false)
   val prisonId: String,
-
-  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH])
-  @JoinColumn(name = "PRISON_ID", updatable = false, insertable = false)
-  val prison: Prison,
 
   @Enumerated(EnumType.STRING)
   @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEOLINK_CONFERENCING_CENTRE','OFFENDER_MANAGEMENT_UNIT')", nullable = false)
@@ -64,11 +69,6 @@ class ContactDetails(
   @UpdateTimestamp
   @Column
   val modifyTimestamp: LocalDateTime? = null
-
-  @PreRemove
-  private fun removeFromParent() {
-    prison.contactDetails.remove(this)
-  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

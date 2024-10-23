@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.NamedAttributeNode
 import jakarta.persistence.NamedEntityGraph
-import jakarta.persistence.NamedSubgraph
 import jakarta.persistence.OneToMany
 import org.hibernate.Hibernate
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
@@ -27,17 +26,6 @@ import java.time.LocalDate
     NamedAttributeNode("categories"),
     NamedAttributeNode("addresses"),
     NamedAttributeNode("prisonOperators"),
-    NamedAttributeNode("contactDetails", subgraph = "contact-subgraph"),
-  ],
-  subgraphs = [
-    NamedSubgraph(
-      name = "contact-subgraph",
-      attributeNodes = [
-        NamedAttributeNode("emailAddress"),
-        NamedAttributeNode("webAddress"),
-        NamedAttributeNode("phoneNumber"),
-      ],
-    ),
   ],
 )
 data class Prison(
@@ -77,8 +65,6 @@ data class Prison(
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var addresses: Set<Address> = setOf(),
 
-  @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  var contactDetails: MutableSet<ContactDetails> = mutableSetOf(),
 ) {
 
   @Column(name = "gp_practice_code", nullable = true)

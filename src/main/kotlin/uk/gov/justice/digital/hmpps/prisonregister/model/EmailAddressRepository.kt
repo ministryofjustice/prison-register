@@ -15,8 +15,5 @@ interface EmailAddressRepository : JpaRepository<EmailAddress, Long> {
   )
   fun delete(emailAddress: String)
 
-  @Query(
-    "SELECT ea FROM EmailAddress ea WHERE ea.value=:emailAddress",
-  )
-  fun getEmailAddress(emailAddress: String): EmailAddress?
+  fun getByValue(emailAddress: String): EmailAddress?
 }

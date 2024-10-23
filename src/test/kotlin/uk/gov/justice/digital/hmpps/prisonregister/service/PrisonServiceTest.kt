@@ -372,11 +372,10 @@ class PrisonServiceTest {
 
     @Test
     fun `CreateContactDetails ContactDetailsDto not found`() {
-      val contactDetailDto = ContactDetailsDto(DepartmentType.VIDEOLINK_CONFERENCING_CENTRE, null, null, null)
+      val contactDetailDto = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, null, null, null)
       val prison = Prison("BRI", "Bri Prison", active = true)
       val contactDetailEntity = ContactDetails(
         prison.prisonId,
-        prison,
         contactDetailDto.type,
         emailAddress = null,
         webAddress = null,

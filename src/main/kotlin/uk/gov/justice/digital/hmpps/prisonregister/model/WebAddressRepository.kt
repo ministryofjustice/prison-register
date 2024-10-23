@@ -15,8 +15,5 @@ interface WebAddressRepository : JpaRepository<WebAddress, Long> {
   )
   fun delete(webAddress: String)
 
-  @Query(
-    "SELECT wa FROM WebAddress wa WHERE wa.value=:webAddress",
-  )
-  fun get(webAddress: String): WebAddress?
+  fun getByValue(webAddress: String): WebAddress?
 }
