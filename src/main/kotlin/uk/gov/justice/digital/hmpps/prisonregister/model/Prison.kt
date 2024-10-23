@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.NamedAttributeNode
 import jakarta.persistence.NamedEntityGraph
+import jakarta.persistence.NamedSubgraph
 import jakarta.persistence.OneToMany
 import org.hibernate.Hibernate
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
@@ -21,7 +22,23 @@ import java.time.LocalDate
 @Entity
 @NamedEntityGraph(
   name = "prison-entity-graph",
-  attributeNodes = [ NamedAttributeNode("prisonTypes"), NamedAttributeNode("categories"), NamedAttributeNode("contactDetails"), NamedAttributeNode("addresses"), NamedAttributeNode("prisonOperators") ],
+  attributeNodes = [
+    NamedAttributeNode("prisonTypes"),
+    NamedAttributeNode("categories"),
+    NamedAttributeNode("addresses"),
+    NamedAttributeNode("prisonOperators"),
+    NamedAttributeNode("contactDetails", subgraph = "contact-subgraph"),
+  ],
+  subgraphs = [
+    NamedSubgraph(
+      name = "contact-subgraph",
+      attributeNodes = [
+        NamedAttributeNode("emailAddress"),
+        NamedAttributeNode("webAddress"),
+        NamedAttributeNode("phoneNumber"),
+      ],
+    ),
+  ],
 )
 data class Prison(
   @Id
