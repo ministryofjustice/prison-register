@@ -47,7 +47,7 @@ class PrisonAddressServiceTest {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),
@@ -82,7 +82,7 @@ class PrisonAddressServiceTest {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),
@@ -133,7 +133,7 @@ class PrisonAddressServiceTest {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),
@@ -170,7 +170,7 @@ class PrisonAddressServiceTest {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),
@@ -222,7 +222,7 @@ class PrisonAddressServiceTest {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),
@@ -248,7 +248,7 @@ class PrisonAddressServiceTest {
         postcode = "DN7 6BW",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
 
       whenever(addressRepository.findById(any())).thenReturn(
         Optional.of(address),

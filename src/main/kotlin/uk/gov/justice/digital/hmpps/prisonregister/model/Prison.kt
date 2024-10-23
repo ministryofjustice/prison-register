@@ -11,12 +11,18 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
+import jakarta.persistence.NamedAttributeNode
+import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToMany
 import org.hibernate.Hibernate
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import java.time.LocalDate
 
 @Entity
+@NamedEntityGraph(
+  name = "prison-entity-graph",
+  attributeNodes = [ NamedAttributeNode("prisonTypes"), NamedAttributeNode("categories"), NamedAttributeNode("contactDetails"), NamedAttributeNode("addresses"), NamedAttributeNode("prisonOperators") ],
+)
 data class Prison(
   @Id
   @Column(unique = true)
@@ -49,13 +55,13 @@ data class Prison(
     joinColumns = [JoinColumn(name = "prison_id")],
     inverseJoinColumns = [JoinColumn(name = "operator_id", referencedColumnName = "id")],
   )
-  var prisonOperators: List<Operator> = listOf(),
+  var prisonOperators: Set<Operator> = setOf(),
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  var addresses: List<Address> = listOf(),
+  var addresses: Set<Address> = setOf(),
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  var contactDetails: MutableList<ContactDetails> = mutableListOf(),
+  var contactDetails: MutableSet<ContactDetails> = mutableSetOf(),
 ) {
 
   @Column(name = "gp_practice_code", nullable = true)

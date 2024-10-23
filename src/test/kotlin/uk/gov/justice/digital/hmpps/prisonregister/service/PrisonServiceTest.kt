@@ -88,7 +88,7 @@ class PrisonServiceTest {
         "England",
         prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
       whenever(prisonRepository.findById(anyString())).thenReturn(
         Optional.of(prison),
       )
@@ -239,7 +239,7 @@ class PrisonServiceTest {
         prison = prison,
       )
       prison.prisonTypes = prisonTypes
-      prison.addresses = mutableListOf(address)
+      prison.addresses = mutableSetOf(address)
       prison.categories = mutableSetOf(Category.A, Category.D)
 
       return prison

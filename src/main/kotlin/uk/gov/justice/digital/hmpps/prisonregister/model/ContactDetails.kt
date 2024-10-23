@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.PreRemove
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
+import org.hibernate.Hibernate
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -67,5 +68,25 @@ class ContactDetails(
   @PreRemove
   private fun removeFromParent() {
     prison.contactDetails.remove(this)
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+    if (!super.equals(other)) return false
+
+    other as ContactDetails
+
+    if (prisonId != other.prisonId) return false
+    if (type != other.type) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode()
+    result = 31 * result + prisonId.hashCode()
+    result = 31 * result + type.hashCode()
+    return result
   }
 }

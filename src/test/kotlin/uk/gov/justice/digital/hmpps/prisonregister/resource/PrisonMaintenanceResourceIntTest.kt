@@ -287,7 +287,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         country = "England",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
 
@@ -359,7 +359,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         country = "England",
         prison = prison,
       )
-      prison.addresses = listOf(address)
+      prison.addresses = setOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
 
