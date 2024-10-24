@@ -143,7 +143,7 @@ class PrisonService(
 
   @Transactional(readOnly = true)
   fun getContactDetails(prisonId: String, type: DepartmentType): ContactDetailsDto {
-    val contactDetails = contactDetailsRepository.get(prisonId, type)
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, type)
     return contactDetails?.let {
       ContactDetailsDto(contactDetails)
     } ?: throw ContactDetailsNotFoundException(
@@ -159,9 +159,9 @@ class PrisonService(
 
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     if (contactDetails == null) {
-      val prison = prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
+      prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
       val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
-      contactDetailsRepository.save(ContactDetails(prisonId, prison, departmentType, persistedEmailAddress))
+      contactDetailsRepository.save(ContactDetails(prisonId, departmentType, persistedEmailAddress))
       return CREATED
     }
     val oldEmailAddress = contactDetails.emailAddress?.value
@@ -224,7 +224,7 @@ class PrisonService(
   private fun createOrGetEmailAddress(
     newEmailAddress: String,
   ): EmailAddress {
-    val emailEntity = emailAddressRepository.getEmailAddress(newEmailAddress)
+    val emailEntity = emailAddressRepository.getByValue(newEmailAddress)
     return emailEntity?.let {
       emailEntity
     } ?: emailAddressRepository.save(EmailAddress(newEmailAddress))
@@ -233,7 +233,7 @@ class PrisonService(
   private fun createOrGetPhoneNumber(
     newPhoneNumber: String,
   ): PhoneNumber {
-    val phoneNumberEntity = phoneNumberRepository.getPhoneNumber(newPhoneNumber)
+    val phoneNumberEntity = phoneNumberRepository.getByValue(newPhoneNumber)
     return phoneNumberEntity?.let {
       phoneNumberEntity
     } ?: phoneNumberRepository.save(PhoneNumber(newPhoneNumber))
@@ -242,7 +242,7 @@ class PrisonService(
   private fun createOrGetWebAddress(
     value: String,
   ): WebAddress {
-    val entity = webAddressRepository.get(value)
+    val entity = webAddressRepository.getByValue(value)
     return entity?.let {
       entity
     } ?: webAddressRepository.save(WebAddress(value))
@@ -253,7 +253,7 @@ class PrisonService(
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
     LOG.debug("Enter createContactDetails $prisonId / ${contactDetailsDto.type.toMessage()}")
 
-    val prison = prisonRepository.getReferenceById(prisonId) ?: throw PrisonNotFoundException(prisonId)
+    prisonRepository.getReferenceById(prisonId) ?: throw PrisonNotFoundException(prisonId)
     if (contactDetailsRepository.getByPrisonIdAndType(prisonId, contactDetailsDto.type) != null) {
       throw ContactDetailsAlreadyExistException(prisonId, contactDetailsDto.type)
     }
@@ -270,7 +270,6 @@ class PrisonService(
 
     val entity = ContactDetails(
       prisonId,
-      prison,
       contactDetailsDto.type,
       emailAddress = persistedEmailAddress,
       webAddress = persistedWebAddress,

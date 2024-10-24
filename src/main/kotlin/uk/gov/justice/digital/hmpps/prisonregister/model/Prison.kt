@@ -21,7 +21,12 @@ import java.time.LocalDate
 @Entity
 @NamedEntityGraph(
   name = "prison-entity-graph",
-  attributeNodes = [ NamedAttributeNode("prisonTypes"), NamedAttributeNode("categories"), NamedAttributeNode("contactDetails"), NamedAttributeNode("addresses"), NamedAttributeNode("prisonOperators") ],
+  attributeNodes = [
+    NamedAttributeNode("prisonTypes"),
+    NamedAttributeNode("categories"),
+    NamedAttributeNode("addresses"),
+    NamedAttributeNode("prisonOperators"),
+  ],
 )
 data class Prison(
   @Id
@@ -60,8 +65,6 @@ data class Prison(
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var addresses: Set<Address> = setOf(),
 
-  @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-  var contactDetails: MutableSet<ContactDetails> = mutableSetOf(),
 ) {
 
   @Column(name = "gp_practice_code", nullable = true)

@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 
 @WithMockUser(authorities = ["ROLE_MAINTAIN_REF_DATA", "SCOPE_write"])
@@ -44,7 +43,6 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) : I
   fun `Authorised user can update email`() {
     val contactDetails = ContactDetails(
       "MDI",
-      Prison("MDI", "Moorland", active = true),
       OFFENDER_MANAGEMENT_UNIT,
       EmailAddress("a@b.com"),
     )

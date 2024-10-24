@@ -15,8 +15,5 @@ interface PhoneNumberRepository : JpaRepository<PhoneNumber, Long> {
   )
   fun delete(phoneNumber: String)
 
-  @Query(
-    "SELECT pn FROM PhoneNumber pn WHERE pn.value=:phoneNumber",
-  )
-  fun getPhoneNumber(phoneNumber: String): PhoneNumber?
+  fun getByValue(phoneNumber: String): PhoneNumber?
 }
