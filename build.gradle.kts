@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.7"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.8"
   kotlin("plugin.spring") version "2.0.21"
   kotlin("plugin.jpa") version "2.0.21"
   id("org.jetbrains.kotlinx.kover") version "0.8.3"
@@ -27,15 +27,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.0.2")
   implementation("com.jayway.jsonpath:json-path:2.9.0")
 
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.9.0")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
   implementation("org.springframework.data:spring-data-commons:3.3.5")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
@@ -65,7 +65,7 @@ dependencies {
   testImplementation("org.testcontainers:postgresql:1.20.3")
   testImplementation("org.testcontainers:localstack:1.20.3")
   testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.777")
-  testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
+  testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
 }
 
 java {
