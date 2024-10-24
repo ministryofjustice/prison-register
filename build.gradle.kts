@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import uk.gov.justice.digital.hmpps.gradle.PortForwardRDSTask
+import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
+import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
@@ -73,6 +76,18 @@ repositories {
 }
 
 tasks {
+  register<PortForwardRDSTask>("portForwardRDS") {
+    namespacePrefix = "hmpps-registers"
+  }
+
+  register<PortForwardRedisTask>("portForwardRedis") {
+    namespacePrefix = "hmpps-registers"
+  }
+
+  register<RevealSecretsTask>("revealSecrets") {
+    namespacePrefix = "hmpps-registers"
+  }
+
   withType<KotlinCompile> {
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
   }
