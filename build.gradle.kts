@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.7"
   kotlin("plugin.spring") version "2.0.21"
   kotlin("plugin.jpa") version "2.0.21"
   id("org.jetbrains.kotlinx.kover") version "0.8.3"
@@ -22,7 +22,7 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:33.3.1-jre")
   implementation("commons-validator:commons-validator:1.9.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:8.13.47")
+  implementation("com.googlecode.libphonenumber:libphonenumber:8.13.48")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
@@ -33,10 +33,10 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.8.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.9.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
-  implementation("org.springframework.data:spring-data-commons:3.3.4")
+  implementation("org.springframework.data:spring-data-commons:3.3.5")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.6.0")
@@ -54,17 +54,17 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.22")
-  testImplementation("org.wiremock:wiremock-standalone:3.9.1")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.23")
+  testImplementation("org.wiremock:wiremock-standalone:3.9.2")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.12.6")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:postgresql:1.20.2")
-  testImplementation("org.testcontainers:localstack:1.20.2")
-  testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.774")
+  testImplementation("org.testcontainers:postgresql:1.20.3")
+  testImplementation("org.testcontainers:localstack:1.20.3")
+  testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.777")
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
 }
 
