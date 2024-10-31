@@ -1,8 +1,6 @@
 version: 2.1
-
 orbs:
   hmpps: ministryofjustice/hmpps@10
-
 jobs:
   validate:
     executor:
@@ -103,42 +101,3 @@ workflows:
             - prison-register-prod
           requires:
             - request-prod-approval
-
-  security:
-    triggers:
-      - schedule:
-          cron: "37 6 * * 1-5"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/gradle_owasp_dependency_check:
-          jdk_tag: "21.0"
-          slack_channel: move-a-prisoner-alerts
-          context:
-            - hmpps-common-vars
-      - hmpps/trivy_latest_scan:
-          slack_channel: move-a-prisoner-alerts
-          context:
-            - hmpps-common-vars
-      - hmpps/veracode_pipeline_scan:
-          slack_channel: move-a-prisoner-alerts
-          context:
-            - hmpps-common-vars
-            - veracode-credentials
-  security-weekly:
-    triggers:
-      - schedule:
-          cron: "40 4 * * 1"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/veracode_policy_scan:
-          slack_channel: move-a-prisoner-alerts
-          context:
-            - veracode-credentials
-            - hmpps-common-vars
-
