@@ -27,7 +27,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.1")
   implementation("com.jayway.jsonpath:json-path:2.9.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
@@ -47,6 +47,7 @@ dependencies {
   implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0")
   implementation("org.apache.commons:commons-csv:1.12.0")
   implementation("org.freemarker:freemarker:2.3.33")
+  implementation("io.netty:netty-common:4.1.115.Final")
 
   runtimeOnly("org.postgresql:postgresql")
   runtimeOnly("org.flywaydb:flyway-core")
