@@ -47,6 +47,7 @@ dependencies {
   implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0")
   implementation("org.apache.commons:commons-csv:1.12.0")
   implementation("org.freemarker:freemarker:2.3.33")
+  implementation("io.netty:netty-common:4.1.115.Final")
 
   runtimeOnly("org.postgresql:postgresql")
   runtimeOnly("org.flywaydb:flyway-core")
