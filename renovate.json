@@ -3,6 +3,7 @@
   "extends": ["github>ministryofjustice/hmpps-renovate-config:jvm"],
   "assigneesFromCodeOwners": true,
   "prBodyTemplate": "{{{table}}}{{{notes}}}{{{warnings}}}{{{controls}}}",
+  "ignoreDeps": ["jackson"],
   "packageRules": [
     {
       "matchManagers": ["gradle"],
