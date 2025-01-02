@@ -3,7 +3,7 @@
   "extends": ["github>ministryofjustice/hmpps-renovate-config:jvm"],
   "assigneesFromCodeOwners": true,
   "prBodyTemplate": "{{{table}}}{{{notes}}}{{{warnings}}}{{{controls}}}",
-  "ignoreDeps": ["jackson"],
+  "ignoreDeps": ["com.fasterxml.jackson.datatype:jackson-datatype-jsr310", "com.fasterxml.jackson.module:jackson-module-kotlin"],
   "packageRules": [
     {
       "matchManagers": ["gradle"],
