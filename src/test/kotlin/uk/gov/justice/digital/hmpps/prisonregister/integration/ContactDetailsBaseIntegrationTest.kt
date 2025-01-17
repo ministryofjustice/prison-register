@@ -4,10 +4,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
 import org.springframework.web.reactive.function.BodyInserters
@@ -36,28 +36,28 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
   val prisonId = "LEI"
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var prisonRepository: PrisonRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var contactDetailsRepository: ContactDetailsRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var emailAddressRepository: EmailAddressRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var webAddressRepository: WebAddressRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var phoneNumberRepository: PhoneNumberRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var testEmailAddressRepository: TestEmailAddressRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var testPhoneNumberRepository: TestPhoneNumberRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var testWebAddressRepository: TestWebAddressRepository
 
   @AfterEach

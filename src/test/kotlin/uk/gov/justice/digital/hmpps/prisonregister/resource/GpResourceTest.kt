@@ -5,14 +5,14 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import java.util.Optional
 
 class GpResourceTest : IntegrationTest() {
-  @MockBean
+  @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
   @Test

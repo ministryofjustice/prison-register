@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
@@ -20,10 +20,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import java.util.Optional
 
 class PrisonResourceIntTest : IntegrationTest() {
-  @MockBean
+  @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var addressRepository: AddressRepository
 
   @Suppress("ClassName")

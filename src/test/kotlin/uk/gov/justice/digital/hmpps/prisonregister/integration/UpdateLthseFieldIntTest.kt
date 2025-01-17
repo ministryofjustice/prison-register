@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ReactiveHttpOutputMessage
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.web.reactive.function.BodyInserter
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -21,10 +21,10 @@ import kotlin.jvm.optionals.getOrNull
 
 class UpdateLthseFieldIntTest : IntegrationTest() {
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var auditService: AuditService
 
   val prisonId = "HSE"
