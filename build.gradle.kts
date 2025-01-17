@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.1.2"
   kotlin("plugin.spring") version "2.0.21"
   kotlin("plugin.jpa") version "2.0.21"
   id("org.jetbrains.kotlinx.kover") version "0.9.0"
@@ -46,6 +46,7 @@ dependencies {
   implementation("net.javacrumbs.shedlock:shedlock-spring:5.16.0")
   implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0")
   implementation("org.apache.commons:commons-csv:1.12.0")
+  implementation("org.apache.commons:commons-compress:1.27.1") // Address CVE-2024-25710 and CVE-2024-26308 present in v1.24
   implementation("org.freemarker:freemarker:2.3.33")
   implementation("io.netty:netty-common:4.1.116.Final")
 
