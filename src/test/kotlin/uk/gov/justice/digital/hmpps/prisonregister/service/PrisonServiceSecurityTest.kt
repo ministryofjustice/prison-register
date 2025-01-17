@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
@@ -26,16 +26,16 @@ annotation class WithMaintenanceMockUser
 @ActiveProfiles("test")
 class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) : IntegrationTest() {
 
-  @MockBean
+  @MockitoBean
   lateinit var contactDetailsRepository: ContactDetailsRepository
 
-  @MockBean
+  @MockitoBean
   lateinit var emailAddressRepository: EmailAddressRepository
 
-  @MockBean
+  @MockitoBean
   lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   lateinit var telemetryClient: TelemetryClient
 
   @Test

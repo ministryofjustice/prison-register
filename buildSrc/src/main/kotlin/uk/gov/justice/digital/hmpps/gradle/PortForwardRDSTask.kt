@@ -21,7 +21,7 @@ open class PortForwardRDSTask : PortForwardTask() {
     description = "Connect a local port to RDS in Cloud Platform"
   }
 
-  override var secretName: String? = "dps-rds-instance-output"
+  override var secretName: String? = "prisons-rds-instance-output"
     @Input
     get
 

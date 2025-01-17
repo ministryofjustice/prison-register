@@ -13,8 +13,8 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.BodyInserters
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest.builder
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
@@ -28,16 +28,16 @@ import java.util.Optional
 
 class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
 
-  @MockBean
+  @MockitoBean
   private lateinit var addressRepository: AddressRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var auditService: AuditService
 
-  @MockBean
+  @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
 
   @Nested
