@@ -49,6 +49,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        "Road in Welsh",
+        "Sub area in Welsh",
+        "Town in Welsh",
+        "County in Welsh",
+        "Cymru",
         prison,
       )
 
@@ -82,6 +87,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
         prison,
       )
 
@@ -117,6 +127,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
         prison,
       )
 
@@ -256,6 +271,40 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
+        prison,
+      )
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(mdiAddress),
+      )
+      webTestClient.get().uri("/prisons/id/LEI/address/21")
+        .exchange()
+        .expectStatus().isNotFound
+        .expectBody()
+        .jsonPath("$.developerMessage").isEqualTo("Address 21 not in prison LEI")
+    }
+
+    @Test
+    fun `should include Welsh address`() {
+      val prison = Prison("CFI", "HMP Cardiff", active = true)
+      val mdiAddress = Address(
+        21,
+        "Some Road",
+        "Some Area",
+        "Cardiff",
+        "Some County",
+        "CF24 0UG",
+        "Wales",
+        "Road in Welsh",
+        "Area in Welsh",
+        "Town in Welsh",
+        "County in Welsh",
+        "Country in Welsh",
         prison,
       )
 

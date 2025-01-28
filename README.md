@@ -115,6 +115,12 @@ diff old_gp_practice.sql new_gp_practice.sql
 
 ## Testing
 
+### Integration tests
+Some integration require a local postgres DB instance so you will need to execute the following
+```bash
+docker-compose -f docker-compose-test.yml up -d
+```
+
 ### Localstack
 
 `localstack` is used to emulate the AWS SNS and SQS services. When running the integration tests localstack is started automatically by TestContainers.

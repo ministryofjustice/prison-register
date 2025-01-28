@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -20,6 +21,13 @@ data class Address(
   var county: String? = null,
   var postcode: String,
   var country: String,
+  @Column(name = "address_line1_in_welsh")
+  var addressLine1InWelsh: String? = null,
+  @Column(name = "address_line2_in_welsh")
+  var addressLine2InWelsh: String? = null,
+  var townInWelsh: String? = null,
+  var countyInWelsh: String? = null,
+  var countryInWelsh: String? = null,
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "PRISON_ID", nullable = false)

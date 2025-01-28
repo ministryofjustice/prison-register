@@ -247,4 +247,39 @@ data class UpdateAddressDto(
     message = "Country must be no more than 16 characters",
   )
   val country: String,
+
+  @Schema(description = "Address line 1 in Welsh", example = "Bawtry Road", required = false)
+  @field:Size(
+    max = 80,
+    message = "Address line 1 must be no more than 80 characters",
+  )
+  val addressLine1InWelsh: String?,
+
+  @Schema(description = "Address line 2 in Welsh", example = "Hatfield Woodhouse", required = false)
+  @field:Size(
+    max = 80,
+    message = "Address line 2 must be no more than 80 characters",
+  )
+  val addressLine2InWelsh: String?,
+
+  @Schema(description = "Village/Town/City in Welsh", example = "Brynbuga", required = false)
+  @field:Size(
+    max = 80,
+    message = "Village/Town/City must be no more than 80 characters",
+  )
+  val townInWelsh: String?,
+
+  @Schema(description = "County in Welsh", example = "Sir Fynwy", required = false)
+  @field:Size(
+    max = 80,
+    message = "County must be no more than 80 characters",
+  )
+  val countyInWelsh: String?,
+
+  @Schema(description = "Country in Welsh", example = "Cymru", required = false)
+  @field:Size(
+    max = 16,
+    message = "Country must be no more than 16 characters",
+  )
+  val countryInWelsh: String?,
 )
