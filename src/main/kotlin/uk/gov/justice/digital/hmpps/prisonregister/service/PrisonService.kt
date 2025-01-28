@@ -92,6 +92,7 @@ class PrisonService(
       val prison = Prison(
         prisonId = prisonId,
         name = prisonName,
+        prisonNameInWelsh = prisonNameInWelsh,
         active = true,
         male = male,
         female = female,

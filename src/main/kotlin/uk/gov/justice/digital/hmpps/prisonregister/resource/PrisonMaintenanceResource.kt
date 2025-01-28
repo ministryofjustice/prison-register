@@ -168,6 +168,10 @@ data class InsertPrisonDto(
   @field:NotBlank(message = "Prison name is required")
   val prisonName: String,
 
+  @Schema(description = "Welsh name of the prison", example = "Carchar Brynbuga", required = false)
+  @field:Size(min = 3, max = 40, message = "Welsh prison name must be between 3 and 40 letters")
+  val prisonNameInWelsh: String? = null,
+
   @Schema(description = "Whether the prison is still active", required = false)
   val active: Boolean = true,
 
@@ -201,6 +205,10 @@ data class UpdatePrisonDto(
   @field:Size(min = 3, max = 40, message = "Prison name must be between 3 and 40 letters")
   @field:NotBlank(message = "Prison name is required")
   val prisonName: String,
+
+  @Schema(description = "Welsh name of the prison", example = "Carchar Brynbuga", required = false)
+  @field:Size(min = 3, max = 40, message = "Welsh prison name must be between 3 and 40 letters")
+  val prisonNameInWelsh: String? = null,
 
   @Schema(description = "Whether the prison is still active", required = true)
   val active: Boolean,

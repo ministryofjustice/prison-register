@@ -199,7 +199,7 @@ class PrisonServiceTest {
         Optional.of(Prison("MDI", "A Prison 1", active = true)),
       )
       assertThrows(EntityExistsException::class.java) {
-        prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", true, contracted = false))
+        prisonService.insertPrison(InsertPrisonDto("MDI", "A Prison 1", active = true, contracted = false))
       }
       verify(prisonRepository).findById("MDI")
       verifyNoInteractions(telemetryClient)
@@ -305,7 +305,7 @@ class PrisonServiceTest {
       )
 
       assertThrows(EntityNotFoundException::class.java) {
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A Prison 1", true))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A Prison 1", active = true))
       }
       verify(prisonRepository).findById("MDI")
       verifyNoInteractions(telemetryClient)
@@ -318,7 +318,7 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
       assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
@@ -369,7 +369,7 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", true, prisonTypes = setOf(Type.HMP, Type.YOI)))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, prisonTypes = setOf(Type.HMP, Type.YOI)))
       assertThat(updatedPrison).isEqualTo(
         PrisonDto(
           "MDI",

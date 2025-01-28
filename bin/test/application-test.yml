@@ -1,0 +1,43 @@
+server:
+  shutdown: immediate
+
+aws:
+  provider: localstack
+
+oauth:
+  endpoint.url: http://localhost:9090/auth
+
+management.endpoint:
+  health.cache.time-to-live: 0
+  info.cache.time-to-live: 0
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    show-sql: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/prison-register
+    username: prison-register
+    password: prison-register
+    hikari:
+      maximum-pool-size: 2
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:local-public-key.pub
+
+hmpps.sqs:
+  provider: localstack
+  queues:
+    domaineventstestqueue:
+      queueName: ${random.uuid}
+      subscribeTopicId: domainevents
+  topics:
+    domainevents:
+      arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
+

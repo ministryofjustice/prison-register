@@ -1,0 +1,3 @@
+CREATE INDEX contact_details_to_web_address_idx on contact_details_to_web_address (web_address_id, contact_details_id);
+CREATE INDEX contact_details_to_email_address_idx on contact_details_to_email_address (email_address_id, contact_details_id);
+CREATE INDEX contact_details_to_phone_number_idx on contact_details_to_phone_number (phone_number_id, contact_details_id);
