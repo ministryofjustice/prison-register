@@ -86,6 +86,50 @@ class PrisonServiceTest {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
+        prison,
+      )
+      prison.addresses = setOf(address)
+      whenever(prisonRepository.findById(anyString())).thenReturn(
+        Optional.of(prison),
+      )
+      val prisonDto = PrisonDto(prison)
+
+      val actual = prisonService.findById("MDI")
+      assertThat(actual).isEqualTo(prisonDto)
+      assertThat(actual.categories).containsExactly(Category.C)
+      verify(prisonRepository).findById("MDI")
+    }
+
+    @Test
+    fun `find prison includes Welsh names`() {
+      val prison = Prison(
+        prisonId = "CFI",
+        name = "Cardiff Prison",
+        active = true,
+        male = true,
+        female = false,
+        contracted = true,
+        categories = mutableSetOf(Category.C),
+      )
+
+      val address = Address(
+        21,
+        "Some Road",
+        "Some Area",
+        "Cardiff",
+        "Some Area",
+        "DN7 6BW",
+        "Wales",
+        "Some Welsh Road",
+        "Some Welsh Area",
+        "Some Welsh Town",
+        "Some Welsh County",
+        "Cymru",
         prison,
       )
       prison.addresses = setOf(address)
@@ -211,6 +255,11 @@ class PrisonServiceTest {
         county = "South Yorkshire",
         postcode = "DN7 6BW",
         country = "England",
+        null,
+        null,
+        null,
+        null,
+        null,
       )
 
       return InsertPrisonDto(

@@ -113,6 +113,11 @@ class PrisonAddressServiceTest {
             "county",
             "postcode",
             "country",
+            null,
+            null,
+            null,
+            null,
+            null,
           ),
         )
       }
@@ -150,6 +155,11 @@ class PrisonAddressServiceTest {
             "county",
             "postcode",
             "country",
+            null,
+            null,
+            null,
+            null,
+            null,
           ),
         )
       }
@@ -336,6 +346,11 @@ class PrisonAddressServiceTest {
       "county",
       "postcode",
       "country",
+      null,
+      null,
+      null,
+      null,
+      null,
     )
   }
 }
