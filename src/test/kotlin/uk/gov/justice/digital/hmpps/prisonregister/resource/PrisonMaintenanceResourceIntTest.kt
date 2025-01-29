@@ -395,8 +395,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
             "Town in Welsh",
             "County in Welsh",
             "Cymru",
-
-            ),
+          ),
         ),
       )
 
