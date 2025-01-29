@@ -1,0 +1,11 @@
+{
+  "prisonId": "CFI",
+  "prisonName": "HMP Cardiff",
+  "prisonNameInWelsh": "Carchar Caerdydd",
+  "active": true,
+  "female": false,
+  "male": true,
+  "types": [],
+  "addresses": [],
+  "categories": []
+}

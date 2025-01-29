@@ -33,6 +33,11 @@ class PrisonAddressService(
       address.county = county
       address.postcode = postcode
       address.country = country
+      address.addressLine1InWelsh = addressLine1InWelsh
+      address.addressLine2InWelsh = addressLine2InWelsh
+      address.townInWelsh = townInWelsh
+      address.countyInWelsh = countyInWelsh
+      address.countryInWelsh = countryInWelsh
     }
 
     recordPrisonAddressEditEvent("prison-register-address-update", address)
@@ -54,6 +59,11 @@ class PrisonAddressService(
           postcode = postcode,
           country = country,
           prison = prison,
+          addressLine1InWelsh = addressLine1InWelsh,
+          addressLine2InWelsh = addressLine2InWelsh,
+          townInWelsh = townInWelsh,
+          countyInWelsh = countyInWelsh,
+          countryInWelsh = countryInWelsh,
         ),
       )
 
@@ -82,6 +92,11 @@ class PrisonAddressService(
         "county" to county,
         "postcode" to postcode,
         "country" to country,
+        "addressLine1InWelsh" to addressLine1InWelsh,
+        "addressLine2InWelsh" to addressLine2InWelsh,
+        "townInWelsh" to townInWelsh,
+        "countyInWelsh" to countyInWelsh,
+        "countryInWelsh" to countryInWelsh,
       )
 
       telemetryClient.trackEvent(eventIdentifier, trackingAttributes, null)
