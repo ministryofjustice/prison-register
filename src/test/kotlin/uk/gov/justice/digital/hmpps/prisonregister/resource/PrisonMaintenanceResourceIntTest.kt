@@ -135,6 +135,49 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
     }
 
     @Test
+    fun `update prison welsh name`() {
+      whenever(prisonRepository.findById("CFI")).thenReturn(
+        Optional.of(Prison("CFI", "HMP Cardiff", prisonNameInWelsh = null, active = true)),
+      )
+      webTestClient.put()
+        .uri("/prison-maintenance/id/CFI")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(BodyInserters.fromValue(UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true, female = false)))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("welsh_prison".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_UPDATE"),
+        eq(
+          Pair(
+            "CFI",
+            UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true, female = false),
+          ),
+        ),
+        any(),
+      )
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("CFI")
+      assertThat(message.contains("A prison has been updated"))
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+
+    @Test
     fun `update a prison with maintain prison data role`() {
       whenever(prisonRepository.findById("MDI")).thenReturn(
         Optional.of(Prison("MDI", "A Prison 1", active = true)),
@@ -274,10 +317,10 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
 
     @Test
     fun `insert a prison with welsh name`() {
-      val prison = Prison("CFI", "Inserted Prison", prisonNameInWelsh = "Welsh prison name", active = true)
+      val prison = Prison("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true)
       whenever(prisonRepository.findById("CFI")).thenReturn(Optional.empty(), Optional.of(prison))
       whenever(prisonRepository.save(any())).thenReturn(prison)
-      val insertDto = InsertPrisonDto("CFI", "Inserted Prison", prisonNameInWelsh = "Welsh prison name", contracted = false)
+      val insertDto = InsertPrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", male = true, contracted = false)
 
       webTestClient.post()
         .uri("/prison-maintenance")
@@ -292,7 +335,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .body(BodyInserters.fromValue(insertDto))
         .exchange()
         .expectStatus().isCreated
-        .expectBody().json("inserted_welsh_prison".loadJson())
+        .expectBody().json("welsh_prison".loadJson())
 
       verify(auditService).sendAuditEvent(
         eq("PRISON_REGISTER_INSERT"),

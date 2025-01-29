@@ -389,6 +389,19 @@ class PrisonServiceTest {
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
+
+    @Test
+    fun `update a prison adding new Welsh name`() {
+      whenever(prisonRepository.findById("CFI")).thenReturn(
+        Optional.of(Prison("CFI", "HMP Cardiff", prisonNameInWelsh = null, active = true, lthse = false, female = true, male = false, contracted = false)),
+      )
+
+      val updatedPrison =
+        prisonService.updatePrison("CFI", UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
+      assertThat(updatedPrison).isEqualTo(PrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+      verify(prisonRepository).findById("CFI")
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
   }
 
   @Nested

@@ -119,6 +119,7 @@ class PrisonService(
 
     with(prisonUpdateRecord) {
       prison.name = prisonName
+      prison.prisonNameInWelsh = prisonNameInWelsh
       prison.active = active
       prison.male = male
       prison.female = female
