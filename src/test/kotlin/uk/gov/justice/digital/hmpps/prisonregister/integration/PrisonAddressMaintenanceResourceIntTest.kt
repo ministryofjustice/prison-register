@@ -234,6 +234,99 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
       assertThat(message.contains("A prison has been updated"))
       verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
     }
+
+    @Test
+    fun `update a prison welsh address`() {
+      val prison = Prison("CFI", "A Prison", active = true)
+      val address = Address(
+        id = 21,
+        addressLine1 = "Line 1",
+        addressLine2 = "Line 2",
+        town = "Cardiff",
+        country = "Wales",
+        postcode = "CF1 0AA",
+        addressLine1InWelsh = "Welsh Line 1",
+        addressLine2InWelsh = "Welsh Line 2",
+        townInWelsh = "Welsh Town",
+        countyInWelsh = "Welsh County",
+        countryInWelsh = "Cymru",
+        prison = prison,
+      )
+      prison.addresses = setOf(address)
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(address),
+      )
+      webTestClient.put()
+        .uri("/prison-maintenance/id/CFI/address/21")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(
+          BodyInserters.fromValue(
+            UpdateAddressDto(
+              "Line 1",
+              "Line 2",
+              "Cardiff",
+              "Wales",
+              "CF1 0AA",
+              "Wales",
+              "Welsh Line 1",
+              "Welsh Line 2",
+              "Welsh Town",
+              "Welsh County",
+              "Cymru",
+            ),
+          ),
+        )
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("updated_prison_welsh_address".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_ADDRESS_UPDATE"),
+        eq(
+          mapOf(
+            Pair("prisonId", "CFI"),
+            Pair(
+              "address",
+              AddressDto(
+                21,
+                "Line 1",
+                "Line 2",
+                "Cardiff",
+                "Wales",
+                "CF1 0AA",
+                "Wales",
+                "Welsh Line 1",
+                "Welsh Line 2",
+                "Welsh Town",
+                "Welsh County",
+                "Cymru",
+              ),
+            ),
+          ),
+        ),
+        any(),
+      )
+
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("CFI")
+      assertThat(message.contains("A prison has been updated"))
+      verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
+    }
   }
 
   @Nested
