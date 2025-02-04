@@ -57,11 +57,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "county",
               "postcode",
               "country",
-              "Road in Welsh",
-              "Sub area in Welsh",
-              "Town in Welsh",
-              "County in Welsh",
-              "Cymru",
             ),
           ),
         )
@@ -84,11 +79,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "county",
               "postcode",
               "country",
-              "Road in Welsh",
-              "Sub area in Welsh",
-              "Town in Welsh",
-              "County in Welsh",
-              "Cymru",
             ),
           ),
         ).exchange()
@@ -110,11 +100,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "county",
               "postcode",
               "country",
-              "Road in Welsh",
-              "Sub area in Welsh",
-              "Town in Welsh",
-              "County in Welsh",
-              "Cymru",
             ),
           ),
         )
@@ -183,11 +168,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "South Yorkshire",
               "S1 2AB",
               "England",
-              null,
-              null,
-              null,
-              null,
-              null,
             ),
           ),
         )
@@ -244,6 +224,7 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
         addressLine2 = "Line 2",
         town = "Cardiff",
         country = "Wales",
+        county = "Wales",
         postcode = "CF1 0AA",
         addressLine1InWelsh = "Welsh Line 1",
         addressLine2InWelsh = "Welsh Line 2",
@@ -258,7 +239,7 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
         Optional.of(address),
       )
       webTestClient.put()
-        .uri("/prison-maintenance/id/CFI/address/21")
+        .uri("/prison-maintenance/id/CFI/welsh-address/21")
         .accept(MediaType.APPLICATION_JSON)
         .headers(
           setAuthorisation(
@@ -269,13 +250,7 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
         )
         .body(
           BodyInserters.fromValue(
-            UpdateAddressDto(
-              "Line 1",
-              "Line 2",
-              "Cardiff",
-              "Wales",
-              "CF1 0AA",
-              "Wales",
+            UpdateWelshAddressDto(
               "Welsh Line 1",
               "Welsh Line 2",
               "Welsh Town",
@@ -463,11 +438,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "county",
               "postcode",
               "country",
-              "Road in Welsh",
-              "Sub area in Welsh",
-              "Town in Welsh",
-              "County in Welsh",
-              "Cymru",
             ),
           ),
         )
@@ -490,11 +460,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "county",
               "postcode",
               "country",
-              "Road in Welsh",
-              "Sub area in Welsh",
-              "Town in Welsh",
-              "County in Welsh",
-              "Cymru",
             ),
           ),
         ).exchange()
@@ -516,11 +481,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
               "county",
               "postcode",
               "country",
-              "Road in Welsh",
-              "Sub area in Welsh",
-              "Town in Welsh",
-              "County in Welsh",
-              "Cymru",
             ),
           ),
         )
@@ -559,11 +519,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "S1 2AB",
         "England",
-        "Road in Welsh",
-        "Sub area in Welsh",
-        "Town in Welsh",
-        "County in Welsh",
-        "Cymru",
       )
 
       with(additionalAddressDetails) {
@@ -574,11 +529,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
           county = county,
           country = country,
           postcode = postcode,
-          addressLine1InWelsh = addressLine1InWelsh,
-          addressLine2InWelsh = addressLine2InWelsh,
-          townInWelsh = townInWelsh,
-          countyInWelsh = countyInWelsh,
-          countryInWelsh = countryInWelsh,
           prison = prison,
         )
 
@@ -590,11 +540,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
           county = county,
           country = country,
           postcode = postcode,
-          addressLine1InWelsh = addressLine1InWelsh,
-          addressLine2InWelsh = addressLine2InWelsh,
-          townInWelsh = townInWelsh,
-          countyInWelsh = countyInWelsh,
-          countryInWelsh = countryInWelsh,
           prison = prison,
         )
 
@@ -631,11 +576,11 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
                 "South Yorkshire",
                 "S1 2AB",
                 "England",
-                "Road in Welsh",
-                "Sub area in Welsh",
-                "Town in Welsh",
-                "County in Welsh",
-                "Cymru",
+                null,
+                null,
+                null,
+                null,
+                null,
               ),
             ),
           ),

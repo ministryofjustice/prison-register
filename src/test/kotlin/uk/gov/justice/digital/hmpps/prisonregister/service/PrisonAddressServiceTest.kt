@@ -113,11 +113,6 @@ class PrisonAddressServiceTest {
             "county",
             "postcode",
             "country",
-            null,
-            null,
-            null,
-            null,
-            null,
           ),
         )
       }
@@ -155,11 +150,6 @@ class PrisonAddressServiceTest {
             "county",
             "postcode",
             "country",
-            null,
-            null,
-            null,
-            null,
-            null,
           ),
         )
       }
@@ -332,89 +322,14 @@ class PrisonAddressServiceTest {
           "county" to county,
           "postcode" to postcode,
           "country" to country,
-          "addressLine1InWelsh" to addressLine1InWelsh,
-          "addressLine2InWelsh" to addressLine2InWelsh,
-          "townInWelsh" to townInWelsh,
-          "countyInWelsh" to countyInWelsh,
-          "countryInWelsh" to countryInWelsh,
+          "addressLine1InWelsh" to null,
+          "addressLine2InWelsh" to null,
+          "townInWelsh" to null,
+          "countyInWelsh" to null,
+          "countryInWelsh" to null,
         )
 
         val actualAddress = prisonAddressService.addAddress(prison.prisonId, additionalAddress)
-
-        assertEquals(expectedAddress, actualAddress)
-        verify(telemetryClient).trackEvent(eq("prison-register-address-add"), eq(expectedTrackingAttributes), isNull())
-        verify(addressRepository).save(address)
-      }
-    }
-
-    @Test
-    fun `add a welsh address to an existing prison`() {
-      val prison = Prison("CFI", "HMP Usk", prisonNameInWelsh = "Carchar Brynbuga", active = true)
-      whenever(prisonRepository.findById(prison.prisonId)).thenReturn(Optional.of(prison))
-      val addresses = UpdateAddressDto(
-        "Line1",
-        "line2",
-        "town",
-        "county",
-        "postcode",
-        "country",
-        "Welsh Line 1",
-        "Welsh Line 2",
-        "Welsh Town",
-        "Welsh County",
-        "Cymru",
-      )
-      with(addresses) {
-        val address = Address(
-          addressLine1 = addressLine1,
-          addressLine2 = addressLine2,
-          town = town,
-          county = county,
-          country = country,
-          postcode = postcode,
-          prison = prison,
-          addressLine1InWelsh = addressLine1InWelsh,
-          addressLine2InWelsh = addressLine2InWelsh,
-          townInWelsh = townInWelsh,
-          countyInWelsh = countyInWelsh,
-          countryInWelsh = countryInWelsh,
-        )
-
-        val savedAddress = Address(
-          id = 1L,
-          addressLine1 = addressLine1,
-          addressLine2 = addressLine2,
-          town = town,
-          county = county,
-          country = country,
-          postcode = postcode,
-          prison = prison,
-          addressLine1InWelsh = addressLine1InWelsh,
-          addressLine2InWelsh = addressLine2InWelsh,
-          townInWelsh = townInWelsh,
-          countyInWelsh = countyInWelsh,
-          countryInWelsh = countryInWelsh,
-        )
-
-        whenever(addressRepository.save(address)).thenReturn(savedAddress)
-        val expectedAddress = AddressDto(savedAddress)
-        val expectedTrackingAttributes = mapOf(
-          "prisonId" to prison.prisonId,
-          "addressId" to savedAddress.id?.toString(),
-          "addressLine1" to addressLine1,
-          "addressLine2" to addressLine2,
-          "town" to town,
-          "county" to county,
-          "postcode" to postcode,
-          "country" to country,
-          "addressLine1InWelsh" to addressLine1InWelsh,
-          "addressLine2InWelsh" to addressLine2InWelsh,
-          "townInWelsh" to townInWelsh,
-          "countyInWelsh" to countyInWelsh,
-          "countryInWelsh" to countryInWelsh,
-        )
-
-        val actualAddress = prisonAddressService.addAddress(prison.prisonId, addresses)
 
         assertEquals(expectedAddress, actualAddress)
         verify(telemetryClient).trackEvent(eq("prison-register-address-add"), eq(expectedTrackingAttributes), isNull())
@@ -431,11 +346,6 @@ class PrisonAddressServiceTest {
       "county",
       "postcode",
       "country",
-      null,
-      null,
-      null,
-      null,
-      null,
     )
   }
 }

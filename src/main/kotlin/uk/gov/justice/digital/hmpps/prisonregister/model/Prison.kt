@@ -80,11 +80,6 @@ data class Prison(
       county = dto.county,
       postcode = dto.postcode,
       country = dto.country,
-      addressLine1InWelsh = dto.addressLine1InWelsh,
-      addressLine2InWelsh = dto.addressLine2InWelsh,
-      townInWelsh = dto.townInWelsh,
-      countyInWelsh = dto.countyInWelsh,
-      countryInWelsh = dto.countryInWelsh,
     )
     addresses = addresses.plus(building)
 
