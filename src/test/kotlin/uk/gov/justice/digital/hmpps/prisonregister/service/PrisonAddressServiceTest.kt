@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateWelshAddressDto
 import java.util.Optional
 
 class PrisonAddressServiceTest {
@@ -332,7 +331,6 @@ class PrisonAddressServiceTest {
         verify(addressRepository).save(address)
       }
     }
-
   }
 
   private fun givenAddress(): UpdateAddressDto {

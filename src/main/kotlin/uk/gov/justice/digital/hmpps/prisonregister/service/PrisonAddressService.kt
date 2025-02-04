@@ -39,6 +39,7 @@ class PrisonAddressService(
     recordPrisonAddressEditEvent("prison-register-address-update", address)
     return AddressDto(address)
   }
+
   @Transactional
   fun updateWelshAddress(prisonId: String, addressId: Long, updateWelshAddressDto: UpdateWelshAddressDto): AddressDto {
     val address = getAddress(addressId, prisonId)
