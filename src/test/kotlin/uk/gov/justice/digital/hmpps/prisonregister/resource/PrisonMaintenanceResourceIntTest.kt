@@ -390,11 +390,6 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
             "South Yorkshire",
             "DN7 6BW",
             "England",
-            "Road in Welsh",
-            "Sub area in Welsh",
-            "Town in Welsh",
-            "County in Welsh",
-            "Cymru",
           ),
         ),
       )
@@ -467,11 +462,6 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
             "South Yorkshire",
             "DN7 6BW",
             "England",
-            "Road in Welsh",
-            "Sub area in Welsh",
-            "Town in Welsh",
-            "County in Welsh",
-            "Cymru",
           ),
         ),
       )

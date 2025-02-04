@@ -255,11 +255,6 @@ class PrisonServiceTest {
         county = "South Yorkshire",
         postcode = "DN7 6BW",
         country = "England",
-        null,
-        null,
-        null,
-        null,
-        null,
       )
 
       return InsertPrisonDto(
