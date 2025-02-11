@@ -43,3 +43,4 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: prison-register
+  alertSeverity: move-a-prisoner-alerts-nonprod
