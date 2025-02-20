@@ -99,6 +99,29 @@ class PrisonAddressMaintenanceResource(
     return updatedAddress
   }
 
+  @PutMapping("/id/{prisonId}/welsh-address/{addressId}")
+  fun updateWelshAddress(
+    @Schema(description = "Prison Id", example = "MDI", required = true)
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 characters")
+    prisonId: String,
+    @Schema(description = "Address Id", example = "234231", required = true)
+    @PathVariable
+    addressId: Long,
+    @RequestBody @Valid
+    updateWelshAddressDto: UpdateWelshAddressDto,
+  ): AddressDto {
+    val updatedAddress = addressService.updateWelshAddress(prisonId, addressId, updateWelshAddressDto)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAmendedEvent(prisonId, now)
+    auditService.sendAuditEvent(
+      PRISON_REGISTER_ADDRESS_UPDATE.name,
+      mapOf("prisonId" to prisonId, "address" to updatedAddress),
+      now,
+    )
+    return updatedAddress
+  }
+
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @Operation(
     summary = "Delete specified address for specified Prison",
@@ -247,4 +270,44 @@ data class UpdateAddressDto(
     message = "Country must be no more than 16 characters",
   )
   val country: String,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "Welsh Address Update Record")
+data class UpdateWelshAddressDto(
+
+  @Schema(description = "Address line 1 in Welsh", example = "Bawtry Road", required = false)
+  @field:Size(
+    max = 80,
+    message = "Address line 1 must be no more than 80 characters",
+  )
+  val addressLine1InWelsh: String?,
+
+  @Schema(description = "Address line 2 in Welsh", example = "Hatfield Woodhouse", required = false)
+  @field:Size(
+    max = 80,
+    message = "Address line 2 must be no more than 80 characters",
+  )
+  val addressLine2InWelsh: String?,
+
+  @Schema(description = "Village/Town/City in Welsh", example = "Brynbuga", required = false)
+  @field:Size(
+    max = 80,
+    message = "Village/Town/City must be no more than 80 characters",
+  )
+  val townInWelsh: String?,
+
+  @Schema(description = "County in Welsh", example = "Sir Fynwy", required = false)
+  @field:Size(
+    max = 80,
+    message = "County must be no more than 80 characters",
+  )
+  val countyInWelsh: String?,
+
+  @Schema(description = "Country in Welsh", example = "Cymru", required = false)
+  @field:Size(
+    max = 16,
+    message = "Country must be no more than 16 characters",
+  )
+  val countryInWelsh: String?,
 )

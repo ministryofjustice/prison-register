@@ -13,8 +13,8 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.BodyInserters
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
@@ -29,13 +29,13 @@ import java.util.Optional
 
 class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
 
-  @MockBean
+  @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var auditService: AuditService
 
-  @MockBean
+  @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
 
   @Nested
@@ -45,7 +45,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
       webTestClient.put()
         .uri("/prison-maintenance/id/MDI")
         .accept(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true)))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", active = false, male = true)))
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -56,7 +56,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .uri("/prison-maintenance/id/MDI")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_DUMMY"), scopes = listOf("write")))
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, female = true)))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", active = false, female = true)))
         .exchange()
         .expectStatus().isForbidden
     }
@@ -67,7 +67,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .uri("/prison-maintenance/id/MDI")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("read")))
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false)))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", active = false)))
         .exchange().expectStatus().isForbidden
     }
 
@@ -106,7 +106,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
             user = "bobby.beans",
           ),
         )
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI))))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", active = false, male = true, female = true, contracted = true, lthse = false, prisonTypes = setOf(Type.YOI))))
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
@@ -116,7 +116,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         eq(
           Pair(
             "MDI",
-            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI)),
+            UpdatePrisonDto("Updated Prison", active = false, male = true, female = true, contracted = true, lthse = false, prisonTypes = setOf(Type.YOI)),
           ),
         ),
         any(),
@@ -130,6 +130,49 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
       assertThat(eventType).isEqualTo("register.prison.amended")
       assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been updated"))
+      verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+
+    @Test
+    fun `update prison welsh name`() {
+      whenever(prisonRepository.findById("CFI")).thenReturn(
+        Optional.of(Prison("CFI", "HMP Cardiff", prisonNameInWelsh = null, active = true)),
+      )
+      webTestClient.put()
+        .uri("/prison-maintenance/id/CFI")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(BodyInserters.fromValue(UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true, female = false)))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("welsh_prison".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_UPDATE"),
+        eq(
+          Pair(
+            "CFI",
+            UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true, female = false),
+          ),
+        ),
+        any(),
+      )
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("CFI")
       assertThat(message.contains("A prison has been updated"))
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
@@ -149,7 +192,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
             user = "bobby.beans",
           ),
         )
-        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI))))
+        .body(BodyInserters.fromValue(UpdatePrisonDto("Updated Prison", active = false, male = true, female = true, contracted = true, lthse = false, prisonTypes = setOf(Type.YOI))))
         .exchange()
         .expectStatus().isOk
         .expectBody().json("updated_prison".loadJson())
@@ -159,7 +202,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         eq(
           Pair(
             "MDI",
-            UpdatePrisonDto("Updated Prison", false, male = true, female = true, contracted = true, lthse = false, setOf(Type.YOI)),
+            UpdatePrisonDto("Updated Prison", active = false, male = true, female = true, contracted = true, lthse = false, prisonTypes = setOf(Type.YOI)),
           ),
         ),
         any(),
@@ -185,7 +228,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
       webTestClient.post()
         .uri("/prison-maintenance")
         .accept(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false, contracted = false)))
+        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", active = false, contracted = false)))
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -196,7 +239,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .uri("/prison-maintenance")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_DUMMY"), scopes = listOf("write")))
-        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false, contracted = false)))
+        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", active = false, contracted = false)))
         .exchange()
         .expectStatus().isForbidden
     }
@@ -207,7 +250,7 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
         .uri("/prison-maintenance")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("read")))
-        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", false, contracted = false)))
+        .body(BodyInserters.fromValue(InsertPrisonDto("AAI", "Created Prison", active = false, contracted = false)))
         .exchange().expectStatus().isForbidden
     }
 
@@ -268,6 +311,46 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
       assertThat(eventType).isEqualTo("register.prison.inserted")
       assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been inserted"))
+      verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
+    }
+
+    @Test
+    fun `insert a prison with welsh name`() {
+      val prison = Prison("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true)
+      whenever(prisonRepository.findById("CFI")).thenReturn(Optional.empty(), Optional.of(prison))
+      whenever(prisonRepository.save(any())).thenReturn(prison)
+      val insertDto = InsertPrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", male = true, contracted = false)
+
+      webTestClient.post()
+        .uri("/prison-maintenance")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(BodyInserters.fromValue(insertDto))
+        .exchange()
+        .expectStatus().isCreated
+        .expectBody().json("welsh_prison".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_INSERT"),
+        eq(insertDto),
+        any(),
+      )
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.inserted")
+      assertThat(additionalInformation.prisonId).isEqualTo("CFI")
       assertThat(message.contains("A prison has been inserted"))
       verify(telemetryClient).trackEvent(eq("prison-register-insert"), any(), isNull())
     }

@@ -3,14 +3,14 @@ package uk.gov.justice.digital.hmpps.prisonregister.integration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 
 class GetByFilterIntTest : IntegrationTest() {
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var prisonRepository: PrisonRepository
 
   @BeforeEach

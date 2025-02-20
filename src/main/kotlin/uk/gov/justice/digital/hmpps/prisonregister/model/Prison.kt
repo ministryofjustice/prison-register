@@ -39,6 +39,7 @@ data class Prison(
   var female: Boolean = false,
   var contracted: Boolean = false,
   var lthse: Boolean = false,
+  var prisonNameInWelsh: String? = null,
 
   var inactiveDate: LocalDate? = null,
 

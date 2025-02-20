@@ -170,6 +170,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
 data class PrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
+  @Schema(description = "Name of the prison in Welsh", example = "Carchar Brynbuga", required = false) val prisonNameInWelsh: String? = null,
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
   @Schema(description = "Whether the prison has male prisoners") val male: Boolean,
   @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
@@ -183,6 +184,7 @@ data class PrisonDto(
   constructor(prison: Prison) : this(
     prison.prisonId,
     prison.name,
+    prison.prisonNameInWelsh,
     prison.active,
     prison.male,
     prison.female,
@@ -203,6 +205,11 @@ data class AddressDto(
   @Schema(description = "County", example = "South Yorkshire", required = false) val county: String?,
   @Schema(description = "Postcode", example = "DN7 6BW", required = true) val postcode: String,
   @Schema(description = "Country", example = "England", required = true) val country: String,
+  @Schema(description = "Address line 1 in Welsh", example = "Coed-y-Paen", required = false) val addressLine1InWelsh: String?,
+  @Schema(description = "Address line 2 in Welsh", example = "Hatfield Woodhouse", required = false) val addressLine2InWelsh: String?,
+  @Schema(description = "Village/Town/City in Welsh", example = "Pont-y-pŵl", required = false) val townInWelsh: String?,
+  @Schema(description = "County in Welsh", example = "Sir Fynwy", required = false) val countyInWelsh: String?,
+  @Schema(description = "Country in Welsh", example = "Cymru", required = false) val countryInWelsh: String?,
 ) {
   constructor(address: Address) : this(
     address.id!!,
@@ -212,6 +219,11 @@ data class AddressDto(
     address.county,
     address.postcode,
     address.country,
+    address.addressLine1InWelsh,
+    address.addressLine2InWelsh,
+    address.townInWelsh,
+    address.countyInWelsh,
+    address.countryInWelsh,
   )
 }
 

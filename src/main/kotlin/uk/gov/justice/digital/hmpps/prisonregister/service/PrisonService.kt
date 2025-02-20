@@ -92,6 +92,7 @@ class PrisonService(
       val prison = Prison(
         prisonId = prisonId,
         name = prisonName,
+        prisonNameInWelsh = prisonNameInWelsh,
         active = true,
         male = male,
         female = female,
@@ -119,6 +120,7 @@ class PrisonService(
     with(prisonUpdateRecord) {
       prison.name = prisonName
       prison.active = active
+      prison.prisonNameInWelsh = prisonNameInWelsh
       prison.male = male
       prison.female = female
       prison.contracted = contracted

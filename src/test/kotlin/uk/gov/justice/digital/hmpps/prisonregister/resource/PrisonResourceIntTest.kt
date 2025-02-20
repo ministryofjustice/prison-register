@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
@@ -20,10 +20,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import java.util.Optional
 
 class PrisonResourceIntTest : IntegrationTest() {
-  @MockBean
+  @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var addressRepository: AddressRepository
 
   @Suppress("ClassName")
@@ -49,6 +49,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        "Road in Welsh",
+        "Sub area in Welsh",
+        "Town in Welsh",
+        "County in Welsh",
+        "Cymru",
         prison,
       )
 
@@ -82,6 +87,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
         prison,
       )
 
@@ -117,6 +127,11 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
         prison,
       )
 
@@ -256,6 +271,40 @@ class PrisonResourceIntTest : IntegrationTest() {
         "South Yorkshire",
         "DN7 6BW",
         "England",
+        null,
+        null,
+        null,
+        null,
+        null,
+        prison,
+      )
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(mdiAddress),
+      )
+      webTestClient.get().uri("/prisons/id/LEI/address/21")
+        .exchange()
+        .expectStatus().isNotFound
+        .expectBody()
+        .jsonPath("$.developerMessage").isEqualTo("Address 21 not in prison LEI")
+    }
+
+    @Test
+    fun `should include Welsh address`() {
+      val prison = Prison("CFI", "HMP Cardiff", active = true)
+      val mdiAddress = Address(
+        21,
+        "Some Road",
+        "Some Area",
+        "Cardiff",
+        "Some County",
+        "CF24 0UG",
+        "Wales",
+        "Road in Welsh",
+        "Area in Welsh",
+        "Town in Welsh",
+        "County in Welsh",
+        "Country in Welsh",
         prison,
       )
 

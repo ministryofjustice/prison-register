@@ -13,8 +13,8 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.BodyInserters
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest.builder
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
@@ -28,16 +28,16 @@ import java.util.Optional
 
 class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
 
-  @MockBean
+  @MockitoBean
   private lateinit var addressRepository: AddressRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
-  @MockBean
+  @MockitoBean
   private lateinit var auditService: AuditService
 
-  @MockBean
+  @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
 
   @Nested
@@ -137,6 +137,11 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
         county = "South Yorkshire",
         country = "England",
         postcode = "DN7 6BW",
+        addressLine1InWelsh = null,
+        addressLine2InWelsh = null,
+        townInWelsh = null,
+        countyInWelsh = null,
+        countryInWelsh = null,
         prison = prison,
       )
       prison.addresses = setOf(address)
@@ -185,6 +190,11 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
                 "South Yorkshire",
                 "S1 2AB",
                 "England",
+                null,
+                null,
+                null,
+                null,
+                null,
               ),
             ),
           ),
@@ -201,6 +211,94 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
       assertThat(eventType).isEqualTo("register.prison.amended")
       assertThat(additionalInformation.prisonId).isEqualTo("MDI")
+      assertThat(message.contains("A prison has been updated"))
+      verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
+    }
+
+    @Test
+    fun `update a prison welsh address`() {
+      val prison = Prison("CFI", "A Prison", active = true)
+      val address = Address(
+        id = 21,
+        addressLine1 = "Line 1",
+        addressLine2 = "Line 2",
+        town = "Cardiff",
+        country = "Wales",
+        county = "Wales",
+        postcode = "CF1 0AA",
+        addressLine1InWelsh = "Welsh Line 1",
+        addressLine2InWelsh = "Welsh Line 2",
+        townInWelsh = "Welsh Town",
+        countyInWelsh = "Welsh County",
+        countryInWelsh = "Cymru",
+        prison = prison,
+      )
+      prison.addresses = setOf(address)
+
+      whenever(addressRepository.findById(any())).thenReturn(
+        Optional.of(address),
+      )
+      webTestClient.put()
+        .uri("/prison-maintenance/id/CFI/welsh-address/21")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(
+          BodyInserters.fromValue(
+            UpdateWelshAddressDto(
+              "Welsh Line 1",
+              "Welsh Line 2",
+              "Welsh Town",
+              "Welsh County",
+              "Cymru",
+            ),
+          ),
+        )
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("updated_prison_welsh_address".loadJson())
+
+      verify(auditService).sendAuditEvent(
+        eq("PRISON_REGISTER_ADDRESS_UPDATE"),
+        eq(
+          mapOf(
+            Pair("prisonId", "CFI"),
+            Pair(
+              "address",
+              AddressDto(
+                21,
+                "Line 1",
+                "Line 2",
+                "Cardiff",
+                "Wales",
+                "CF1 0AA",
+                "Wales",
+                "Welsh Line 1",
+                "Welsh Line 2",
+                "Welsh Town",
+                "Welsh County",
+                "Cymru",
+              ),
+            ),
+          ),
+        ),
+        any(),
+      )
+
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("CFI")
       assertThat(message.contains("A prison has been updated"))
       verify(telemetryClient).trackEvent(eq("prison-register-address-update"), any(), isNull())
     }
@@ -261,6 +359,11 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
         county = "South Yorkshire",
         country = "England",
         postcode = "S1 2AB",
+        addressLine1InWelsh = "Road in Welsh",
+        addressLine2InWelsh = "Sub area in Welsh",
+        townInWelsh = "Town in Welsh",
+        countyInWelsh = "County in Welsh",
+        countryInWelsh = "Cymru",
         prison = prison,
       )
 
@@ -293,6 +396,11 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
                 "South Yorkshire",
                 "S1 2AB",
                 "England",
+                "Road in Welsh",
+                "Sub area in Welsh",
+                "Town in Welsh",
+                "County in Welsh",
+                "Cymru",
               ),
             ),
           ),
@@ -468,6 +576,11 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
                 "South Yorkshire",
                 "S1 2AB",
                 "England",
+                null,
+                null,
+                null,
+                null,
+                null,
               ),
             ),
           ),

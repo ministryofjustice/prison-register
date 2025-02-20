@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateWelshAddressDto
 
 @Service
 @Transactional(readOnly = true)
@@ -33,6 +34,22 @@ class PrisonAddressService(
       address.county = county
       address.postcode = postcode
       address.country = country
+    }
+
+    recordPrisonAddressEditEvent("prison-register-address-update", address)
+    return AddressDto(address)
+  }
+
+  @Transactional
+  fun updateWelshAddress(prisonId: String, addressId: Long, updateWelshAddressDto: UpdateWelshAddressDto): AddressDto {
+    val address = getAddress(addressId, prisonId)
+
+    with(updateWelshAddressDto) {
+      address.addressLine1InWelsh = addressLine1InWelsh
+      address.addressLine2InWelsh = addressLine2InWelsh
+      address.townInWelsh = townInWelsh
+      address.countyInWelsh = countyInWelsh
+      address.countryInWelsh = countryInWelsh
     }
 
     recordPrisonAddressEditEvent("prison-register-address-update", address)
@@ -82,8 +99,12 @@ class PrisonAddressService(
         "county" to county,
         "postcode" to postcode,
         "country" to country,
+        "addressLine1InWelsh" to addressLine1InWelsh,
+        "addressLine2InWelsh" to addressLine2InWelsh,
+        "townInWelsh" to townInWelsh,
+        "countyInWelsh" to countyInWelsh,
+        "countryInWelsh" to countryInWelsh,
       )
-
       telemetryClient.trackEvent(eventIdentifier, trackingAttributes, null)
     }
   }

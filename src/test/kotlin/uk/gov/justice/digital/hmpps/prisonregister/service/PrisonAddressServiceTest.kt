@@ -304,6 +304,11 @@ class PrisonAddressServiceTest {
           country = country,
           postcode = postcode,
           prison = prison,
+          addressLine1InWelsh = null,
+          addressLine2InWelsh = null,
+          townInWelsh = null,
+          countyInWelsh = null,
+          countryInWelsh = null,
         )
 
         whenever(addressRepository.save(address)).thenReturn(savedAddress)
@@ -317,6 +322,11 @@ class PrisonAddressServiceTest {
           "county" to county,
           "postcode" to postcode,
           "country" to country,
+          "addressLine1InWelsh" to null,
+          "addressLine2InWelsh" to null,
+          "townInWelsh" to null,
+          "countyInWelsh" to null,
+          "countryInWelsh" to null,
         )
 
         val actualAddress = prisonAddressService.addAddress(prison.prisonId, additionalAddress)
