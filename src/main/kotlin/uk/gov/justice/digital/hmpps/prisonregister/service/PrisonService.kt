@@ -79,8 +79,7 @@ class PrisonService(
     textSearch: String? = null,
     genders: List<Gender>? = listOf(),
     prisonTypeCodes: List<Type>? = listOf(),
-  ): List<PrisonDto> =
-    prisonRepository.findAll(PrisonFilter(active, lthse, textSearch, genders, prisonTypeCodes)).map { PrisonDto(it) }
+  ): List<PrisonDto> = prisonRepository.findAll(PrisonFilter(active, lthse, textSearch, genders, prisonTypeCodes)).map { PrisonDto(it) }
 
   @Transactional
   fun insertPrison(prisonInsertRecord: InsertPrisonDto): String {
@@ -217,10 +216,8 @@ class PrisonService(
     }
   }
 
-  private fun isContactDetailsEmpty(contactDetails: ContactDetails): Boolean {
-    return with(contactDetails) {
-      webAddress == null && phoneNumber == null && emailAddress == null
-    }
+  private fun isContactDetailsEmpty(contactDetails: ContactDetails): Boolean = with(contactDetails) {
+    webAddress == null && phoneNumber == null && emailAddress == null
   }
 
   private fun createOrGetEmailAddress(
@@ -342,11 +339,9 @@ class PrisonService(
   }
 
   @Transactional(readOnly = true)
-  fun getPrisonNames(active: Boolean? = null, prisonId: String? = null): List<PrisonNameDto> {
-    return prisonRepository.findByActiveOrderByPrisonName(active = active)
-      .filter { prisonId == null || it.prisonId == prisonId }
-      .map { PrisonNameDto(it.prisonId, it.name) }
-  }
+  fun getPrisonNames(active: Boolean? = null, prisonId: String? = null): List<PrisonNameDto> = prisonRepository.findByActiveOrderByPrisonName(active = active)
+    .filter { prisonId == null || it.prisonId == prisonId }
+    .map { PrisonNameDto(it.prisonId, it.name) }
 
   private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {
     contactDetails.emailAddress?.let {
@@ -368,12 +363,10 @@ class PrisonService(
     }
   }
 
-  private fun haveContactDetailsChanged(updateContactDetailsDto: ContactDetailsDto, contactDetails: ContactDetails): Boolean {
-    return updateContactDetailsDto.type != contactDetails.type ||
-      updateContactDetailsDto.emailAddress != contactDetails.emailAddress?.value ||
-      updateContactDetailsDto.webAddress != contactDetails.webAddress?.value ||
-      updateContactDetailsDto.phoneNumber != contactDetails.phoneNumber?.value
-  }
+  private fun haveContactDetailsChanged(updateContactDetailsDto: ContactDetailsDto, contactDetails: ContactDetails): Boolean = updateContactDetailsDto.type != contactDetails.type ||
+    updateContactDetailsDto.emailAddress != contactDetails.emailAddress?.value ||
+    updateContactDetailsDto.webAddress != contactDetails.webAddress?.value ||
+    updateContactDetailsDto.phoneNumber != contactDetails.phoneNumber?.value
 
   fun findPrisonsByIds(ids: List<String>): List<PrisonDto> = prisonRepository.findAllByPrisonIdIsIn(ids).map { PrisonDto(it) }
 }

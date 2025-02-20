@@ -328,6 +328,5 @@ class PrisonResourceIntTest : IntegrationTest() {
     }
   }
 
-  private fun String.loadJson(): String =
-    PrisonResourceIntTest::class.java.getResource("$this.json").readText()
+  private fun String.loadJson(): String = PrisonResourceIntTest::class.java.getResource("$this.json").readText()
 }

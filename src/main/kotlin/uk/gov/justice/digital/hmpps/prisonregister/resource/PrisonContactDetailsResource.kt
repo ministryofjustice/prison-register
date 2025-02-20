@@ -146,9 +146,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
     prisonId: String,
     @RequestBody @Valid
     contactDetailsDto: ContactDetailsDto,
-  ): ResponseEntity<ContactDetailsDto> {
-    return ResponseEntity<ContactDetailsDto>(prisonService.createContactDetails(prisonId, contactDetailsDto), HttpStatus.CREATED)
-  }
+  ): ResponseEntity<ContactDetailsDto> = ResponseEntity<ContactDetailsDto>(prisonService.createContactDetails(prisonId, contactDetailsDto), HttpStatus.CREATED)
 
   @PutMapping(
     END_POINT,
@@ -211,9 +209,7 @@ class PrisonContactDetailsResource(private val prisonService: PrisonService) {
     @Schema(description = "if true individual contact details are removed if null", example = "true", defaultValue = "true", required = false)
     @RequestParam
     removeIfNull: Boolean = true,
-  ): ResponseEntity<ContactDetailsDto> {
-    return ResponseEntity<ContactDetailsDto>(prisonService.updateContactDetails(prisonId, updateContactDetailsDto, removeIfNull), HttpStatus.OK)
-  }
+  ): ResponseEntity<ContactDetailsDto> = ResponseEntity<ContactDetailsDto>(prisonService.updateContactDetails(prisonId, updateContactDetailsDto, removeIfNull), HttpStatus.OK)
 
   @DeleteMapping(
     END_POINT,

@@ -11,7 +11,5 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun oauthApiHealthWebClient(): WebClient {
-    return WebClient.builder().baseUrl(oauthRootUri).build()
-  }
+  fun oauthApiHealthWebClient(): WebClient = WebClient.builder().baseUrl(oauthRootUri).build()
 }

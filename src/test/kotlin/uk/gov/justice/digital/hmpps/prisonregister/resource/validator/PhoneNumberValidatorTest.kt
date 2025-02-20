@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 /**
  * Test logic in the PhoneNumberValidator class.
  */
-class PhoneNumberValidatorTest() {
+class PhoneNumberValidatorTest {
 
   private val phoneNumberValidator: PhoneNumberValidator = PhoneNumberValidator()
 

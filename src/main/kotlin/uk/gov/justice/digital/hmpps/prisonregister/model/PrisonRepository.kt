@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface PrisonRepository : JpaRepository<Prison, String>, JpaSpecificationExecutor<Prison> {
+interface PrisonRepository :
+  JpaRepository<Prison, String>,
+  JpaSpecificationExecutor<Prison> {
 
   @Query("FROM Prison p where (:active is null or p.active = :active) order by p.name")
   fun findByActiveOrderByPrisonName(active: Boolean?): List<Prison>

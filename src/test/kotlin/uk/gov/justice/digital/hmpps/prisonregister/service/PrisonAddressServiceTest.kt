@@ -338,14 +338,12 @@ class PrisonAddressServiceTest {
     }
   }
 
-  private fun givenAddress(): UpdateAddressDto {
-    return UpdateAddressDto(
-      "Line1",
-      "line2",
-      "town",
-      "county",
-      "postcode",
-      "country",
-    )
-  }
+  private fun givenAddress(): UpdateAddressDto = UpdateAddressDto(
+    "Line1",
+    "line2",
+    "town",
+    "county",
+    "postcode",
+    "country",
+  )
 }

@@ -65,10 +65,9 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-  ): ResponseEntity<String> =
-    prisonService.getEmailAddress(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
-      ?.let { ResponseEntity.ok(it) }
-      ?: ResponseEntity.notFound().build()
+  ): ResponseEntity<String> = prisonService.getEmailAddress(prisonId, VIDEOLINK_CONFERENCING_CENTRE)
+    ?.let { ResponseEntity.ok(it) }
+    ?: ResponseEntity.notFound().build()
 
   @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
@@ -99,10 +98,9 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @PathVariable
     @Size(max = 12, min = 2)
     prisonId: String,
-  ): ResponseEntity<String> =
-    prisonService.getEmailAddress(prisonId, OFFENDER_MANAGEMENT_UNIT)
-      ?.let { ResponseEntity.ok(it) }
-      ?: ResponseEntity.notFound().build()
+  ): ResponseEntity<String> = prisonService.getEmailAddress(prisonId, OFFENDER_MANAGEMENT_UNIT)
+    ?.let { ResponseEntity.ok(it) }
+    ?: ResponseEntity.notFound().build()
 
   @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
@@ -141,12 +139,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Valid
     @Email
     emailAddress: String,
-  ): ResponseEntity<Void> {
-    return when (prisonService.setEmailAddress(prisonId, emailAddress, VIDEOLINK_CONFERENCING_CENTRE)) {
-      SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
-      SetOutcome.UPDATED -> ResponseEntity.noContent()
-    }.build()
-  }
+  ): ResponseEntity<Void> = when (prisonService.setEmailAddress(prisonId, emailAddress, VIDEOLINK_CONFERENCING_CENTRE)) {
+    SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
+    SetOutcome.UPDATED -> ResponseEntity.noContent()
+  }.build()
 
   @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")
@@ -185,12 +181,10 @@ class PrisonEmailResource(private val prisonService: PrisonService) {
     @Valid
     @Email
     emailAddress: String,
-  ): ResponseEntity<Void> {
-    return when (prisonService.setEmailAddress(prisonId, emailAddress, OFFENDER_MANAGEMENT_UNIT)) {
-      SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
-      SetOutcome.UPDATED -> ResponseEntity.noContent()
-    }.build()
-  }
+  ): ResponseEntity<Void> = when (prisonService.setEmailAddress(prisonId, emailAddress, OFFENDER_MANAGEMENT_UNIT)) {
+    SetOutcome.CREATED -> ResponseEntity.status(HttpStatus.CREATED)
+    SetOutcome.UPDATED -> ResponseEntity.noContent()
+  }.build()
 
   @Deprecated("This endpoint should be changed to corresponding $CONTACT_DETAILS_END_POINT_DEPARTMENT end point", ReplaceWith(CONTACT_DETAILS_END_POINT_DEPARTMENT), WARNING)
   @Suppress("KotlinDeprecation")

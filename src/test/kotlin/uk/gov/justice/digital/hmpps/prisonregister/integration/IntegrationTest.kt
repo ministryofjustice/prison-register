@@ -70,8 +70,7 @@ abstract class IntegrationTest : TestBase() {
 
   fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))
 
-  fun HmppsSqsProperties.domaineventsTopicConfig() =
-    topics["domainevents"] ?: throw MissingTopicException("domainevents has not been loaded from configuration properties")
+  fun HmppsSqsProperties.domaineventsTopicConfig() = topics["domainevents"] ?: throw MissingTopicException("domainevents has not been loaded from configuration properties")
 
   internal fun setAuthorisation(
     user: String = "prison-register-api-client",
