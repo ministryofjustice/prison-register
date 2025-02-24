@@ -7,7 +7,5 @@ enum class DepartmentType {
   OFFENDER_MANAGEMENT_UNIT,
   ;
 
-  fun toMessage(): String {
-    return this.name.lowercase().replace("_", " ")
-  }
+  fun toMessage(): String = this.name.lowercase().replace("_", " ")
 }

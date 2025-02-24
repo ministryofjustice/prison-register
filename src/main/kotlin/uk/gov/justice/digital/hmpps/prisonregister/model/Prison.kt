@@ -97,10 +97,8 @@ data class Prison(
   override fun hashCode(): Int = javaClass.hashCode()
 
   @Override
-  override fun toString(): String {
-    return this::class.simpleName + "(prisonId = $prisonId, name = $name, description = $description, active = $active," +
-      " male = $male, female = $female, contracted = $contracted, lthse = $lthse, categories = $categories )"
-  }
+  override fun toString(): String = this::class.simpleName + "(prisonId = $prisonId, name = $name, description = $description, active = $active," +
+    " male = $male, female = $female, contracted = $contracted, lthse = $lthse, categories = $categories )"
 }
 
 enum class Gender(val columnName: String) {

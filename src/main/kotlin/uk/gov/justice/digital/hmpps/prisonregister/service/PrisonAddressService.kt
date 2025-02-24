@@ -19,9 +19,7 @@ class PrisonAddressService(
   private val telemetryClient: TelemetryClient,
 ) {
 
-  fun findById(prisonId: String, addressId: Long): AddressDto {
-    return AddressDto(getAddress(addressId, prisonId))
-  }
+  fun findById(prisonId: String, addressId: Long): AddressDto = AddressDto(getAddress(addressId, prisonId))
 
   @Transactional
   fun updateAddress(prisonId: String, addressId: Long, updateAddressRecord: UpdateAddressDto): AddressDto {

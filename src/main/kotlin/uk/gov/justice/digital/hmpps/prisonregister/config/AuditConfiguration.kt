@@ -12,7 +12,5 @@ class AuditConfiguration
 
 @Service(value = "auditorAware")
 class AuditorAwareImpl(private val securityUserContext: SecurityUserContext) : AuditorAware<String> {
-  override fun getCurrentAuditor(): Optional<String> {
-    return Optional.ofNullable(securityUserContext.principal)
-  }
+  override fun getCurrentAuditor(): Optional<String> = Optional.ofNullable(securityUserContext.principal)
 }

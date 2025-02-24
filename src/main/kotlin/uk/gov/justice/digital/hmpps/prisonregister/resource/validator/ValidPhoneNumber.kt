@@ -23,15 +23,13 @@ class PhoneNumberValidator : ConstraintValidator<ValidPhoneNumber, String> {
     if (value.isBlank()) return false
     return this.isValidPhoneNumber(value)
   }
-  private fun isValidPhoneNumber(value: String): Boolean {
-    return try {
-      // If no + prefix defaults to uk
-      val countryCode = if (value.startsWith("+")) "" else "GB"
-      val numberUtil = PhoneNumberUtil.getInstance()
-      val phoneNumber = numberUtil.parse(value, countryCode)
-      numberUtil.isValidNumber(phoneNumber)
-    } catch (e: NumberParseException) {
-      false
-    }
+  private fun isValidPhoneNumber(value: String): Boolean = try {
+    // If no + prefix defaults to uk
+    val countryCode = if (value.startsWith("+")) "" else "GB"
+    val numberUtil = PhoneNumberUtil.getInstance()
+    val phoneNumber = numberUtil.parse(value, countryCode)
+    numberUtil.isValidNumber(phoneNumber)
+  } catch (e: NumberParseException) {
+    false
   }
 }

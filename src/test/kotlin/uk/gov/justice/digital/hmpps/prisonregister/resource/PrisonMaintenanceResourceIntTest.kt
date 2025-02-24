@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
 import java.util.Optional
 
-class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
+class PrisonMaintenanceResourceIntTest : IntegrationTest() {
 
   @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
@@ -500,7 +500,6 @@ class PrisonMaintenanceResourceIntTest() : IntegrationTest() {
     }
   }
 
-  private fun String.loadJson(): String =
-    PrisonMaintenanceResourceIntTest::class.java.getResource("$this.json")?.readText()
-      ?: throw AssertionError("file $this.json not found")
+  private fun String.loadJson(): String = PrisonMaintenanceResourceIntTest::class.java.getResource("$this.json")?.readText()
+    ?: throw AssertionError("file $this.json not found")
 }

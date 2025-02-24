@@ -83,10 +83,8 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
 
   fun createMaintainPrisonRoleWithWriteScope(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ROLE_MAINTAIN_PRISON_DATA"), scopes = listOf("write"))
 
-  fun createDBData(prisonId: String, dto: ContactDetailsDto): ContactDetailsDto {
-    return with(dto) {
-      createDBData(prisonId, departmentType = type, phoneNumber = phoneNumber, emailAddress = emailAddress, webAddress = webAddress)
-    }
+  fun createDBData(prisonId: String, dto: ContactDetailsDto): ContactDetailsDto = with(dto) {
+    createDBData(prisonId, departmentType = type, phoneNumber = phoneNumber, emailAddress = emailAddress, webAddress = webAddress)
   }
 
   fun createDBData(prisonId: String, departmentType: DepartmentType, phoneNumber: String? = null, emailAddress: String? = null, webAddress: String? = null): ContactDetailsDto {
@@ -114,137 +112,105 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     return ContactDetailsDto(contactDetails)
   }
 
-  private fun createOrGetDbPrison(prisonId: String): Prison {
-    return prisonRepository.findById(prisonId).getOrNull() ?: prisonRepository.save(
-      Prison(
-        prisonId,
-        "$prisonId Prison",
-        active = true,
-      ),
-    )
-  }
+  private fun createOrGetDbPrison(prisonId: String): Prison = prisonRepository.findById(prisonId).getOrNull() ?: prisonRepository.save(
+    Prison(
+      prisonId,
+      "$prisonId Prison",
+      active = true,
+    ),
+  )
 
   fun getContactDetailsEndPoint(
     prisonId: String,
     removeIfNull: Boolean? = null,
-  ): String {
-    return removeIfNull?.let {
-      "/secure/prisons/id/$prisonId/department/contact-details?removeIfNull=$removeIfNull"
-    } ?: "/secure/prisons/id/$prisonId/department/contact-details"
-  }
+  ): String = removeIfNull?.let {
+    "/secure/prisons/id/$prisonId/department/contact-details?removeIfNull=$removeIfNull"
+  } ?: "/secure/prisons/id/$prisonId/department/contact-details"
 
   fun getLegacyEndPointEmail(
     prisonId: String,
     departmentType: String,
-  ): String {
-    return "/secure/prisons/id/$prisonId/$departmentType/email-address"
-  }
+  ): String = "/secure/prisons/id/$prisonId/$departmentType/email-address"
 
-  fun doDeleteActionNoRole(endPoint: String, prisonID: String? = prisonId, departmentType: DepartmentType): ResponseSpec {
-    return webTestClient
-      .delete()
-      .uri(endPoint + "?departmentType=${departmentType.name}", prisonID)
-      .exchange()
-  }
+  fun doDeleteActionNoRole(endPoint: String, prisonID: String? = prisonId, departmentType: DepartmentType): ResponseSpec = webTestClient
+    .delete()
+    .uri(endPoint + "?departmentType=${departmentType.name}", prisonID)
+    .exchange()
 
-  fun doDeleteActionNoRoleLegacy(endPoint: String): ResponseSpec {
-    return webTestClient
-      .delete()
-      .uri(endPoint, prisonId)
-      .exchange()
-  }
+  fun doDeleteActionNoRoleLegacy(endPoint: String): ResponseSpec = webTestClient
+    .delete()
+    .uri(endPoint, prisonId)
+    .exchange()
 
-  fun doDeleteAction(endPoint: String, prisonID: String? = prisonId, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient
-      .delete()
-      .uri(endPoint, prisonID)
-      .headers(headers)
-      .exchange()
-  }
+  fun doDeleteAction(endPoint: String, prisonID: String? = prisonId, headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient
+    .delete()
+    .uri(endPoint, prisonID)
+    .headers(headers)
+    .exchange()
 
-  fun doDeleteAction(endPoint: String, prisonID: String? = prisonId, departmentType: DepartmentType, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient
-      .delete()
-      .uri(endPoint + "?departmentType=${departmentType.name}", prisonID)
-      .headers(headers)
-      .exchange()
-  }
+  fun doDeleteAction(endPoint: String, prisonID: String? = prisonId, departmentType: DepartmentType, headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient
+    .delete()
+    .uri(endPoint + "?departmentType=${departmentType.name}", prisonID)
+    .headers(headers)
+    .exchange()
 
-  fun doGetActionNoRole(endPoint: String): ResponseSpec {
-    return webTestClient.get()
-      .uri(endPoint).exchange()
-  }
+  fun doGetActionNoRole(endPoint: String): ResponseSpec = webTestClient.get()
+    .uri(endPoint).exchange()
 
-  fun doGetAction(endPoint: String, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient.get()
-      .uri(endPoint)
-      .headers(headers)
-      .exchange()
-  }
+  fun doGetAction(endPoint: String, headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient.get()
+    .uri(endPoint)
+    .headers(headers)
+    .exchange()
 
-  fun doGetAction(endPoint: String, departmentType: DepartmentType, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient.get()
-      .uri(endPoint + "?departmentType=${departmentType.name}")
-      .headers(headers)
-      .exchange()
-  }
+  fun doGetAction(endPoint: String, departmentType: DepartmentType, headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient.get()
+    .uri(endPoint + "?departmentType=${departmentType.name}")
+    .headers(headers)
+    .exchange()
 
-  fun doCreateContactDetailsAction(endPoint: String, prisonID: String? = prisonId, bodyValue: ContactDetailsDto, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient
-      .post()
-      .uri(endPoint, prisonID)
-      .contentType(MediaType.APPLICATION_JSON)
-      .body(BodyInserters.fromValue(bodyValue))
-      .headers(headers)
-      .exchange()
-  }
+  fun doCreateContactDetailsAction(endPoint: String, prisonID: String? = prisonId, bodyValue: ContactDetailsDto, headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient
+    .post()
+    .uri(endPoint, prisonID)
+    .contentType(MediaType.APPLICATION_JSON)
+    .body(BodyInserters.fromValue(bodyValue))
+    .headers(headers)
+    .exchange()
 
-  fun doUpdateContactDetailsAction(endPoint: String, bodyValue: ContactDetailsDto, headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient
-      .put()
-      .uri(endPoint)
-      .contentType(MediaType.APPLICATION_JSON)
-      .body(BodyInserters.fromValue(bodyValue))
-      .headers(headers)
-      .exchange()
-  }
+  fun doUpdateContactDetailsAction(endPoint: String, bodyValue: ContactDetailsDto, headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient
+    .put()
+    .uri(endPoint)
+    .contentType(MediaType.APPLICATION_JSON)
+    .body(BodyInserters.fromValue(bodyValue))
+    .headers(headers)
+    .exchange()
 
-  fun doCreateContactDetailsAction(endPoint: String, prisonID: String? = prisonId, bodyValue: ContactDetailsDto): ResponseSpec {
-    return webTestClient
-      .post()
-      .uri(endPoint, prisonID)
-      .contentType(MediaType.APPLICATION_JSON)
-      .body(BodyInserters.fromValue(bodyValue))
-      .exchange()
-  }
+  fun doCreateContactDetailsAction(endPoint: String, prisonID: String? = prisonId, bodyValue: ContactDetailsDto): ResponseSpec = webTestClient
+    .post()
+    .uri(endPoint, prisonID)
+    .contentType(MediaType.APPLICATION_JSON)
+    .body(BodyInserters.fromValue(bodyValue))
+    .exchange()
 
-  fun doUpdateContactDetailsAction(endPoint: String, bodyValue: ContactDetailsDto): ResponseSpec {
-    return webTestClient
-      .post()
-      .uri(endPoint)
-      .contentType(MediaType.APPLICATION_JSON)
-      .body(BodyInserters.fromValue(bodyValue))
-      .exchange()
-  }
+  fun doUpdateContactDetailsAction(endPoint: String, bodyValue: ContactDetailsDto): ResponseSpec = webTestClient
+    .post()
+    .uri(endPoint)
+    .contentType(MediaType.APPLICATION_JSON)
+    .body(BodyInserters.fromValue(bodyValue))
+    .exchange()
 
-  fun doPutActionEmailNoRole(endPoint: String): ResponseSpec {
-    return webTestClient
-      .put()
-      .uri(endPoint, prisonId)
-      .contentType(MediaType.TEXT_PLAIN)
-      .bodyValue("aled@moj.gov.uk")
-      .exchange()
-  }
+  fun doPutActionEmailNoRole(endPoint: String): ResponseSpec = webTestClient
+    .put()
+    .uri(endPoint, prisonId)
+    .contentType(MediaType.TEXT_PLAIN)
+    .bodyValue("aled@moj.gov.uk")
+    .exchange()
 
-  fun doPutActionLegacyEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec {
-    return webTestClient
-      .put()
-      .uri(endPoint, prisonID)
-      .contentType(MediaType.TEXT_PLAIN)
-      .bodyValue(emailAddress as Any)
-      .headers(headers)
-      .exchange()
-  }
+  fun doPutActionLegacyEmail(endPoint: String, prisonID: String? = prisonId, emailAddress: String? = "a@a.com", headers: (HttpHeaders) -> Unit): ResponseSpec = webTestClient
+    .put()
+    .uri(endPoint, prisonID)
+    .contentType(MediaType.TEXT_PLAIN)
+    .bodyValue(emailAddress as Any)
+    .headers(headers)
+    .exchange()
 
   fun assertContactDetailsHaveBeenDeleted(prisonId: String, phoneNumber: String? = null, emailAddress: String? = null, department: DepartmentType) {
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
@@ -339,9 +305,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
     }
   }
 
-  fun getContactDetailsDtoResults(returnResult: WebTestClient.BodyContentSpec): ContactDetailsDto {
-    return objectMapper.readValue(returnResult.returnResult().responseBody, ContactDetailsDto::class.java)
-  }
+  fun getContactDetailsDtoResults(returnResult: WebTestClient.BodyContentSpec): ContactDetailsDto = objectMapper.readValue(returnResult.returnResult().responseBody, ContactDetailsDto::class.java)
 
   fun assertContactDetailsEquals(dto1: ContactDetailsDto, dto2: ContactDetailsDto) {
     assertEquals(dto1.type, dto2.type)

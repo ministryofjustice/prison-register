@@ -15,7 +15,7 @@ const val EMAIL_2 = "d@e.org"
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class ApplicationIntegrationTest() : IntegrationTest() {
+class ApplicationIntegrationTest : IntegrationTest() {
   @Test
   fun `OMU email address life-cycle`() {
     webTestClient

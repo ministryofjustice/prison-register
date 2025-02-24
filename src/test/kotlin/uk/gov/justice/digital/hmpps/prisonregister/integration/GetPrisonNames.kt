@@ -153,7 +153,5 @@ class GetPrisonNames : IntegrationTest() {
     }
   }
 
-  fun getPrisonNames(returnResult: WebTestClient.BodyContentSpec): Array<PrisonNameDto> {
-    return objectMapper.readValue(returnResult.returnResult().responseBody, Array<PrisonNameDto>::class.java)
-  }
+  fun getPrisonNames(returnResult: WebTestClient.BodyContentSpec): Array<PrisonNameDto> = objectMapper.readValue(returnResult.returnResult().responseBody, Array<PrisonNameDto>::class.java)
 }

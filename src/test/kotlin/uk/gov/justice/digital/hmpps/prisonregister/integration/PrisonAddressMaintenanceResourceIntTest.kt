@@ -602,7 +602,6 @@ class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
     }
   }
 
-  private fun String.loadJson(): String =
-    PrisonAddressMaintenanceResourceIntTest::class.java.getResource("$this.json")?.readText()
-      ?: throw AssertionError("file $this.json not found")
+  private fun String.loadJson(): String = PrisonAddressMaintenanceResourceIntTest::class.java.getResource("$this.json")?.readText()
+    ?: throw AssertionError("file $this.json not found")
 }

@@ -91,8 +91,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     @Schema(description = "Address Id", example = "234231", required = true)
     @PathVariable
     addressId: Long,
-  ): AddressDto =
-    addressService.findById(prisonId, addressId)
+  ): AddressDto = addressService.findById(prisonId, addressId)
 
   @GetMapping("/search")
   @Operation(summary = "Get prisons from active and text search", description = "All prisons")
@@ -140,9 +139,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   fun getPrisonNames(
     @Parameter(description = "If active is not set, return all prisons, otherwise return only the active or inactive ones based on the value", example = "true", required = false) @RequestParam active: Boolean?,
     @Parameter(description = "If parameter prisonId is not set, return the names of all prisons, otherwise return only the one corresponding to the prisonId code.  Filtering on active still applies", example = "WDI", required = false) @RequestParam prison_id: String?,
-  ): List<PrisonNameDto> {
-    return prisonService.getPrisonNames(active, prison_id)
-  }
+  ): List<PrisonNameDto> = prisonService.getPrisonNames(active, prison_id)
 
   @PostMapping("/prisonsByIds", consumes = ["application/json"])
   @Operation(summary = "Get prisons by IDs", description = "Get prisons based on their IDs")

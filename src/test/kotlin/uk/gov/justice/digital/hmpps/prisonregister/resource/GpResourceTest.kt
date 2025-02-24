@@ -115,6 +115,5 @@ class GpResourceTest : IntegrationTest() {
       .expectBody().json("prison_id_badrequest_getPrisonFromGpPrescriber".loadJson())
   }
 
-  private fun String.loadJson(): String =
-    GpResourceTest::class.java.getResource("$this.json").readText()
+  private fun String.loadJson(): String = GpResourceTest::class.java.getResource("$this.json").readText()
 }
