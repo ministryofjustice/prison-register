@@ -48,7 +48,7 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.13.0")
   implementation("org.apache.commons:commons-compress:1.27.1") // Address CVE-2024-25710 and CVE-2024-26308 present in v1.24
   implementation("org.freemarker:freemarker:2.3.34")
-  implementation("io.netty:netty-common:4.1.118.Final")
+  implementation("io.netty:netty-common:4.1.119.Final")
 
   runtimeOnly("org.postgresql:postgresql")
   runtimeOnly("org.flywaydb:flyway-core")
@@ -59,7 +59,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.25")
   testImplementation("org.wiremock:wiremock-standalone:3.12.0")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
+  testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.12.6")
