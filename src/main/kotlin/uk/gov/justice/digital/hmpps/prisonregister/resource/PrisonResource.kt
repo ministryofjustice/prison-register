@@ -162,8 +162,8 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   ) = prisonService.findPrisonsByIds(prisonRequest.prisonIds)
 }
 
-@JsonInclude(NON_NULL)
 @Schema(description = "Prison Information")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
@@ -194,6 +194,7 @@ data class PrisonDto(
   )
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class AddressDto(
   @Schema(description = "Unique ID of the address", example = "10000", required = true) val id: Long,
   @Schema(description = "Address line 1", example = "Bawtry Road", required = false) val addressLine1: String?,
@@ -224,6 +225,7 @@ data class AddressDto(
   )
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PrisonTypeDto(
   @Schema(description = "Prison type code", example = "HMP", required = true) val code: Type,
   @Schema(
@@ -235,6 +237,7 @@ data class PrisonTypeDto(
   constructor(prisonType: PrisonType) : this(prisonType.type, prisonType.type.description)
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PrisonOperatorDto(
   @Schema(description = "Prison operator name", example = "PSP, G4S", required = true) val name: String,
 ) {
