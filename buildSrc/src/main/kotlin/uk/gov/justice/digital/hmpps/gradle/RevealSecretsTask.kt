@@ -18,7 +18,7 @@ import org.gradle.work.DisableCachingByDefault
  * ```shell
  * ./gradlew help --task revealSecrets
  * ./gradlew revealSecrets
- * ./gradlew revealSecrets --environment dev --secret dps-rds-instance-output
+ * ./gradlew revealSecrets --environment dev --secret prisons-rds-instance-output
  * ```
  */
 @DisableCachingByDefault
