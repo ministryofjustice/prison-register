@@ -1,0 +1,1 @@
+ALTER TABLE prison_category ADD PRIMARY KEY (prison_id, category);
