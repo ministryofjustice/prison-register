@@ -39,7 +39,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
@@ -148,25 +147,6 @@ class PrisonServiceTest {
     fun `find prison not found`() {
       assertThatThrownBy { prisonService.findById("MDI") }
         .isInstanceOf(EntityNotFoundException::class.java).hasMessage("Prison MDI not found")
-    }
-  }
-
-  @Nested
-  inner class findByGpPractice {
-    @Test
-    fun `find prison from gp practice`() {
-      val prison = Prison("MDI", "Name", active = true)
-      prison.gpPractice = "A12345"
-      val prisonGpPracticeDto = GpDto(prison)
-      whenever(prisonRepository.findOneByGpPractice(anyString())).thenReturn(prison)
-      val prisonDto = prisonService.findByGpPractice("MDI")
-      assertThat(prisonDto).isEqualTo(prisonGpPracticeDto)
-    }
-
-    @Test
-    fun `find prison from gp practice not found`() {
-      assertThatThrownBy { prisonService.findByGpPractice("A12345") }
-        .isInstanceOf(EntityNotFoundException::class.java).hasMessage("Prison with gp practice A12345 not found")
     }
   }
 
@@ -417,7 +397,7 @@ class PrisonServiceTest {
     @Test
     fun `should throw PrisonNotFoundException when getReferenceById not found`() {
       val contactDetailDto = ContactDetailsDto(
-        DepartmentType.VIDEOLINK_CONFERENCING_CENTRE,
+        VIDEOLINK_CONFERENCING_CENTRE,
         emailAddress = "xxx@moj.gov.uk",
         phoneNumber = "01234567899",
         webAddress = "www.xxxmojdigital.blog.gov.uk",

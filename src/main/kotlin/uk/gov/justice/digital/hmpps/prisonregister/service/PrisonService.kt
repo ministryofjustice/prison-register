@@ -29,7 +29,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.UPDATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.resource.GpDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
@@ -57,18 +56,6 @@ class PrisonService(
     val prison =
       prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
     return PrisonDto(prison)
-  }
-
-  fun findPrisonAndGpPracticeById(prisonId: String): GpDto {
-    val prison =
-      prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
-    return GpDto(prison)
-  }
-
-  fun findByGpPractice(gpPracticeCode: String): GpDto {
-    val prison = prisonRepository.findOneByGpPractice(gpPracticeCode)
-      ?: throw EntityNotFoundException("Prison with gp practice $gpPracticeCode not found")
-    return GpDto(prison)
   }
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
@@ -134,12 +121,6 @@ class PrisonService(
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
-  }
-
-  @Transactional(readOnly = true)
-  fun getEmailAddress(prisonId: String, departmentType: DepartmentType): String? {
-    LOG.debug("Enter getEmailAddress $prisonId / ${departmentType.toMessage()}")
-    return contactDetailsRepository.getEmailAddressByPrisonIdAndDepartment(prisonId, departmentType)
   }
 
   @Transactional(readOnly = true)

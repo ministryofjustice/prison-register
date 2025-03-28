@@ -1,0 +1,2 @@
+ALTER TABLE offender_management_unit RENAME TO offender_management_unit_archive;
+ALTER TABLE videolink_conferencing_centre RENAME TO videolink_conferencing_centre_archive;
