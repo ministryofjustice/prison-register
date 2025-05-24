@@ -22,7 +22,7 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:33.4.8-jre")
   implementation("commons-validator:commons-validator:1.9.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:8.13.55")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.6")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
