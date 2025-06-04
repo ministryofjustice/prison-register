@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.2.0"
   kotlin("plugin.spring") version "2.1.21"
   kotlin("plugin.jpa") version "2.1.21"
   id("org.jetbrains.kotlinx.kover") version "0.9.1"
@@ -27,15 +27,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.4")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.5")
   implementation("com.jayway.jsonpath:json-path:2.9.0")
 
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.4")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.16.0")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.4")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
   implementation("org.springframework.data:spring-data-commons:3.5.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.8")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
@@ -56,7 +56,7 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.28")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.29")
   testImplementation("org.wiremock:wiremock-standalone:3.13.0")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
@@ -64,9 +64,9 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.12.6")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:postgresql:1.21.0")
-  testImplementation("org.testcontainers:localstack:1.21.0")
-  testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.783")
+  testImplementation("org.testcontainers:postgresql:1.21.1")
+  testImplementation("org.testcontainers:localstack:1.21.1")
+  testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.785")
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
 }
 
