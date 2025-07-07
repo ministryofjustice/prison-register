@@ -43,8 +43,8 @@ dependencies {
   implementation("io.swagger.core.v3:swagger-annotations:2.2.32")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("net.javacrumbs.shedlock:shedlock-spring:5.16.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:6.9.2")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.2")
   implementation("org.apache.commons:commons-csv:1.14.0")
   implementation("org.apache.commons:commons-compress:1.27.1") // Address CVE-2024-25710 and CVE-2024-26308 present in v1.24
   implementation("org.freemarker:freemarker:2.3.34")
