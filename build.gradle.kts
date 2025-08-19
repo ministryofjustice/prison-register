@@ -48,7 +48,7 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.14.0")
   implementation("org.apache.commons:commons-compress:1.27.1")
   implementation("org.freemarker:freemarker:2.3.34")
-  implementation("io.netty:netty-common:4.2.3.Final")
+  implementation("io.netty:netty-common:4.2.4.Final")
 
   runtimeOnly("org.postgresql:postgresql")
   runtimeOnly("org.flywaydb:flyway-core")
