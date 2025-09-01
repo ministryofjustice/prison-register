@@ -11,6 +11,8 @@ jobs:
       localstack_tag: "3"
       postgres_username: "prison-register"
       postgres_password: "prison-register"
+    environment:
+      _JAVA_OPTIONS: -Xmx2048m
     steps:
       - checkout
       - run:
