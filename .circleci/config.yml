@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  hmpps: ministryofjustice/hmpps@11
+  hmpps: ministryofjustice/hmpps@10
 jobs:
   validate:
     executor:
@@ -11,8 +11,6 @@ jobs:
       localstack_tag: "3"
       postgres_username: "prison-register"
       postgres_password: "prison-register"
-    environment:
-      _JAVA_OPTIONS: -Xmx2048m
     steps:
       - checkout
       - run:
