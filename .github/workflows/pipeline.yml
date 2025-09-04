@@ -62,27 +62,27 @@ jobs:
       environment: 'dev'
       app_version: '${{ needs.build.outputs.app_version }}'
       helm_timeout: '5m'
-#  deploy_preprod:
-#    name: Deploy to the preprod environment
-#    needs:
-#      - build
-#      - helm_lint
-#      - deploy_dev
-#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-#    secrets: inherit
-#    with:
-#      environment: 'preprod'
-#      app_version: '${{ needs.build.outputs.app_version }}'
-#      helm_timeout: '5m'
-#  deploy_prod:
-#    name: Deploy to the prod environment
-#    needs:
-#      - build
-#      - helm_lint
-#      - deploy_preprod
-#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-#    secrets: inherit
-#    with:
-#      environment: 'prod'
-#      app_version: '${{ needs.build.outputs.app_version }}'
-#      helm_timeout: '5m'
+  deploy_preprod:
+    name: Deploy to the preprod environment
+    needs:
+      - build
+      - helm_lint
+      - deploy_dev
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'preprod'
+      app_version: '${{ needs.build.outputs.app_version }}'
+      helm_timeout: '5m'
+  deploy_prod:
+    name: Deploy to the prod environment
+    needs:
+      - build
+      - helm_lint
+      - deploy_preprod
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'prod'
+      app_version: '${{ needs.build.outputs.app_version }}'
+      helm_timeout: '5m'
