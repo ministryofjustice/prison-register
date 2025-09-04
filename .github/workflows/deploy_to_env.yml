@@ -1,0 +1,20 @@
+name: Deploy to environment
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: choice
+        required: true
+        options:
+          - dev
+          - preprod
+          - prod
+        default: 'dev'
+      version:
+        description: version to be deployed to the environment - must already exist.
+        required: true
+        default: ''
+        type: string
+permissions:
+  contents: read
