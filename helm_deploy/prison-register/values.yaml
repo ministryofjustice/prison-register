@@ -4,7 +4,7 @@ generic-service:
   nameOverride: prison-register
   serviceAccountName: hmpps-registers
   image:
-    repository: quay.io/hmpps/prison-register
+    repository: ghcr.io/hmpps/prison-register
     tag: app_version    # override at deployment time
     port: 8080
 
@@ -25,6 +25,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_SQS_USE_WEB_TOKEN: true
+    PRODUCT_ID: 'DPS098'
 
   namespace_secrets:
     prison-register:
