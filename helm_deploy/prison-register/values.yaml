@@ -4,7 +4,7 @@ generic-service:
   nameOverride: prison-register
   serviceAccountName: hmpps-registers
   image:
-    repository: ghcr.io/hmpps/prison-register
+    repository: ghcr.io/ministryofjustice/prison-register
     tag: app_version    # override at deployment time
     port: 8080
 

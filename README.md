@@ -120,7 +120,7 @@ Some integration require a local postgres DB instance so you will need to execut
 ```bash
 docker-compose -f docker-compose-test.yml up -d
 ```
-
+NB. if the integration tests fail then you may need to run `docker-compose -f docker-compose-test.yml down` to clean up the containers.
 ### Localstack
 
 `localstack` is used to emulate the AWS SNS and SQS services. When running the integration tests localstack is started automatically by TestContainers.
