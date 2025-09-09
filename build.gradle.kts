@@ -5,8 +5,8 @@ import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.0.1"
-  kotlin("plugin.spring") version "2.2.0"
-  kotlin("plugin.jpa") version "2.2.0"
+  kotlin("plugin.spring") version "2.2.10"
+  kotlin("plugin.jpa") version "2.2.10"
   id("org.jetbrains.kotlinx.kover") version "0.9.1"
   idea
 }
@@ -33,20 +33,20 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.18.1")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.19.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-  implementation("org.springframework.data:spring-data-commons:3.5.2")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.9")
-  implementation("io.swagger.core.v3:swagger-annotations:2.2.34")
+  implementation("org.springframework.data:spring-data-commons:3.5.3")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.13")
+  implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("net.javacrumbs.shedlock:shedlock-spring:6.9.2")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.2")
-  implementation("org.apache.commons:commons-csv:1.14.0")
-  implementation("org.apache.commons:commons-compress:1.27.1")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:6.10.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.10.0")
+  implementation("org.apache.commons:commons-csv:1.14.1")
+  implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.34")
   implementation("io.netty:netty-common:4.2.3.Final")
 
@@ -62,7 +62,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("io.jsonwebtoken:jjwt:0.12.6")
+  testImplementation("io.jsonwebtoken:jjwt:0.13.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:postgresql:1.21.3")
   testImplementation("org.testcontainers:localstack:1.21.3")
