@@ -39,7 +39,7 @@ dependencies {
   implementation("org.springframework.data:spring-data-commons:3.5.3")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.13")
+  implementation("org.springdoc:springdoc-openapi-starter-common:3.0.1")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
