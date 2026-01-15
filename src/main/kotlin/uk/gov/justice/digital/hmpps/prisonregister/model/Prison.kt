@@ -106,4 +106,4 @@ enum class Gender(val columnName: String) {
   FEMALE("female"),
 }
 
-enum class Category { A, B, C, D }
+enum class Category { A, B, C, D, OPEN, CLOSED }
