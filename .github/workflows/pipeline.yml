@@ -38,6 +38,7 @@ jobs:
       postgres-tag: "16"
       postgres-username: prison-register
       postgres-password: prison-register
+      java-version: "25"
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
