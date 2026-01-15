@@ -125,7 +125,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
 
     Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(persisted.phoneNumber!!)).isEqualTo(1)
-    Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
+    Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress)).isEqualTo(1)
     Assertions.assertThat(testWebAddressRepository.getWebAddressCount(persisted.webAddress!!)).isEqualTo(1)
   }
 

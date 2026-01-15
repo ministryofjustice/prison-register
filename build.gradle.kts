@@ -4,10 +4,10 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.0.1"
-  kotlin("plugin.spring") version "2.2.10"
-  kotlin("plugin.jpa") version "2.2.10"
-  id("org.jetbrains.kotlinx.kover") version "0.9.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
+  kotlin("plugin.spring") version "2.3.0"
+  kotlin("plugin.jpa") version "2.3.0"
+  id("org.jetbrains.kotlinx.kover") version "0.9.4"
   idea
 }
 
@@ -36,7 +36,7 @@ dependencies {
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.19.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-  implementation("org.springframework.data:spring-data-commons:3.5.3")
+  implementation("org.springframework.data:spring-data-commons:3.5.7")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.8.13")
@@ -70,9 +70,18 @@ dependencies {
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 }
 
-java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+kotlin {
+  jvmToolchain(25)
+  compilerOptions {
+    freeCompilerArgs.addAll("-Xwhen-guards", "-Xannotation-default-target=param-property")
+  }
 }
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_25
+  targetCompatibility = JavaVersion.VERSION_25
+}
+
 repositories {
   mavenCentral()
 }
@@ -91,7 +100,7 @@ tasks {
   }
 
   withType<KotlinCompile> {
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 
   test {
