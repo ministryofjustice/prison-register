@@ -16,7 +16,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
 
   prison-register-db:
-    image: postgres:16
+    image: postgres:18
     networks:
       - hmpps
     container_name: prison-register-db
