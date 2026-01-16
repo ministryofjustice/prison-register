@@ -43,8 +43,8 @@ dependencies {
   implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("net.javacrumbs.shedlock:shedlock-spring:6.10.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.10.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.5.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.5.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.34")
