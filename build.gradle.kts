@@ -36,7 +36,7 @@ dependencies {
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.19.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-  implementation("org.springframework.data:spring-data-commons:3.5.7")
+  implementation("org.springframework.data:spring-data-commons:4.0.2")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.8.13")
