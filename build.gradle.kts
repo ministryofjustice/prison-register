@@ -5,8 +5,8 @@ import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
-  kotlin("plugin.spring") version "2.3.0"
-  kotlin("plugin.jpa") version "2.3.0"
+  kotlin("plugin.spring") version "2.3.10"
+  kotlin("plugin.jpa") version "2.3.10"
   id("org.jetbrains.kotlinx.kover") version "0.9.4"
   idea
 }
@@ -27,7 +27,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.10")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
   implementation("com.jayway.jsonpath:json-path:2.9.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
@@ -37,9 +37,9 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
   implementation("org.springframework.data:spring-data-commons:3.5.7")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.13")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.15")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.15")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -48,7 +48,6 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.34")
-  implementation("io.netty:netty-common:4.2.3.Final")
 
   runtimeOnly("org.postgresql:postgresql")
   runtimeOnly("org.flywaydb:flyway-core")
@@ -64,8 +63,8 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.13.0")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:postgresql:1.21.3")
-  testImplementation("org.testcontainers:localstack:1.21.3")
+  testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
+  testImplementation("org.testcontainers:testcontainers-localstack:2.0.3")
   testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.791")
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 }
