@@ -62,6 +62,11 @@ class GetPrisonNames : IntegrationTest() {
 
     val prisonNames = getPrisonNames(responseSpec.expectBody())
     Assertions.assertThat(prisonNames).isNotEmpty
+
+    // Assert one welsh prison for coverage
+    Assertions.assertThat(prisonNames.first { it.prisonId == "CFI" }.prisonNameInWelsh).isEqualTo("Carchar Caerdydd")
+
+    // Expected result in order
     with(prisonNames[0]) {
       Assertions.assertThat(prisonId).isEqualTo("ACI")
       Assertions.assertThat(prisonName).isEqualTo("Altcourse (HMP & YOI)")
