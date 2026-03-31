@@ -163,7 +163,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
 }
 
 @Schema(description = "Prison Information")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 data class PrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,

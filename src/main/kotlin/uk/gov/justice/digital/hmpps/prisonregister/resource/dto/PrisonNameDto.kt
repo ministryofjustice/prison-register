@@ -8,4 +8,6 @@ class PrisonNameDto(
   val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true)
   val prisonName: String,
+  @Schema(description = "Name of the prison in Welsh", example = "Carchar Brynbuga", required = false)
+  val prisonNameInWelsh: String? = null,
 )
