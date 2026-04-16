@@ -28,7 +28,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
-  implementation("com.jayway.jsonpath:json-path:2.9.0")
+  implementation("com.jayway.jsonpath:json-path:3.0.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
