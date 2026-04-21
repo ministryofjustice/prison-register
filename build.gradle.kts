@@ -38,7 +38,7 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
   implementation("org.springframework.data:spring-data-commons:3.5.7")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.15")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.8.15")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
 
