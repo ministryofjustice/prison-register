@@ -4,10 +4,10 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
-  kotlin("plugin.spring") version "2.3.10"
-  kotlin("plugin.jpa") version "2.3.10"
-  id("org.jetbrains.kotlinx.kover") version "0.9.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.7.0"
+  kotlin("plugin.spring") version "2.3.21"
+  kotlin("plugin.jpa") version "2.3.21"
+  id("org.jetbrains.kotlinx.kover") version "0.9.8"
   idea
 }
 
@@ -20,9 +20,9 @@ configurations {
 }
 
 dependencies {
-  implementation("com.google.guava:guava:33.4.8-jre")
-  implementation("commons-validator:commons-validator:1.10.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.13")
+  implementation("com.google.guava:guava:33.6.0-jre")
+  implementation("commons-validator:commons-validator:1.10.1")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.29")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
@@ -33,18 +33,18 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.19.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.27.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-  implementation("org.springframework.data:spring-data-commons:3.5.7")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.15")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.15")
-  implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
+  implementation("org.springframework.data:spring-data-commons:3.5.11")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.17")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.17")
+  implementation("io.swagger.core.v3:swagger-annotations:2.2.48")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.5.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.5.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.7.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.34")
@@ -55,17 +55,17 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.33")
-  testImplementation("org.wiremock:wiremock-standalone:3.13.1")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.40")
+  testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+  testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.jsonwebtoken:jjwt:0.13.0")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
-  testImplementation("org.testcontainers:testcontainers-localstack:2.0.3")
-  testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.791")
+  testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
+  testImplementation("org.testcontainers:testcontainers-localstack:2.0.5")
+  testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.797")
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 }
 
