@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 @WithMockUser(authorities = ["ROLE_MAINTAIN_REF_DATA", "SCOPE_write"])
 annotation class WithMaintenanceMockUser
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) : IntegrationTest() {

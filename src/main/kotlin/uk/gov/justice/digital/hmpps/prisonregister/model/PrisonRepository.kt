@@ -25,7 +25,7 @@ interface PrisonRepository :
   override fun findById(id: String): Optional<Prison>
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
-  override fun findAll(spec: Specification<Prison>?): List<Prison>
+  override fun findAll(spec: Specification<Prison>): List<Prison>
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   override fun findAll(): List<Prison>

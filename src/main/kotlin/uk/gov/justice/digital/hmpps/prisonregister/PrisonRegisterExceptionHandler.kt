@@ -71,7 +71,7 @@ class PrisonRegisterExceptionHandler {
   }
 
   @ExceptionHandler(ValidationException::class)
-  fun handleValidationException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
+  fun handleValidationException(e: java.lang.Exception): ResponseEntity<ErrorResponse>? {
     log.info("Validation exception: {}", e.message)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)

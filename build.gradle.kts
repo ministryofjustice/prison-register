@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.7.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.2"
   kotlin("plugin.spring") version "2.3.21"
   kotlin("plugin.jpa") version "2.3.21"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
@@ -27,7 +27,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.1")
   implementation("com.jayway.jsonpath:json-path:3.0.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
@@ -36,10 +36,10 @@ dependencies {
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.27.0")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-  implementation("org.springframework.data:spring-data-commons:3.5.11")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.17")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.17")
+  implementation("org.springframework.data:spring-data-commons:4.0.5")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.3")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
+  implementation("org.springdoc:springdoc-openapi-starter-common:3.0.3")
   implementation("io.swagger.core.v3:swagger-annotations:2.2.48")
 
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -61,6 +61,10 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-data-jdbc-test")
+  testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("io.jsonwebtoken:jjwt:0.13.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")

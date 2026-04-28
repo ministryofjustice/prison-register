@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
-import org.springframework.lang.Nullable
 
 class PrisonFilter(
   val active: Boolean? = null,
@@ -16,7 +15,7 @@ class PrisonFilter(
   val prisonTypeCodes: List<Type>? = listOf(),
 ) : Specification<Prison> {
 
-  override fun toPredicate(root: Root<Prison>, @Nullable query: CriteriaQuery<*>?, cb: CriteriaBuilder): Predicate? {
+  override fun toPredicate(root: Root<Prison>, query: CriteriaQuery<*>, cb: CriteriaBuilder): Predicate? {
     val andBuilder = ImmutableList.builder<Predicate>()
     active?.let {
       andBuilder.add(cb.equal(root.get<Any>("active"), it))
@@ -38,8 +37,8 @@ class PrisonFilter(
       orBuilder.add(textSearchWildcardAndIgnoreCasePredicate(root, cb, "name"))
       andBuilder.add(cb.or(*orBuilder.build().toTypedArray()))
     }
-    query?.orderBy(cb.asc(root.get<Any>("prisonId")))
-    query?.distinct(true)
+    query.orderBy(cb.asc(root.get<Any>("prisonId")))
+    query.distinct(true)
     return cb.and(*andBuilder.build().toTypedArray())
   }
 
