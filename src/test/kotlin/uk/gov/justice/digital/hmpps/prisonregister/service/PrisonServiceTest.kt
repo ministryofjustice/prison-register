@@ -420,7 +420,7 @@ class PrisonServiceTest {
       )
 
       whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
-      whenever(contactDetailsRepository.save(any())).thenReturn(contactDetailEntity)
+      whenever(contactDetailsRepository.save(any<ContactDetails>())).thenReturn(contactDetailEntity)
       val gotContactDetailDto = prisonService.createContactDetails(prison.prisonId, contactDetailDto)
       assertThat(gotContactDetailDto.type).isEqualTo(contactDetailDto.type)
       assertThat(gotContactDetailDto.emailAddress).isNull()
