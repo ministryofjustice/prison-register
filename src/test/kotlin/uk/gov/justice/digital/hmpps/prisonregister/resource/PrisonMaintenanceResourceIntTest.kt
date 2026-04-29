@@ -279,7 +279,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
     fun `insert a prison with minimal data`() {
       val prison = Prison("MDI", "Inserted Prison", active = true)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
       val insertDto = InsertPrisonDto("MDI", "Inserted Prison", contracted = false)
 
       webTestClient.post()
@@ -319,7 +319,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
     fun `insert a prison with welsh name`() {
       val prison = Prison("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true)
       whenever(prisonRepository.findById("CFI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
       val insertDto = InsertPrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", male = true, contracted = false)
 
       webTestClient.post()
@@ -372,7 +372,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
       )
       prison.addresses = setOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
 
       val insertDto = InsertPrisonDto(
         "MDI",
@@ -444,7 +444,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
       )
       prison.addresses = setOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
 
       val insertDto = InsertPrisonDto(
         "MDI",

@@ -29,7 +29,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.utilities.TestWebAddressRepos
 import java.nio.charset.StandardCharsets
 import kotlin.jvm.optionals.getOrNull
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {

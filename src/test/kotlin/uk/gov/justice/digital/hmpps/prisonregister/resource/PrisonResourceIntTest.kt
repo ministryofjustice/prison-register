@@ -186,15 +186,15 @@ class PrisonResourceIntTest : IntegrationTest() {
         },
       )
       whenever(prisonRepository.findAll(any<PrisonFilter>())).thenReturn(prisons)
-
+      val genders = listOf("MALE")
       webTestClient.get()
         .uri { uriBuilder ->
           uriBuilder
             .path("/prisons/search")
             .queryParam("active", true)
             .queryParam("textSearch", "MDI")
-            .queryParam("genders", listOf("MALE"))
-            .queryParam("prisonTypeCodes", listOf("HMP"))
+            .queryParam("genders", *listOf("MALE").toTypedArray())
+            .queryParam("prisonTypeCodes", *mutableListOf("HMP").toTypedArray())
             .queryParam("lthse", true)
             .build()
         }
