@@ -65,6 +65,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
   testImplementation("org.springframework.boot:spring-boot-starter-data-jdbc-test")
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testImplementation("io.jsonwebtoken:jjwt:0.13.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
@@ -76,7 +77,7 @@ dependencies {
 kotlin {
   jvmToolchain(25)
   compilerOptions {
-    freeCompilerArgs.addAll("-Xwhen-guards", "-Xannotation-default-target=param-property")
+    freeCompilerArgs.addAll("-Xannotation-default-target=param-property")
   }
 }
 
