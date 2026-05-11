@@ -10,6 +10,12 @@ generic-service:
     OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api.hmpps.service.justice.gov.uk"
 
+  allowlist:
+    groups:
+      - internal
+      - prisons
+      - private_prisons
+
   postgresDatabaseRestore:
     enabled: true
     namespace_secrets:
