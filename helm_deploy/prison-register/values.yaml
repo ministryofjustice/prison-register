@@ -22,7 +22,8 @@ generic-service:
 
   allowlist:
     groups:
-      - internal
+      - digital_staff_and_mojo
+      - moj_cloud_platform
 
   env:
     SERVER_PORT: 8080
