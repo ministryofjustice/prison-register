@@ -18,7 +18,6 @@ generic-service:
           return 401;
         }
     tlsSecretName: prison-register-cert
-    modsecurity_enabled: true
 
   allowlist:
     groups:
