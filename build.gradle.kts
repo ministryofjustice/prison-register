@@ -20,9 +20,9 @@ configurations {
 }
 
 dependencies {
-  implementation("com.google.guava:guava:33.4.8-jre")
-  implementation("commons-validator:commons-validator:1.10.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.13")
+  implementation("com.google.guava:guava:33.6.0-jre")
+  implementation("commons-validator:commons-validator:1.10.1")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.31")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -40,8 +40,8 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.5.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.5.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.7.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.34")
@@ -58,12 +58,12 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.42") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.43") {
     exclude(group = "io.swagger.core.v3")
   }
 
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+  testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
