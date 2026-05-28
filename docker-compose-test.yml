@@ -34,7 +34,7 @@ services:
       - hmpps
     container_name: hmpps-auth
     ports:
-      - '9090:8080'
+      - '8090:8080'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8080/auth/health']
     environment:
@@ -42,7 +42,7 @@ services:
       DELIUS_ENABLED: "false"
 
   localstack:
-    image: localstack/localstack:stable
+    image: localstack/localstack:community-archive
     networks:
       - hmpps
     container_name: localstack

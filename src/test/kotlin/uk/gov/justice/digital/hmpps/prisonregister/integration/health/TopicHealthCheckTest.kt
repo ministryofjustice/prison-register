@@ -1,12 +1,14 @@
 package uk.gov.justice.digital.hmpps.prisonregister.integration.health
 
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 
-class TopicHealthCheckTest : IntegrationTest() {
+class TopicHealthCheckTest : IntegrationTestBase() {
 
   @Test
   fun `Outbound topic health ok`() {
+    stubPingWithResponse(200)
+
     webTestClient.get()
       .uri("/health")
       .exchange()

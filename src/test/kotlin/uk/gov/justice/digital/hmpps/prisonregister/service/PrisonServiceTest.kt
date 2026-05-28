@@ -402,7 +402,7 @@ class PrisonServiceTest {
         phoneNumber = "01234567899",
         webAddress = "www.xxxmojdigital.blog.gov.uk",
       )
-      whenever(prisonRepository.getReferenceById(any())).thenThrow(PrisonNotFoundException::class.java)
+      whenever(prisonRepository.findById("XXX")).thenReturn(Optional.empty())
       assertThatThrownBy { prisonService.createContactDetails("XXX", contactDetailDto) }
         .isInstanceOf(PrisonNotFoundException::class.java)
     }
@@ -419,8 +419,8 @@ class PrisonServiceTest {
         phoneNumber = null,
       )
 
-      whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
-      whenever(contactDetailsRepository.save(any())).thenReturn(contactDetailEntity)
+      whenever(prisonRepository.findById(any<String>())).thenReturn(Optional.of(prison))
+      whenever(contactDetailsRepository.save(any<ContactDetails>())).thenReturn(contactDetailEntity)
       val gotContactDetailDto = prisonService.createContactDetails(prison.prisonId, contactDetailDto)
       assertThat(gotContactDetailDto.type).isEqualTo(contactDetailDto.type)
       assertThat(gotContactDetailDto.emailAddress).isNull()
@@ -438,7 +438,7 @@ class PrisonServiceTest {
       val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
       val prison = Prison("BRI", "Bri Prison", active = true)
 
-      whenever(prisonRepository.getReferenceById(any())).thenReturn(prison)
+      whenever(prisonRepository.findById(any())).thenReturn(Optional.of(prison))
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
       assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
         .isInstanceOf(ContactDetailsNotFoundException::class.java)
@@ -449,7 +449,7 @@ class PrisonServiceTest {
       val removeIfNull = true
       val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
 
-      whenever(prisonRepository.getReferenceById(any())).thenThrow(EntityNotFoundException::class.java)
+      whenever(prisonRepository.findById(any())).thenThrow(EntityNotFoundException::class.java)
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
 
       assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
@@ -463,9 +463,9 @@ class PrisonServiceTest {
     @Test
     fun `prison getReferenceById not found`() {
       whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
-      whenever(prisonRepository.getReferenceById(anyString())).thenThrow(EntityNotFoundException::class.java)
+      whenever(prisonRepository.findById("XXX")).thenReturn(Optional.empty())
       assertThatThrownBy { prisonService.setEmailAddress("XXX", "email@gov.uk", DepartmentType.OFFENDER_MANAGEMENT_UNIT) }
-        .isInstanceOf(EntityNotFoundException::class.java)
+        .isInstanceOf(PrisonNotFoundException::class.java)
     }
   }
 }

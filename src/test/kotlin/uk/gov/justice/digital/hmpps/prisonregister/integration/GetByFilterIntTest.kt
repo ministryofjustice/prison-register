@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 
-class GetByFilterIntTest : IntegrationTest() {
+class GetByFilterIntTest : IntegrationTestBase() {
 
   @MockitoSpyBean
   lateinit var prisonRepository: PrisonRepository

@@ -6,7 +6,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import java.util.Optional
 
-class PrisonResourceIntTest : IntegrationTest() {
+class PrisonResourceIntTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
 
@@ -193,8 +193,8 @@ class PrisonResourceIntTest : IntegrationTest() {
             .path("/prisons/search")
             .queryParam("active", true)
             .queryParam("textSearch", "MDI")
-            .queryParam("genders", listOf("MALE"))
-            .queryParam("prisonTypeCodes", listOf("HMP"))
+            .queryParam("genders", "MALE")
+            .queryParam("prisonTypeCodes", "HMP")
             .queryParam("lthse", true)
             .build()
         }

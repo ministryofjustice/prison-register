@@ -4,9 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.test.context.transaction.TestTransaction
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.integration.TestBase
 
@@ -22,9 +21,7 @@ class PrisonRepositoryTest : TestBase() {
   fun `should insert prison`() {
     val prison = Prison("SHFCRT", "Sheffield Prison", active = true)
 
-    val id = prisonRepository.save(prison).prisonId
-
-    commitAndStartNewTx()
+    val id = prisonRepository.saveAndFlush(prison).prisonId
 
     val savedPrison = prisonRepository.findById(id).get()
 
@@ -44,9 +41,7 @@ class PrisonRepositoryTest : TestBase() {
       categories = mutableSetOf(Category.A, Category.B),
     )
 
-    val id = prisonRepository.save(prison).prisonId
-
-    commitAndStartNewTx()
+    val id = prisonRepository.saveAndFlush(prison).prisonId
 
     val savedPrison = prisonRepository.findById(id).get()
 
@@ -194,9 +189,7 @@ class PrisonRepositoryTest : TestBase() {
     prison.female = true
     prison.male = false
     prison.lthse = true
-    prisonRepository.save(prison)
-
-    commitAndStartNewTx()
+    prisonRepository.saveAndFlush(prison)
 
     val savedPrison = prisonRepository.findById("MDI").get()
 
@@ -209,17 +202,4 @@ class PrisonRepositoryTest : TestBase() {
       assertThat(lthse).isEqualTo(true)
     }
   }
-}
-
-/**
- * Convenience function for committing a transaction and starting a new one.
- * Without the call to TestTransaction.start() subsequent JPA operations operate outside a managed transaction
- * (each op is wrapped by an autocommit) and the Hibernate session is absent.
- * An absent (closed) session results in a LazyInitialisationException in the
- * `should insert prison categories`() test above.
- */
-private fun commitAndStartNewTx() {
-  TestTransaction.flagForCommit()
-  TestTransaction.end()
-  TestTransaction.start()
 }

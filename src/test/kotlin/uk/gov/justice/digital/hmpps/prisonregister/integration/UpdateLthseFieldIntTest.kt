@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import kotlin.jvm.optionals.getOrNull
 
-class UpdateLthseFieldIntTest : IntegrationTest() {
+class UpdateLthseFieldIntTest : IntegrationTestBase() {
 
   @MockitoSpyBean
   lateinit var prisonRepository: PrisonRepository

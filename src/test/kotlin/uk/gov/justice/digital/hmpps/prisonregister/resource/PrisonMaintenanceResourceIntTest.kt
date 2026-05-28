@@ -17,7 +17,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.BodyInserters
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
-import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
 import java.util.Optional
 
-class PrisonMaintenanceResourceIntTest : IntegrationTest() {
+class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var prisonRepository: PrisonRepository
@@ -279,7 +279,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
     fun `insert a prison with minimal data`() {
       val prison = Prison("MDI", "Inserted Prison", active = true)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
       val insertDto = InsertPrisonDto("MDI", "Inserted Prison", contracted = false)
 
       webTestClient.post()
@@ -319,7 +319,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
     fun `insert a prison with welsh name`() {
       val prison = Prison("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, male = true)
       whenever(prisonRepository.findById("CFI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
       val insertDto = InsertPrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", male = true, contracted = false)
 
       webTestClient.post()
@@ -357,7 +357,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
 
     @Test
     fun `insert a prison with maintain ref data role`() {
-      val prison = Prison("MDI", "Inserted Prison", female = true, active = false)
+      val prison = Prison("MDI", "Inserted Prison", female = true, male = false, active = false)
       val prisonTypes = mutableSetOf(PrisonType(prison = prison, type = Type.YOI))
       prison.prisonTypes = prisonTypes
       val address = Address(
@@ -372,7 +372,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
       )
       prison.addresses = setOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
 
       val insertDto = InsertPrisonDto(
         "MDI",
@@ -444,7 +444,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTest() {
       )
       prison.addresses = setOf(address)
       whenever(prisonRepository.findById("MDI")).thenReturn(Optional.empty(), Optional.of(prison))
-      whenever(prisonRepository.save(any())).thenReturn(prison)
+      whenever(prisonRepository.save(any<Prison>())).thenReturn(prison)
 
       val insertDto = InsertPrisonDto(
         "MDI",

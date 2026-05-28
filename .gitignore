@@ -9,3 +9,5 @@ dps-gradle-spring-boot-suppressions.xml
 sonar-project.properties
 helm_deploy/*/Chart.lock
 helm_deploy/*/charts/
+
+.snyk

@@ -20,7 +20,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${oauth.endpoint.url}/.well-known/jwks.json
+          jwk-set-uri: ${hmpps-auth.url}/.well-known/jwks.json
       client:
         registration:
           audit-api:
@@ -30,7 +30,7 @@ spring:
             authorization-grant-type: client_credentials
         provider:
           hmpps-auth:
-            token-uri: ${oauth.endpoint.url}/oauth/token
+            token-uri: ${hmpps-auth.url}/oauth/token
   jpa:
     open-in-view: false
     show-sql: false
@@ -49,9 +49,7 @@ spring:
       validationTimeout:  500
 
   jackson:
-    date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
+    time-zone: "Europe/London"
 
   thymeleaf.render-hidden-markers-before-checkboxes: true
   sql:
@@ -106,3 +104,9 @@ hmpps.sqs:
   topics:
     domainevents:
       asyncClient: true
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

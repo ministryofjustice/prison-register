@@ -141,7 +141,7 @@ class PrisonService(
 
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     if (contactDetails == null) {
-      prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
+      prisonRepository.findById(prisonId).orElseThrow { PrisonNotFoundException(prisonId) }
       val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
       contactDetailsRepository.save(ContactDetails(prisonId, departmentType, persistedEmailAddress))
       return CREATED
@@ -233,7 +233,8 @@ class PrisonService(
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
     LOG.debug("Enter createContactDetails $prisonId / ${contactDetailsDto.type.toMessage()}")
 
-    prisonRepository.getReferenceById(prisonId) ?: throw PrisonNotFoundException(prisonId)
+    prisonRepository.findById(prisonId).orElseThrow { PrisonNotFoundException(prisonId) }
+
     if (contactDetailsRepository.getByPrisonIdAndType(prisonId, contactDetailsDto.type) != null) {
       throw ContactDetailsAlreadyExistException(prisonId, contactDetailsDto.type)
     }
@@ -264,7 +265,7 @@ class PrisonService(
   fun updateContactDetails(prisonId: String, updateContactDetailsDto: ContactDetailsDto, removeIfNull: Boolean = true): ContactDetailsDto {
     LOG.debug("Enter updateContactDetails $prisonId / ${updateContactDetailsDto.type.toMessage()}")
 
-    prisonRepository.getReferenceById(prisonId) ?: throw EntityNotFoundException()
+    prisonRepository.findById(prisonId).orElseThrow { PrisonNotFoundException(prisonId) }
 
     val contactDetails =
       contactDetailsRepository.getByPrisonIdAndType(prisonId, updateContactDetailsDto.type) ?: throw ContactDetailsNotFoundException(

@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.prisonregister.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -13,16 +15,19 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import uk.gov.justice.digital.hmpps.prisonregister.config.LocalStackContainer
 import uk.gov.justice.digital.hmpps.prisonregister.config.LocalStackContainer.setLocalStackProperties
-import uk.gov.justice.digital.hmpps.prisonregister.utilities.JwtAuthHelper
+import uk.gov.justice.digital.hmpps.prisonregister.wiremock.HmppsAuthApiExtension
+import uk.gov.justice.digital.hmpps.prisonregister.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
 import uk.gov.justice.hmpps.sqs.MissingTopicException
 import uk.gov.justice.hmpps.sqs.countMessagesOnQueue
+import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
+@ExtendWith(HmppsAuthApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-abstract class IntegrationTest : TestBase() {
+@AutoConfigureWebTestClient
+abstract class IntegrationTestBase : TestBase() {
 
   data class HMPPSEventType(val Value: String, val Type: String)
   data class HMPPSMessageAttributes(val eventType: HMPPSEventType)
@@ -45,12 +50,11 @@ abstract class IntegrationTest : TestBase() {
   @Autowired
   protected lateinit var objectMapper: ObjectMapper
 
-  @Suppress("unused")
   @Autowired
-  lateinit var webTestClient: WebTestClient
+  protected lateinit var webTestClient: WebTestClient
 
   @Autowired
-  protected lateinit var jwtAuthHelper: JwtAuthHelper
+  protected lateinit var jwtAuthHelper: JwtAuthorisationHelper
 
   @MockitoSpyBean
   protected lateinit var hmppsSqsPropertiesSpy: HmppsSqsProperties
@@ -76,7 +80,11 @@ abstract class IntegrationTest : TestBase() {
     user: String = "prison-register-api-client",
     roles: List<String> = listOf(),
     scopes: List<String> = listOf(),
-  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
+  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisationHeader(username = user, roles = roles, scope = scopes)
+
+  protected fun stubPingWithResponse(status: Int) {
+    hmppsAuth.stubHealthPing(status)
+  }
 
   internal val testQueue by lazy { hmppsQueueService.findByQueueId("domaineventstestqueue") ?: throw RuntimeException("Queue with name domaineventstestqueue doesn't exist") }
   internal val testSqsClient by lazy { testQueue.sqsClient }

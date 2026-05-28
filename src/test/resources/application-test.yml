@@ -4,8 +4,8 @@ server:
 aws:
   provider: localstack
 
-oauth:
-  endpoint.url: http://localhost:9090/auth
+hmpps-auth:
+  url: http://localhost:8090/auth
 
 management.endpoint:
   health.cache.time-to-live: 0
@@ -17,9 +17,12 @@ spring:
 
   jpa:
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/prison-register
+    url: jdbc:postgresql://localhost:5432/prison-register?sslmode=prefer
     username: prison-register
     password: prison-register
     hikari:
@@ -41,3 +44,8 @@ hmpps.sqs:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
