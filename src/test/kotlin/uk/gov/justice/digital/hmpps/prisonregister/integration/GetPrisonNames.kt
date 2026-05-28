@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 
-class GetPrisonNames : IntegrationTest() {
+class GetPrisonNames : IntegrationTestBase() {
   @Test
   fun `should return prisons`() {
     // Given

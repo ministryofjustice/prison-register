@@ -17,7 +17,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.BodyInserters
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest.builder
-import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
 import java.util.Optional
 
-class PrisonAddressMaintenanceResourceIntTest : IntegrationTest() {
+class PrisonAddressMaintenanceResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var addressRepository: AddressRepository

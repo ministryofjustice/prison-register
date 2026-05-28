@@ -32,7 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
+abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
 
   val prisonId = "LEI"
 
@@ -109,7 +109,8 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTest() {
       ),
     )
 
-    return ContactDetailsDto(contactDetails)
+    // avoid lazy loading issue in tests
+    return ContactDetailsDto(departmentType, emailAddress, phoneNumber, webAddress)
   }
 
   private fun createOrGetDbPrison(prisonId: String): Prison = prisonRepository.findById(prisonId).getOrNull() ?: prisonRepository.save(

@@ -194,7 +194,7 @@ data class InsertPrisonDto(
   @Schema(description = "List of addresses for this prison", required = false)
   val addresses: List<UpdateAddressDto> = listOf(),
 
-  @Schema(description = "Set of categories for this prison", required = false)
+  @Schema(description = "Set of categories for this prison", example = "[\"A\"]", required = false)
   val categories: Set<Category> = setOf(),
 )
 
@@ -225,9 +225,9 @@ data class UpdatePrisonDto(
   @Schema(description = "If this prison is part of the long term high security estate", required = false)
   val lthse: Boolean = false,
 
-  @Schema(description = "Set of types for this prison")
+  @Schema(description = "Set of types for this prison", example = "[\"HMP\"]")
   val prisonTypes: Set<Type> = setOf(),
 
-  @Schema(description = "Set of categories for this prison", required = false)
+  @Schema(description = "Set of categories for this prison", example = "[\"A\"]", required = false)
   val categories: Set<Category> = setOf(),
 )

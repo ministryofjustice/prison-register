@@ -10,7 +10,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
@@ -24,7 +24,7 @@ annotation class WithMaintenanceMockUser
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) : IntegrationTest() {
+class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) : IntegrationTestBase() {
 
   @MockitoBean
   lateinit var contactDetailsRepository: ContactDetailsRepository

@@ -1,7 +1,7 @@
 services:
 
   localstack:
-    image: localstack/localstack:4
+    image: localstack/localstack:community-archive
     networks:
       - hmpps
     container_name: localstack
@@ -21,7 +21,7 @@ services:
       - hmpps
     container_name: hmpps-auth
     ports:
-      - "9090:8080"
+      - "8090:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health/ping"]
     environment:
@@ -31,7 +31,7 @@ services:
       - NOMIS_ENABLED=false
 
   prison-register-db:
-    image: postgres
+    image: postgres:18
     networks:
       - hmpps
     container_name: prison-register-db
