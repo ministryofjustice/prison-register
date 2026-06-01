@@ -170,6 +170,18 @@ class PrisonResourceIntTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `find prisons by ids ignores null values in list`() {
+      whenever(prisonRepository.findAllByPrisonIdIsIn(emptyList())).thenReturn(emptyList())
+
+      webTestClient.post().uri("/prisons/prisonsByIds")
+        .header("Content-Type", "application/json")
+        .bodyValue(PrisonRequest(listOf(null)))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().json("[]")
+    }
+
+    @Test
     fun `find prison validation failure`() {
       webTestClient.get().uri("/prisons/id/1234567890123")
         .exchange()

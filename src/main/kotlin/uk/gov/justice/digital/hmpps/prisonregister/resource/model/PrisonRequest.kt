@@ -6,6 +6,6 @@ data class PrisonRequest(
   @Schema(description = "List of prison ids", required = true)
   val prisonIds: List<
     @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
-    String,
+    String?,
     >? = emptyList(),
 )

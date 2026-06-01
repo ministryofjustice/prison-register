@@ -159,7 +159,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonsByIds(
     @RequestBody @Valid prisonRequest: PrisonRequest,
-  ) = prisonService.findPrisonsByIds(prisonRequest.prisonIds ?: emptyList())
+  ) = prisonService.findPrisonsByIds(prisonRequest.prisonIds?.filterNotNull() ?: emptyList())
 }
 
 @Schema(description = "Prison Information")
