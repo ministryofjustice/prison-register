@@ -15,6 +15,8 @@ generic-service:
     HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api-dev.hmpps.service.justice.gov.uk"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
+    SPRINGDOC_API_DOCS_ENABLED: "true"
+    SPRINGDOC_SWAGGER_UI_ENABLED: "true"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
