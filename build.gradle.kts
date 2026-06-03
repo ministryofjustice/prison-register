@@ -5,8 +5,8 @@ import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
-  kotlin("plugin.spring") version "2.3.21"
-  kotlin("plugin.jpa") version "2.3.21"
+  kotlin("plugin.spring") version "2.4.0"
+  kotlin("plugin.jpa") version "2.4.0"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
   idea
 }
@@ -22,7 +22,7 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:33.6.0-jre")
   implementation("commons-validator:commons-validator:1.10.1")
-  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.31")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.32")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
