@@ -22,11 +22,11 @@ spring:
           public-key-location: classpath:local-public-key.pub
 
 hmpps-auth:
-  url: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+  url: http://localhost:8090/auth
   client:
     client-id: prison-register-api-client
     client-secret: clientsecret
-    access-token-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token
+    access-token-uri: http://localhost:8090/auth/oauth/token
 
 springdoc:
   api-docs:
