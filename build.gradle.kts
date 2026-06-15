@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.0"
   kotlin("plugin.spring") version "2.4.0"
   kotlin("plugin.jpa") version "2.4.0"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
@@ -24,7 +24,7 @@ dependencies {
   implementation("commons-validator:commons-validator:1.10.1")
   implementation("com.googlecode.libphonenumber:libphonenumber:9.0.32")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -47,7 +47,7 @@ dependencies {
   implementation("org.freemarker:freemarker:2.3.34")
 
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  implementation("com.zaxxer:HikariCP:7.0.2")
+  implementation("com.zaxxer:HikariCP:7.1.0")
   runtimeOnly("org.postgresql:postgresql:42.7.11")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -58,7 +58,7 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.43") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.44") {
     exclude(group = "io.swagger.core.v3")
   }
 
