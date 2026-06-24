@@ -53,7 +53,7 @@ jobs:
       postgres-password: prison-register
       java-version: "25"
   test-build:
-    name: Build docker image from hmpps-github-actions without publishing
+    name: Build docker multi platform image from hmpps-github-actions without publishing
     if: github.ref != 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
@@ -63,13 +63,14 @@ jobs:
       registry_org: 'ministryofjustice'
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: false
-      docker_multiplatform: false
+      docker_multiplatform: true
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
       - kotlin_validate
+      - helm_lint
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
