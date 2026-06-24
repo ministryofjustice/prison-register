@@ -52,7 +52,7 @@ jobs:
       postgres-username: prison-register
       postgres-password: prison-register
       java-version: "25"
-      upload-build-artifacts: 'true'
+      upload-build-artifacts: true
   test-build:
     name: Build docker image from hmpps-github-actions without publishing
     if: github.ref != 'refs/heads/main'
