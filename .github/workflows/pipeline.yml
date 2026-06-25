@@ -43,7 +43,7 @@ jobs:
       environment: ${{ matrix.environments }}
   kotlin_validate:
     name: Validate the kotlin
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_localstack_postgres_verify.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
       postgres-db: prison-register
@@ -52,6 +52,7 @@ jobs:
       postgres-username: prison-register
       postgres-password: prison-register
       java-version: "25"
+      build-artifact-name: 'build-results'
   test-build:
     name: Build docker image from hmpps-github-actions without publishing
     if: github.ref != 'refs/heads/main'
@@ -63,7 +64,7 @@ jobs:
       registry_org: 'ministryofjustice'
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: false
-      docker_multiplatform: false
+      docker_multiplatform: true
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
@@ -76,7 +77,6 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || inputs.push == null }}
       docker_multiplatform: true
-      download_build_artifacts: true
       generate_sbom: true
       attach_sbom_to_registry: true
       sign_image: true
