@@ -54,7 +54,7 @@ jobs:
       java-version: "25"
       build-artifact-name: 'build-results'
   test-build:
-    name: Build docker image from hmpps-github-actions without publishing
+    name: Build docker multi platform image from hmpps-github-actions without publishing
     if: github.ref != 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
@@ -71,6 +71,7 @@ jobs:
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
       - kotlin_validate
+      - helm_lint
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
