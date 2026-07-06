@@ -48,7 +48,7 @@ dependencies {
 
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   implementation("com.zaxxer:HikariCP:7.1.0")
-  runtimeOnly("org.postgresql:postgresql:42.7.12")
+  runtimeOnly("org.postgresql:postgresql:42.7.13")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
