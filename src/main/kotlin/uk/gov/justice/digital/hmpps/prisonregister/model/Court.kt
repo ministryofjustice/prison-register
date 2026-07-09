@@ -9,7 +9,10 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.Transient
 import org.hibernate.Hibernate
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Persistable
 import java.time.LocalDate
 
 @Entity
@@ -57,7 +60,11 @@ data class Court(
   )
   var phoneNumbers: MutableList<PhoneNumber> = mutableListOf(),
 
-) {
+  @Transient
+  @Value("false")
+  val new: Boolean = true,
+
+) : Persistable<String> {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -71,4 +78,6 @@ data class Court(
 
   @Override
   override fun toString(): String = this::class.simpleName + "(courtId = $courtId, name = $name, description = $description"
+  override fun getId(): String? = courtId
+  override fun isNew(): Boolean = new
 }

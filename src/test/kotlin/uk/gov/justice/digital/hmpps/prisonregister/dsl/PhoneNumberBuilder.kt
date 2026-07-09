@@ -9,7 +9,7 @@ annotation class PhoneNumberDslMarker
 
 @PhoneNumberDslMarker
 @Component
-class PhoneNumber(val phoneNumberRepository: PhoneNumberRepository) {
+class PhoneNumberBuilder(val phoneNumberRepository: PhoneNumberRepository) {
   fun build(
     phoneNumber: String,
   ): PhoneNumber = phoneNumberRepository.saveAndFlush(
