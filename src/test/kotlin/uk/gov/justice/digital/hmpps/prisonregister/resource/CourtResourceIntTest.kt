@@ -30,7 +30,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      dsl.court(
+      court = dsl.court(
         courtId = "SHEFCC",
         name = "Sheffield Central Ct",
         description = "Sheffield Central Court",
@@ -70,7 +70,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
     @AfterEach
     fun tearDown() {
       if (::court.isInitialized) {
-        courtRepository.delete(court)
+        courtRepository.deleteById(court.courtId)
       }
     }
 

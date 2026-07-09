@@ -10,7 +10,7 @@ annotation class DataDslMarker
 @DataDslMarker
 @Component
 @Transactional
-class Root(val court: Court) {
+class Root(val courtBuilder: CourtBuilder) {
   fun court(
     courtId: String,
     name: String,
@@ -21,8 +21,8 @@ class Root(val court: Court) {
     cjitCode: String? = null,
     areaCode: String? = null,
     regionCode: String? = null,
-    dsl: Court.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.Court = court.build(
+    dsl: CourtBuilder.() -> Unit,
+  ): uk.gov.justice.digital.hmpps.prisonregister.model.Court = courtBuilder.build(
     courtId = courtId,
     name = name,
     description = description,
@@ -33,6 +33,6 @@ class Root(val court: Court) {
     areaCode = areaCode,
     regionCode = regionCode,
   ).also {
-    dsl.invoke(court)
+    dsl.invoke(courtBuilder)
   }
 }

@@ -2,10 +2,13 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
 
@@ -14,14 +17,14 @@ annotation class CourtDslMarker
 
 @CourtDslMarker
 @Component
-class Court(
+class CourtBuilder(
   private val courtTypeRepository: CourtTypeRepository,
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
   private val courtRepository: CourtRepository,
-  private val addressBuilder: AgencyAddress,
-  private val phoneBuilder: PhoneNumber,
-  private val emailBuilder: EmailAddress,
+  private val addressBuilder: AgencyAddressBuilder,
+  private val phoneBuilder: PhoneNumberBuilder,
+  private val emailBuilder: EmailAddressBuilder,
 ) {
   lateinit var court: Court
   fun build(
@@ -57,7 +60,7 @@ class Court(
     county: String? = null,
     postcode: String? = null,
     country: String? = null,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress = addressBuilder.build(
+  ): AgencyAddress = addressBuilder.build(
     addressLine1 = addressLine1,
     addressLine2 = addressLine2,
     town = town,
@@ -70,7 +73,7 @@ class Court(
   }
   fun email(
     emailAddress: String = "test@justice.gov.uk",
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress = emailBuilder.build(
+  ): EmailAddress = emailBuilder.build(
     emailAddress = emailAddress,
   ).also {
     court.emailAddresses.add(it)
@@ -78,7 +81,7 @@ class Court(
   }
   fun phoneNumber(
     phoneNumber: String = "0114 555 8989",
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber = phoneBuilder.build(
+  ): PhoneNumber = phoneBuilder.build(
     phoneNumber = phoneNumber,
   ).also {
     court.phoneNumbers.add(it)

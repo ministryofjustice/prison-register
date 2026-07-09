@@ -9,7 +9,7 @@ annotation class AgencyAddressDslMarker
 
 @AgencyAddressDslMarker
 @Component
-class AgencyAddress(val agencyAddressRepository: AgencyAddressRepository) {
+class AgencyAddressBuilder(val agencyAddressRepository: AgencyAddressRepository) {
   fun build(
     addressLine1: String?,
     addressLine2: String?,
