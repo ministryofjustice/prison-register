@@ -92,3 +92,4 @@ abstract class IntegrationTestBase : TestBase() {
 
   fun testQueueEventMessageCount(): Int? = testSqsClient.countMessagesOnQueue(testQueueUrl).get()
 }
+inline fun <reified B : Any> WebTestClient.ResponseSpec.expectBodyResponse(): B = this.expectStatus().is2xxSuccessful.expectBody(B::class.java).returnResult().responseBody!!
