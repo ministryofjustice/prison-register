@@ -23,7 +23,7 @@ dependencies {
   implementation("com.google.guava:guava:33.6.0-jre")
   implementation("commons-validator:commons-validator:1.10.1")
   implementation("com.googlecode.libphonenumber:libphonenumber:9.0.34")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
