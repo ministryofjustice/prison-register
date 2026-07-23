@@ -7,7 +7,7 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.7"
   kotlin("plugin.spring") version "2.4.10"
   kotlin("plugin.jpa") version "2.4.10"
-  id("org.jetbrains.kotlinx.kover") version "0.9.8"
+  id("org.jetbrains.kotlinx.kover") version "0.9.9"
   idea
 }
 
@@ -22,14 +22,14 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:33.6.0-jre")
   implementation("commons-validator:commons-validator:1.10.1")
-  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.34")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.35")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.29.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.30.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   implementation("com.jayway.jsonpath:json-path:3.0.0")
