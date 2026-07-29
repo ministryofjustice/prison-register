@@ -4,29 +4,30 @@ import jakarta.persistence.EntityNotFoundException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
-import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.HospitalDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 
 @Service
 @Transactional
-class CourtService(
-  private val courtRepository: CourtRepository,
+class HospitalService(
+  private val hospitalRepository: HospitalRepository,
 ) {
-  fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.let {
-    CourtDto(
-      courtId = it.courtId,
-      courtName = it.name,
+  fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.let {
+    HospitalDto(
+      hospitalId = it.hospitalId,
+      hospitalName = it.name,
       description = it.description,
       active = it.active,
       inactiveDate = it.inactiveDate,
       cjitCode = it.cjitCode,
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
       region = it.region?.let { area -> CodeDescription(area.code, area.description) },
-      courtType = CodeDescription(it.courtType.code, it.courtType.description),
+      geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+      payrollRegion = it.payrollRegion?.let { area -> CodeDescription(area.code, area.description) },
+      highSecurity = it.highSecurity,
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
           id = address.id,
@@ -38,12 +39,6 @@ class CourtService(
           country = address.country,
         )
       },
-      emailAddresses = it.emailAddresses.map { emailAddress ->
-        AgencyEmailDto(
-          id = emailAddress.id,
-          address = emailAddress.value,
-        )
-      },
       phoneNumbers = it.phoneNumbers.map { phoneNumber ->
         AgencyPhoneDto(
           id = phoneNumber.id,
@@ -51,5 +46,5 @@ class CourtService(
         )
       },
     )
-  } ?: throw EntityNotFoundException("Court $courtId not found")
+  } ?: throw EntityNotFoundException("Hospital $hospitalId not found")
 }
