@@ -3,6 +3,10 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.model.Court
+import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
+import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
+import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import java.time.LocalDate
 
 @DslMarker
@@ -11,7 +15,7 @@ annotation class DataDslMarker
 @DataDslMarker
 @Component
 @Transactional
-class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder, val probationOfficeBuilder: ProbationOfficeBuilder) {
+class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder, val probationOfficeBuilder: ProbationOfficeBuilder, val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder) {
   fun court(
     courtId: String,
     name: String,
@@ -23,7 +27,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     areaCode: String? = null,
     regionCode: String? = null,
     dsl: CourtBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.Court = courtBuilder.build(
+  ): Court = courtBuilder.build(
     courtId = courtId,
     name = name,
     description = description,
@@ -48,7 +52,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
     dsl: ProbationOfficeBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice = probationOfficeBuilder.build(
+  ): ProbationOffice = probationOfficeBuilder.build(
     probationOfficeId = probationOfficeId,
     name = name,
     description = description,
@@ -61,6 +65,31 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     geographicalAreaCode = geographicalAreaCode,
   ).also {
     dsl.invoke(probationOfficeBuilder)
+  }
+
+  fun policeCustodySuite(
+    policeCustodySuiteId: String,
+    name: String,
+    description: String = name,
+    active: Boolean = true,
+    inactiveDate: LocalDate? = null,
+    cjitCode: String? = null,
+    areaCode: String? = null,
+    regionCode: String? = null,
+    geographicalAreaCode: String? = null,
+    dsl: PoliceCustodySuiteBuilder.() -> Unit,
+  ): PoliceCustodySuite = policeCustodySuiteBuilder.build(
+    policeCustodySuiteId = policeCustodySuiteId,
+    name = name,
+    description = description,
+    active = active,
+    inactiveDate = inactiveDate,
+    cjitCode = cjitCode,
+    areaCode = areaCode,
+    regionCode = regionCode,
+    geographicalAreaCode = geographicalAreaCode,
+  ).also {
+    dsl.invoke(policeCustodySuiteBuilder)
   }
 
   fun hospital(
@@ -76,7 +105,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     payrollRegionCode: String? = null,
     geographicalAreaCode: String? = null,
     dsl: HospitalBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.Hospital = hospitalBuilder.build(
+  ): Hospital = hospitalBuilder.build(
     hospitalId = hospitalId,
     name = name,
     description = description,
