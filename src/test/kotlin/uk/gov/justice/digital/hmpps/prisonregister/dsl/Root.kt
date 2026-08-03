@@ -15,7 +15,7 @@ annotation class DataDslMarker
 @DataDslMarker
 @Component
 @Transactional
-class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder, val probationOfficeBuilder: ProbationOfficeBuilder, val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder) {
+class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder, val probationOfficeBuilder: ProbationOfficeBuilder, val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder, val approvedPremiseBuilder: ApprovedPremiseBuilder) {
   fun court(
     courtId: String,
     name: String,
@@ -65,6 +65,35 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     geographicalAreaCode = geographicalAreaCode,
   ).also {
     dsl.invoke(probationOfficeBuilder)
+  }
+
+  fun approvedPremise(
+    approvedPremiseId: String,
+    name: String,
+    description: String = name,
+    contact: String? = null,
+    active: Boolean = true,
+    accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
+    inactiveDate: LocalDate? = null,
+    cjitCode: String? = null,
+    areaCode: String? = null,
+    regionCode: String? = null,
+    geographicalAreaCode: String? = null,
+    dsl: ApprovedPremiseBuilder.() -> Unit,
+  ): uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise = approvedPremiseBuilder.build(
+    approvedPremiseId = approvedPremiseId,
+    name = name,
+    description = description,
+    contact = contact,
+    active = active,
+    accessibleAccess = accessibleAccess,
+    inactiveDate = inactiveDate,
+    cjitCode = cjitCode,
+    areaCode = areaCode,
+    regionCode = regionCode,
+    geographicalAreaCode = geographicalAreaCode,
+  ).also {
+    dsl.invoke(approvedPremiseBuilder)
   }
 
   fun policeCustodySuite(
