@@ -79,7 +79,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -88,7 +88,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -98,7 +98,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -111,7 +111,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if not found`() {
         webTestClient.get()
-          .uri("/police-custody-suite/id/ZZZZ")
+          .uri("/police-custody-suites/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -124,7 +124,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return core details`() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -143,7 +143,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return addresses`() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -161,7 +161,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return emails`() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -174,7 +174,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return phone numbers`() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
-          .uri("/police-custody-suite/id/SHFPCS")
+          .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()

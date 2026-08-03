@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
 import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
@@ -18,7 +17,6 @@ import java.time.LocalDate
 @Entity
 data class PoliceCustodySuite(
   @Id
-  @Column(unique = true)
   val policeCustodySuiteId: String,
   var name: String,
   var description: String?,

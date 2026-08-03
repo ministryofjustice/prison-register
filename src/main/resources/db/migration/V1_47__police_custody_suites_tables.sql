@@ -34,6 +34,8 @@ create table police_custody_suite_to_phone
     constraint police_custody_suite_to_phone_to_phone_fk foreign key (phone_id) references phone_number (id)
 );
 
+create index police_custody_suite_to_phone_idx on police_custody_suite_to_phone (police_custody_suite_id, phone_id);
+
 create table police_custody_suite_to_email_address
 (
     police_custody_suite_id          varchar(6) not null,
@@ -42,3 +44,13 @@ create table police_custody_suite_to_email_address
     constraint police_custody_suite_to_email_address_to_email_address_fk foreign key (email_address_id) references email_address (id)
 );
 
+create index police_custody_suite_to_email_address_idx on police_custody_suite_to_email_address (police_custody_suite_id, email_address_id);
+
+
+create index probation_office_to_phone_idx on probation_office_to_phone (probation_office_id, phone_id);
+create index probation_office_to_email_address_idx on probation_office_to_email_address (probation_office_id, email_address_id);
+
+create index hospital_to_phone_idx on hospital_to_phone (hospital_id, phone_id);
+
+create index court_to_phone_idx on court_to_phone (court_id, phone_id);
+create index court_to_email_address_idx on court_to_email_address (court_id, email_address_id);

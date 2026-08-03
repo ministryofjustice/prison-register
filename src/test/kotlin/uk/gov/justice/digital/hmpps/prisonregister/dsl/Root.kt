@@ -3,6 +3,10 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.model.Court
+import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
+import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
+import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import java.time.LocalDate
 
 @DslMarker
@@ -23,7 +27,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     areaCode: String? = null,
     regionCode: String? = null,
     dsl: CourtBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.Court = courtBuilder.build(
+  ): Court = courtBuilder.build(
     courtId = courtId,
     name = name,
     description = description,
@@ -48,7 +52,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
     dsl: ProbationOfficeBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice = probationOfficeBuilder.build(
+  ): ProbationOffice = probationOfficeBuilder.build(
     probationOfficeId = probationOfficeId,
     name = name,
     description = description,
@@ -74,7 +78,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
     dsl: PoliceCustodySuiteBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite = policeCustodySuiteBuilder.build(
+  ): PoliceCustodySuite = policeCustodySuiteBuilder.build(
     policeCustodySuiteId = policeCustodySuiteId,
     name = name,
     description = description,
@@ -101,7 +105,7 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder,
     payrollRegionCode: String? = null,
     geographicalAreaCode: String? = null,
     dsl: HospitalBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.Hospital = hospitalBuilder.build(
+  ): Hospital = hospitalBuilder.build(
     hospitalId = hospitalId,
     name = name,
     description = description,

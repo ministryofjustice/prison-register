@@ -23,7 +23,7 @@ import java.time.LocalDate
 
 @RestController
 @Validated
-@RequestMapping("/police-custody-suite", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/police-custody-suites", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
 class PoliceCustodySuiteResource(private val policeCustodySuiteService: PoliceCustodySuiteService) {
   @GetMapping("/id/{policeCustodySuiteId}")
@@ -37,7 +37,7 @@ class PoliceCustodySuiteResource(private val policeCustodySuiteService: PoliceCu
     ],
   )
   fun getPoliceCustodySuiteFromId(
-    @Schema(description = "Police Custody Suite ID", example = "SHEFPCS", required = true)
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
     @PathVariable
     @Size(min = 3, max = 6, message = "Police Custody Suite Id must be between 3 and 6 letters")
     policeCustodySuiteId: String,
@@ -47,7 +47,7 @@ class PoliceCustodySuiteResource(private val policeCustodySuiteService: PoliceCu
 @Schema(description = "Police Custody Suite Information")
 @JsonInclude(NON_NULL)
 data class PoliceCustodySuiteDto(
-  @Schema(description = "Police Custody Suite ID", example = "SHEFPCS") val policeCustodySuiteId: String,
+  @Schema(description = "Police Custody Suite ID", example = "SHFPCS") val policeCustodySuiteId: String,
   @Schema(description = "Name", example = "Sheffield Police Custody Suite") val policeCustodySuiteName: String,
   @Schema(description = "Description", example = "Sheffield City Centre Police Custody Suite") val description: String?,
   @Schema(description = "Whether still active") val active: Boolean,
