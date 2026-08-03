@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import java.time.LocalDate
 
 @DslMarker
@@ -10,7 +11,7 @@ annotation class DataDslMarker
 @DataDslMarker
 @Component
 @Transactional
-class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder) {
+class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder, val probationOfficeBuilder: ProbationOfficeBuilder) {
   fun court(
     courtId: String,
     name: String,
@@ -35,6 +36,33 @@ class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder)
   ).also {
     dsl.invoke(courtBuilder)
   }
+  fun probationOffice(
+    probationOfficeId: String,
+    name: String,
+    description: String = name,
+    active: Boolean = true,
+    accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
+    inactiveDate: LocalDate? = null,
+    cjitCode: String? = null,
+    areaCode: String? = null,
+    regionCode: String? = null,
+    geographicalAreaCode: String? = null,
+    dsl: ProbationOfficeBuilder.() -> Unit,
+  ): uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice = probationOfficeBuilder.build(
+    probationOfficeId = probationOfficeId,
+    name = name,
+    description = description,
+    active = active,
+    accessibleAccess = accessibleAccess,
+    inactiveDate = inactiveDate,
+    cjitCode = cjitCode,
+    areaCode = areaCode,
+    regionCode = regionCode,
+    geographicalAreaCode = geographicalAreaCode,
+  ).also {
+    dsl.invoke(probationOfficeBuilder)
+  }
+
   fun hospital(
     hospitalId: String,
     name: String,

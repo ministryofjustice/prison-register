@@ -51,7 +51,7 @@ data class CourtDto(
   @Schema(description = "Name", example = "N Staffs Youth Court - Newcastle") val courtName: String,
   @Schema(description = "Description", example = "North Staffordshire Youth Court - Newcastle under Lyme") val description: String?,
   @Schema(description = "Whether still active") val active: Boolean,
-  val inactiveDate: LocalDate?,
+  @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
   @Schema(description = "Area") val area: CodeDescription?,
   @Schema(description = "Region") val region: CodeDescription?,
