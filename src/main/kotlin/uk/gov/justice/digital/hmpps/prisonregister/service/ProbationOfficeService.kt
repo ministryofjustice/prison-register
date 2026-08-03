@@ -22,7 +22,7 @@ class ProbationOfficeService(
       probationOfficeName = it.name,
       description = it.description,
       active = it.active,
-      accessibleAccess = it.accessibleAccess.name,
+      accessibleAccess = it.accessibleAccess?.name,
       inactiveDate = it.inactiveDate,
       cjitCode = it.cjitCode,
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },

@@ -23,7 +23,7 @@ class ApprovedPremiseService(
       description = it.description,
       contact = it.contact,
       active = it.active,
-      accessibleAccess = it.accessibleAccess.name,
+      accessibleAccess = it.accessibleAccess?.name,
       inactiveDate = it.inactiveDate,
       cjitCode = it.cjitCode,
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
