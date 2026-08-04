@@ -6,7 +6,7 @@ create table agency
     contact           varchar(40),
     active            boolean     not null,
     accessible_access varchar(20),
-    agency_type       varchar(30),
+    agency_type       varchar(30) not null,
     inactive_date     date,
     area              varchar(12),
     geographical_area varchar(12),
