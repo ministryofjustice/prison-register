@@ -85,8 +85,7 @@ data class Agency(
 
   override fun hashCode(): Int = javaClass.hashCode()
 
-  @Override
-  override fun toString(): String = this::class.simpleName + "(agencyId = $agencyId, name = $name, description = $description"
+  override fun toString(): String = "${this::class.simpleName}(agencyId = $agencyId, name = $name, description = $description)"
   override fun getId(): String? = agencyId
   override fun isNew(): Boolean = new
 }
