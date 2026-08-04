@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.model
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
@@ -23,7 +25,8 @@ data class ProbationOffice(
   var name: String,
   var description: String?,
   var active: Boolean,
-  var accessibleAccess: AccessibleAccess,
+  @Enumerated(EnumType.STRING)
+  var accessibleAccess: AccessibleAccess?,
   var inactiveDate: LocalDate?,
   var cjitCode: String?,
 
