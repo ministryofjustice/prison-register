@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
@@ -15,7 +17,45 @@ annotation class DataDslMarker
 @DataDslMarker
 @Component
 @Transactional
-class Root(val courtBuilder: CourtBuilder, val hospitalBuilder: HospitalBuilder, val probationOfficeBuilder: ProbationOfficeBuilder, val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder, val approvedPremiseBuilder: ApprovedPremiseBuilder) {
+class Root(
+  val courtBuilder: CourtBuilder,
+  val hospitalBuilder: HospitalBuilder,
+  val probationOfficeBuilder: ProbationOfficeBuilder,
+  val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder,
+  val approvedPremiseBuilder: ApprovedPremiseBuilder,
+  val agencyBuilder: AgencyBuilder,
+) {
+  fun agency(
+    agencyId: String,
+    name: String,
+    description: String = name,
+    active: Boolean = true,
+    accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
+    agencyType: AgencyType = AgencyType.PROBATION_CRC,
+    inactiveDate: LocalDate? = null,
+    cjitCode: String? = null,
+    areaCode: String? = null,
+    regionCode: String? = null,
+    geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
+    dsl: AgencyBuilder.() -> Unit,
+  ): Agency = agencyBuilder.build(
+    agencyId = agencyId,
+    name = name,
+    description = description,
+    active = active,
+    accessibleAccess = accessibleAccess,
+    agencyType = agencyType,
+    inactiveDate = inactiveDate,
+    cjitCode = cjitCode,
+    areaCode = areaCode,
+    regionCode = regionCode,
+    geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
+  ).also {
+    dsl.invoke(agencyBuilder)
+  }
+
   fun court(
     courtId: String,
     name: String,
