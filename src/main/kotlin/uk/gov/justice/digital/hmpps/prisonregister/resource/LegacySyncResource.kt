@@ -42,8 +42,7 @@ class LegacySyncResource {
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad Information request to create or update update agency",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        description = "Bad Information request to create or update agency",
       ),
       ApiResponse(
         responseCode = "401",
