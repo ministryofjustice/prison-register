@@ -25,8 +25,8 @@ import java.time.LocalDate
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
 class LegacySyncResource {
   @Operation(
-    summary = "Creates or updates a agency of any type",
-    description = "Used for synchronising and migrating data from NOMIS this will create an agency or update if already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Creates or updates an agency of any type",
+    description = "Used for synchronising and migrating data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
