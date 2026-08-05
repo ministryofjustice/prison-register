@@ -1079,6 +1079,32 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
 
           assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for agency BRDMR")
         }
+
+        @Test
+        fun `geographical area code is not valid`() {
+          val errorResponse: ErrorResponse = webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "BRDMR")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(hospitalRequest.copy(geographicalAreaCode = "ZZZ"))
+            .exchange()
+            .expectStatus().isBadRequest.expectBodyResponse()
+
+          assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency BRDMR")
+        }
+
+        @Test
+        fun `payroll region code is not valid`() {
+          val errorResponse: ErrorResponse = webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "BRDMR")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(hospitalRequest.copy(payrollRegionCode = "ZZZ"))
+            .exchange()
+            .expectStatus().isBadRequest.expectBodyResponse()
+
+          assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency BRDMR")
+        }
       }
 
       @Nested
