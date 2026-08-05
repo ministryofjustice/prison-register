@@ -24,6 +24,7 @@ import java.time.LocalDate
     NamedAttributeNode("area"),
     NamedAttributeNode("region"),
     NamedAttributeNode("courtType"),
+    NamedAttributeNode("addresses"),
   ],
 )
 data class Court(

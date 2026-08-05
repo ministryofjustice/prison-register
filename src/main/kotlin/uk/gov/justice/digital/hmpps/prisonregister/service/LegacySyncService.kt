@@ -28,9 +28,29 @@ fun LegacyAgencyAddressDto.toAgencyAddress() = AgencyAddress(
   country = this.country,
 )
 
+fun AgencyAddress.update(addressDto: LegacyAgencyAddressDto) {
+  addressLine1 = addressDto.addressLine1
+  addressLine2 = addressDto.addressLine2
+  town = addressDto.town
+  county = addressDto.county
+  postcode = addressDto.postcode
+  country = addressDto.country
+}
+
 fun LegacyAgencyPhoneDto.toAgencyPhone() = PhoneNumber(
   value = this.number,
 )
+
 fun LegacyAgencyEmailDto.toAgencyEmail() = EmailAddress(
   value = this.address,
 )
+
+fun <E, DTO> MutableList<E>.update(dtoList: List<DTO>, compare: (entity: E, dto: DTO) -> Boolean, transform: (DTO) -> E) {
+  val toAdd = dtoList.filter { dto -> this.none { compare(it, dto) } }
+  val toRemove = this.filter { entity -> dtoList.none { compare(entity, it) } }
+  this.removeAll(toRemove)
+  this.addAll(toAdd.map { transform(it) })
+}
+
+fun MutableList<EmailAddress>.updateEmailAddressFrom(emailDtoList: List<LegacyAgencyEmailDto>) = update(emailDtoList, { entity, dto -> entity.value == dto.address }) { it.toAgencyEmail() }
+fun MutableList<PhoneNumber>.updatePhoneNumberFrom(phoneDtoList: List<LegacyAgencyPhoneDto>) = update(phoneDtoList, { entity, dto -> entity.value == dto.number }) { it.toAgencyPhone() }
