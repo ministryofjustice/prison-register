@@ -13,11 +13,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBa
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
 class LegacySyncResourceIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var courtRepository: CourtRepository
+
+  @Autowired
+  lateinit var transactionHelper: TransactionHelper
 
   @Autowired
   lateinit var dsl: Root
@@ -176,23 +180,134 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .uri("/sync/agency/id/{agencyId}", "SHEFMC")
             .accept(MediaType.APPLICATION_JSON)
             .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-            .bodyValue(courtRequest.copy(addresses = emptyList(), emailAddresses = emptyList(), phoneNumbers = emptyList()))
+            .bodyValue(
+              courtRequest.copy(
+                addresses = emptyList(),
+                emailAddresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
             .exchange()
             .expectStatus().isOk.expectBodyResponse()
 
           assertThat(response.updated).isFalse
 
-          val court = courtRepository.findByCourtId("SHEFMC")
+          transactionHelper.runInTransaction {
+            val court = courtRepository.findByCourtId("SHEFMC")
 
-          with(court) {
-            assertThat(name).isEqualTo("Sheffield MC")
-            assertThat(description).isEqualTo("Sheffield Magistrates' Court")
-            assertThat(active).isTrue
-            assertThat(inactiveDate).isNull()
-            assertThat(cjitCode).isEqualTo("123456789")
-            assertThat(area?.description).isEqualTo("South Yorkshire")
-            assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
-            assertThat(courtType.description).isEqualTo("Magistrates Court")
+            with(court) {
+              assertThat(name).isEqualTo("Sheffield MC")
+              assertThat(description).isEqualTo("Sheffield Magistrates' Court")
+              assertThat(active).isTrue
+              assertThat(inactiveDate).isNull()
+              assertThat(cjitCode).isEqualTo("123456789")
+              assertThat(area?.description).isEqualTo("South Yorkshire")
+              assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
+              assertThat(courtType.description).isEqualTo("Magistrates Court")
+              assertThat(addresses).isEmpty()
+              assertThat(phoneNumbers).isEmpty()
+              assertThat(emailAddresses).isEmpty()
+            }
+          }
+        }
+
+        @Test
+        fun `will create an address`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                addresses = listOf(
+                  LegacyAgencyAddressDto(
+                    addressLine1 = "Castle Street",
+                    addressLine2 = null,
+                    town = "Sheffield",
+                    county = "South Yorkshire",
+                    postcode = "S3 8LU",
+                    country = "England",
+                  ),
+                ),
+                emailAddresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(addresses).hasSize(1)
+              with(addresses[0]) {
+                assertThat(addressLine1).isEqualTo("Castle Street")
+                assertThat(addressLine2).isNull()
+                assertThat(town).isEqualTo("Sheffield")
+                assertThat(county).isEqualTo("South Yorkshire")
+                assertThat(postcode).isEqualTo("S3 8LU")
+                assertThat(country).isEqualTo("England")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will create an email address`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = listOf(
+                  LegacyAgencyEmailDto(address = "test.sheffield.mc@justice.gov.uk"),
+                ),
+                addresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(emailAddresses).hasSize(1)
+              with(emailAddresses[0]) {
+                assertThat(value).isEqualTo("test.sheffield.mc@justice.gov.uk")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will create phone numbers`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = emptyList(),
+                addresses = emptyList(),
+                phoneNumbers = listOf(
+                  LegacyAgencyPhoneDto(number = "0114 555 5555"),
+                  LegacyAgencyPhoneDto(number = "0114 999 5555"),
+                ),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(phoneNumbers).hasSize(2)
+              with(phoneNumbers[0]) {
+                assertThat(value).isEqualTo("0114 555 5555")
+              }
+              with(phoneNumbers[1]) {
+                assertThat(value).isEqualTo("0114 999 5555")
+              }
+            }
           }
         }
       }
@@ -339,6 +454,309 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             assertThat(area?.description).isEqualTo("South Yorkshire")
             assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
             assertThat(courtType.description).isEqualTo("Magistrates Court")
+          }
+        }
+
+        @Test
+        fun `will update existing address`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                addresses = listOf(
+                  LegacyAgencyAddressDto(
+                    addressLine1 = "Castle Street",
+                    addressLine2 = "City Centre",
+                    town = "Sheffield",
+                    county = "South Yorkshire",
+                    postcode = "S3 8LU",
+                    country = "England",
+                  ),
+                ),
+                emailAddresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(addresses).hasSize(1)
+              with(addresses[0]) {
+                assertThat(addressLine1).isEqualTo("Castle Street")
+                assertThat(addressLine2).isEqualTo("City Centre")
+                assertThat(town).isEqualTo("Sheffield")
+                assertThat(county).isEqualTo("South Yorkshire")
+                assertThat(postcode).isEqualTo("S3 8LU")
+                assertThat(country).isEqualTo("England")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will remove existing address`() {
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(addresses).hasSize(1)
+            }
+          }
+
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                addresses = emptyList(),
+                emailAddresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(addresses).hasSize(0)
+            }
+          }
+        }
+
+        @Test
+        fun `will update existing address add others`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                addresses = listOf(
+                  LegacyAgencyAddressDto(
+                    addressLine1 = "Front Entrance",
+                    addressLine2 = "Castle Street",
+                    town = "Sheffield",
+                    county = "South Yorkshire",
+                    postcode = "S3 8LU",
+                    country = "England",
+                  ),
+                  LegacyAgencyAddressDto(
+                    addressLine1 = "Back Entrance",
+                    addressLine2 = "Castle Street",
+                    town = "Sheffield",
+                    county = "South Yorkshire",
+                    postcode = "S3 8LU",
+                    country = "England",
+                  ),
+                ),
+                emailAddresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(addresses).hasSize(2)
+              with(addresses.first { it.addressLine1 == "Front Entrance" }) {
+                assertThat(addressLine1).isEqualTo("Front Entrance")
+                assertThat(addressLine2).isEqualTo("Castle Street")
+                assertThat(town).isEqualTo("Sheffield")
+                assertThat(county).isEqualTo("South Yorkshire")
+                assertThat(postcode).isEqualTo("S3 8LU")
+                assertThat(country).isEqualTo("England")
+              }
+              with(addresses.first { it.addressLine1 == "Back Entrance" }) {
+                assertThat(addressLine1).isEqualTo("Back Entrance")
+                assertThat(addressLine2).isEqualTo("Castle Street")
+                assertThat(town).isEqualTo("Sheffield")
+                assertThat(county).isEqualTo("South Yorkshire")
+                assertThat(postcode).isEqualTo("S3 8LU")
+                assertThat(country).isEqualTo("England")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will update an email address`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = listOf(
+                  LegacyAgencyEmailDto(address = "test.2.sheffield.mc@justice.gov.uk"),
+                ),
+                addresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(emailAddresses).hasSize(1)
+              with(emailAddresses[0]) {
+                assertThat(value).isEqualTo("test.2.sheffield.mc@justice.gov.uk")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will create and update email addresses`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = listOf(
+                  LegacyAgencyEmailDto(address = "test.sheffield.mc@justice.gov.uk"),
+                  LegacyAgencyEmailDto(address = "test.2.sheffield.mc@justice.gov.uk"),
+                ),
+                addresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(emailAddresses).hasSize(2)
+              with(emailAddresses[0]) {
+                assertThat(value).isEqualTo("test.sheffield.mc@justice.gov.uk")
+              }
+              with(emailAddresses[1]) {
+                assertThat(value).isEqualTo("test.2.sheffield.mc@justice.gov.uk")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will remove email addresses`() {
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(emailAddresses).hasSize(1)
+            }
+          }
+
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = emptyList(),
+                addresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(emailAddresses).hasSize(0)
+            }
+          }
+        }
+
+        @Test
+        fun `will remove phone numbers`() {
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(phoneNumbers).hasSize(1)
+            }
+          }
+
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = emptyList(),
+                addresses = emptyList(),
+                phoneNumbers = emptyList(),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(phoneNumbers).hasSize(0)
+            }
+          }
+        }
+
+        @Test
+        fun `will update phone numbers`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = emptyList(),
+                addresses = emptyList(),
+                phoneNumbers = listOf(
+                  LegacyAgencyPhoneDto(number = "0114 999 5555"),
+                ),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(phoneNumbers).hasSize(1)
+              with(phoneNumbers[0]) {
+                assertThat(value).isEqualTo("0114 999 5555")
+              }
+            }
+          }
+        }
+
+        @Test
+        fun `will create and update phone numbers`() {
+          webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "SHEFMC")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(
+              courtRequest.copy(
+                emailAddresses = emptyList(),
+                addresses = emptyList(),
+                phoneNumbers = listOf(
+                  LegacyAgencyPhoneDto(number = "0114 555 5555"),
+                  LegacyAgencyPhoneDto(number = "0114 999 5555"),
+                ),
+              ),
+            )
+            .exchange()
+            .expectStatus().isOk
+
+          transactionHelper.runInTransaction {
+            with(courtRepository.findByCourtId("SHEFMC")) {
+              assertThat(phoneNumbers).hasSize(2)
+              with(phoneNumbers[0]) {
+                assertThat(value).isEqualTo("0114 555 5555")
+              }
+              with(phoneNumbers[1]) {
+                assertThat(value).isEqualTo("0114 999 5555")
+              }
+            }
           }
         }
       }

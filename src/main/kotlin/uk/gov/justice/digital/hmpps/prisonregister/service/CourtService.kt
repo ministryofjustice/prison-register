@@ -63,8 +63,19 @@ class CourtService(
     )
   } ?: throw EntityNotFoundException("Court $courtId not found")
 
-  fun createOrUpdateCourtFromLegacyData(courtId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = courtRepository.findByIdOrNull(courtId)?.let {
-    it.update(agencyDto)
+  fun createOrUpdateCourtFromLegacyData(courtId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = courtRepository.findByIdOrNull(courtId)?.let { court ->
+    court.update(agencyDto)
+    // treat these as value objects and replace. If we are just updating a single address (vast majority of agencies will have at most one), keep the original entity and its ID
+    if (court.addresses.size == 1 && agencyDto.addresses.size == 1) {
+      court.addresses[0].update(agencyDto.addresses[0])
+    } else {
+      court.addresses.clear()
+      court.addresses += agencyDto.addresses.map { it.toAgencyAddress() }
+    }
+
+    court.phoneNumbers.updatePhoneNumberFrom(agencyDto.phoneNumbers)
+    court.emailAddresses.updateEmailAddressFrom(agencyDto.emailAddresses)
+
     LegacyAgencyResponse(updated = true)
   } ?: let {
     val court = agencyDto.toCourt(courtId)
@@ -75,7 +86,7 @@ class CourtService(
     LegacyAgencyResponse(updated = false)
   }
 
-  fun LegacyAgencyDto.toCourt(courtId: String) = Court(
+  private fun LegacyAgencyDto.toCourt(courtId: String) = Court(
     courtId = courtId,
     name = this.name,
     description = this.description,
@@ -87,7 +98,7 @@ class CourtService(
     courtType = this.courtTypeCode?.let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
   )
 
-  fun Court.update(agencyDto: LegacyAgencyDto) {
+  private fun Court.update(agencyDto: LegacyAgencyDto) {
     this.name = agencyDto.name
     this.description = agencyDto.description
     this.active = agencyDto.active
