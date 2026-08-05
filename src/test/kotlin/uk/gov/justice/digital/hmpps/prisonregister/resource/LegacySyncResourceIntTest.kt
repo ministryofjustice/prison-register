@@ -280,7 +280,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         }
 
         @Test
-        fun `will create a phone numbers`() {
+        fun `will create phone numbers`() {
           webTestClient.post()
             .uri("/sync/agency/id/{agencyId}", "SHEFMC")
             .accept(MediaType.APPLICATION_JSON)

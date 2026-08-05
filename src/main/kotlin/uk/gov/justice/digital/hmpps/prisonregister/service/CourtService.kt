@@ -65,11 +65,9 @@ class CourtService(
 
   fun createOrUpdateCourtFromLegacyData(courtId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = courtRepository.findByIdOrNull(courtId)?.let { court ->
     court.update(agencyDto)
-    // treat these as value objects and replace, but if we are just updating one (vast majority of agencies will have just one thing at the most) lets keep original entity and it's ID
-    if (court.addresses.size == agencyDto.addresses.size) {
-      court.addresses.zip(agencyDto.addresses).forEach { (address, addressDto) ->
-        address.update(addressDto)
-      }
+    // treat these as value objects and replace. If we are just updating a single address (vast majority of agencies will have at most one), keep the original entity and its ID
+    if (court.addresses.size == 1 && agencyDto.addresses.size == 1) {
+      court.addresses[0].update(agencyDto.addresses[0])
     } else {
       court.addresses.clear()
       court.addresses += agencyDto.addresses.map { it.toAgencyAddress() }
