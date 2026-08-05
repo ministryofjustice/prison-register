@@ -64,6 +64,7 @@ class CourtService(
   } ?: throw EntityNotFoundException("Court $courtId not found")
 
   fun createOrUpdateCourtFromLegacyData(courtId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = courtRepository.findByIdOrNull(courtId)?.let {
+    it.update(agencyDto)
     LegacyAgencyResponse(updated = true)
   } ?: let {
     val court = agencyDto.toCourt(courtId)
@@ -85,4 +86,15 @@ class CourtService(
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") },
     courtType = this.courtTypeCode?.let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
   )
+
+  fun Court.update(agencyDto: LegacyAgencyDto) {
+    this.name = agencyDto.name
+    this.description = agencyDto.description
+    this.active = agencyDto.active
+    this.inactiveDate = agencyDto.inactiveDate
+    this.cjitCode = agencyDto.cjitCode
+    this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") }
+    this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") }
+    this.courtType = agencyDto.courtTypeCode?.let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
+  }
 }
