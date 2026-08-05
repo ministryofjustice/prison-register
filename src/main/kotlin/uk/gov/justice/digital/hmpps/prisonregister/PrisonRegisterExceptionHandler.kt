@@ -55,10 +55,10 @@ class PrisonRegisterExceptionHandler {
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handleNotFoundException(e: Exception): ResponseEntity<ErrorResponse> {
-    log.debug("Prison not found exception: {}", e.message)
+    log.debug("Agency not found exception: {}", e.message)
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
-      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message, userMessage = "Prison not found exception"))
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message, userMessage = "Agency not found exception"))
   }
 
   @ExceptionHandler(PrisonNotFoundException::class)

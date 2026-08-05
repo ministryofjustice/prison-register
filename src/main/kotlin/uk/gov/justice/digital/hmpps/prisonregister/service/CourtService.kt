@@ -1,11 +1,18 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import jakarta.persistence.EntityNotFoundException
+import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -15,6 +22,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 @Transactional
 class CourtService(
   private val courtRepository: CourtRepository,
+  private val areaRepository: AreaRepository,
+  private val regionRepository: RegionRepository,
+  private val courtTypeRepository: CourtTypeRepository,
 ) {
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.let {
     CourtDto(
@@ -52,4 +62,27 @@ class CourtService(
       },
     )
   } ?: throw EntityNotFoundException("Court $courtId not found")
+
+  fun createOrUpdateCourtFromLegacyData(courtId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = courtRepository.findByIdOrNull(courtId)?.let {
+    LegacyAgencyResponse(updated = true)
+  } ?: let {
+    val court = agencyDto.toCourt(courtId)
+    court.addresses += agencyDto.addresses.map { it.toAgencyAddress() }
+    court.phoneNumbers += agencyDto.phoneNumbers.map { it.toAgencyPhone() }
+    court.emailAddresses += agencyDto.emailAddresses.map { it.toAgencyEmail() }
+    courtRepository.saveAndFlush(court)
+    LegacyAgencyResponse(updated = false)
+  }
+
+  fun LegacyAgencyDto.toCourt(courtId: String) = Court(
+    courtId = courtId,
+    name = this.name,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") },
+    region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") },
+    courtType = this.courtTypeCode?.let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
+  )
 }
