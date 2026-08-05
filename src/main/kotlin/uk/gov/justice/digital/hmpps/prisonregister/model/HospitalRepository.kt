@@ -4,4 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface HospitalRepository : JpaRepository<Hospital, String>
+interface HospitalRepository : JpaRepository<Hospital, String> {
+  fun findByHospitalId(hospitalId: String): Hospital
+}
