@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
+import uk.gov.justice.digital.hmpps.prisonregister.service.LegacySyncService
 import java.time.LocalDate
 
 @RestController
 @Validated
 @RequestMapping("/sync", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
-class LegacySyncResource {
+class LegacySyncResource(val legacySyncService: LegacySyncService) {
   @Operation(
     summary = "Creates or updates an agency of any type",
     description = "Used for synchronising and migrating data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
@@ -65,14 +66,14 @@ class LegacySyncResource {
     @RequestBody @Valid
     @Suppress("unused")
     agencyDto: LegacyAgencyDto,
-  ): LegacyAgencyResponse = LegacyAgencyResponse(false)
+  ): LegacyAgencyResponse = legacySyncService.createOrUpdateAgency(agencyId, agencyDto)
 }
 
 @Schema(description = "Agency Information")
 @JsonInclude(NON_NULL)
 data class LegacyAgencyDto(
   @Schema(description = "Agency Type", example = "COURT", enumAsRef = true) val agencyType: LegacyAgencyType,
-  @Schema(description = "Name", example = "N Staffs Youth Court - Newcastle") val courtName: String,
+  @Schema(description = "Name", example = "N Staffs Youth Court - Newcastle") val name: String,
   @Schema(description = "Description", example = "North Staffordshire Youth Court - Newcastle under Lyme") val description: String?,
   @Schema(description = "Whether still active") val active: Boolean,
   @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
@@ -99,12 +100,12 @@ data class LegacyAgencyAddressDto(
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyPhoneDto(
-  @Schema(description = "Phone number", example = "0114 555 9898") val number: String?,
+  @Schema(description = "Phone number", example = "0114 555 9898") val number: String,
 )
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyEmailDto(
-  @Schema(description = "Email address", example = "example@example.com") val address: String?,
+  @Schema(description = "Email address", example = "example@example.com") val address: String,
 )
 
 data class LegacyAgencyResponse(val updated: Boolean)
