@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
@@ -44,6 +45,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
       active = true,
       inactiveDate = null,
       cjitCode = "123456789",
+      accessibleAccess = null,
       areaCode = "52",
       regionCode = "YOHUM",
       geographicalAreaCode = null,
@@ -109,6 +111,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         active = true,
         inactiveDate = null,
         cjitCode = "123456789",
+        accessibleAccess = null,
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = null,
@@ -334,6 +337,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         active = true,
         inactiveDate = null,
         cjitCode = "123456789",
+        accessibleAccess = null,
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = null,
@@ -784,6 +788,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
       active = true,
       inactiveDate = null,
       cjitCode = "123456789",
+      accessibleAccess = null,
       areaCode = "52",
       regionCode = "YOHUM",
       geographicalAreaCode = "WYORKS",
@@ -1010,6 +1015,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         active = true,
         inactiveDate = null,
         cjitCode = "123456789",
+        accessibleAccess = null,
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
@@ -1271,6 +1277,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
       geographicalAreaCode = "WYORKS",
       payrollRegionCode = null,
       courtTypeCode = null,
+      accessibleAccess = LegacyAccessibleAccess.WHEELCHAIR_ACCESS,
       addresses = listOf(
         LegacyAgencyAddressDto(
           addressLine1 = "Probation House, 31 High Street",
@@ -1363,6 +1370,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
               assertThat(area?.description).isEqualTo("South Yorkshire")
               assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
               assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+              assertThat(accessibleAccess).isEqualTo(AccessibleAccess.WHEELCHAIR_ACCESS)
               assertThat(addresses).isEmpty()
               assertThat(phoneNumbers).isEmpty()
               assertThat(emailAddresses).isEmpty()
@@ -1473,6 +1481,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         active = true,
         inactiveDate = null,
         cjitCode = "123456789",
+        accessibleAccess = null,
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
