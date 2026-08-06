@@ -84,6 +84,7 @@ data class LegacyAgencyDto(
   @Schema(description = "Prisoner Payroll Region code", example = "HS") val payrollRegionCode: String?,
   @Schema(description = "Court Type code", example = "CC") val courtTypeCode: String?,
   @Schema(description = "Accessible Access", example = "ACCESSIBLE") val accessibleAccess: LegacyAccessibleAccess?,
+  @Schema(description = "Contact", example = "John Smith") val contact: String?,
   @Schema(description = "addresses") val addresses: List<LegacyAgencyAddressDto>,
   @Schema(description = "emailAddresses") val emailAddresses: List<LegacyAgencyEmailDto>,
   @Schema(description = "phoneNumbers") val phoneNumbers: List<LegacyAgencyPhoneDto>,
@@ -133,6 +134,7 @@ enum class LegacyAgencyType {
   YOT,
 }
 
+@Suppress("unused")
 enum class LegacyAccessibleAccess {
   NONE,
   ACCESSIBLE,
