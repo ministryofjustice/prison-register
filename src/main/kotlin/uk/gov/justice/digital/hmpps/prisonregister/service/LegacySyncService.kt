@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 
 @Service
-class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremiseService: ApprovedPremiseService, val policeCustodySuiteService: PoliceCustodySuiteService) {
+class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremiseService: ApprovedPremiseService, val policeCustodySuiteService: PoliceCustodySuiteService, val agencyService: AgencyService) {
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = false)
@@ -20,7 +20,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.createOrUpdateProbationOfficeFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.APPROVED_PREMISE -> approvedPremiseService.createOrUpdateApprovedPremiseFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.createOrUpdatePoliceCustodySuiteFromLegacyData(agencyId, agencyDto)
-    else -> throw IllegalArgumentException("Unsupported agency type: ${agencyDto.agencyType}")
+    else -> agencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
   }
 }
 
