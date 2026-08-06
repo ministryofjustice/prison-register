@@ -1514,6 +1514,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           cjitCode = "123456789",
           areaCode = "52",
           regionCode = "YOHUM",
+          accessibleAccess = AccessibleAccess.NONE,
           geographicalAreaCode = "WYORKS",
         ) {
           address(
@@ -1580,7 +1581,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .uri("/sync/agency/id/{agencyId}", "SHEFPB")
             .accept(MediaType.APPLICATION_JSON)
             .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-            .bodyValue(updateRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
+            .bodyValue(updateRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01"), accessibleAccess = LegacyAccessibleAccess.BY_ARRANGEMENT_ONLY))
             .exchange()
             .expectStatus().isOk.expectBodyResponse()
 
@@ -1595,6 +1596,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
               assertThat(active).isFalse
               assertThat(inactiveDate).isEqualTo(LocalDate.parse("2026-01-01"))
               assertThat(cjitCode).isEqualTo("123456789")
+              assertThat(accessibleAccess).isEqualTo(AccessibleAccess.BY_ARRANGEMENT_ONLY)
               assertThat(area?.description).isEqualTo("South Yorkshire")
               assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
               assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
