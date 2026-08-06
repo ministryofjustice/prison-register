@@ -83,6 +83,7 @@ data class LegacyAgencyDto(
   @Schema(description = "Geographic Region code", example = "WYORKS") val geographicalAreaCode: String?,
   @Schema(description = "Prisoner Payroll Region code", example = "HS") val payrollRegionCode: String?,
   @Schema(description = "Court Type code", example = "CC") val courtTypeCode: String?,
+  @Schema(description = "Accessible Access", example = "ACCESSIBLE") val accessibleAccess: LegacyAccessibleAccess?,
   @Schema(description = "addresses") val addresses: List<LegacyAgencyAddressDto>,
   @Schema(description = "emailAddresses") val emailAddresses: List<LegacyAgencyEmailDto>,
   @Schema(description = "phoneNumbers") val phoneNumbers: List<LegacyAgencyPhoneDto>,
@@ -130,4 +131,11 @@ enum class LegacyAgencyType {
   CHILDREN_SECURE_HOME,
   SECURE_TRAINING_CENTRE,
   YOT,
+}
+
+enum class LegacyAccessibleAccess {
+  NONE,
+  ACCESSIBLE,
+  BY_ARRANGEMENT_ONLY,
+  WHEELCHAIR_ACCESS,
 }

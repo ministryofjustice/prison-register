@@ -5,6 +5,7 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
@@ -89,7 +90,7 @@ class ProbationOfficeService(
     name = this.name,
     description = this.description,
     active = this.active,
-    accessibleAccess = null,
+    accessibleAccess = this.accessibleAccess?.let { AccessibleAccess.valueOf(it.name) },
     inactiveDate = this.inactiveDate,
     cjitCode = this.cjitCode,
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $probationOfficeId") },
@@ -103,6 +104,7 @@ class ProbationOfficeService(
     this.active = agencyDto.active
     this.inactiveDate = agencyDto.inactiveDate
     this.cjitCode = agencyDto.cjitCode
+    this.accessibleAccess = agencyDto.accessibleAccess?.let { AccessibleAccess.valueOf(it.name) }
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $probationOfficeId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $probationOfficeId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $probationOfficeId") }
