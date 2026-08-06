@@ -8,8 +8,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.NamedAttributeNode
-import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Transient
 import org.hibernate.Hibernate
@@ -18,15 +16,6 @@ import org.springframework.data.domain.Persistable
 import java.time.LocalDate
 
 @Entity
-@NamedEntityGraph(
-  name = "court-entity-graph",
-  attributeNodes = [
-    NamedAttributeNode("area"),
-    NamedAttributeNode("region"),
-    NamedAttributeNode("courtType"),
-    NamedAttributeNode("addresses"),
-  ],
-)
 data class Court(
   @Id
   @Column(unique = true)
