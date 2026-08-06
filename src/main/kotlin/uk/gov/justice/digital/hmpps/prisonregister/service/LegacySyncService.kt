@@ -12,11 +12,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 
 @Service
-class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService) {
+class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService) {
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = false)
     LegacyAgencyType.SECURE_HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = true)
+    LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.createOrUpdateProbationOfficeFromLegacyData(agencyId, agencyDto)
     else -> throw IllegalArgumentException("Unsupported agency type: ${agencyDto.agencyType}")
   }
 }
