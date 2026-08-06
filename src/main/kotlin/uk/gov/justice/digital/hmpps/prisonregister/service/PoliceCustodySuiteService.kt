@@ -1,10 +1,16 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import jakarta.persistence.EntityNotFoundException
+import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PoliceCustodySuiteDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
@@ -15,6 +21,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 @Transactional
 class PoliceCustodySuiteService(
   private val policeCustodySuiteRepository: PoliceCustodySuiteRepository,
+  private val areaRepository: AreaRepository,
+  private val regionRepository: RegionRepository,
 ) {
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let {
     PoliceCustodySuiteDto(
@@ -52,4 +60,49 @@ class PoliceCustodySuiteService(
       },
     )
   } ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+  fun createOrUpdatePoliceCustodySuiteFromLegacyData(policeCustodySuiteId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let { policeCustodySuite ->
+    policeCustodySuite.update(agencyDto)
+    if (policeCustodySuite.addresses.size == 1 && agencyDto.addresses.size == 1) {
+      policeCustodySuite.addresses[0].update(agencyDto.addresses[0])
+    } else {
+      policeCustodySuite.addresses.clear()
+      policeCustodySuite.addresses += agencyDto.addresses.map { it.toAgencyAddress() }
+    }
+
+    policeCustodySuite.phoneNumbers.updatePhoneNumberFrom(agencyDto.phoneNumbers)
+    policeCustodySuite.emailAddresses.updateEmailAddressFrom(agencyDto.emailAddresses)
+
+    LegacyAgencyResponse(updated = true)
+  } ?: let {
+    val policeCustodySuite = agencyDto.toPoliceCustodySuite(policeCustodySuiteId)
+    policeCustodySuite.addresses += agencyDto.addresses.map { it.toAgencyAddress() }
+    policeCustodySuite.phoneNumbers += agencyDto.phoneNumbers.map { it.toAgencyPhone() }
+    policeCustodySuite.emailAddresses += agencyDto.emailAddresses.map { it.toAgencyEmail() }
+    policeCustodySuiteRepository.saveAndFlush(policeCustodySuite)
+    LegacyAgencyResponse(updated = false)
+  }
+
+  private fun LegacyAgencyDto.toPoliceCustodySuite(policeCustodySuiteId: String) = PoliceCustodySuite(
+    policeCustodySuiteId = policeCustodySuiteId,
+    name = this.name,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $policeCustodySuiteId") },
+    region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $policeCustodySuiteId") },
+    geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $policeCustodySuiteId") },
+  )
+
+  private fun PoliceCustodySuite.update(agencyDto: LegacyAgencyDto) {
+    this.name = agencyDto.name
+    this.description = agencyDto.description
+    this.active = agencyDto.active
+    this.inactiveDate = agencyDto.inactiveDate
+    this.cjitCode = agencyDto.cjitCode
+    this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $policeCustodySuiteId") }
+    this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $policeCustodySuiteId") }
+    this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $policeCustodySuiteId") }
+  }
 }
