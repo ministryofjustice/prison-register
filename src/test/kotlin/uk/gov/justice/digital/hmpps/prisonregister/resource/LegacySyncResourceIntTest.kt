@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
@@ -205,7 +206,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           assertThat(response.updated).isFalse
 
           transactionHelper.runInTransaction {
-            val court = courtRepository.findByCourtId("SHEFMC")
+            val court = courtRepository.findByIdOrNull("SHEFMC")!!
 
             with(court) {
               assertThat(name).isEqualTo("Sheffield MC")
@@ -249,7 +250,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(addresses).hasSize(1)
               with(addresses[0]) {
                 assertThat(addressLine1).isEqualTo("Castle Street")
@@ -282,7 +283,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(emailAddresses).hasSize(1)
               with(emailAddresses[0]) {
                 assertThat(value).isEqualTo("test.sheffield.mc@justice.gov.uk")
@@ -311,7 +312,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(phoneNumbers).hasSize(2)
               with(phoneNumbers[0]) {
                 assertThat(value).isEqualTo("0114 555 5555")
@@ -455,17 +456,19 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
 
           assertThat(response.updated).isTrue
 
-          val court = courtRepository.findByCourtId("SHEFMC")
+          transactionHelper.runInTransaction {
+            val court = courtRepository.findByIdOrNull("SHEFMC")!!
 
-          with(court) {
-            assertThat(name).isEqualTo("Sheffield MC")
-            assertThat(description).isEqualTo("Sheffield Magistrates' Court")
-            assertThat(active).isFalse
-            assertThat(inactiveDate).isEqualTo("2026-01-01")
-            assertThat(cjitCode).isEqualTo("123456789")
-            assertThat(area?.description).isEqualTo("South Yorkshire")
-            assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
-            assertThat(courtType.description).isEqualTo("Magistrates Court")
+            with(court) {
+              assertThat(name).isEqualTo("Sheffield MC")
+              assertThat(description).isEqualTo("Sheffield Magistrates' Court")
+              assertThat(active).isFalse
+              assertThat(inactiveDate).isEqualTo("2026-01-01")
+              assertThat(cjitCode).isEqualTo("123456789")
+              assertThat(area?.description).isEqualTo("South Yorkshire")
+              assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
+              assertThat(courtType.description).isEqualTo("Magistrates Court")
+            }
           }
         }
 
@@ -495,7 +498,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(addresses).hasSize(1)
               with(addresses[0]) {
                 assertThat(addressLine1).isEqualTo("Castle Street")
@@ -512,7 +515,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove existing address`() {
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(addresses).hasSize(1)
             }
           }
@@ -532,7 +535,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(addresses).hasSize(0)
             }
           }
@@ -572,7 +575,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(addresses).hasSize(2)
               with(addresses.first { it.addressLine1 == "Front Entrance" }) {
                 assertThat(addressLine1).isEqualTo("Front Entrance")
@@ -613,7 +616,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(emailAddresses).hasSize(1)
               with(emailAddresses[0]) {
                 assertThat(value).isEqualTo("test.2.sheffield.mc@justice.gov.uk")
@@ -642,7 +645,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(emailAddresses).hasSize(2)
               with(emailAddresses[0]) {
                 assertThat(value).isEqualTo("test.sheffield.mc@justice.gov.uk")
@@ -657,7 +660,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove email addresses`() {
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(emailAddresses).hasSize(1)
             }
           }
@@ -677,7 +680,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(emailAddresses).hasSize(0)
             }
           }
@@ -686,7 +689,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove phone numbers`() {
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(phoneNumbers).hasSize(1)
             }
           }
@@ -706,7 +709,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(phoneNumbers).hasSize(0)
             }
           }
@@ -731,7 +734,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(phoneNumbers).hasSize(1)
               with(phoneNumbers[0]) {
                 assertThat(value).isEqualTo("0114 999 5555")
@@ -760,7 +763,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(courtRepository.findByCourtId("SHEFMC")) {
+            with(courtRepository.findByIdOrNull("SHEFMC")!!) {
               assertThat(phoneNumbers).hasSize(2)
               with(phoneNumbers[0]) {
                 assertThat(value).isEqualTo("0114 555 5555")
@@ -883,7 +886,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           assertThat(response.updated).isFalse
 
           transactionHelper.runInTransaction {
-            val hospital = hospitalRepository.findByHospitalId("BRDMR")
+            val hospital = hospitalRepository.findByIdOrNull("BRDMR")!!
 
             with(hospital) {
               assertThat(name).isEqualTo("Broadmoor Hospital")
@@ -921,7 +924,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           assertThat(response.updated).isFalse
 
           transactionHelper.runInTransaction {
-            val hospital = hospitalRepository.findByHospitalId("BRDMR")
+            val hospital = hospitalRepository.findByIdOrNull("BRDMR")!!
 
             with(hospital) {
               assertThat(highSecurity).isTrue
@@ -954,7 +957,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(hospitalRepository.findByHospitalId("BRDMR")) {
+            with(hospitalRepository.findByIdOrNull("BRDMR")!!) {
               assertThat(addresses).hasSize(1)
               with(addresses[0]) {
                 assertThat(addressLine1).isEqualTo("Crowthorne")
@@ -987,7 +990,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(hospitalRepository.findByHospitalId("BRDMR")) {
+            with(hospitalRepository.findByIdOrNull("BRDMR")!!) {
               assertThat(phoneNumbers).hasSize(2)
               with(phoneNumbers[0]) {
                 assertThat(value).isEqualTo("01344 773111")
@@ -1129,7 +1132,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           assertThat(response.updated).isTrue
 
           transactionHelper.runInTransaction {
-            val updated = hospitalRepository.findByHospitalId("BRDMR")
+            val updated = hospitalRepository.findByIdOrNull("BRDMR")!!
 
             with(updated) {
               assertThat(name).isEqualTo("Broadmoor Hospital")
@@ -1154,7 +1157,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            assertThat(hospitalRepository.findByHospitalId("BRDMR").highSecurity).isTrue
+            assertThat(hospitalRepository.findByIdOrNull("BRDMR")!!.highSecurity).isTrue
           }
         }
 
@@ -1183,7 +1186,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(hospitalRepository.findByHospitalId("BRDMR")) {
+            with(hospitalRepository.findByIdOrNull("BRDMR")!!) {
               assertThat(addresses).hasSize(1)
               with(addresses[0]) {
                 assertThat(addressLine1).isEqualTo("Crowthorne")
@@ -1196,7 +1199,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove existing hospital address`() {
           transactionHelper.runInTransaction {
-            assertThat(hospitalRepository.findByHospitalId("BRDMR").addresses).hasSize(1)
+            assertThat(hospitalRepository.findByIdOrNull("BRDMR")!!.addresses).hasSize(1)
           }
 
           webTestClient.post()
@@ -1208,7 +1211,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            assertThat(hospitalRepository.findByHospitalId("BRDMR").addresses).isEmpty()
+            assertThat(hospitalRepository.findByIdOrNull("BRDMR")!!.addresses).isEmpty()
           }
         }
 
@@ -1228,7 +1231,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(hospitalRepository.findByHospitalId("BRDMR")) {
+            with(hospitalRepository.findByIdOrNull("BRDMR")!!) {
               assertThat(phoneNumbers).hasSize(1)
               assertThat(phoneNumbers[0].value).isEqualTo("01344 999000")
             }
@@ -1238,7 +1241,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove hospital phone numbers`() {
           transactionHelper.runInTransaction {
-            assertThat(hospitalRepository.findByHospitalId("BRDMR").phoneNumbers).hasSize(1)
+            assertThat(hospitalRepository.findByIdOrNull("BRDMR")!!.phoneNumbers).hasSize(1)
           }
 
           webTestClient.post()
@@ -1250,7 +1253,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            assertThat(hospitalRepository.findByHospitalId("BRDMR").phoneNumbers).isEmpty()
+            assertThat(hospitalRepository.findByIdOrNull("BRDMR")!!.phoneNumbers).isEmpty()
           }
         }
       }
@@ -1352,7 +1355,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           assertThat(response.updated).isFalse
 
           transactionHelper.runInTransaction {
-            val probationOffice = probationOfficeRepository.findByProbationOfficeId("SHEFPB")
+            val probationOffice = probationOfficeRepository.findByIdOrNull("SHEFPB")!!
 
             with(probationOffice) {
               assertThat(name).isEqualTo("Sheffield Probation Office")
@@ -1396,7 +1399,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(probationOfficeRepository.findByProbationOfficeId("SHEFPB")) {
+            with(probationOfficeRepository.findByIdOrNull("SHEFPB")!!) {
               assertThat(addresses).hasSize(1)
               with(addresses[0]) {
                 assertThat(addressLine1).isEqualTo("Probation House, 31 High Street")
@@ -1427,7 +1430,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(probationOfficeRepository.findByProbationOfficeId("SHEFPB")) {
+            with(probationOfficeRepository.findByIdOrNull("SHEFPB")!!) {
               assertThat(emailAddresses).hasSize(1)
               assertThat(emailAddresses[0].value).isEqualTo("sheffield.probation@justice.gov.uk")
             }
@@ -1454,7 +1457,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(probationOfficeRepository.findByProbationOfficeId("SHEFPB")) {
+            with(probationOfficeRepository.findByIdOrNull("SHEFPB")!!) {
               assertThat(phoneNumbers).hasSize(2)
               assertThat(phoneNumbers[0].value).isEqualTo("0114 555 7777")
               assertThat(phoneNumbers[1].value).isEqualTo("0114 999 7777")
@@ -1578,7 +1581,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
           assertThat(response.updated).isTrue
 
           transactionHelper.runInTransaction {
-            val updated = probationOfficeRepository.findByProbationOfficeId("SHEFPB")
+            val updated = probationOfficeRepository.findByIdOrNull("SHEFPB")!!
 
             with(updated) {
               assertThat(name).isEqualTo("Sheffield Probation Office")
@@ -1619,7 +1622,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(probationOfficeRepository.findByProbationOfficeId("SHEFPB")) {
+            with(probationOfficeRepository.findByIdOrNull("SHEFPB")!!) {
               assertThat(addresses).hasSize(1)
               with(addresses[0]) {
                 assertThat(addressLine1).isEqualTo("Probation House, 31 High Street")
@@ -1632,7 +1635,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove existing address`() {
           transactionHelper.runInTransaction {
-            assertThat(probationOfficeRepository.findByProbationOfficeId("SHEFPB").addresses).hasSize(1)
+            assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")!!.addresses).hasSize(1)
           }
 
           webTestClient.post()
@@ -1644,7 +1647,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            assertThat(probationOfficeRepository.findByProbationOfficeId("SHEFPB").addresses).isEmpty()
+            assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")!!.addresses).isEmpty()
           }
         }
 
@@ -1665,7 +1668,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(probationOfficeRepository.findByProbationOfficeId("SHEFPB")) {
+            with(probationOfficeRepository.findByIdOrNull("SHEFPB")!!) {
               assertThat(emailAddresses).hasSize(1)
               assertThat(emailAddresses[0].value).isEqualTo("new.sheffield.probation@justice.gov.uk")
             }
@@ -1675,7 +1678,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove email addresses`() {
           transactionHelper.runInTransaction {
-            assertThat(probationOfficeRepository.findByProbationOfficeId("SHEFPB").emailAddresses).hasSize(1)
+            assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")!!.emailAddresses).hasSize(1)
           }
 
           webTestClient.post()
@@ -1687,7 +1690,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            assertThat(probationOfficeRepository.findByProbationOfficeId("SHEFPB").emailAddresses).isEmpty()
+            assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")!!.emailAddresses).isEmpty()
           }
         }
 
@@ -1708,7 +1711,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            with(probationOfficeRepository.findByProbationOfficeId("SHEFPB")) {
+            with(probationOfficeRepository.findByIdOrNull("SHEFPB")!!) {
               assertThat(phoneNumbers).hasSize(1)
               assertThat(phoneNumbers[0].value).isEqualTo("0114 999 7777")
             }
@@ -1718,7 +1721,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will remove phone numbers`() {
           transactionHelper.runInTransaction {
-            assertThat(probationOfficeRepository.findByProbationOfficeId("SHEFPB").phoneNumbers).hasSize(1)
+            assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")!!.phoneNumbers).hasSize(1)
           }
 
           webTestClient.post()
@@ -1730,7 +1733,7 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           transactionHelper.runInTransaction {
-            assertThat(probationOfficeRepository.findByProbationOfficeId("SHEFPB").phoneNumbers).isEmpty()
+            assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")!!.phoneNumbers).isEmpty()
           }
         }
       }
