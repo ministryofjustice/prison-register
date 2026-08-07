@@ -5,6 +5,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
@@ -73,6 +75,20 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
       emailAddresses = listOf(),
       phoneNumbers = listOf(),
     )
+
+    @JvmStatic
+    fun legacyAgencyTypes() = LegacyAgencyType.entries
+      .filterNot {
+        it.name in setOf(
+          "PRISON",
+          "COURT",
+          "HOSPITAL",
+          "SECURE_HOSPITAL",
+          "APPROVED_PREMISE",
+          "POLICE_CUSTODY_SUITE",
+          "PROBATION_OFFICE",
+        )
+      }
   }
 
   @AfterEach
@@ -2890,6 +2906,24 @@ class LegacySyncResourceIntTest : IntegrationTestBase() {
               assertThat(emailAddresses).isEmpty()
             }
           }
+        }
+
+        @ParameterizedTest
+        @MethodSource("uk.gov.justice.digital.hmpps.prisonregister.resource.LegacySyncResourceIntTest#legacyAgencyTypes")
+        fun `can create all legacy agency types`(agencyType: LegacyAgencyType) {
+          val response: LegacyAgencyResponse = webTestClient.post()
+            .uri("/sync/agency/id/{agencyId}", "AGY123")
+            .accept(MediaType.APPLICATION_JSON)
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+            .bodyValue(agencyRequest.copy(agencyType = agencyType))
+            .exchange()
+            .expectStatus().isOk.expectBodyResponse()
+
+          assertThat(response.updated).isFalse
+
+          val agency = agencyRepository.findByIdOrNull("AGY123")
+          assertThat(agency).isNotNull
+          assertThat(agency!!.agencyType.name).isEqualTo(agencyType.name)
         }
 
         @Test
