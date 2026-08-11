@@ -26,9 +26,6 @@ import java.time.LocalDate
 @RequestMapping("/legacy", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
 class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: LegacySyncService) {
-  companion object {
-    val LOG: Logger = LoggerFactory.getLogger(this::class.java)
-  }
 
   @Operation(
     summary = "Creates or updates an agency of any type",
