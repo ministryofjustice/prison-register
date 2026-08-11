@@ -2,12 +2,15 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
+import com.microsoft.applicationinsights.TelemetryClient
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
@@ -22,12 +25,16 @@ import java.time.LocalDate
 
 @RestController
 @Validated
-@RequestMapping("/sync", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/legacy", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
-class LegacySyncResource(val legacySyncService: LegacySyncService) {
+class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: LegacySyncService) {
+  companion object {
+    val LOG: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   @Operation(
     summary = "Creates or updates an agency of any type",
-    description = "Used for synchronising and migrating data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -57,7 +64,7 @@ class LegacySyncResource(val legacySyncService: LegacySyncService) {
       ),
     ],
   )
-  @PostMapping("/agency/id/{agencyId}")
+  @PostMapping("/sync/agency/id/{agencyId}")
   fun createOrUpdateAgency(
     @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
     @PathVariable
@@ -66,7 +73,63 @@ class LegacySyncResource(val legacySyncService: LegacySyncService) {
     @RequestBody @Valid
     @Suppress("unused")
     agencyDto: LegacyAgencyDto,
-  ): LegacyAgencyResponse = legacySyncService.createOrUpdateAgency(agencyId, agencyDto)
+  ): LegacyAgencyResponse = legacySyncService.createOrUpdateAgency(agencyId, agencyDto).also {
+    // TODO raise appropriate domain events
+    if (it.updated) {
+      telemetry.trackEvent("legacy-sync-agency-updated", mapOf("agencyId" to agencyId), null)
+    } else {
+      telemetry.trackEvent("legacy-sync-agency-created", mapOf("agencyId" to agencyId), null)
+    }
+  }
+
+  @Operation(
+    summary = "Migrates an agency of any type",
+    description = "Used for migrating data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = LegacyAgencyDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Agency created or updated",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad Information request to create or update agency",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to add or update agency",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/migrate/agency/id/{agencyId}")
+  fun migrateAgency(
+    @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Agency Id must be between 3 and 6 characters")
+    agencyId: String,
+    @RequestBody @Valid
+    @Suppress("unused")
+    agencyDto: LegacyAgencyDto,
+  ): LegacyAgencyResponse = legacySyncService.createOrUpdateAgency(agencyId, agencyDto).also {
+    if (it.updated) {
+      telemetry.trackEvent("legacy-migration-agency-updated", mapOf("agencyId" to agencyId), null)
+    } else {
+      telemetry.trackEvent("legacy-migration-agency-created", mapOf("agencyId" to agencyId), null)
+    }
+  }
 }
 
 @Schema(description = "Agency Information")
