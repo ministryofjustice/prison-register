@@ -140,6 +140,7 @@ data class LegacyAgencyDto(
   @Schema(description = "Region Code", example = "YOHUM") val regionCode: String?,
   @Schema(description = "Geographic Region code", example = "WYORKS") val geographicalAreaCode: String?,
   @Schema(description = "Prisoner Payroll Region code", example = "HS") val payrollRegionCode: String?,
+  @Schema(description = "Local Authority code", example = "00CG") val localAuthorityCode: String?,
   @Schema(description = "Court Type code", example = "CC") val courtTypeCode: String?,
   @Schema(description = "Accessible Access", example = "ACCESSIBLE") val accessibleAccess: LegacyAccessibleAccess?,
   @Schema(description = "Contact", example = "John Smith") val contact: String?,

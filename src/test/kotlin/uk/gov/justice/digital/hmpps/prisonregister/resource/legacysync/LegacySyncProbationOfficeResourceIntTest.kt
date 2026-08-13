@@ -57,6 +57,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = null,
+        localAuthorityCode = "00CG",
         courtTypeCode = null,
         accessibleAccess = LegacyAccessibleAccess.WHEELCHAIR_ACCESS,
         addresses = listOf(
@@ -268,6 +269,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
+          localAuthorityCode = "00CG",
           courtTypeCode = null,
           addresses = listOf(
             LegacyAgencyAddressDto(

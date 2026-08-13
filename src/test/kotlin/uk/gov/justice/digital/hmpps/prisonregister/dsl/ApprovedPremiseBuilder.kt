@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
@@ -20,6 +21,7 @@ annotation class ApprovedPremiseDslMarker
 class ApprovedPremiseBuilder(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
   private val approvedPremiseRepository: ApprovedPremiseRepository,
   private val addressBuilder: AgencyAddressBuilder,
   private val phoneBuilder: PhoneNumberBuilder,
@@ -39,6 +41,7 @@ class ApprovedPremiseBuilder(
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
+    localAuthorityCode: String?,
   ): ApprovedPremise = ApprovedPremise(
     approvedPremiseId = approvedPremiseId,
     name = name,
@@ -51,6 +54,7 @@ class ApprovedPremiseBuilder(
     area = areaCode?.let { areaRepository.findByIdOrNull(it) },
     region = regionCode?.let { regionRepository.findByIdOrNull(it) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
+    localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     approvedPremiseRepository.saveAndFlush(it)
   }.also {

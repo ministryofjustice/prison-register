@@ -57,6 +57,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = "HS",
+        localAuthorityCode = "00CG",
         courtTypeCode = null,
         addresses = listOf(
           LegacyAgencyAddressDto(
@@ -285,6 +286,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = "HS",
+          localAuthorityCode = "00CG",
           courtTypeCode = null,
           addresses = listOf(
             LegacyAgencyAddressDto(

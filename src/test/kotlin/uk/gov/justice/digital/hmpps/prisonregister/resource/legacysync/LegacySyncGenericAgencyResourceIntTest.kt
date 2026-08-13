@@ -57,6 +57,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
       regionCode = "YOHUM",
       geographicalAreaCode = null,
       payrollRegionCode = "HS",
+      localAuthorityCode = "00CG",
       courtTypeCode = "MC",
       addresses = listOf(),
       emailAddresses = listOf(),
@@ -136,6 +137,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = "HS",
         courtTypeCode = null,
+        localAuthorityCode = "00CG",
         accessibleAccess = null,
         contact = null,
         addresses = listOf(
@@ -416,6 +418,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               country = "England",
             ),
           ),
+          localAuthorityCode = "00CG",
           emailAddresses = listOf(LegacyAgencyEmailDto(address = "sheffield.crc@justice.gov.uk")),
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1234")),
         )
@@ -796,6 +799,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           ),
           emailAddresses = listOf(LegacyAgencyEmailDto(address = "sheffield.crc@justice.gov.uk")),
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1234")),
+          localAuthorityCode = "00CG",
         )
 
         @Test
@@ -840,6 +844,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           ),
           emailAddresses = listOf(LegacyAgencyEmailDto(address = "sheffield.crc@justice.gov.uk")),
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1234")),
+          localAuthorityCode = "00CG",
         )
 
         @BeforeEach

@@ -56,6 +56,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
         payrollRegionCode = null,
         courtTypeCode = null,
         accessibleAccess = null,
@@ -116,6 +117,19 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFAP")
           }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(approvedPremiseRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFAP")
+          }
         }
 
         @Nested
@@ -152,6 +166,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
                 assertThat(emailAddresses).isEmpty()
@@ -266,6 +281,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           contact = "Gemma Smith",
           geographicalAreaCode = "WYORKS",
+          localAuthorityCode = "00CG",
           payrollRegionCode = null,
           courtTypeCode = null,
           accessibleAccess = null,
@@ -298,6 +314,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
             areaCode = "52",
             regionCode = "YOHUM",
             geographicalAreaCode = "WYORKS",
+            localAuthorityCode = "00CF",
           ) {
             address(
               addressLine1 = "14 West Bar",
@@ -352,6 +369,19 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFAP")
           }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(updateRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFAP")
+          }
         }
 
         @Nested
@@ -363,7 +393,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-              .bodyValue(updateRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
+              .bodyValue(updateRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01"), localAuthorityCode = "00CG"))
               .exchange()
               .expectStatus().isOk.expectBodyResponse()
 
@@ -382,6 +412,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
               }
             }
           }
