@@ -136,7 +136,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         assertThat(hospitalDto.area?.description).isEqualTo("South Yorkshire")
         assertThat(hospitalDto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(hospitalDto.geographicalArea?.description).isEqualTo("West Yorkshire")
-        assertThat(hospitalDto.localAuthority?.description).isEqualTo("Sheffied City Council")
+        assertThat(hospitalDto.localAuthority?.description).isEqualTo("Sheffield City Council")
         assertThat(hospitalDto.payrollRegion?.description).isEqualTo("High Security")
       }
 

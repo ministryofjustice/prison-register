@@ -142,7 +142,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(probationOfficeDto.area?.description).isEqualTo("South Yorkshire")
         assertThat(probationOfficeDto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(probationOfficeDto.geographicalArea?.description).isEqualTo("West Yorkshire")
-        assertThat(probationOfficeDto.localAuthority?.description).isEqualTo("Sheffied City Council")
+        assertThat(probationOfficeDto.localAuthority?.description).isEqualTo("Sheffield City Council")
       }
 
       @Test

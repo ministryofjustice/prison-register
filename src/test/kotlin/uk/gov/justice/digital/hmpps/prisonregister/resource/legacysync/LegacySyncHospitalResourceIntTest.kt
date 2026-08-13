@@ -178,7 +178,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
-                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
                 assertThat(payrollRegion?.description).isEqualTo("High Security")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
@@ -427,7 +427,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
                 assertThat(highSecurity).isFalse
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
-                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
               }
             }
           }

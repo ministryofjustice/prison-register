@@ -139,7 +139,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         assertThat(dto.area?.description).isEqualTo("South Yorkshire")
         assertThat(dto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(dto.geographicalArea?.description).isEqualTo("West Yorkshire")
-        assertThat(dto.localAuthority?.description).isEqualTo("Sheffied City Council")
+        assertThat(dto.localAuthority?.description).isEqualTo("Sheffield City Council")
       }
 
       @Test

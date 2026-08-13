@@ -165,7 +165,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
-                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
                 assertThat(emailAddresses).isEmpty()
@@ -396,7 +396,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
-                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
               }
             }
           }
