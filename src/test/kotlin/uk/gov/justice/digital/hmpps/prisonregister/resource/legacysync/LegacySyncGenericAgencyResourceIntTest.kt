@@ -286,7 +286,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(payrollRegion?.description).isEqualTo("High Security")
-                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
                 assertThat(emailAddresses).isEmpty()
@@ -577,7 +577,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(payrollRegion?.description).isEqualTo("High Security")
-                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
               }
             }
           }
@@ -830,7 +830,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           verify(telemetry).trackEvent("legacy-migration-agency-created", mapOf("agencyId" to "SFCRC"), null)
 
           transactionHelper.runInTransaction {
-            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffied City Council")
+            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
           }
         }
       }
@@ -908,7 +908,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           verify(telemetry).trackEvent("legacy-migration-agency-updated", mapOf("agencyId" to "SFCRC"), null)
 
           transactionHelper.runInTransaction {
-            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffied City Council")
+            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
           }
         }
       }
