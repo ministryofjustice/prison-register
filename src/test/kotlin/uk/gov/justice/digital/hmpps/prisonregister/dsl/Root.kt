@@ -38,6 +38,7 @@ class Root(
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
+    localAuthorityCode: String? = null,
     dsl: AgencyBuilder.() -> Unit,
   ): Agency = agencyBuilder.build(
     agencyId = agencyId,
@@ -52,6 +53,7 @@ class Root(
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
     payrollRegionCode = payrollRegionCode,
+    localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(agencyBuilder)
   }
@@ -91,6 +93,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    localAuthorityCode: String? = null,
     dsl: ProbationOfficeBuilder.() -> Unit,
   ): ProbationOffice = probationOfficeBuilder.build(
     probationOfficeId = probationOfficeId,
@@ -103,6 +106,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(probationOfficeBuilder)
   }
@@ -148,6 +152,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    localAuthorityCode: String? = null,
     dsl: PoliceCustodySuiteBuilder.() -> Unit,
   ): PoliceCustodySuite = policeCustodySuiteBuilder.build(
     policeCustodySuiteId = policeCustodySuiteId,
@@ -159,6 +164,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(policeCustodySuiteBuilder)
   }
@@ -175,6 +181,7 @@ class Root(
     regionCode: String? = null,
     payrollRegionCode: String? = null,
     geographicalAreaCode: String? = null,
+    localAuthorityCode: String? = null,
     dsl: HospitalBuilder.() -> Unit,
   ): Hospital = hospitalBuilder.build(
     hospitalId = hospitalId,
@@ -188,6 +195,7 @@ class Root(
     geographicalAreaCode = geographicalAreaCode,
     regionCode = regionCode,
     payrollRegionCode = payrollRegionCode,
+    localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(hospitalBuilder)
   }

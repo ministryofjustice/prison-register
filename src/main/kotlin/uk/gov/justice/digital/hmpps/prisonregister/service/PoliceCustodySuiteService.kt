@@ -6,6 +6,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
@@ -23,6 +24,7 @@ class PoliceCustodySuiteService(
   private val policeCustodySuiteRepository: PoliceCustodySuiteRepository,
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let {
     PoliceCustodySuiteDto(
@@ -35,6 +37,7 @@ class PoliceCustodySuiteService(
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
       region = it.region?.let { region -> CodeDescription(region.code, region.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
           id = address.id,
@@ -93,6 +96,7 @@ class PoliceCustodySuiteService(
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $policeCustodySuiteId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $policeCustodySuiteId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $policeCustodySuiteId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $policeCustodySuiteId") },
   )
 
   private fun PoliceCustodySuite.update(agencyDto: LegacyAgencyDto) {
@@ -104,5 +108,6 @@ class PoliceCustodySuiteService(
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $policeCustodySuiteId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $policeCustodySuiteId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $policeCustodySuiteId") }
+    this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $policeCustodySuiteId") }
   }
 }

@@ -129,6 +129,19 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency BRDMR")
           }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "BRDMR")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(hospitalRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency BRDMR")
+          }
         }
 
         @Nested
@@ -165,6 +178,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
                 assertThat(payrollRegion?.description).isEqualTo("High Security")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
@@ -318,6 +332,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
             regionCode = "YOHUM",
             geographicalAreaCode = "WYORKS",
             payrollRegionCode = "HS",
+            localAuthorityCode = "00CF",
           ) {
             address(
               addressLine1 = "Crowthorne",
@@ -412,6 +427,7 @@ class LegacySyncHospitalResourceIntTest : IntegrationTestBase() {
                 assertThat(highSecurity).isFalse
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
               }
             }
           }

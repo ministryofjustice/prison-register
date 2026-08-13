@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
@@ -19,6 +20,7 @@ annotation class PoliceCustodySuiteDslMarker
 class PoliceCustodySuiteBuilder(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
   private val policeCustodySuiteRepository: PoliceCustodySuiteRepository,
   private val addressBuilder: AgencyAddressBuilder,
   private val phoneBuilder: PhoneNumberBuilder,
@@ -36,6 +38,7 @@ class PoliceCustodySuiteBuilder(
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
+    localAuthorityCode: String?,
   ): PoliceCustodySuite = PoliceCustodySuite(
     policeCustodySuiteId = policeCustodySuiteId,
     name = name,
@@ -46,6 +49,7 @@ class PoliceCustodySuiteBuilder(
     area = areaCode?.let { areaRepository.findByIdOrNull(it) },
     region = regionCode?.let { regionRepository.findByIdOrNull(it) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
+    localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     policeCustodySuiteRepository.saveAndFlush(it)
   }.also {

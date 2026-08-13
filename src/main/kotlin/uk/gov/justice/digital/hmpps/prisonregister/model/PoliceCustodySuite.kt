@@ -33,6 +33,9 @@ data class PoliceCustodySuite(
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "geographical_area")
   var geographicalArea: Area?,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "local_authority")
+  var localAuthority: LocalAuthority?,
 
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
   @JoinTable(
