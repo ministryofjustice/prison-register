@@ -45,6 +45,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = "NEY",
+        localAuthorityCode = "00CG",
       ) {
         address(
           addressLine1 = "Crown Court, 1 Bank Street",
@@ -146,6 +147,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         assertThat(agencyDto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(agencyDto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(agencyDto.payrollRegion?.description).isEqualTo("North East & Yorkshire")
+        assertThat(agencyDto.localAuthority?.description).isEqualTo("Sheffied City Council")
       }
 
       @Test

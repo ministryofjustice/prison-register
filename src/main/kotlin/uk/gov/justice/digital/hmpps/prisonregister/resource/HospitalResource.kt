@@ -55,6 +55,7 @@ data class HospitalDto(
   @Schema(description = "Area") val area: CodeDescription?,
   @Schema(description = "Region") val region: CodeDescription?,
   @Schema(description = "Geographic Region") val geographicalArea: CodeDescription?,
+  @Schema(description = "Local Authority") val localAuthority: CodeDescription?,
   @Schema(description = "Prisoner Payroll Region") val payrollRegion: CodeDescription?,
   @Schema(description = "Is high security restricted hospital") val highSecurity: Boolean,
   @Schema(description = "addresses") val addresses: List<AgencyAddressDto>,

@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyDto
@@ -27,6 +28,7 @@ class AgencyService(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun findById(agencyId: String): AgencyDto = agencyRepository.findByIdOrNull(agencyId)?.let {
     AgencyDto(
@@ -42,6 +44,7 @@ class AgencyService(
       region = it.region?.let { region -> CodeDescription(region.code, region.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
       payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
+      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
           id = address.id,
@@ -103,6 +106,7 @@ class AgencyService(
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $agencyId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $agencyId") },
     payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $agencyId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $agencyId") },
   )
 
   private fun Agency.update(agencyDto: LegacyAgencyDto) {
@@ -117,5 +121,6 @@ class AgencyService(
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $agencyId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $agencyId") }
     this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $agencyId") }
+    this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $agencyId") }
   }
 }

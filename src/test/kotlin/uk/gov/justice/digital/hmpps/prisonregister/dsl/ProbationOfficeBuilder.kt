@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
@@ -20,6 +21,7 @@ annotation class ProbationOfficeDslMarker
 class ProbationOfficeBuilder(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
   private val probationOfficeRepository: ProbationOfficeRepository,
   private val addressBuilder: AgencyAddressBuilder,
   private val phoneBuilder: PhoneNumberBuilder,
@@ -38,6 +40,7 @@ class ProbationOfficeBuilder(
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
+    localAuthorityCode: String?,
   ): ProbationOffice = ProbationOffice(
     probationOfficeId = probationOfficeId,
     name = name,
@@ -49,6 +52,7 @@ class ProbationOfficeBuilder(
     area = areaCode?.let { areaRepository.findByIdOrNull(it) },
     region = regionCode?.let { regionRepository.findByIdOrNull(it) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
+    localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     probationOfficeRepository.saveAndFlush(it)
   }.also {

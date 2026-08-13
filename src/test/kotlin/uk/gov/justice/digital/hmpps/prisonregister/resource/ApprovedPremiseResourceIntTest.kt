@@ -43,6 +43,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
       ) {
         address(
           addressLine1 = "Approved Premise House, 31 High Street",
@@ -143,6 +144,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(dto.area?.description).isEqualTo("South Yorkshire")
         assertThat(dto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(dto.geographicalArea?.description).isEqualTo("West Yorkshire")
+        assertThat(dto.localAuthority?.description).isEqualTo("Sheffied City Council")
       }
 
       @Test

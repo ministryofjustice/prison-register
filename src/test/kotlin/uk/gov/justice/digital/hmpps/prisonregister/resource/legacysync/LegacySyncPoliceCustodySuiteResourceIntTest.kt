@@ -56,6 +56,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = null,
+        localAuthorityCode = "00CG",
         courtTypeCode = null,
         accessibleAccess = null,
         contact = null,
@@ -116,6 +117,19 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFPS")
           }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFPS")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(policeCustodySuiteRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFPS")
+          }
         }
 
         @Nested
@@ -151,6 +165,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
                 assertThat(emailAddresses).isEmpty()
@@ -265,6 +280,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
+          localAuthorityCode = "00CG",
           courtTypeCode = null,
           accessibleAccess = null,
           contact = null,
@@ -296,6 +312,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
             areaCode = "52",
             regionCode = "YOHUM",
             geographicalAreaCode = "WYORKS",
+            localAuthorityCode = "00CF",
           ) {
             address(
               addressLine1 = "101 Snig Hill",
@@ -379,6 +396,7 @@ class LegacySyncPoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
               }
             }
           }

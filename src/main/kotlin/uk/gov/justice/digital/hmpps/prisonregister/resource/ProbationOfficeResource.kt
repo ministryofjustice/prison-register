@@ -57,6 +57,7 @@ data class ProbationOfficeDto(
   @Schema(description = "Area") val area: CodeDescription?,
   @Schema(description = "Region") val region: CodeDescription?,
   @Schema(description = "Geographical Area") val geographicalArea: CodeDescription?,
+  @Schema(description = "Local Authority") val localAuthority: CodeDescription?,
   @Schema(description = "addresses") val addresses: List<AgencyAddressDto>,
   @Schema(description = "emailAddresses") val emailAddresses: List<AgencyEmailDto>,
   @Schema(description = "phoneNumbers") val phoneNumbers: List<AgencyPhoneDto>,

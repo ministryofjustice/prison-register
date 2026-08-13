@@ -57,6 +57,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
       regionCode = "YOHUM",
       geographicalAreaCode = null,
       payrollRegionCode = "HS",
+      localAuthorityCode = "00CG",
       courtTypeCode = "MC",
       addresses = listOf(),
       emailAddresses = listOf(),
@@ -136,6 +137,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = "HS",
         courtTypeCode = null,
+        localAuthorityCode = "00CG",
         accessibleAccess = null,
         contact = null,
         addresses = listOf(
@@ -221,6 +223,19 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SFCRC")
           }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SFCRC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SFCRC")
+          }
         }
 
         @Nested
@@ -271,6 +286,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(payrollRegion?.description).isEqualTo("High Security")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
                 assertThat(emailAddresses).isEmpty()
@@ -403,6 +419,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = "HS",
+          localAuthorityCode = "00CG",
           courtTypeCode = null,
           accessibleAccess = null,
           contact = null,
@@ -560,6 +577,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(payrollRegion?.description).isEqualTo("High Security")
+                assertThat(localAuthority?.description).isEqualTo("Sheffied City Council")
               }
             }
           }
@@ -796,6 +814,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           ),
           emailAddresses = listOf(LegacyAgencyEmailDto(address = "sheffield.crc@justice.gov.uk")),
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1234")),
+          localAuthorityCode = "00CG",
         )
 
         @Test
@@ -809,6 +828,10 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           verify(telemetry).trackEvent("legacy-migration-agency-created", mapOf("agencyId" to "SFCRC"), null)
+
+          transactionHelper.runInTransaction {
+            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffied City Council")
+          }
         }
       }
 
@@ -840,6 +863,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           ),
           emailAddresses = listOf(LegacyAgencyEmailDto(address = "sheffield.crc@justice.gov.uk")),
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1234")),
+          localAuthorityCode = "00CG",
         )
 
         @BeforeEach
@@ -856,6 +880,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
             regionCode = "YOHUM",
             geographicalAreaCode = "WYORKS",
             payrollRegionCode = "HS",
+            localAuthorityCode = "00CF",
           ) {
             address(
               addressLine1 = "1 Charter Row",
@@ -881,6 +906,10 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
             .expectStatus().isOk
 
           verify(telemetry).trackEvent("legacy-migration-agency-updated", mapOf("agencyId" to "SFCRC"), null)
+
+          transactionHelper.runInTransaction {
+            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffied City Council")
+          }
         }
       }
     }

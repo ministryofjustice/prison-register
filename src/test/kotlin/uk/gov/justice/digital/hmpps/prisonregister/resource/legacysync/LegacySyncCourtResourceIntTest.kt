@@ -60,6 +60,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = null,
           payrollRegionCode = null,
+          localAuthorityCode = null,
           courtTypeCode = "MC",
           addresses = listOf(
             LegacyAgencyAddressDto(
@@ -287,6 +288,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = null,
           payrollRegionCode = null,
+          localAuthorityCode = null,
           courtTypeCode = "MC",
           addresses = listOf(
             LegacyAgencyAddressDto(

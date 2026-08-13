@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
@@ -20,6 +21,7 @@ class HospitalBuilder(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
   private val hospitalRepository: HospitalRepository,
   private val addressBuilder: AgencyAddressBuilder,
   private val phoneBuilder: PhoneNumberBuilder,
@@ -37,6 +39,7 @@ class HospitalBuilder(
     geographicalAreaCode: String?,
     regionCode: String?,
     payrollRegionCode: String?,
+    localAuthorityCode: String?,
   ): Hospital = Hospital(
     hospitalId = hospitalId,
     name = name,
@@ -49,6 +52,7 @@ class HospitalBuilder(
     region = regionCode?.let { regionRepository.findByIdOrNull(it) },
     payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
+    localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     hospitalRepository.saveAndFlush(it)
   }.also {

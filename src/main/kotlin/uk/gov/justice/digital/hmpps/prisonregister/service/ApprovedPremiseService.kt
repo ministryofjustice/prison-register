@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.ApprovedPremiseDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
@@ -24,6 +25,7 @@ class ApprovedPremiseService(
   private val approvedPremiseRepository: ApprovedPremiseRepository,
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun findById(approvedPremiseId: String): ApprovedPremiseDto = approvedPremiseRepository.findByIdOrNull(approvedPremiseId)?.let {
     ApprovedPremiseDto(
@@ -38,6 +40,7 @@ class ApprovedPremiseService(
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
       region = it.region?.let { region -> CodeDescription(region.code, region.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
           id = address.id,
@@ -97,6 +100,7 @@ class ApprovedPremiseService(
     cjitCode = this.cjitCode,
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $approvedPremiseId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $approvedPremiseId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $approvedPremiseId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $approvedPremiseId") },
   )
 
@@ -111,5 +115,6 @@ class ApprovedPremiseService(
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $approvedPremiseId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $approvedPremiseId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $approvedPremiseId") }
+    this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $approvedPremiseId") }
   }
 }

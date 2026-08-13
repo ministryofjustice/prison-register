@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.HospitalDto
@@ -24,6 +25,7 @@ class HospitalService(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.let {
     HospitalDto(
@@ -37,6 +39,7 @@ class HospitalService(
       region = it.region?.let { area -> CodeDescription(area.code, area.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
       payrollRegion = it.payrollRegion?.let { area -> CodeDescription(area.code, area.description) },
+      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
       highSecurity = it.highSecurity,
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
@@ -90,6 +93,7 @@ class HospitalService(
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $hospitalId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $hospitalId") },
     payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $hospitalId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $hospitalId") },
   )
 
   private fun Hospital.update(agencyDto: LegacyAgencyDto, highSecurity: Boolean) {
@@ -103,5 +107,6 @@ class HospitalService(
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $hospitalId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $hospitalId") }
     this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $hospitalId") }
+    this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $hospitalId") }
   }
 }

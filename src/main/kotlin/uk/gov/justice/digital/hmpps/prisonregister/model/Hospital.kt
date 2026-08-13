@@ -39,6 +39,9 @@ data class Hospital(
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "payroll_region")
   var payrollRegion: PayrollRegion?,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "local_authority")
+  var localAuthority: LocalAuthority?,
 
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
   @JoinTable(
