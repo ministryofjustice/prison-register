@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.SubareaRepository
 import java.time.LocalDate
 
 @DslMarker
@@ -20,6 +21,7 @@ annotation class ProbationOfficeDslMarker
 @Component
 class ProbationOfficeBuilder(
   private val areaRepository: AreaRepository,
+  private val subareaRepository: SubareaRepository,
   private val regionRepository: RegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val probationOfficeRepository: ProbationOfficeRepository,
@@ -38,6 +40,7 @@ class ProbationOfficeBuilder(
     inactiveDate: LocalDate?,
     cjitCode: String?,
     areaCode: String?,
+    subareaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
     localAuthorityCode: String?,
@@ -50,6 +53,7 @@ class ProbationOfficeBuilder(
     inactiveDate = inactiveDate,
     cjitCode = cjitCode,
     area = areaCode?.let { areaRepository.findByIdOrNull(it) },
+    subarea = subareaCode?.let { subareaRepository.findByIdOrNull(it) },
     region = regionCode?.let { regionRepository.findByIdOrNull(it) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
     localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },

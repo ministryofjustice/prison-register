@@ -54,6 +54,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
         contact = null,
         cjitCode = "123456789",
         areaCode = "52",
+        subareaCode = "SHEFF",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         payrollRegionCode = null,
@@ -90,6 +91,19 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
               .expectStatus().isBadRequest.expectBodyResponse()
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency SHEFPB")
+          }
+
+          @Test
+          fun `subarea code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFPB")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(probationOfficeRequest.copy(subareaCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ subarea code not found for agency SHEFPB")
           }
 
           @Test
@@ -163,6 +177,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
                 assertThat(inactiveDate).isNull()
                 assertThat(cjitCode).isEqualTo("123456789")
                 assertThat(area?.description).isEqualTo("South Yorkshire")
+                assertThat(subarea?.description).isEqualTo("Sheffield")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(accessibleAccess).isEqualTo(AccessibleAccess.WHEELCHAIR_ACCESS)
@@ -280,6 +295,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
           contact = null,
           accessibleAccess = null,
           areaCode = "52",
+          subareaCode = "SHEFF",
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
@@ -314,6 +330,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
             regionCode = "YOHUM",
             accessibleAccess = AccessibleAccess.NONE,
             geographicalAreaCode = "WYORKS",
+            subareaCode = "ROTH",
             localAuthorityCode = "00CF",
           ) {
             address(
@@ -342,6 +359,19 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
               .expectStatus().isBadRequest.expectBodyResponse()
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency SHEFPB")
+          }
+
+          @Test
+          fun `subarea code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFPB")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(updateRequest.copy(subareaCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ subarea code not found for agency SHEFPB")
           }
 
           @Test
@@ -403,6 +433,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
                 assertThat(cjitCode).isEqualTo("123456789")
                 assertThat(accessibleAccess).isEqualTo(AccessibleAccess.BY_ARRANGEMENT_ONLY)
                 assertThat(area?.description).isEqualTo("South Yorkshire")
+                assertThat(subarea?.description).isEqualTo("Sheffield")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
