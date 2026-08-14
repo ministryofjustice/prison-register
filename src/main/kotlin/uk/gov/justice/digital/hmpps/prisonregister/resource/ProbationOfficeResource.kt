@@ -55,6 +55,7 @@ data class ProbationOfficeDto(
   @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
   @Schema(description = "Area") val area: CodeDescription?,
+  @Schema(description = "Subarea") val subarea: CodeDescription?,
   @Schema(description = "Region") val region: CodeDescription?,
   @Schema(description = "Geographical Area") val geographicalArea: CodeDescription?,
   @Schema(description = "Local Authority") val localAuthority: CodeDescription?,

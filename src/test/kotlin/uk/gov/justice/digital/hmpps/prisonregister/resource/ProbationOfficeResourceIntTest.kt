@@ -40,6 +40,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         inactiveDate = LocalDate.parse("2020-01-02"),
         cjitCode = "C00SH00",
         areaCode = "52",
+        subareaCode = "SHEFF",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         localAuthorityCode = "00CG",
@@ -143,6 +144,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(probationOfficeDto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(probationOfficeDto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(probationOfficeDto.localAuthority?.description).isEqualTo("Sheffield City Council")
+        assertThat(probationOfficeDto.subarea?.description).isEqualTo("Sheffield")
       }
 
       @Test

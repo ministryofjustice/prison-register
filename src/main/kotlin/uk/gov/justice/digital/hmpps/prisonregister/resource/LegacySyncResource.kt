@@ -137,6 +137,7 @@ data class LegacyAgencyDto(
   @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
   @Schema(description = "Area Code", example = "NW") val areaCode: String?,
+  @Schema(description = "Subarea Code", example = "SHEFF") val subareaCode: String? = null,
   @Schema(description = "Region Code", example = "YOHUM") val regionCode: String?,
   @Schema(description = "Geographic Region code", example = "WYORKS") val geographicalAreaCode: String?,
   @Schema(description = "Prisoner Payroll Region code", example = "HS") val payrollRegionCode: String?,

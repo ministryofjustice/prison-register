@@ -34,6 +34,9 @@ data class ProbationOffice(
   @JoinColumn(name = "area")
   var area: Area?,
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "subarea")
+  var subarea: Subarea?,
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "region")
   var region: Region?,
   @ManyToOne(fetch = FetchType.LAZY)
