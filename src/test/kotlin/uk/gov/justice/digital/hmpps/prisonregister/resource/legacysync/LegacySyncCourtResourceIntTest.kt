@@ -246,7 +246,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
-          fun `will create phone numbers`() {
+          fun `will create phone numbers, including duplicates`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
               .accept(MediaType.APPLICATION_JSON)
@@ -257,6 +257,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                   addresses = emptyList(),
                   phoneNumbers = listOf(
                     LegacyAgencyPhoneDto(number = "0114 555 5555"),
+                    LegacyAgencyPhoneDto(number = "0114 555 5555"),
                     LegacyAgencyPhoneDto(number = "0114 999 5555"),
                   ),
                 ),
@@ -266,11 +267,14 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
 
             transactionHelper.runInTransaction {
               with(courtRepository.findByIdOrNull("SHEFMC")!!) {
-                assertThat(phoneNumbers).hasSize(2)
+                assertThat(phoneNumbers).hasSize(3)
                 with(phoneNumbers[0]) {
                   assertThat(value).isEqualTo("0114 555 5555")
                 }
                 with(phoneNumbers[1]) {
+                  assertThat(value).isEqualTo("0114 555 5555")
+                }
+                with(phoneNumbers[2]) {
                   assertThat(value).isEqualTo("0114 999 5555")
                 }
               }
@@ -385,15 +389,21 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
 
           @Test
           fun `court type code missing`() {
-            val errorResponse: ErrorResponse = webTestClient.post()
+            webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(courtRequest.copy(courtTypeCode = null))
               .exchange()
-              .expectStatus().isBadRequest.expectBodyResponse()
+              .expectStatus().isOk
 
-            assertThat(errorResponse.developerMessage).isEqualTo("null court type not found for agency SHEFMC")
+            transactionHelper.runInTransaction {
+              val court = courtRepository.findByIdOrNull("SHEFMC")!!
+
+              with(court) {
+                assertThat(courtType.description).isEqualTo("Unknown")
+              }
+            }
           }
         }
 
