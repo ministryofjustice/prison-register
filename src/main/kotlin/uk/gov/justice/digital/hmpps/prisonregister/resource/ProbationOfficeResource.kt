@@ -39,7 +39,7 @@ class ProbationOfficeResource(private val probationOfficeService: ProbationOffic
   fun getProbationOfficeFromId(
     @Schema(description = "Probation Office ID", example = "SHEFPB", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Probation Office Id must be between 3 and 6 letters")
+    @Size(min = 2, max = 6, message = "Probation Office Id must be between 2 and 6 letters")
     probationOfficeId: String,
   ): ProbationOfficeDto = probationOfficeService.findById(probationOfficeId)
 }

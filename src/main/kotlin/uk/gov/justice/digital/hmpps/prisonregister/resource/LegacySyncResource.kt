@@ -63,7 +63,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   fun createOrUpdateAgency(
     @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Agency Id must be between 3 and 6 characters")
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
     agencyId: String,
     @RequestBody @Valid
     @Suppress("unused")
@@ -113,7 +113,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   fun migrateAgency(
     @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Agency Id must be between 3 and 6 characters")
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
     agencyId: String,
     @RequestBody @Valid
     @Suppress("unused")

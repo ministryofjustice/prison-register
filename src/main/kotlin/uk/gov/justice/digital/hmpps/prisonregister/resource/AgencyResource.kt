@@ -39,7 +39,7 @@ class AgencyResource(private val agencyService: AgencyService) {
   fun getAgencyFromId(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Agency Id must be between 3 and 6 letters")
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
     agencyId: String,
   ): AgencyDto = agencyService.findById(agencyId)
 }

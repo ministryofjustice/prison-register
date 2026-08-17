@@ -38,7 +38,7 @@ class HospitalResource(private val hospitalService: HospitalService) {
   fun getHospitalFromId(
     @Schema(description = "Hospital ID", example = "SHEFCC", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Hospital Id must be between 3 and 6 letters")
+    @Size(min = 2, max = 6, message = "Hospital Id must be between 2 and 6 letters")
     hospitalId: String,
   ): HospitalDto = hospitalService.findById(hospitalId)
 }

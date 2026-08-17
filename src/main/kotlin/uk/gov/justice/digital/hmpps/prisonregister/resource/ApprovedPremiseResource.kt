@@ -39,7 +39,7 @@ class ApprovedPremiseResource(private val approvedPremiseService: ApprovedPremis
   fun getApprovedPremiseFromId(
     @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Approved Premise Id must be between 3 and 6 letters")
+    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
     approvedPremiseId: String,
   ): ApprovedPremiseDto = approvedPremiseService.findById(approvedPremiseId)
 }

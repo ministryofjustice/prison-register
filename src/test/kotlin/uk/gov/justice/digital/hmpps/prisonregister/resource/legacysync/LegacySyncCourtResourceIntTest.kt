@@ -118,16 +118,22 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
-          fun `court type code missing`() {
-            val errorResponse: ErrorResponse = webTestClient.post()
+          fun `court type code missing is mapped to unknown`() {
+            webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(courtRequest.copy(courtTypeCode = null))
               .exchange()
-              .expectStatus().isBadRequest.expectBodyResponse()
+              .expectStatus().isOk
 
-            assertThat(errorResponse.developerMessage).isEqualTo("null court type not found for agency SHEFMC")
+            transactionHelper.runInTransaction {
+              val court = courtRepository.findByIdOrNull("SHEFMC")!!
+
+              with(court) {
+                assertThat(courtType.description).isEqualTo("Unknown")
+              }
+            }
           }
         }
 
