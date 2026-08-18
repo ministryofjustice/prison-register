@@ -27,6 +27,10 @@ class ApprovedPremiseService(
   private val regionRepository: RegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
+  fun deleteAll() {
+    approvedPremiseRepository.deleteAll()
+  }
+
   fun findById(approvedPremiseId: String): ApprovedPremiseDto = approvedPremiseRepository.findByIdOrNull(approvedPremiseId)?.let {
     ApprovedPremiseDto(
       approvedPremiseId = it.approvedPremiseId,

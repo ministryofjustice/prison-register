@@ -26,6 +26,10 @@ class CourtService(
   private val regionRepository: RegionRepository,
   private val courtTypeRepository: CourtTypeRepository,
 ) {
+  fun deleteAll() {
+    courtRepository.deleteAll()
+  }
+
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.let {
     CourtDto(
       courtId = it.courtId,

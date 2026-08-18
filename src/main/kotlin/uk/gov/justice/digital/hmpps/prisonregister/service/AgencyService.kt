@@ -30,6 +30,10 @@ class AgencyService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
+  fun deleteAll() {
+    agencyRepository.deleteAll()
+  }
+
   fun findById(agencyId: String): AgencyDto = agencyRepository.findByIdOrNull(agencyId)?.let {
     AgencyDto(
       agencyId = it.agencyId,

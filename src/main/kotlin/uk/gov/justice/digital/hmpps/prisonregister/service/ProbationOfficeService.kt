@@ -29,6 +29,10 @@ class ProbationOfficeService(
   private val regionRepository: RegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
+  fun deleteAll() {
+    probationOfficeRepository.deleteAll()
+  }
+
   fun findById(probationOfficeId: String): ProbationOfficeDto = probationOfficeRepository.findByIdOrNull(probationOfficeId)?.let {
     ProbationOfficeDto(
       probationOfficeId = it.probationOfficeId,
