@@ -30,6 +30,8 @@ class CourtService(
     courtRepository.deleteAll()
   }
 
+  fun getAllIds(): List<String> = courtRepository.findAll().map { it.courtId }
+
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.let {
     CourtDto(
       courtId = it.courtId,

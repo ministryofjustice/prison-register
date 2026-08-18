@@ -30,6 +30,8 @@ class PoliceCustodySuiteService(
     policeCustodySuiteRepository.deleteAll()
   }
 
+  fun getAllIds(): List<String> = policeCustodySuiteRepository.findAll().map { it.policeCustodySuiteId }
+
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let {
     PoliceCustodySuiteDto(
       policeCustodySuiteId = it.policeCustodySuiteId,

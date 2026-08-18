@@ -31,6 +31,8 @@ class HospitalService(
     hospitalRepository.deleteAll()
   }
 
+  fun getAllIds(): List<String> = hospitalRepository.findAll().map { it.hospitalId }
+
   fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.let {
     HospitalDto(
       hospitalId = it.hospitalId,

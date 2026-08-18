@@ -31,6 +31,8 @@ class ApprovedPremiseService(
     approvedPremiseRepository.deleteAll()
   }
 
+  fun getAllIds(): List<String> = approvedPremiseRepository.findAll().map { it.approvedPremiseId }
+
   fun findById(approvedPremiseId: String): ApprovedPremiseDto = approvedPremiseRepository.findByIdOrNull(approvedPremiseId)?.let {
     ApprovedPremiseDto(
       approvedPremiseId = it.approvedPremiseId,
