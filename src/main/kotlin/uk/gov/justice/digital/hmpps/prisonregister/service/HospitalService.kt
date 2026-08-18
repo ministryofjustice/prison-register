@@ -12,8 +12,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.HospitalDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
@@ -66,6 +69,28 @@ class HospitalService(
       },
     )
   } ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+
+  fun tryFindById(agencyId: String): LegacyAgencyDto? = hospitalRepository.findByIdOrNull(agencyId)?.let { hospital ->
+    LegacyAgencyDto(
+      agencyType = if (hospital.highSecurity) LegacyAgencyType.SECURE_HOSPITAL else LegacyAgencyType.HOSPITAL,
+      name = hospital.name,
+      description = hospital.description,
+      active = hospital.active,
+      inactiveDate = hospital.inactiveDate,
+      cjitCode = hospital.cjitCode,
+      areaCode = hospital.area?.code,
+      regionCode = hospital.region?.code,
+      geographicalAreaCode = hospital.geographicalArea?.code,
+      payrollRegionCode = hospital.payrollRegion?.code,
+      localAuthorityCode = hospital.localAuthority?.code,
+      courtTypeCode = null,
+      accessibleAccess = null,
+      contact = null,
+      addresses = hospital.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = emptyList(),
+      phoneNumbers = hospital.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+    )
+  }
 
   fun createOrUpdateHospitalFromLegacyData(hospitalId: String, agencyDto: LegacyAgencyDto, highSecurity: Boolean): LegacyAgencyResponse = hospitalRepository.findByIdOrNull(hospitalId)?.let { hospital ->
     hospital.update(agencyDto, highSecurity)

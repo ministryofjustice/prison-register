@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
@@ -50,6 +51,14 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
 
     return AgencyIdsResponse(ids)
   }
+
+  fun getDetails(agencyId: String): LegacyAgencyDto = courtService.tryFindById(agencyId)
+    ?: hospitalService.tryFindById(agencyId)
+    ?: probationOfficeService.tryFindById(agencyId)
+    ?: approvedPremiseService.tryFindById(agencyId)
+    ?: policeCustodySuiteService.tryFindById(agencyId)
+    ?: agencyService.tryFindById(agencyId)
+    ?: throw EntityNotFoundException("Agency $agencyId not found")
 }
 
 fun LegacyAgencyAddressDto.toAgencyAddress() = AgencyAddress(

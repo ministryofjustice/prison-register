@@ -12,8 +12,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SubareaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.ProbationOfficeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
@@ -74,6 +79,29 @@ class ProbationOfficeService(
       },
     )
   } ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
+
+  fun tryFindById(agencyId: String): LegacyAgencyDto? = probationOfficeRepository.findByIdOrNull(agencyId)?.let { po ->
+    LegacyAgencyDto(
+      agencyType = LegacyAgencyType.PROBATION_OFFICE,
+      name = po.name,
+      description = po.description,
+      active = po.active,
+      inactiveDate = po.inactiveDate,
+      cjitCode = po.cjitCode,
+      areaCode = po.area?.code,
+      subareaCode = po.subarea?.code,
+      regionCode = po.region?.code,
+      geographicalAreaCode = po.geographicalArea?.code,
+      payrollRegionCode = null,
+      localAuthorityCode = po.localAuthority?.code,
+      courtTypeCode = null,
+      accessibleAccess = po.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
+      contact = null,
+      addresses = po.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = po.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
+      phoneNumbers = po.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+    )
+  }
 
   fun createOrUpdateProbationOfficeFromLegacyData(probationOfficeId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = probationOfficeRepository.findByIdOrNull(probationOfficeId)?.let { probationOffice ->
     probationOffice.update(agencyDto)
