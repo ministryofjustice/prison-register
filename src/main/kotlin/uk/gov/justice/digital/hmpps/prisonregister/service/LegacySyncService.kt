@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyId
+import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyIdsResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
@@ -32,6 +34,21 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     approvedPremiseService.deleteAll()
     policeCustodySuiteService.deleteAll()
     agencyService.deleteAll()
+  }
+
+  fun getAllIds(): AgencyIdsResponse {
+    val ids = (
+      courtService.getAllIds() +
+        hospitalService.getAllIds() +
+        probationOfficeService.getAllIds() +
+        approvedPremiseService.getAllIds() +
+        policeCustodySuiteService.getAllIds() +
+        agencyService.getAllIds()
+      )
+      .sorted()
+      .map { AgencyId(it) }
+
+    return AgencyIdsResponse(ids)
   }
 }
 

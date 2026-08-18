@@ -33,6 +33,8 @@ class ProbationOfficeService(
     probationOfficeRepository.deleteAll()
   }
 
+  fun getAllIds(): List<String> = probationOfficeRepository.findAll().map { it.probationOfficeId }
+
   fun findById(probationOfficeId: String): ProbationOfficeDto = probationOfficeRepository.findByIdOrNull(probationOfficeId)?.let {
     ProbationOfficeDto(
       probationOfficeId = it.probationOfficeId,

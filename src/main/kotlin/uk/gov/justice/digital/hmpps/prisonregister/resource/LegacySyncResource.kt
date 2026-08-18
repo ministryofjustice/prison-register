@@ -14,6 +14,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -130,6 +131,29 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   }
 
   @Operation(
+    summary = "Returns IDs of all non-prison agencies for reconciliation",
+    description = "Returns the IDs of all courts, hospitals, probation offices, approved premises, police custody suites, and generic agencies. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Agency IDs returned",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to retrieve agency IDs",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/reconciliation/ids/all")
+  fun getAllAgencyIds(): AgencyIdsResponse = legacySyncService.getAllIds()
+
+  @Operation(
     summary = "Deletes all non-prison agency data",
     description = "Deletes all synchronized agency data except prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
@@ -230,3 +254,6 @@ enum class LegacyAccessibleAccess {
   BY_ARRANGEMENT_ONLY,
   WHEELCHAIR_ACCESS,
 }
+
+data class AgencyIdsResponse(val agencyIds: List<AgencyId>)
+data class AgencyId(val agencyId: String)

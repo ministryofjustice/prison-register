@@ -34,6 +34,8 @@ class AgencyService(
     agencyRepository.deleteAll()
   }
 
+  fun getAllIds(): List<String> = agencyRepository.findAll().map { it.agencyId }
+
   fun findById(agencyId: String): AgencyDto = agencyRepository.findByIdOrNull(agencyId)?.let {
     AgencyDto(
       agencyId = it.agencyId,
