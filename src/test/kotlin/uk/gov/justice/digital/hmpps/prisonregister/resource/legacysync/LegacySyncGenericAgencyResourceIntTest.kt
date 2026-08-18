@@ -820,17 +820,17 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
         @Test
         fun `will track telemetry`() {
           webTestClient.post()
-            .uri("/legacy/migrate/agency/id/{agencyId}", "SFCRC")
+            .uri("/legacy/migrate/agency/id/{agencyId}", "S1")
             .accept(MediaType.APPLICATION_JSON)
             .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
             .bodyValue(createRequest)
             .exchange()
             .expectStatus().isOk
 
-          verify(telemetry).trackEvent("legacy-migration-agency-created", mapOf("agencyId" to "SFCRC"), null)
+          verify(telemetry).trackEvent("legacy-migration-agency-created", mapOf("agencyId" to "S1"), null)
 
           transactionHelper.runInTransaction {
-            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
+            assertThat(agencyRepository.findByIdOrNull("S1")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
           }
         }
       }

@@ -39,7 +39,7 @@ class PoliceCustodySuiteResource(private val policeCustodySuiteService: PoliceCu
   fun getPoliceCustodySuiteFromId(
     @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
     @PathVariable
-    @Size(min = 3, max = 6, message = "Police Custody Suite Id must be between 3 and 6 letters")
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
     policeCustodySuiteId: String,
   ): PoliceCustodySuiteDto = policeCustodySuiteService.findById(policeCustodySuiteId)
 }

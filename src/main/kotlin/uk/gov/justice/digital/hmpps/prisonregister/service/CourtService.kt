@@ -95,7 +95,7 @@ class CourtService(
     cjitCode = this.cjitCode,
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") },
-    courtType = this.courtTypeCode?.let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
+    courtType = (this.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
   )
 
   private fun Court.update(agencyDto: LegacyAgencyDto) {
@@ -106,6 +106,6 @@ class CourtService(
     this.cjitCode = agencyDto.cjitCode
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") }
-    this.courtType = agencyDto.courtTypeCode?.let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
+    this.courtType = (agencyDto.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
   }
 }
