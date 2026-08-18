@@ -154,6 +154,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   fun getAllAgencyIds(): AgencyIdsResponse = legacySyncService.getAllIds()
 
   @Operation(
+    summary = "Deletes all non-prison agency data",
     description = "Deletes all synchronized agency data except prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
