@@ -181,7 +181,9 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   @GetMapping("/reconciliation/{agencyId}")
   fun getAgencyDetails(
     @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
-    @PathVariable agencyId: String,
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+    agencyId: String,
   ): LegacyAgencyDto = legacySyncService.getDetails(agencyId)
 
   @Operation(
