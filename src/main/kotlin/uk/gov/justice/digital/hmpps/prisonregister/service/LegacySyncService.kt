@@ -44,10 +44,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
         approvedPremiseService.getAllIds() +
         policeCustodySuiteService.getAllIds() +
         agencyService.getAllIds()
-      )
-      .sorted()
-      .map { AgencyId(it) }
-
+      ).map { AgencyId(it) }
     return AgencyIdsResponse(ids)
   }
 }

@@ -130,6 +130,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
     }
   }
 
+
   @Operation(
     summary = "Returns IDs of all non-prison agencies for reconciliation",
     description = "Returns the IDs of all courts, hospitals, probation offices, approved premises, police custody suites, and generic agencies. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
@@ -154,7 +155,6 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   fun getAllAgencyIds(): AgencyIdsResponse = legacySyncService.getAllIds()
 
   @Operation(
-    summary = "Deletes all non-prison agency data",
     description = "Deletes all synchronized agency data except prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
