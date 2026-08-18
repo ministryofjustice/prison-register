@@ -14,8 +14,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -76,6 +81,28 @@ class AgencyService(
       },
     )
   } ?: throw EntityNotFoundException("Agency $agencyId not found")
+
+  fun tryFindById(agencyId: String): LegacyAgencyDto? = agencyRepository.findByIdOrNull(agencyId)?.let { agency ->
+    LegacyAgencyDto(
+      agencyType = LegacyAgencyType.valueOf(agency.agencyType.name),
+      name = agency.name,
+      description = agency.description,
+      active = agency.active,
+      inactiveDate = agency.inactiveDate,
+      cjitCode = agency.cjitCode,
+      areaCode = agency.area?.code,
+      regionCode = agency.region?.code,
+      geographicalAreaCode = agency.geographicalArea?.code,
+      payrollRegionCode = agency.payrollRegion?.code,
+      localAuthorityCode = agency.localAuthority?.code,
+      courtTypeCode = null,
+      accessibleAccess = agency.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
+      contact = null,
+      addresses = agency.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = agency.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
+      phoneNumbers = agency.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+    )
+  }
 
   fun createOrUpdateAgencyFromLegacyData(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = agencyRepository.findByIdOrNull(agencyId)?.let { agency ->
     agency.update(agencyDto)

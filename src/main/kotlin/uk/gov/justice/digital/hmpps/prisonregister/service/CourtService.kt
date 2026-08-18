@@ -11,8 +11,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -68,6 +72,28 @@ class CourtService(
       },
     )
   } ?: throw EntityNotFoundException("Court $courtId not found")
+
+  fun tryFindById(agencyId: String): LegacyAgencyDto? = courtRepository.findByIdOrNull(agencyId)?.let { court ->
+    LegacyAgencyDto(
+      agencyType = LegacyAgencyType.COURT,
+      name = court.name,
+      description = court.description,
+      active = court.active,
+      inactiveDate = court.inactiveDate,
+      cjitCode = court.cjitCode,
+      areaCode = court.area?.code,
+      regionCode = court.region?.code,
+      geographicalAreaCode = null,
+      payrollRegionCode = null,
+      localAuthorityCode = null,
+      courtTypeCode = court.courtType.code,
+      accessibleAccess = null,
+      contact = null,
+      addresses = court.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = court.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
+      phoneNumbers = court.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+    )
+  }
 
   fun createOrUpdateCourtFromLegacyData(courtId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = courtRepository.findByIdOrNull(courtId)?.let { court ->
     court.update(agencyDto)

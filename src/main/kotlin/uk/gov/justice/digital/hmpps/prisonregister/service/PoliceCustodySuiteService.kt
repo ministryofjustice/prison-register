@@ -10,8 +10,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PoliceCustodySuiteDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
@@ -69,6 +73,28 @@ class PoliceCustodySuiteService(
       },
     )
   } ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+  fun tryFindById(agencyId: String): LegacyAgencyDto? = policeCustodySuiteRepository.findByIdOrNull(agencyId)?.let { pcs ->
+    LegacyAgencyDto(
+      agencyType = LegacyAgencyType.POLICE_CUSTODY_SUITE,
+      name = pcs.name,
+      description = pcs.description,
+      active = pcs.active,
+      inactiveDate = pcs.inactiveDate,
+      cjitCode = pcs.cjitCode,
+      areaCode = pcs.area?.code,
+      regionCode = pcs.region?.code,
+      geographicalAreaCode = pcs.geographicalArea?.code,
+      payrollRegionCode = null,
+      localAuthorityCode = pcs.localAuthority?.code,
+      courtTypeCode = null,
+      accessibleAccess = null,
+      contact = null,
+      addresses = pcs.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = pcs.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
+      phoneNumbers = pcs.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+    )
+  }
 
   fun createOrUpdatePoliceCustodySuiteFromLegacyData(policeCustodySuiteId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let { policeCustodySuite ->
     policeCustodySuite.update(agencyDto)

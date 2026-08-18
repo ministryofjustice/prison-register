@@ -12,8 +12,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.ApprovedPremiseDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -72,6 +77,28 @@ class ApprovedPremiseService(
       },
     )
   } ?: throw EntityNotFoundException("Approved premise $approvedPremiseId not found")
+
+  fun tryFindById(agencyId: String): LegacyAgencyDto? = approvedPremiseRepository.findByIdOrNull(agencyId)?.let { ap ->
+    LegacyAgencyDto(
+      agencyType = LegacyAgencyType.APPROVED_PREMISE,
+      name = ap.name,
+      description = ap.description,
+      active = ap.active,
+      inactiveDate = ap.inactiveDate,
+      cjitCode = ap.cjitCode,
+      areaCode = ap.area?.code,
+      regionCode = ap.region?.code,
+      geographicalAreaCode = ap.geographicalArea?.code,
+      payrollRegionCode = null,
+      localAuthorityCode = ap.localAuthority?.code,
+      courtTypeCode = null,
+      accessibleAccess = ap.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
+      contact = ap.contact,
+      addresses = ap.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = ap.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
+      phoneNumbers = ap.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+    )
+  }
 
   fun createOrUpdateApprovedPremiseFromLegacyData(approvedPremiseId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = approvedPremiseRepository.findByIdOrNull(approvedPremiseId)?.let { approvedPremise ->
     approvedPremise.update(agencyDto)
