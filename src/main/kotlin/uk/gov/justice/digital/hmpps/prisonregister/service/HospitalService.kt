@@ -27,6 +27,10 @@ class HospitalService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
+  fun deleteAll() {
+    hospitalRepository.deleteAll()
+  }
+
   fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.let {
     HospitalDto(
       hospitalId = it.hospitalId,

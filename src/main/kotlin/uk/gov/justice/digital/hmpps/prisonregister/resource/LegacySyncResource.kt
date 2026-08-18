@@ -9,13 +9,16 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.service.LegacySyncService
@@ -124,6 +127,32 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
     } else {
       telemetry.trackEvent("legacy-migration-agency-created", mapOf("agencyId" to agencyId), null)
     }
+  }
+
+  @Operation(
+    summary = "Deletes all non-prison agency data",
+    description = "Deletes all synchronized agency data except prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Agencies deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete agencies",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/admin/sync/agency/all")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteAllAgencies() {
+    legacySyncService.deleteAll()
   }
 }
 

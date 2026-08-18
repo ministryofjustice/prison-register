@@ -26,6 +26,10 @@ class PoliceCustodySuiteService(
   private val regionRepository: RegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
+  fun deleteAll() {
+    policeCustodySuiteRepository.deleteAll()
+  }
+
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let {
     PoliceCustodySuiteDto(
       policeCustodySuiteId = it.policeCustodySuiteId,

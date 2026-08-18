@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 
 @Service
+@Transactional
 class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremiseService: ApprovedPremiseService, val policeCustodySuiteService: PoliceCustodySuiteService, val agencyService: AgencyService) {
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
@@ -21,6 +23,15 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     LegacyAgencyType.APPROVED_PREMISE -> approvedPremiseService.createOrUpdateApprovedPremiseFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.createOrUpdatePoliceCustodySuiteFromLegacyData(agencyId, agencyDto)
     else -> agencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
+  }
+
+  fun deleteAll() {
+    courtService.deleteAll()
+    hospitalService.deleteAll()
+    probationOfficeService.deleteAll()
+    approvedPremiseService.deleteAll()
+    policeCustodySuiteService.deleteAll()
+    agencyService.deleteAll()
   }
 }
 
