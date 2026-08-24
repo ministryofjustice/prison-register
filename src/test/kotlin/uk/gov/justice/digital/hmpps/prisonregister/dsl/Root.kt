@@ -68,6 +68,7 @@ class Root(
     cjitCode: String? = null,
     areaCode: String? = null,
     regionCode: String? = null,
+    geographicalAreaCode: String? = null,
     dsl: CourtBuilder.() -> Unit,
   ): Court = courtBuilder.build(
     courtId = courtId,
@@ -79,6 +80,7 @@ class Root(
     cjitCode = cjitCode,
     areaCode = areaCode,
     regionCode = regionCode,
+    geographicalAreaCode = geographicalAreaCode,
   ).also {
     dsl.invoke(courtBuilder)
   }

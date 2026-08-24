@@ -46,6 +46,7 @@ class CourtService(
       cjitCode = it.cjitCode,
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
       region = it.region?.let { area -> CodeDescription(area.code, area.description) },
+      geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
       courtType = CodeDescription(it.courtType.code, it.courtType.description),
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
@@ -83,7 +84,7 @@ class CourtService(
       cjitCode = court.cjitCode,
       areaCode = court.area?.code,
       regionCode = court.region?.code,
-      geographicalAreaCode = null,
+      geographicalAreaCode = court.geographicalArea?.code,
       payrollRegionCode = null,
       localAuthorityCode = null,
       courtTypeCode = court.courtType.code,
@@ -127,6 +128,7 @@ class CourtService(
     cjitCode = this.cjitCode,
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") },
+    geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $courtId") },
     courtType = (this.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
   )
 
@@ -138,6 +140,7 @@ class CourtService(
     this.cjitCode = agencyDto.cjitCode
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") }
+    this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $courtId") }
     this.courtType = (agencyDto.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
   }
 }
