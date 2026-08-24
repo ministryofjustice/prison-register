@@ -24,6 +24,7 @@ data class ProbationOffice(
   val probationOfficeId: String,
   var name: String,
   var description: String?,
+  var contact: String?,
   var active: Boolean,
   @Enumerated(EnumType.STRING)
   var accessibleAccess: AccessibleAccess?,
