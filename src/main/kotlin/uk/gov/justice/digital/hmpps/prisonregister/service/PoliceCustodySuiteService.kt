@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
@@ -28,6 +29,7 @@ class PoliceCustodySuiteService(
   private val policeCustodySuiteRepository: PoliceCustodySuiteRepository,
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun deleteAll() {
@@ -47,6 +49,7 @@ class PoliceCustodySuiteService(
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
       region = it.region?.let { region -> CodeDescription(region.code, region.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+      payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
       localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
@@ -85,7 +88,7 @@ class PoliceCustodySuiteService(
       areaCode = pcs.area?.code,
       regionCode = pcs.region?.code,
       geographicalAreaCode = pcs.geographicalArea?.code,
-      payrollRegionCode = null,
+      payrollRegionCode = pcs.payrollRegion?.code,
       localAuthorityCode = pcs.localAuthority?.code,
       courtTypeCode = null,
       accessibleAccess = null,
@@ -128,6 +131,7 @@ class PoliceCustodySuiteService(
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $policeCustodySuiteId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $policeCustodySuiteId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $policeCustodySuiteId") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $policeCustodySuiteId") },
     localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $policeCustodySuiteId") },
   )
 
@@ -140,6 +144,7 @@ class PoliceCustodySuiteService(
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $policeCustodySuiteId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $policeCustodySuiteId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $policeCustodySuiteId") }
+    this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $policeCustodySuiteId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $policeCustodySuiteId") }
   }
 }

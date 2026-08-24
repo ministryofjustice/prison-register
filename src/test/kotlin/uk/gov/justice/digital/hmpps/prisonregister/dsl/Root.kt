@@ -156,6 +156,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: PoliceCustodySuiteBuilder.() -> Unit,
   ): PoliceCustodySuite = policeCustodySuiteBuilder.build(
@@ -168,6 +169,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(policeCustodySuiteBuilder)
