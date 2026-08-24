@@ -88,6 +88,7 @@ class Root(
     probationOfficeId: String,
     name: String,
     description: String = name,
+    contact: String? = null,
     active: Boolean = true,
     accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
     inactiveDate: LocalDate? = null,
@@ -102,6 +103,7 @@ class Root(
     probationOfficeId = probationOfficeId,
     name = name,
     description = description,
+    contact = contact,
     active = active,
     accessibleAccess = accessibleAccess,
     inactiveDate = inactiveDate,
@@ -156,6 +158,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: PoliceCustodySuiteBuilder.() -> Unit,
   ): PoliceCustodySuite = policeCustodySuiteBuilder.build(
@@ -168,6 +171,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(policeCustodySuiteBuilder)

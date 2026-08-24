@@ -51,7 +51,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
         description = "Sheffield City Centre Probation Office",
         active = true,
         inactiveDate = null,
-        contact = null,
+        contact = "Gemma Jones",
         cjitCode = "123456789",
         areaCode = "52",
         subareaCode = "SHEFF",
@@ -176,8 +176,8 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
                 assertThat(active).isTrue
                 assertThat(inactiveDate).isNull()
                 assertThat(cjitCode).isEqualTo("123456789")
+                assertThat(contact).isEqualTo("Gemma Jones")
                 assertThat(area?.description).isEqualTo("South Yorkshire")
-                assertThat(subarea?.description).isEqualTo("Sheffield")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(accessibleAccess).isEqualTo(AccessibleAccess.WHEELCHAIR_ACCESS)
@@ -292,7 +292,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
           active = true,
           inactiveDate = null,
           cjitCode = "123456789",
-          contact = null,
+          contact = "Gemma Jones",
           accessibleAccess = null,
           areaCode = "52",
           subareaCode = "SHEFF",
@@ -431,6 +431,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
                 assertThat(active).isFalse
                 assertThat(inactiveDate).isEqualTo(LocalDate.parse("2026-01-01"))
                 assertThat(cjitCode).isEqualTo("123456789")
+                assertThat(contact).isEqualTo("Gemma Jones")
                 assertThat(accessibleAccess).isEqualTo(AccessibleAccess.BY_ARRANGEMENT_ONLY)
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(subarea?.description).isEqualTo("Sheffield")

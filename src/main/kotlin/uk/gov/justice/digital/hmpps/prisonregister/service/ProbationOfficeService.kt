@@ -45,6 +45,7 @@ class ProbationOfficeService(
       probationOfficeId = it.probationOfficeId,
       probationOfficeName = it.name,
       description = it.description,
+      contact = it.contact,
       active = it.active,
       accessibleAccess = it.accessibleAccess?.name,
       inactiveDate = it.inactiveDate,
@@ -96,7 +97,7 @@ class ProbationOfficeService(
       localAuthorityCode = po.localAuthority?.code,
       courtTypeCode = null,
       accessibleAccess = po.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
-      contact = null,
+      contact = po.contact,
       addresses = po.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
       emailAddresses = po.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
       phoneNumbers = po.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
@@ -129,6 +130,7 @@ class ProbationOfficeService(
     probationOfficeId = probationOfficeId,
     name = this.name,
     description = this.description,
+    contact = this.contact,
     active = this.active,
     accessibleAccess = this.accessibleAccess?.let { AccessibleAccess.valueOf(it.name) },
     inactiveDate = this.inactiveDate,
@@ -143,6 +145,7 @@ class ProbationOfficeService(
   private fun ProbationOffice.update(agencyDto: LegacyAgencyDto) {
     this.name = agencyDto.name
     this.description = agencyDto.description
+    this.contact = agencyDto.contact
     this.active = agencyDto.active
     this.inactiveDate = agencyDto.inactiveDate
     this.cjitCode = agencyDto.cjitCode

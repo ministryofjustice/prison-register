@@ -35,6 +35,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         probationOfficeId = "SHEFPB",
         name = "Sheffield Probation Office",
         description = "Sheffield City Centre Probation Office",
+        contact = "Jane Smith",
         active = false,
         accessibleAccess = AccessibleAccess.ACCESSIBLE,
         inactiveDate = LocalDate.parse("2020-01-02"),
@@ -137,6 +138,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(probationOfficeDto.probationOfficeId).isEqualTo("SHEFPB")
         assertThat(probationOfficeDto.probationOfficeName).isEqualTo("Sheffield Probation Office")
         assertThat(probationOfficeDto.description).isEqualTo("Sheffield City Centre Probation Office")
+        assertThat(probationOfficeDto.contact).isEqualTo("Jane Smith")
         assertThat(probationOfficeDto.active).isFalse
         assertThat(probationOfficeDto.accessibleAccess).isEqualTo("ACCESSIBLE")
         assertThat(probationOfficeDto.inactiveDate).isEqualTo("2020-01-02")

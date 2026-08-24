@@ -50,6 +50,7 @@ data class ProbationOfficeDto(
   @Schema(description = "Probation Office ID", example = "SHEFPB") val probationOfficeId: String,
   @Schema(description = "Name", example = "Sheffield Probation Office") val probationOfficeName: String,
   @Schema(description = "Description", example = "Sheffield City Centre Probation Office") val description: String?,
+  @Schema(description = "Contact", example = "John Smith") val contact: String?,
   @Schema(description = "Whether still active") val active: Boolean,
   @Schema(description = "Accessible access", example = "ACCESSIBLE") val accessibleAccess: String?,
   @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
