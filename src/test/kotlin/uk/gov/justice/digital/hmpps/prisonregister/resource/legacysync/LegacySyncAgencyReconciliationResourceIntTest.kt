@@ -179,6 +179,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
           areaCode = "52",
           regionCode = "YOHUM",
           courtTypeCode = "MC",
+          geographicalAreaCode = "WYORKS",
         ) {
           address(addressLine1 = "Castle Street", town = "Sheffield", county = "South Yorkshire", postcode = "S3 8LU", country = "England")
           email(emailAddress = "test.sheffield.mc@justice.gov.uk")
@@ -200,6 +201,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
         assertThat(response.cjitCode).isEqualTo("123456789")
         assertThat(response.areaCode).isEqualTo("52")
         assertThat(response.regionCode).isEqualTo("YOHUM")
+        assertThat(response.geographicalAreaCode).isEqualTo("WYORKS")
         assertThat(response.courtTypeCode).isEqualTo("MC")
         assertThat(response.addresses).hasSize(1)
         with(response.addresses[0]) {

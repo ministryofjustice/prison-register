@@ -37,6 +37,7 @@ class CourtBuilder(
     cjitCode: String?,
     areaCode: String?,
     regionCode: String?,
+    geographicalAreaCode: String?,
   ): Court = Court(
     courtId = courtId,
     name = name,
@@ -47,6 +48,7 @@ class CourtBuilder(
     cjitCode = cjitCode,
     area = areaCode?.let { areaRepository.findByIdOrNull(areaCode) },
     region = regionCode?.let { regionRepository.findByIdOrNull(regionCode) },
+    geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(geographicalAreaCode) },
   ).let {
     courtRepository.saveAndFlush(it)
   }.also {

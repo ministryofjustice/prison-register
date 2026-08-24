@@ -55,6 +55,7 @@ data class CourtDto(
   @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
   @Schema(description = "Area") val area: CodeDescription?,
   @Schema(description = "Region") val region: CodeDescription?,
+  @Schema(description = "Geographical Area") val geographicalArea: CodeDescription?,
   @Schema(description = "courtType") val courtType: CodeDescription?,
   @Schema(description = "addresses") val addresses: List<AgencyAddressDto>,
   @Schema(description = "emailAddresses") val emailAddresses: List<AgencyEmailDto>,

@@ -58,7 +58,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           accessibleAccess = null,
           areaCode = "52",
           regionCode = "YOHUM",
-          geographicalAreaCode = null,
+          geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
           localAuthorityCode = null,
           courtTypeCode = "MC",
@@ -118,6 +118,19 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
+          fun `geographical area code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(courtRequest.copy(geographicalAreaCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFMC")
+          }
+
+          @Test
           fun `court type code missing is mapped to unknown`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
@@ -169,6 +182,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(cjitCode).isEqualTo("123456789")
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
+                assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(courtType.description).isEqualTo("Magistrates Court")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
@@ -296,7 +310,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           contact = null,
           areaCode = "52",
           regionCode = "YOHUM",
-          geographicalAreaCode = null,
+          geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
           localAuthorityCode = null,
           courtTypeCode = "MC",
@@ -328,6 +342,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
             cjitCode = "123456789",
             areaCode = "52",
             regionCode = "YOHUM",
+            geographicalAreaCode = null,
           ) {
             address(
               addressLine1 = "Castle Street",
@@ -388,6 +403,19 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
+          fun `geographical area code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(courtRequest.copy(geographicalAreaCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFMC")
+          }
+
+          @Test
           fun `court type code missing`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
@@ -434,6 +462,8 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(courtType.description).isEqualTo("Magistrates Court")
+                assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
+                assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
               }
             }
           }
