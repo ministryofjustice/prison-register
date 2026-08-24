@@ -60,7 +60,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
-          localAuthorityCode = null,
+          localAuthorityCode = "00CG",
           courtTypeCode = "MC",
           addresses = listOf(
             LegacyAgencyAddressDto(
@@ -131,6 +131,19 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(courtRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFMC")
+          }
+
+          @Test
           fun `court type code missing is mapped to unknown`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
@@ -183,6 +196,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
                 assertThat(courtType.description).isEqualTo("Magistrates Court")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
@@ -312,7 +326,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
           payrollRegionCode = null,
-          localAuthorityCode = null,
+          localAuthorityCode = "00CG",
           courtTypeCode = "MC",
           addresses = listOf(
             LegacyAgencyAddressDto(
@@ -416,6 +430,19 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(courtRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFMC")
+          }
+
+          @Test
           fun `court type code missing`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
@@ -464,6 +491,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(courtType.description).isEqualTo("Magistrates Court")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
               }
             }
           }
