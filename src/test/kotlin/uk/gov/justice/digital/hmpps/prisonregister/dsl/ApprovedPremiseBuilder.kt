@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseReposito
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
@@ -21,6 +22,7 @@ annotation class ApprovedPremiseDslMarker
 class ApprovedPremiseBuilder(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val approvedPremiseRepository: ApprovedPremiseRepository,
   private val addressBuilder: AgencyAddressBuilder,
@@ -41,6 +43,7 @@ class ApprovedPremiseBuilder(
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
+    payrollRegionCode: String?,
     localAuthorityCode: String?,
   ): ApprovedPremise = ApprovedPremise(
     approvedPremiseId = approvedPremiseId,
@@ -54,6 +57,7 @@ class ApprovedPremiseBuilder(
     area = areaCode?.let { areaRepository.findByIdOrNull(it) },
     region = regionCode?.let { regionRepository.findByIdOrNull(it) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
+    payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) },
     localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     approvedPremiseRepository.saveAndFlush(it)

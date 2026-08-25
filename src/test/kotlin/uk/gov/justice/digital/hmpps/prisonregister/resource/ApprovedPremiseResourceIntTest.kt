@@ -43,6 +43,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         areaCode = "52",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
+        payrollRegionCode = "NEY",
         localAuthorityCode = "00CG",
       ) {
         address(
@@ -144,6 +145,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(dto.area?.description).isEqualTo("South Yorkshire")
         assertThat(dto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(dto.geographicalArea?.description).isEqualTo("West Yorkshire")
+        assertThat(dto.payrollRegion?.code).isEqualTo("NEY")
         assertThat(dto.localAuthority?.description).isEqualTo("Sheffield City Council")
       }
 

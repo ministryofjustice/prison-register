@@ -57,7 +57,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         localAuthorityCode = "00CG",
-        payrollRegionCode = null,
+        payrollRegionCode = "NEY",
         courtTypeCode = null,
         accessibleAccess = null,
         addresses = listOf(
@@ -130,6 +130,19 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFAP")
           }
+
+          @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(approvedPremiseRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFAP")
+          }
         }
 
         @Nested
@@ -166,6 +179,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(payrollRegion?.code).isEqualTo("NEY")
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
@@ -282,7 +296,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
           contact = "Gemma Smith",
           geographicalAreaCode = "WYORKS",
           localAuthorityCode = "00CG",
-          payrollRegionCode = null,
+          payrollRegionCode = "NEY",
           courtTypeCode = null,
           accessibleAccess = null,
           addresses = listOf(
@@ -382,6 +396,19 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFAP")
           }
+
+          @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(updateRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFAP")
+          }
         }
 
         @Nested
@@ -412,6 +439,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(payrollRegion?.code).isEqualTo("NEY")
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
               }
             }

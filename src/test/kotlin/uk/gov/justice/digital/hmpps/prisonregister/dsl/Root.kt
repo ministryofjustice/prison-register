@@ -131,6 +131,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: ApprovedPremiseBuilder.() -> Unit,
   ): uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise = approvedPremiseBuilder.build(
@@ -145,6 +146,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(approvedPremiseBuilder)
