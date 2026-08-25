@@ -45,6 +45,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
       ) {
         address(
           addressLine1 = "Probation House, 31 High Street",
@@ -146,6 +147,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(probationOfficeDto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(probationOfficeDto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(probationOfficeDto.localAuthority?.description).isEqualTo("Sheffield City Council")
+        assertThat(probationOfficeDto.payrollRegion?.code).isEqualTo("NEY")
         assertThat(probationOfficeDto.subarea?.description).isEqualTo("Sheffield")
       }
 

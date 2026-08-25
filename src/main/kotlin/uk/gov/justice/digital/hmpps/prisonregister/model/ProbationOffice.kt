@@ -44,6 +44,9 @@ data class ProbationOffice(
   @JoinColumn(name = "geographical_area")
   var geographicalArea: Area?,
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "payroll_region")
+  var payrollRegion: PayrollRegion?,
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "local_authority")
   var localAuthority: LocalAuthority?,
 

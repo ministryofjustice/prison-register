@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
@@ -9,6 +10,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
@@ -22,6 +24,7 @@ class CourtBuilder(
   private val courtTypeRepository: CourtTypeRepository,
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val courtRepository: CourtRepository,
   private val addressBuilder: AgencyAddressBuilder,
@@ -37,9 +40,11 @@ class CourtBuilder(
     inactiveDate: LocalDate?,
     courtTypeCode: String,
     cjitCode: String?,
+    accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
+    payrollRegionCode: String?,
     localAuthorityCode: String?,
   ): Court = Court(
     courtId = courtId,
@@ -49,9 +54,11 @@ class CourtBuilder(
     inactiveDate = inactiveDate,
     courtType = courtTypeRepository.findByIdOrNull(courtTypeCode) ?: throw RuntimeException("Court type $courtTypeCode not found"),
     cjitCode = cjitCode,
+    accessibleAccess = accessibleAccess,
     area = areaCode?.let { areaRepository.findByIdOrNull(areaCode) },
     region = regionCode?.let { regionRepository.findByIdOrNull(regionCode) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(geographicalAreaCode) },
+    payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) },
     localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     courtRepository.saveAndFlush(it)

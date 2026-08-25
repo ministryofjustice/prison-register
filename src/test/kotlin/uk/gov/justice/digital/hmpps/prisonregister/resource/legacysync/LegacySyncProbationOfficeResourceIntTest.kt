@@ -57,7 +57,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
         subareaCode = "SHEFF",
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
-        payrollRegionCode = null,
+        payrollRegionCode = "NEY",
         localAuthorityCode = "00CG",
         courtTypeCode = null,
         accessibleAccess = LegacyAccessibleAccess.WHEELCHAIR_ACCESS,
@@ -144,6 +144,19 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFPB")
           }
+
+          @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFPB")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(probationOfficeRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFPB")
+          }
         }
 
         @Nested
@@ -182,6 +195,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(accessibleAccess).isEqualTo(AccessibleAccess.WHEELCHAIR_ACCESS)
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
+                assertThat(payrollRegion?.code).isEqualTo("NEY")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
                 assertThat(emailAddresses).isEmpty()
@@ -298,7 +312,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
           subareaCode = "SHEFF",
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
-          payrollRegionCode = null,
+          payrollRegionCode = "NEY",
           localAuthorityCode = "00CG",
           courtTypeCode = null,
           addresses = listOf(
@@ -399,6 +413,32 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
 
             assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFPB")
           }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFPB")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(updateRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFPB")
+          }
+
+          @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFPB")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(updateRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFPB")
+          }
         }
 
         @Nested
@@ -438,6 +478,7 @@ class LegacySyncProbationOfficeResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
+                assertThat(payrollRegion?.code).isEqualTo("NEY")
               }
             }
           }

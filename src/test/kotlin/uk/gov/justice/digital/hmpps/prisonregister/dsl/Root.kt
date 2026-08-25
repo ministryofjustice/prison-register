@@ -66,9 +66,11 @@ class Root(
     inactiveDate: LocalDate? = null,
     courtTypeCode: String = "CC",
     cjitCode: String? = null,
+    accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: CourtBuilder.() -> Unit,
   ): Court = courtBuilder.build(
@@ -79,9 +81,11 @@ class Root(
     inactiveDate = inactiveDate,
     courtTypeCode = courtTypeCode,
     cjitCode = cjitCode,
+    accessibleAccess = accessibleAccess,
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(courtBuilder)
@@ -99,6 +103,7 @@ class Root(
     subareaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: ProbationOfficeBuilder.() -> Unit,
   ): ProbationOffice = probationOfficeBuilder.build(
@@ -114,6 +119,7 @@ class Root(
     subareaCode = subareaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(probationOfficeBuilder)
@@ -131,6 +137,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: ApprovedPremiseBuilder.() -> Unit,
   ): uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise = approvedPremiseBuilder.build(
@@ -145,6 +152,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(approvedPremiseBuilder)

@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.model
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
@@ -14,7 +16,6 @@ import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Persistable
 import java.time.LocalDate
-
 @Entity
 data class Court(
   @Id
@@ -25,6 +26,8 @@ data class Court(
   var active: Boolean,
   var inactiveDate: LocalDate?,
   var cjitCode: String?,
+  @Enumerated(EnumType.STRING)
+  var accessibleAccess: AccessibleAccess?,
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "area")
@@ -35,6 +38,9 @@ data class Court(
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "geographical_area")
   var geographicalArea: Area?,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "payroll_region")
+  var payrollRegion: PayrollRegion?,
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "local_authority")
   var localAuthority: LocalAuthority?,

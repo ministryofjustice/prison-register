@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
@@ -32,6 +33,7 @@ class ProbationOfficeService(
   private val areaRepository: AreaRepository,
   private val subareaRepository: SubareaRepository,
   private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun deleteAll() {
@@ -55,6 +57,7 @@ class ProbationOfficeService(
       region = it.region?.let { region -> CodeDescription(region.code, region.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
       localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
+      payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
           id = address.id,
@@ -93,7 +96,7 @@ class ProbationOfficeService(
       subareaCode = po.subarea?.code,
       regionCode = po.region?.code,
       geographicalAreaCode = po.geographicalArea?.code,
-      payrollRegionCode = null,
+      payrollRegionCode = po.payrollRegion?.code,
       localAuthorityCode = po.localAuthority?.code,
       courtTypeCode = null,
       accessibleAccess = po.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
@@ -139,6 +142,7 @@ class ProbationOfficeService(
     subarea = this.subareaCode?.let { subareaRepository.findByIdOrNull(it) ?: throw ValidationException("$it subarea code not found for agency $probationOfficeId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $probationOfficeId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $probationOfficeId") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $probationOfficeId") },
     localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $probationOfficeId") },
   )
 
@@ -154,6 +158,7 @@ class ProbationOfficeService(
     this.subarea = agencyDto.subareaCode?.let { subareaRepository.findByIdOrNull(it) ?: throw ValidationException("$it subarea code not found for agency $probationOfficeId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $probationOfficeId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $probationOfficeId") }
+    this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $probationOfficeId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $probationOfficeId") }
   }
 }

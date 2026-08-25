@@ -5,13 +5,16 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
@@ -30,6 +33,7 @@ class CourtService(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
   private val courtTypeRepository: CourtTypeRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
 ) {
   fun deleteAll() {
@@ -46,10 +50,12 @@ class CourtService(
       active = it.active,
       inactiveDate = it.inactiveDate,
       cjitCode = it.cjitCode,
+      accessibleAccess = it.accessibleAccess?.name,
       area = it.area?.let { area -> CodeDescription(area.code, area.description) },
       region = it.region?.let { area -> CodeDescription(area.code, area.description) },
       geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
       localAuthority = it.localAuthority?.let { la -> CodeDescription(la.code, la.description) },
+      payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
       courtType = CodeDescription(it.courtType.code, it.courtType.description),
       addresses = it.addresses.map { address ->
         AgencyAddressDto(
@@ -88,10 +94,10 @@ class CourtService(
       areaCode = court.area?.code,
       regionCode = court.region?.code,
       geographicalAreaCode = court.geographicalArea?.code,
-      payrollRegionCode = null,
+      payrollRegionCode = court.payrollRegion?.code,
       localAuthorityCode = court.localAuthority?.code,
-      courtTypeCode = court.courtType.code,
-      accessibleAccess = null,
+      courtTypeCode = court.courtType.code.takeUnless { it == "UNK" },
+      accessibleAccess = court.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
       contact = null,
       addresses = court.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
       emailAddresses = court.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
@@ -129,9 +135,11 @@ class CourtService(
     active = this.active,
     inactiveDate = this.inactiveDate,
     cjitCode = this.cjitCode,
+    accessibleAccess = this.accessibleAccess?.let { AccessibleAccess.valueOf(it.name) },
     area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") },
     region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") },
     geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $courtId") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $courtId") },
     localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $courtId") },
     courtType = (this.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("$courtTypeCode court type not found for agency $courtId"),
   )
@@ -142,9 +150,11 @@ class CourtService(
     this.active = agencyDto.active
     this.inactiveDate = agencyDto.inactiveDate
     this.cjitCode = agencyDto.cjitCode
+    this.accessibleAccess = agencyDto.accessibleAccess?.let { AccessibleAccess.valueOf(it.name) }
     this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $courtId") }
     this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $courtId") }
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $courtId") }
+    this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $courtId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $courtId") }
     this.courtType = (agencyDto.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
   }
