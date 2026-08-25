@@ -59,7 +59,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           areaCode = "52",
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
-          payrollRegionCode = null,
+          payrollRegionCode = "NEY",
           localAuthorityCode = "00CG",
           courtTypeCode = "MC",
           addresses = listOf(
@@ -144,6 +144,19 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(courtRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFMC")
+          }
+
+          @Test
           fun `court type code missing is mapped to unknown`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
@@ -197,6 +210,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
+                assertThat(payrollRegion?.code).isEqualTo("NEY")
                 assertThat(courtType.description).isEqualTo("Magistrates Court")
                 assertThat(addresses).isEmpty()
                 assertThat(phoneNumbers).isEmpty()
@@ -325,7 +339,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           areaCode = "52",
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
-          payrollRegionCode = null,
+          payrollRegionCode = "NEY",
           localAuthorityCode = "00CG",
           courtTypeCode = "MC",
           addresses = listOf(
@@ -443,6 +457,19 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           }
 
           @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(courtRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFMC")
+          }
+
+          @Test
           fun `court type code missing`() {
             webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFMC")
@@ -492,6 +519,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
                 assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
+                assertThat(payrollRegion?.code).isEqualTo("NEY")
               }
             }
           }

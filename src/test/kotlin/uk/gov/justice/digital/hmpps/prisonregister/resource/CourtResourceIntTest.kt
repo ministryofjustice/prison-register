@@ -42,6 +42,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         regionCode = "YOHUM",
         geographicalAreaCode = "WYORKS",
         localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
       ) {
         address(
           addressLine1 = "Court House, 31 High Street",
@@ -142,6 +143,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         assertThat(courtDto.region?.description).isEqualTo("Yorkshire & Humberside")
         assertThat(courtDto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(courtDto.localAuthority?.description).isEqualTo("Sheffield City Council")
+        assertThat(courtDto.payrollRegion?.code).isEqualTo("NEY")
       }
 
       @Test

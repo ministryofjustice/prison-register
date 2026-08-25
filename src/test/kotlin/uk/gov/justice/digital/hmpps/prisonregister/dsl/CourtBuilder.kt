@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
@@ -22,6 +23,7 @@ class CourtBuilder(
   private val courtTypeRepository: CourtTypeRepository,
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val courtRepository: CourtRepository,
   private val addressBuilder: AgencyAddressBuilder,
@@ -40,6 +42,7 @@ class CourtBuilder(
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
+    payrollRegionCode: String?,
     localAuthorityCode: String?,
   ): Court = Court(
     courtId = courtId,
@@ -52,6 +55,7 @@ class CourtBuilder(
     area = areaCode?.let { areaRepository.findByIdOrNull(areaCode) },
     region = regionCode?.let { regionRepository.findByIdOrNull(regionCode) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(geographicalAreaCode) },
+    payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) },
     localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     courtRepository.saveAndFlush(it)
