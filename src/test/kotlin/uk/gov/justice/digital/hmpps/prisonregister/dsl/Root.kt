@@ -99,6 +99,7 @@ class Root(
     subareaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: ProbationOfficeBuilder.() -> Unit,
   ): ProbationOffice = probationOfficeBuilder.build(
@@ -114,6 +115,7 @@ class Root(
     subareaCode = subareaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(probationOfficeBuilder)
