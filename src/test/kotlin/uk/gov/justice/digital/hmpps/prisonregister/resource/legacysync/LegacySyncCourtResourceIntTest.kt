@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
@@ -55,7 +56,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           inactiveDate = null,
           contact = null,
           cjitCode = "123456789",
-          accessibleAccess = null,
+          accessibleAccess = LegacyAccessibleAccess.WHEELCHAIR_ACCESS,
           areaCode = "52",
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
@@ -206,6 +207,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(active).isTrue
                 assertThat(inactiveDate).isNull()
                 assertThat(cjitCode).isEqualTo("123456789")
+                assertThat(accessibleAccess).isEqualTo(AccessibleAccess.WHEELCHAIR_ACCESS)
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
@@ -334,7 +336,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
           active = true,
           inactiveDate = null,
           cjitCode = "123456789",
-          accessibleAccess = null,
+          accessibleAccess = LegacyAccessibleAccess.WHEELCHAIR_ACCESS,
           contact = null,
           areaCode = "52",
           regionCode = "YOHUM",
@@ -513,6 +515,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
                 assertThat(active).isFalse
                 assertThat(inactiveDate).isEqualTo("2026-01-01")
                 assertThat(cjitCode).isEqualTo("123456789")
+                assertThat(accessibleAccess).isEqualTo(AccessibleAccess.WHEELCHAIR_ACCESS)
                 assertThat(area?.description).isEqualTo("South Yorkshire")
                 assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
                 assertThat(courtType.description).isEqualTo("Magistrates Court")

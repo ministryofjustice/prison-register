@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
@@ -39,6 +40,7 @@ class CourtBuilder(
     inactiveDate: LocalDate?,
     courtTypeCode: String,
     cjitCode: String?,
+    accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
     areaCode: String?,
     regionCode: String?,
     geographicalAreaCode: String?,
@@ -52,6 +54,7 @@ class CourtBuilder(
     inactiveDate = inactiveDate,
     courtType = courtTypeRepository.findByIdOrNull(courtTypeCode) ?: throw RuntimeException("Court type $courtTypeCode not found"),
     cjitCode = cjitCode,
+    accessibleAccess = accessibleAccess,
     area = areaCode?.let { areaRepository.findByIdOrNull(areaCode) },
     region = regionCode?.let { regionRepository.findByIdOrNull(regionCode) },
     geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(geographicalAreaCode) },

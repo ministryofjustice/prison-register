@@ -14,7 +14,6 @@ import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Persistable
 import java.time.LocalDate
-
 @Entity
 data class Court(
   @Id
@@ -25,6 +24,7 @@ data class Court(
   var active: Boolean,
   var inactiveDate: LocalDate?,
   var cjitCode: String?,
+  var accessibleAccess: AccessibleAccess?,
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "area")

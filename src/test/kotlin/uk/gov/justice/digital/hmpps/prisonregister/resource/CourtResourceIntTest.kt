@@ -11,6 +11,7 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import java.time.LocalDate
@@ -43,6 +44,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         geographicalAreaCode = "WYORKS",
         localAuthorityCode = "00CG",
         payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
       ) {
         address(
           addressLine1 = "Court House, 31 High Street",
@@ -138,6 +140,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         assertThat(courtDto.description).isEqualTo("Sheffield Central Court")
         assertThat(courtDto.active).isFalse
         assertThat(courtDto.inactiveDate).isEqualTo("2020-01-02")
+        assertThat(courtDto.accessibleAccess).isEqualTo("ACCESSIBLE")
         assertThat(courtDto.courtType?.description).isEqualTo("Crown Court")
         assertThat(courtDto.area?.description).isEqualTo("South Yorkshire")
         assertThat(courtDto.region?.description).isEqualTo("Yorkshire & Humberside")
