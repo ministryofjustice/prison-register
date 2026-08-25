@@ -69,6 +69,7 @@ class Root(
     areaCode: String? = null,
     regionCode: String? = null,
     geographicalAreaCode: String? = null,
+    localAuthorityCode: String? = null,
     dsl: CourtBuilder.() -> Unit,
   ): Court = courtBuilder.build(
     courtId = courtId,
@@ -81,6 +82,7 @@ class Root(
     areaCode = areaCode,
     regionCode = regionCode,
     geographicalAreaCode = geographicalAreaCode,
+    localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(courtBuilder)
   }

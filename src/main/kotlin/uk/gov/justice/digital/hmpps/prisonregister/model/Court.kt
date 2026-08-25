@@ -36,6 +36,9 @@ data class Court(
   @JoinColumn(name = "geographical_area")
   var geographicalArea: Area?,
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "local_authority")
+  var localAuthority: LocalAuthority?,
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "court_type")
   var courtType: CourtType,
 
