@@ -103,7 +103,7 @@ class CourtService(
     cjitCode = this.cjitCode,
     accessibleAccess = this.accessibleAccess?.name,
     area = this.area?.let { area -> CodeDescription(area.code, area.description) },
-    region = this.region?.let { area -> CodeDescription(area.code, area.description) },
+    region = this.region?.let { region -> CodeDescription(region.code, region.description) },
     geographicalArea = this.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
     localAuthority = this.localAuthority?.let { la -> CodeDescription(la.code, la.description) },
     payrollRegion = this.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
