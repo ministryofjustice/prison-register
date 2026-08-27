@@ -194,4 +194,109 @@ class CourtResourceIntTest : IntegrationTestBase() {
       }
     }
   }
+
+  @DisplayName("Get all courts")
+  @Nested
+  inner class GetAll {
+    lateinit var court: Court
+    lateinit var court2: Court
+    lateinit var court3: Court
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = false,
+        inactiveDate = LocalDate.parse("2020-01-02"),
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {}
+
+      court2 = dsl.court(
+        courtId = "LEEDCC",
+        name = "Leeds Central Ct",
+      ) {}
+
+      court3 = dsl.court(
+        courtId = "BIRMCC",
+        name = "Birmingham Central Ct",
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      courtRepository.deleteById(court.courtId)
+      courtRepository.deleteById(court2.courtId)
+      courtRepository.deleteById(court3.courtId)
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will return all courts`() {
+        val courts = webTestClient.get()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(CourtDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").contains("SHEFCC", "LEEDCC", "BIRMCC")
+
+        val courtDto = courts.first { it.courtId == "SHEFCC" }
+        assertThat(courtDto.courtName).isEqualTo("Sheffield Central Ct")
+        assertThat(courtDto.description).isEqualTo("Sheffield Central Court")
+        assertThat(courtDto.active).isFalse
+
+        val court2Dto = courts.first { it.courtId == "LEEDCC" }
+        assertThat(court2Dto.courtName).isEqualTo("Leeds Central Ct")
+
+        val court3Dto = courts.first { it.courtId == "BIRMCC" }
+        assertThat(court3Dto.courtName).isEqualTo("Birmingham Central Ct")
+      }
+    }
+  }
 }
