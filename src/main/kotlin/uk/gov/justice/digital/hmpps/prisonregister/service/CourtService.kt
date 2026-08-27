@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
-import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -103,7 +102,7 @@ class CourtService(
     cjitCode = this.cjitCode,
     accessibleAccess = this.accessibleAccess?.name,
     area = this.area?.let { area -> CodeDescription(area.code, area.description) },
-    region = this.region?.let { region -> CodeDescription(region.code, region.description) },
+    region = this.region?.let { area -> CodeDescription(area.code, area.description) },
     geographicalArea = this.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
     localAuthority = this.localAuthority?.let { la -> CodeDescription(la.code, la.description) },
     payrollRegion = this.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
