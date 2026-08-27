@@ -42,6 +42,18 @@ class CourtResource(private val courtService: CourtService) {
     @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
     courtId: String,
   ): CourtDto = courtService.findById(courtId)
+
+  @GetMapping
+  @Operation(summary = "Get all courts", description = "Information on all courts")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getCourts(): List<CourtDto> = courtService.getAll()
 }
 
 @Schema(description = "Court Information")
