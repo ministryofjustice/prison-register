@@ -42,8 +42,6 @@ class CourtService(
 
   fun getAllIds(): List<String> = courtRepository.findAll().map { it.courtId }
 
-  //fun findAll(): List<PrisonDto> = courtRepository.findAll().map { PrisonDto(it) }
-
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
 
   fun getAll(): List<CourtDto> = courtRepository.findAll().map { it.toCourtDto() }
