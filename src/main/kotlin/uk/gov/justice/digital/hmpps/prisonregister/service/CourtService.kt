@@ -42,46 +42,9 @@ class CourtService(
 
   fun getAllIds(): List<String> = courtRepository.findAll().map { it.courtId }
 
-  fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.let {
-    CourtDto(
-      courtId = it.courtId,
-      courtName = it.name,
-      description = it.description,
-      active = it.active,
-      inactiveDate = it.inactiveDate,
-      cjitCode = it.cjitCode,
-      accessibleAccess = it.accessibleAccess?.name,
-      area = it.area?.let { area -> CodeDescription(area.code, area.description) },
-      region = it.region?.let { area -> CodeDescription(area.code, area.description) },
-      geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
-      localAuthority = it.localAuthority?.let { la -> CodeDescription(la.code, la.description) },
-      payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
-      courtType = CodeDescription(it.courtType.code, it.courtType.description),
-      addresses = it.addresses.map { address ->
-        AgencyAddressDto(
-          id = address.id,
-          addressLine1 = address.addressLine1,
-          addressLine2 = address.addressLine2,
-          town = address.town,
-          county = address.county,
-          postcode = address.postcode,
-          country = address.country,
-        )
-      },
-      emailAddresses = it.emailAddresses.map { emailAddress ->
-        AgencyEmailDto(
-          id = emailAddress.id,
-          address = emailAddress.value,
-        )
-      },
-      phoneNumbers = it.phoneNumbers.map { phoneNumber ->
-        AgencyPhoneDto(
-          id = phoneNumber.id,
-          number = phoneNumber.value,
-        )
-      },
-    )
-  } ?: throw EntityNotFoundException("Court $courtId not found")
+  fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
+
+  fun getAll(): List<CourtDto> = courtRepository.findAll().map { it.toCourtDto() }
 
   fun tryFindById(agencyId: String): LegacyAgencyDto? = courtRepository.findByIdOrNull(agencyId)?.let { court ->
     LegacyAgencyDto(
@@ -127,6 +90,45 @@ class CourtService(
     courtRepository.saveAndFlush(court)
     LegacyAgencyResponse(updated = false)
   }
+
+  private fun Court.toCourtDto() = CourtDto(
+    courtId = this.courtId,
+    courtName = this.name,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    accessibleAccess = this.accessibleAccess?.name,
+    area = this.area?.let { area -> CodeDescription(area.code, area.description) },
+    region = this.region?.let { area -> CodeDescription(area.code, area.description) },
+    geographicalArea = this.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+    localAuthority = this.localAuthority?.let { la -> CodeDescription(la.code, la.description) },
+    payrollRegion = this.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
+    courtType = CodeDescription(this.courtType.code, this.courtType.description),
+    addresses = this.addresses.map { address ->
+      AgencyAddressDto(
+        id = address.id,
+        addressLine1 = address.addressLine1,
+        addressLine2 = address.addressLine2,
+        town = address.town,
+        county = address.county,
+        postcode = address.postcode,
+        country = address.country,
+      )
+    },
+    emailAddresses = this.emailAddresses.map { emailAddress ->
+      AgencyEmailDto(
+        id = emailAddress.id,
+        address = emailAddress.value,
+      )
+    },
+    phoneNumbers = this.phoneNumbers.map { phoneNumber ->
+      AgencyPhoneDto(
+        id = phoneNumber.id,
+        number = phoneNumber.value,
+      )
+    },
+  )
 
   private fun LegacyAgencyDto.toCourt(courtId: String) = Court(
     courtId = courtId,
