@@ -10,8 +10,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
@@ -21,6 +23,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateCourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -45,6 +51,68 @@ class CourtService(
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
 
   fun getAll(): List<CourtDto> = courtRepository.findAll().map { it.toCourtDto() }
+
+  @Transactional
+  fun updateCourt(courtId: String, updateCourtDto: UpdateCourtDto): CourtDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    court.update(updateCourtDto)
+    return court.toCourtDto()
+  }
+
+  @Transactional
+  fun updateCourtAddress(courtId: String, addressId: Long, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    val address = court.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for court $courtId")
+
+    with(updateAddressDto) {
+      address.addressLine1 = addressLine1
+      address.addressLine2 = addressLine2
+      address.town = town
+      address.county = county
+      address.postcode = postcode
+      address.country = country
+    }
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  @Transactional
+  fun updateCourtPhoneNumber(courtId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    val existingPhoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
+    val updatedPhoneNumber = PhoneNumber(value = updatePhoneNumberDto.number)
+    court.phoneNumbers.remove(existingPhoneNumber)
+    court.phoneNumbers.add(updatedPhoneNumber)
+    courtRepository.saveAndFlush(court)
+
+    return AgencyPhoneDto(
+      id = updatedPhoneNumber.id,
+      number = updatedPhoneNumber.value,
+    )
+  }
+
+  @Transactional
+  fun updateCourtEmailAddress(courtId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    val existingEmailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
+    val updatedEmailAddress = EmailAddress(value = updateEmailAddressDto.address)
+    court.emailAddresses.remove(existingEmailAddress)
+    court.emailAddresses.add(updatedEmailAddress)
+    courtRepository.saveAndFlush(court)
+
+    return AgencyEmailDto(
+      id = updatedEmailAddress.id,
+      address = updatedEmailAddress.value,
+    )
+  }
 
   fun tryFindById(agencyId: String): LegacyAgencyDto? = courtRepository.findByIdOrNull(agencyId)?.let { court ->
     LegacyAgencyDto(
@@ -159,5 +227,20 @@ class CourtService(
     this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $courtId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $courtId") }
     this.courtType = (agencyDto.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
+  }
+
+  private fun Court.update(updateCourtDto: UpdateCourtDto) {
+    this.name = updateCourtDto.courtName
+    this.description = updateCourtDto.description
+    this.active = updateCourtDto.active
+    this.inactiveDate = updateCourtDto.inactiveDate
+    this.cjitCode = updateCourtDto.cjitCode
+    this.accessibleAccess = updateCourtDto.accessibleAccess
+    this.area = updateCourtDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for court $courtId") }
+    this.region = updateCourtDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for court $courtId") }
+    this.geographicalArea = updateCourtDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for court $courtId") }
+    this.payrollRegion = updateCourtDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for court $courtId") }
+    this.localAuthority = updateCourtDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for court $courtId") }
+    this.courtType = courtTypeRepository.findByIdOrNull(updateCourtDto.courtTypeCode) ?: throw ValidationException("${updateCourtDto.courtTypeCode} court type not found for court $courtId")
   }
 }
