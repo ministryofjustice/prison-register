@@ -45,25 +45,49 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendCourtRegisterAmendedEvent(courtId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSCourtDomainEvent(
+        "register.court.amended",
+        CourtAdditionalInformation(courtId),
+        occurredAt,
+        "A court has been updated",
+      ),
+    )
+  }
+
   private fun publishToDomainEventsTopic(payload: HMPPSDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.prisonId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publishToDomainEventsTopic(payload: HMPPSCourtDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.courtId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publish(eventType: String, payload: Any) {
     domaineventsTopicClient.publish(
       PublishRequest.builder()
         .topicArn(domaineventsTopic.arn)
         .message(objectMapper.writeValueAsString(payload))
         .messageAttributes(
           mapOf(
-            "eventType" to MessageAttributeValue.builder().dataType("String").stringValue(payload.eventType).build(),
+            "eventType" to MessageAttributeValue.builder().dataType("String").stringValue(eventType).build(),
           ),
         )
         .build()
-        .also { log.info("Published event ${payload.eventType} to domainevents topic") },
+        .also { log.info("Published event $eventType to domainevents topic") },
     )
   }
 }
 
 data class AdditionalInformation(
   val prisonId: String,
+)
+
+data class CourtAdditionalInformation(
+  val courtId: String,
 )
 
 data class HMPPSDomainEvent(
@@ -76,6 +100,27 @@ data class HMPPSDomainEvent(
   constructor(
     eventType: String,
     additionalInformation: AdditionalInformation,
+    occurredAt: Instant,
+    description: String,
+  ) : this(
+    eventType,
+    additionalInformation,
+    1,
+    occurredAt.toOffsetDateFormat(),
+    description,
+  )
+}
+
+data class HMPPSCourtDomainEvent(
+  val eventType: String,
+  val additionalInformation: CourtAdditionalInformation,
+  val version: Int,
+  val occurredAt: String,
+  val description: String,
+) {
+  constructor(
+    eventType: String,
+    additionalInformation: CourtAdditionalInformation,
     occurredAt: Instant,
     description: String,
   ) : this(
