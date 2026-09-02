@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
-import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -42,8 +41,6 @@ class CourtService(
   }
 
   fun getAllIds(): List<String> = courtRepository.findAll().map { it.courtId }
-
-  //fun findAll(): List<PrisonDto> = courtRepository.findAll().map { PrisonDto(it) }
 
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
 
