@@ -40,7 +40,7 @@ import java.time.LocalDate
 @RestController
 @Validated
 @RequestMapping("/courts", produces = [MediaType.APPLICATION_JSON_VALUE])
-@PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
+@PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW')")
 class CourtResource(
   private val courtService: CourtService,
   private val snsService: SnsService,
@@ -135,7 +135,7 @@ class CourtResource(
 
   @Operation(
     summary = "Update specified court address",
-    description = "Updates a single address for a court. Requires role ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Updates a single address for a court. Requires role ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -196,7 +196,7 @@ class CourtResource(
 
   @Operation(
     summary = "Update specified court phone number",
-    description = "Updates a single phone number for a court. Requires role ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Updates a single phone number for a court. Requires role ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -257,7 +257,7 @@ class CourtResource(
 
   @Operation(
     summary = "Update specified court email address",
-    description = "Updates a single email address for a court. Requires role ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Updates a single email address for a court. Requires role ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(

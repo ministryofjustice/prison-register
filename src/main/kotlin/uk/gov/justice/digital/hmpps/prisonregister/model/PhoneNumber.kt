@@ -11,7 +11,7 @@ import jakarta.persistence.Table
 @Table(name = "PHONE_NUMBER")
 data class PhoneNumber(
   @Column(name = "VALUE", nullable = false, unique = true)
-  val value: String,
+  var value: String,
 
 ) : AbstractIdEntity() {
 
