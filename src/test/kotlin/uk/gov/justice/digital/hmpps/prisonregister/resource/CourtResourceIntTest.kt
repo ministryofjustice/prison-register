@@ -8,12 +8,16 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import java.time.LocalDate
 
 class CourtResourceIntTest : IntegrationTestBase() {
@@ -105,7 +109,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -118,7 +122,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/courts/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -131,7 +135,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -154,7 +158,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -172,7 +176,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -185,7 +189,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -264,7 +268,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/courts")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -277,7 +281,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courts = webTestClient.get()
           .uri("/courts")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(CourtDto::class.java)
@@ -296,6 +300,682 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
         val court3Dto = courts.first { it.courtId == "BIRMCC" }
         assertThat(court3Dto.courtName).isEqualTo("Birmingham Central Ct")
+      }
+    }
+  }
+
+  @DisplayName("Update court")
+  @Nested
+  inner class UpdateCourt {
+    lateinit var court: Court
+
+    val updateCourtRequest = UpdateCourtDto(
+      courtName = "Sheffield Magistrates Ct",
+      description = "Sheffield Magistrates' Court",
+      active = true,
+      inactiveDate = null,
+      cjitCode = "123456789",
+      accessibleAccess = AccessibleAccess.WHEELCHAIR_ACCESS,
+      areaCode = "52",
+      regionCode = "YOHUM",
+      geographicalAreaCode = "WYORKS",
+      localAuthorityCode = "00CG",
+      payrollRegionCode = "NEY",
+      courtTypeCode = "MC",
+    )
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = false,
+        inactiveDate = LocalDate.parse("2020-01-02"),
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        address(
+          addressLine1 = "Court House, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(updateCourtRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(updateCourtRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest)
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if not found`() {
+        webTestClient.put()
+          .uri("/courts/id/ZZZZ")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `area code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(areaCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for court SHEFCC")
+      }
+
+      @Test
+      fun `region code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(regionCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for court SHEFCC")
+      }
+
+      @Test
+      fun `geographical area code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(geographicalAreaCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for court SHEFCC")
+      }
+
+      @Test
+      fun `local authority code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(localAuthorityCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for court SHEFCC")
+      }
+
+      @Test
+      fun `payroll region code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(payrollRegionCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for court SHEFCC")
+      }
+
+      @Test
+      fun `court type code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(courtTypeCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ court type not found for court SHEFCC")
+      }
+
+      @Test
+      fun `court name is blank`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(courtName = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will update the core court data`() {
+        val courtDto: CourtDto = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(courtDto.courtId).isEqualTo("SHEFCC")
+        assertThat(courtDto.courtName).isEqualTo("Sheffield Magistrates Ct")
+        assertThat(courtDto.description).isEqualTo("Sheffield Magistrates' Court")
+        assertThat(courtDto.active).isFalse
+        assertThat(courtDto.inactiveDate).isEqualTo("2026-01-01")
+        assertThat(courtDto.cjitCode).isEqualTo("123456789")
+        assertThat(courtDto.accessibleAccess).isEqualTo("WHEELCHAIR_ACCESS")
+        assertThat(courtDto.area?.description).isEqualTo("South Yorkshire")
+        assertThat(courtDto.region?.description).isEqualTo("Yorkshire & Humberside")
+        assertThat(courtDto.geographicalArea?.description).isEqualTo("West Yorkshire")
+        assertThat(courtDto.localAuthority?.description).isEqualTo("Sheffield City Council")
+        assertThat(courtDto.payrollRegion?.code).isEqualTo("NEY")
+        assertThat(courtDto.courtType?.description).isEqualTo("Magistrates Court")
+      }
+
+      @Test
+      fun `will not affect addresses, emails or phone numbers`() {
+        val courtDto: CourtDto = webTestClient.put()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateCourtRequest)
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(courtDto.addresses).hasSize(1)
+        assertThat(courtDto.addresses[0].addressLine1).isEqualTo("Court House, 31 High Street")
+        assertThat(courtDto.emailAddresses).hasSize(1)
+        assertThat(courtDto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
+        assertThat(courtDto.phoneNumbers).hasSize(1)
+        assertThat(courtDto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+      }
+    }
+  }
+
+  @DisplayName("Update court address")
+  @Nested
+  inner class UpdateCourtAddress {
+    lateinit var court: Court
+    var addressId: Long = -1
+
+    val updateAddressRequest = UpdateAddressDto(
+      addressLine1 = "Updated Court House, 31 High Street",
+      addressLine2 = "Updated City Centre",
+      town = "Updated Sheffield",
+      county = "Updated South Yorkshire",
+      postcode = "S1 4HH",
+      country = "Wales",
+    )
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        address(
+          addressLine1 = "Court House, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+      }
+      addressId = court.addresses[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(updateAddressRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(updateAddressRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateAddressRequest)
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.put()
+          .uri("/courts/id/ZZZZ/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if address not found`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if town is missing`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if postcode is too long`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will update the address and preserve its id`() {
+        val addressDto: AgencyAddressDto = webTestClient.put()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateAddressRequest)
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(addressDto.id).isEqualTo(addressId)
+        assertThat(addressDto.addressLine1).isEqualTo("Updated Court House, 31 High Street")
+        assertThat(addressDto.addressLine2).isEqualTo("Updated City Centre")
+        assertThat(addressDto.town).isEqualTo("Updated Sheffield")
+        assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
+        assertThat(addressDto.postcode).isEqualTo("S1 4HH")
+        assertThat(addressDto.country).isEqualTo("Wales")
+      }
+    }
+  }
+
+  @DisplayName("Update court phone number")
+  @Nested
+  inner class UpdateCourtPhoneNumber {
+    lateinit var court: Court
+    var phoneNumberId: Long = -1
+
+    val updatePhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 1234")
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+      phoneNumberId = court.phoneNumbers[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(updatePhoneNumberRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(updatePhoneNumberRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest)
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.put()
+          .uri("/courts/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if phone number not found`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if phone number is in an incorrect format`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if phone number is blank`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will update the phone number and preserve its id`() {
+        val phoneDto: AgencyPhoneDto = webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest)
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(phoneDto.id).isEqualTo(phoneNumberId)
+        assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+      }
+    }
+  }
+
+  @DisplayName("Update court email address")
+  @Nested
+  inner class UpdateCourtEmailAddress {
+    lateinit var court: Court
+    var emailAddressId: Long = -1
+
+    val updateEmailAddressRequest = UpdateEmailAddressDto(address = "updated@justice.gov.uk")
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+      }
+      emailAddressId = court.emailAddresses[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(updateEmailAddressRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(updateEmailAddressRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateEmailAddressRequest)
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.put()
+          .uri("/courts/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateEmailAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if email address not found`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateEmailAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if email address is in an incorrect format`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if email address is blank`() {
+        webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateEmailAddressRequest.copy(address = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will update the email address and preserve its id`() {
+        val emailDto: AgencyEmailDto = webTestClient.put()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updateEmailAddressRequest)
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(emailDto.id).isEqualTo(emailAddressId)
+        assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
       }
     }
   }
