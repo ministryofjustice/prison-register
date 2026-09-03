@@ -77,7 +77,7 @@ class CourtResource(
 
   @Operation(
     summary = "Update specified court details",
-    description = "Updates court information, excluding its addresses. Requires role ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Updates court information, excluding its addresses. Requires role ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
