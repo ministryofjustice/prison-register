@@ -109,7 +109,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -122,7 +122,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/courts/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -135,7 +135,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -158,7 +158,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -176,7 +176,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -189,7 +189,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.get()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -268,7 +268,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/courts")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -281,7 +281,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courts = webTestClient.get()
           .uri("/courts")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(CourtDto::class.java)
@@ -391,7 +391,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest)
           .exchange()
           .expectStatus().isOk
@@ -405,7 +405,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -416,7 +416,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -429,7 +429,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -442,7 +442,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -455,7 +455,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -468,7 +468,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -481,7 +481,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(courtTypeCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -494,7 +494,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(courtName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -508,7 +508,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -533,7 +533,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val courtDto: CourtDto = webTestClient.put()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateCourtRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -625,7 +625,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -639,7 +639,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -650,7 +650,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -661,7 +661,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -672,7 +672,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -686,7 +686,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.put()
           .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -769,7 +769,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk
@@ -783,7 +783,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -794,7 +794,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -805,7 +805,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -816,7 +816,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -830,7 +830,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -908,7 +908,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -922,7 +922,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -933,7 +933,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -944,7 +944,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -955,7 +955,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -969,7 +969,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.put()
           .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("ROLE_HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
