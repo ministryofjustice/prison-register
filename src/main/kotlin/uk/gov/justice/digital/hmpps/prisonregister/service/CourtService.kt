@@ -6,14 +6,18 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateCourtDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
@@ -49,6 +53,20 @@ class CourtService(
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
 
   fun getAll(): List<CourtDto> = courtRepository.findAll().map { it.toCourtDto() }
+
+  @Transactional
+  fun createCourt(createCourtDto: CreateCourtDto): CourtDto {
+    if (courtRepository.existsById(createCourtDto.courtId)) {
+      throw ValidationException("Court ${createCourtDto.courtId} already exists")
+    }
+
+    val court = createCourtDto.toCourt()
+    court.addresses += createCourtDto.addresses.map { it.toAgencyAddress() }
+    court.emailAddresses += createCourtDto.emailAddresses.map { EmailAddress(it.address) }
+    court.phoneNumbers += createCourtDto.phoneNumbers.map { PhoneNumber(it.number) }
+
+    return courtRepository.saveAndFlush(court).toCourtDto()
+  }
 
   @Transactional
   fun updateCourt(courtId: String, updateCourtDto: UpdateCourtDto): CourtDto {
@@ -222,6 +240,32 @@ class CourtService(
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $courtId") }
     this.courtType = (agencyDto.courtTypeCode ?: "UNK").let { courtTypeRepository.findByIdOrNull(it) } ?: throw ValidationException("${agencyDto.courtTypeCode} court type not found for agency $courtId")
   }
+
+  private fun CreateCourtDto.toCourt() = Court(
+    courtId = this.courtId,
+    name = this.courtName,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    accessibleAccess = this.accessibleAccess,
+    area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for court $courtId") },
+    region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for court $courtId") },
+    geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for court $courtId") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for court $courtId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for court $courtId") },
+    courtType = courtTypeRepository.findByIdOrNull(this.courtTypeCode) ?: throw ValidationException("${this.courtTypeCode} court type not found for court $courtId"),
+    new = true,
+  )
+
+  private fun UpdateAddressDto.toAgencyAddress() = AgencyAddress(
+    addressLine1 = this.addressLine1,
+    addressLine2 = this.addressLine2,
+    town = this.town,
+    county = this.county,
+    postcode = this.postcode,
+    country = this.country,
+  )
 
   private fun Court.update(updateCourtDto: UpdateCourtDto) {
     this.name = updateCourtDto.courtName

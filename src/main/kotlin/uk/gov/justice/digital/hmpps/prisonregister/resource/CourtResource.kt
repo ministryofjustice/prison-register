@@ -11,14 +11,17 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
@@ -30,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhone
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.CourtService
@@ -74,6 +78,56 @@ class CourtResource(
     ],
   )
   fun getCourts(): List<CourtDto> = courtService.getAll()
+
+  @Operation(
+    summary = "Create a new court",
+    description = "Creates a court, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = CreateCourtDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Court Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a court",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createCourt(
+    @RequestBody @Valid
+    createCourtDto: CreateCourtDto,
+  ): CourtDto {
+    val createdCourt = courtService.createCourt(createCourtDto)
+    val now = Instant.now()
+    snsService.sendCourtRegisterInsertedEvent(createCourtDto.courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_INSERT.name,
+      mapOf("courtId" to createCourtDto.courtId, "court" to createCourtDto),
+      now,
+    )
+    return createdCourt
+  }
 
   @Operation(
     summary = "Update specified court details",
@@ -410,4 +464,55 @@ data class UpdateEmailAddressDto(
   @field:Size(max = 100, message = "Email address must be no more than 100 characters")
   @field:Email(message = "Email address is in an incorrect format")
   val address: String,
+)
+
+@Schema(description = "Court Create Record")
+@JsonInclude(NON_NULL)
+data class CreateCourtDto(
+  @Schema(description = "Court ID", example = "SHEFCC", required = true)
+  @field:NotBlank(message = "Court id is required")
+  @field:Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+  val courtId: String,
+  @Schema(description = "Name", example = "N Staffs Youth Court - Newcastle", required = true)
+  @field:NotBlank(message = "Court name is required")
+  @field:Size(max = 40, message = "Court name must be no more than 40 characters")
+  val courtName: String,
+  @Schema(description = "Description", example = "North Staffordshire Youth Court - Newcastle under Lyme")
+  @field:Size(max = 3000, message = "Description must be no more than 3000 characters")
+  val description: String?,
+  @Schema(description = "Whether still active", required = true)
+  val active: Boolean = true,
+  @Schema(description = "Date made inactive", example = "2023-12-31")
+  val inactiveDate: LocalDate?,
+  @Schema(description = "CJIT Code", example = "123456789")
+  @field:Size(max = 12, message = "CJIT code must be no more than 12 characters")
+  val cjitCode: String?,
+  @Schema(description = "Accessible access", example = "ACCESSIBLE")
+  val accessibleAccess: AccessibleAccess?,
+  @Schema(description = "Area code", example = "52")
+  @field:Size(max = 12, message = "Area code must be no more than 12 characters")
+  val areaCode: String?,
+  @Schema(description = "Region code", example = "YOHUM")
+  @field:Size(max = 12, message = "Region code must be no more than 12 characters")
+  val regionCode: String?,
+  @Schema(description = "Geographical Area code", example = "WYORKS")
+  @field:Size(max = 12, message = "Geographical area code must be no more than 12 characters")
+  val geographicalAreaCode: String?,
+  @Schema(description = "Local Authority code", example = "00CG")
+  val localAuthorityCode: String?,
+  @Schema(description = "Prisoner Payroll Region code", example = "NEY")
+  val payrollRegionCode: String?,
+  @Schema(description = "Court Type code", example = "CC", required = true)
+  @field:NotBlank(message = "Court type code is required")
+  @field:Size(max = 12, message = "Court type code must be no more than 12 characters")
+  val courtTypeCode: String,
+  @Schema(description = "Addresses")
+  @field:Valid
+  val addresses: List<UpdateAddressDto> = listOf(),
+  @Schema(description = "Email addresses")
+  @field:Valid
+  val emailAddresses: List<UpdateEmailAddressDto> = listOf(),
+  @Schema(description = "Phone numbers")
+  @field:Valid
+  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
 )
