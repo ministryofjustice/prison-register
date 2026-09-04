@@ -56,6 +56,17 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendCourtRegisterInsertedEvent(courtId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSCourtDomainEvent(
+        "register.court.inserted",
+        CourtAdditionalInformation(courtId),
+        occurredAt,
+        "A court has been inserted",
+      ),
+    )
+  }
+
   private fun publishToDomainEventsTopic(payload: HMPPSDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.prisonId)
     publish(payload.eventType, payload)
