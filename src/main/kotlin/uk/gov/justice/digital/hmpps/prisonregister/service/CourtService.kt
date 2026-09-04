@@ -10,10 +10,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
@@ -87,30 +85,26 @@ class CourtService(
   @Transactional
   fun updateCourtPhoneNumber(courtId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
-    val existingPhoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
-    val updatedPhoneNumber = PhoneNumber(value = updatePhoneNumberDto.number)
-    court.phoneNumbers.remove(existingPhoneNumber)
-    court.phoneNumbers.add(updatedPhoneNumber)
-    courtRepository.saveAndFlush(court)
+    val phoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
+
+    phoneNumber.value = updatePhoneNumberDto.number
 
     return AgencyPhoneDto(
-      id = updatedPhoneNumber.id,
-      number = updatedPhoneNumber.value,
+      id = phoneNumber.id,
+      number = phoneNumber.value,
     )
   }
 
   @Transactional
   fun updateCourtEmailAddress(courtId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
-    val existingEmailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
-    val updatedEmailAddress = EmailAddress(value = updateEmailAddressDto.address)
-    court.emailAddresses.remove(existingEmailAddress)
-    court.emailAddresses.add(updatedEmailAddress)
-    courtRepository.saveAndFlush(court)
+    val emailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
+
+    emailAddress.value = updateEmailAddressDto.address
 
     return AgencyEmailDto(
-      id = updatedEmailAddress.id,
-      address = updatedEmailAddress.value,
+      id = emailAddress.id,
+      address = emailAddress.value,
     )
   }
 
