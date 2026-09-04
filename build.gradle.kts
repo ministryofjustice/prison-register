@@ -40,8 +40,8 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.9.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.9.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.10.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.10.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.35")
