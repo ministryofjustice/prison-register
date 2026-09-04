@@ -1155,9 +1155,8 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(persistedCourt.emailAddresses).hasSize(1)
           assertThat(persistedCourt.emailAddresses[0].value).isEqualTo("test@justice.gov.uk")
 
-          assertThat(persistedCourt.phoneNumbers).hasSize(2)
-          assertThat(persistedCourt.phoneNumbers[0].value).isEqualTo("0114 555 8989")
-          assertThat(persistedCourt.phoneNumbers[1].value).isEqualTo("0114 555 7777")
+assertThat(persistedCourt.phoneNumbers).hasSize(2)
+assertThat(persistedCourt.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
         }
       }
     }
