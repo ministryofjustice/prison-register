@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
@@ -18,6 +19,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
 class CourtResourceIntTest : IntegrationTestBase() {
@@ -27,6 +29,9 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var courtRepository: CourtRepository
+
+  @Autowired
+  lateinit var transactionHelper: TransactionHelper
 
   @DisplayName("Get court by id")
   @Nested
@@ -976,6 +981,183 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+      }
+    }
+  }
+
+  @DisplayName("Create court")
+  @Nested
+  inner class CreateCourt {
+    val createCourtRequest = CreateCourtDto(
+      courtId = "NEWCRT",
+      courtName = "New Court",
+      description = "The New Court",
+      active = true,
+      inactiveDate = null,
+      cjitCode = "123456789",
+      accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      areaCode = "52",
+      regionCode = "YOHUM",
+      geographicalAreaCode = "WYORKS",
+      localAuthorityCode = "00CG",
+      payrollRegionCode = "NEY",
+      courtTypeCode = "CC",
+      addresses = listOf(
+        UpdateAddressDto(
+          addressLine1 = "Court House, 31 High Street",
+          addressLine2 = "City Centre",
+          town = "Sheffield",
+          county = "South Yorkshire",
+          postcode = "S1 3GG",
+          country = "England",
+        ),
+      ),
+      emailAddresses = listOf(
+        UpdateEmailAddressDto(address = "test@justice.gov.uk"),
+      ),
+      phoneNumbers = listOf(
+        UpdatePhoneNumberDto(number = "0114 555 8989"),
+        UpdatePhoneNumberDto(number = "0114 555 7777"),
+      ),
+    )
+
+    @AfterEach
+    fun tearDown() {
+      courtRepository.findByIdOrNull(createCourtRequest.courtId)?.let { courtRepository.delete(it) }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createCourtRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createCourtRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createCourtRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `court id already exists`() {
+        dsl.court(courtId = createCourtRequest.courtId, name = "Existing Court") {}
+
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createCourtRequest)
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Court ${createCourtRequest.courtId} already exists")
+      }
+
+      @Test
+      fun `area code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createCourtRequest.copy(areaCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for court ${createCourtRequest.courtId}")
+      }
+
+      @Test
+      fun `court type code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createCourtRequest.copy(courtTypeCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ court type not found for court ${createCourtRequest.courtId}")
+      }
+
+      @Test
+      fun `court name is blank`() {
+        webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createCourtRequest.copy(courtName = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the court, address, email address and phone number`() {
+        webTestClient.post()
+          .uri("/courts")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createCourtRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        transactionHelper.runInTransaction {
+          val persistedCourt = courtRepository.findByIdOrNull(createCourtRequest.courtId)
+
+          assertThat(persistedCourt).isNotNull
+          assertThat(persistedCourt!!.name).isEqualTo("New Court")
+          assertThat(persistedCourt.description).isEqualTo("The New Court")
+          assertThat(persistedCourt.active).isTrue
+          assertThat(persistedCourt.cjitCode).isEqualTo("123456789")
+          assertThat(persistedCourt.accessibleAccess).isEqualTo(AccessibleAccess.ACCESSIBLE)
+          assertThat(persistedCourt.area?.code).isEqualTo("52")
+          assertThat(persistedCourt.region?.code).isEqualTo("YOHUM")
+          assertThat(persistedCourt.geographicalArea?.code).isEqualTo("WYORKS")
+          assertThat(persistedCourt.localAuthority?.code).isEqualTo("00CG")
+          assertThat(persistedCourt.payrollRegion?.code).isEqualTo("NEY")
+          assertThat(persistedCourt.courtType.code).isEqualTo("CC")
+
+          assertThat(persistedCourt.addresses).hasSize(1)
+          assertThat(persistedCourt.addresses[0].addressLine1).isEqualTo("Court House, 31 High Street")
+          assertThat(persistedCourt.addresses[0].addressLine2).isEqualTo("City Centre")
+          assertThat(persistedCourt.addresses[0].town).isEqualTo("Sheffield")
+          assertThat(persistedCourt.addresses[0].county).isEqualTo("South Yorkshire")
+          assertThat(persistedCourt.addresses[0].postcode).isEqualTo("S1 3GG")
+          assertThat(persistedCourt.addresses[0].country).isEqualTo("England")
+
+          assertThat(persistedCourt.emailAddresses).hasSize(1)
+          assertThat(persistedCourt.emailAddresses[0].value).isEqualTo("test@justice.gov.uk")
+
+          assertThat(persistedCourt.phoneNumbers).hasSize(2)
+          assertThat(persistedCourt.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
+        }
       }
     }
   }
