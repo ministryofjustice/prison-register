@@ -846,6 +846,161 @@ class CourtResourceIntTest : IntegrationTestBase() {
     }
   }
 
+  @DisplayName("Create court email address")
+  @Nested
+  inner class CreateCourtEmailAddress {
+    lateinit var court: Court
+
+    val createEmailAddressRequest = UpdateEmailAddressDto(address = "new@justice.gov.uk")
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        email(
+          emailAddress = "existing@test.com",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.post()
+          .uri("/courts/id/ZZZZ/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if email address is in an incorrect format`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if email address is blank`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest.copy(address = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if email address already exists`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Email address ${createEmailAddressRequest.address} already exists")
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the new email address against the court`() {
+        val emailDto: AgencyEmailDto = webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        assertThat(emailDto.address).isEqualTo("new@justice.gov.uk")
+        assertThat(emailDto.id).isNotEqualTo(-1)
+
+        transactionHelper.runInTransaction {
+          val persistedCourt = courtRepository.findByIdOrNull("SHEFCC")!!
+          assertThat(persistedCourt.emailAddresses).hasSize(2)
+          val persistedEmailAddress = persistedCourt.emailAddresses.find { it.id == emailDto.id }
+          assertThat(persistedEmailAddress).isNotNull
+          assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
+        }
+      }
+    }
+  }
+
   @DisplayName("Update court email address")
   @Nested
   inner class UpdateCourtEmailAddress {

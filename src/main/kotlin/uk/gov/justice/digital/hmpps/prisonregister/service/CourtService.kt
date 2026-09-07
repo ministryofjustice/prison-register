@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
@@ -43,6 +44,7 @@ class CourtService(
   private val courtTypeRepository: CourtTypeRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
+  private val emailAddressRepository: EmailAddressRepository,
 ) {
   fun deleteAll() {
     courtRepository.deleteAll()
@@ -110,6 +112,24 @@ class CourtService(
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
+    )
+  }
+
+  @Transactional
+  fun createCourtEmailAddress(courtId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+
+    if (court.emailAddresses.any { it.value == updateEmailAddressDto.address }) {
+      throw ValidationException("Email address ${updateEmailAddressDto.address} already exists")
+    }
+
+    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    court.emailAddresses += emailAddress
+    courtRepository.flush()
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
     )
   }
 
