@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGIS
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_PHONE_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.CourtService
@@ -250,6 +251,70 @@ class CourtResource(
   }
 
   @Operation(
+    summary = "Create a court phone number",
+    description = "Creates a new phone number for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Court Phone Number Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad information provided to create court phone number",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a court phone number",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Court Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        description = "Phone number already exists",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/id/{courtId}/phone-number")
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createCourtPhoneNumber(
+    @Schema(description = "Court ID", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+    courtId: String,
+    @RequestBody @Valid
+    updatePhoneNumberDto: UpdatePhoneNumberDto,
+  ): AgencyPhoneDto {
+    val createdPhoneNumber = courtService.createCourtPhoneNumber(courtId, updatePhoneNumberDto)
+    val now = Instant.now()
+    snsService.sendCourtRegisterAmendedEvent(courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_PHONE_INSERT.name,
+      mapOf("courtId" to courtId, "phoneNumber" to createdPhoneNumber),
+      now,
+    )
+    return createdPhoneNumber
+  }
+
+  @Operation(
     summary = "Update specified court phone number",
     description = "Updates a single phone number for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -344,6 +409,11 @@ class CourtResource(
       ApiResponse(
         responseCode = "404",
         description = "Court Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        description = "Email address already exists",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],

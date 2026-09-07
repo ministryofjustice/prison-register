@@ -707,6 +707,161 @@ class CourtResourceIntTest : IntegrationTestBase() {
     }
   }
 
+  @DisplayName("Create court phone number")
+  @Nested
+  inner class CreateCourtPhoneNumber {
+    lateinit var court: Court
+
+    val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        phoneNumber(
+          phoneNumber = "0114 555 1111",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.post()
+          .uri("/courts/id/ZZZZ/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if phone number is in an incorrect format`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if phone number is blank`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest.copy(number = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `409 if phone number already exists`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Phone number ${createPhoneNumberRequest.number} already exists")
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the new phone number against the court`() {
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
+          .uri("/courts/id/SHEFCC/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+        assertThat(phoneDto.id).isNotEqualTo(-1)
+
+        transactionHelper.runInTransaction {
+          val persistedCourt = courtRepository.findByIdOrNull("SHEFCC")!!
+          assertThat(persistedCourt.phoneNumbers).hasSize(2)
+          val persistedPhoneNumber = persistedCourt.phoneNumbers.find { it.id == phoneDto.id }
+          assertThat(persistedPhoneNumber).isNotNull
+          assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
+        }
+      }
+    }
+  }
+
   @DisplayName("Update court phone number")
   @Nested
   inner class UpdateCourtPhoneNumber {
@@ -954,7 +1109,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `400 if email address already exists`() {
+      fun `409 if email address already exists`() {
         webTestClient.post()
           .uri("/courts/id/SHEFCC/email-address")
           .accept(MediaType.APPLICATION_JSON)
@@ -969,7 +1124,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
-          .expectStatus().isBadRequest.expectBodyResponse()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
 
         assertThat(errorResponse.developerMessage).isEqualTo("Email address ${createEmailAddressRequest.address} already exists")
       }
