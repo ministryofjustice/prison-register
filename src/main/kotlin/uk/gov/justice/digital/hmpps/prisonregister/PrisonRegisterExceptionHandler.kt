@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsAlreadyExistException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
 
 @RestControllerAdvice
@@ -68,6 +70,24 @@ class PrisonRegisterExceptionHandler {
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
       .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message, userMessage = message))
+  }
+
+  @ExceptionHandler(EmailAddressAlreadyExistsException::class)
+  fun handleException(e: EmailAddressAlreadyExistsException): ResponseEntity<ErrorResponse> {
+    val message = "Email address ${e.emailAddress} already exists"
+    log.info(message)
+    return ResponseEntity
+      .status(HttpStatus.CONFLICT)
+      .body(ErrorResponse(status = HttpStatus.CONFLICT, developerMessage = message, userMessage = message))
+  }
+
+  @ExceptionHandler(PhoneNumberAlreadyExistsException::class)
+  fun handleException(e: PhoneNumberAlreadyExistsException): ResponseEntity<ErrorResponse> {
+    val message = "Phone number ${e.phoneNumber} already exists"
+    log.info(message)
+    return ResponseEntity
+      .status(HttpStatus.CONFLICT)
+      .body(ErrorResponse(status = HttpStatus.CONFLICT, developerMessage = message, userMessage = message))
   }
 
   @ExceptionHandler(ValidationException::class)
