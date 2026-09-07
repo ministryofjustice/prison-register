@@ -82,6 +82,25 @@ class CourtService(
   }
 
   @Transactional
+  fun createCourtAddress(courtId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+
+    val address = updateAddressDto.toAgencyAddress()
+    court.addresses += address
+    courtRepository.flush()
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  @Transactional
   fun updateCourtAddress(courtId: String, addressId: Long, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     val address = court.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for court $courtId")
