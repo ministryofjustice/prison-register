@@ -119,7 +119,8 @@ class CourtService(
   fun createCourtEmailAddress(courtId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
-    if (court.emailAddresses.any { it.value == updateEmailAddressDto.address }) {
+    // email address is unique across all establishments
+    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
       throw ValidationException("Email address ${updateEmailAddressDto.address} already exists")
     }
 
