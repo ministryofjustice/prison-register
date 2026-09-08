@@ -14,8 +14,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -29,6 +32,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var courtRepository: CourtRepository
+
+  @Autowired
+  lateinit var agencyAddressRepository: AgencyAddressRepository
+
+  @Autowired
+  lateinit var emailAddressRepository: EmailAddressRepository
+
+  @Autowired
+  lateinit var phoneNumberRepository: PhoneNumberRepository
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
@@ -549,6 +561,108 @@ class CourtResourceIntTest : IntegrationTestBase() {
         assertThat(courtDto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
         assertThat(courtDto.phoneNumbers).hasSize(1)
         assertThat(courtDto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+      }
+    }
+  }
+
+  @DisplayName("Delete court")
+  @Nested
+  inner class DeleteCourt {
+    lateinit var court: Court
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        address(
+          addressLine1 = "Court House, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.findByIdOrNull(court.courtId)?.let { courtRepository.deleteById(court.courtId) }
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/ZZZZ")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the court, along with its addresses, emails and phone numbers`() {
+        val addressId = court.addresses[0].id
+        val emailAddressId = court.emailAddresses[0].id
+        val phoneNumberId = court.phoneNumbers[0].id
+
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(courtRepository.findByIdOrNull("SHEFCC")).isNull()
+          assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
+          assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
+          assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
+        }
       }
     }
   }
