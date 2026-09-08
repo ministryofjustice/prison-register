@@ -553,6 +553,101 @@ class CourtResourceIntTest : IntegrationTestBase() {
     }
   }
 
+  @DisplayName("Delete court")
+  @Nested
+  inner class DeleteCourt {
+    lateinit var court: Court
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        address(
+          addressLine1 = "Court House, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.findByIdOrNull(court.courtId)?.let { courtRepository.deleteById(court.courtId) }
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/ZZZZ")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the court, along with its addresses, emails and phone numbers`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(courtRepository.findByIdOrNull("SHEFCC")).isNull()
+        }
+      }
+    }
+  }
+
   @DisplayName("Create court address")
   @Nested
   inner class CreateCourtAddress {

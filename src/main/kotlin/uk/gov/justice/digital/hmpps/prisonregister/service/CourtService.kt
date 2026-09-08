@@ -82,6 +82,12 @@ class CourtService(
   }
 
   @Transactional
+  fun deleteCourt(courtId: String) {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    courtRepository.delete(court)
+  }
+
+  @Transactional
   fun createCourtAddress(courtId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 

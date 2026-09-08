@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhone
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_INSERT
@@ -189,6 +191,50 @@ class CourtResource(
     )
     return updatedCourt
   }
+
+  @Operation(
+    summary = "Delete specified court",
+    description = "Deletes a court, along with any addresses, email addresses and phone numbers associated with it. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Court Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a court",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Court Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{courtId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteCourt(
+    @Schema(description = "Court ID", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+    courtId: String,
+  ) {
+    courtService.deleteCourt(courtId)
+    val now = Instant.now()
+    snsService.sendCourtRegisterDeletedEvent(courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_DELETE.name,
+      mapOf("courtId" to courtId),
+      now,
+    )
+  }
+
 
   @Operation(
     summary = "Create a court address",

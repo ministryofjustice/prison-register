@@ -67,6 +67,17 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendCourtRegisterDeletedEvent(courtId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSCourtDomainEvent(
+        "register.court.deleted",
+        CourtAdditionalInformation(courtId),
+        occurredAt,
+        "A court has been deleted",
+      ),
+    )
+  }
+
   private fun publishToDomainEventsTopic(payload: HMPPSDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.prisonId)
     publish(payload.eventType, payload)
