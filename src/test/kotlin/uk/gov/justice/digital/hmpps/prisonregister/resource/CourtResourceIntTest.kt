@@ -553,6 +553,155 @@ class CourtResourceIntTest : IntegrationTestBase() {
     }
   }
 
+  @DisplayName("Create court address")
+  @Nested
+  inner class CreateCourtAddress {
+    lateinit var court: Court
+
+    val createAddressRequest = UpdateAddressDto(
+      addressLine1 = "Court House, 31 High Street",
+      addressLine2 = "City Centre",
+      town = "Sheffield",
+      county = "South Yorkshire",
+      postcode = "S1 3GG",
+      country = "England",
+    )
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        address(
+          addressLine1 = "Existing Court House",
+          town = "Leeds",
+          postcode = "LS1 1AA",
+          country = "England",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.deleteById(court.courtId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.post()
+          .uri("/courts/id/ZZZZ/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if town is missing`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if postcode is too long`() {
+        webTestClient.post()
+          .uri("/courts/id/SHEFCC/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the new address against the court`() {
+        val addressDto: AgencyAddressDto = webTestClient.post()
+          .uri("/courts/id/SHEFCC/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        assertThat(addressDto.addressLine1).isEqualTo("Court House, 31 High Street")
+        assertThat(addressDto.addressLine2).isEqualTo("City Centre")
+        assertThat(addressDto.town).isEqualTo("Sheffield")
+        assertThat(addressDto.county).isEqualTo("South Yorkshire")
+        assertThat(addressDto.postcode).isEqualTo("S1 3GG")
+        assertThat(addressDto.country).isEqualTo("England")
+        assertThat(addressDto.id).isNotEqualTo(-1)
+
+        transactionHelper.runInTransaction {
+          val persistedCourt = courtRepository.findByIdOrNull("SHEFCC")!!
+          assertThat(persistedCourt.addresses).hasSize(2)
+          val persistedAddress = persistedCourt.addresses.find { it.id == addressDto.id }
+          assertThat(persistedAddress).isNotNull
+          assertThat(persistedAddress!!.addressLine1).isEqualTo("Court House, 31 High Street")
+        }
+      }
+    }
+  }
+
   @DisplayName("Update court address")
   @Nested
   inner class UpdateCourtAddress {
