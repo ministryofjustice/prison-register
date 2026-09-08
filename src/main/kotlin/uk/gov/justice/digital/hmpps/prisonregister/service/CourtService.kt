@@ -132,6 +132,25 @@ class CourtService(
   }
 
   @Transactional
+  fun deleteCourtAddress(courtId: String, addressId: Long): AgencyAddressDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    val address = court.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for court $courtId")
+
+    court.addresses.remove(address)
+
+    // returned for audit payload
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  @Transactional
   fun createCourtPhoneNumber(courtId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
@@ -164,6 +183,19 @@ class CourtService(
   }
 
   @Transactional
+  fun deleteCourtPhoneNumber(courtId: String, phoneNumberId: Long): AgencyPhoneDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    val phoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
+
+    court.phoneNumbers.remove(phoneNumber)
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  @Transactional
   fun createCourtEmailAddress(courtId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
@@ -188,6 +220,19 @@ class CourtService(
     val emailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
 
     emailAddress.value = updateEmailAddressDto.address
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
+    )
+  }
+
+  @Transactional
+  fun deleteCourtEmailAddress(courtId: String, emailAddressId: Long): AgencyEmailDto {
+    val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
+    val emailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
+
+    court.emailAddresses.remove(emailAddress)
 
     return AgencyEmailDto(
       id = emailAddress.id,
