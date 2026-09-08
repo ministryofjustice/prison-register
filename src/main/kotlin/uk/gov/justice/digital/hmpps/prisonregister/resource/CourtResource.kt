@@ -235,7 +235,6 @@ class CourtResource(
     )
   }
 
-
   @Operation(
     summary = "Create a court address",
     description = "Creates a new address for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",

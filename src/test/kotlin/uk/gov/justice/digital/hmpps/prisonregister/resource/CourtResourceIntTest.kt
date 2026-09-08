@@ -14,8 +14,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -29,6 +32,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var courtRepository: CourtRepository
+
+  @Autowired
+  lateinit var agencyAddressRepository: AgencyAddressRepository
+
+  @Autowired
+  lateinit var emailAddressRepository: EmailAddressRepository
+
+  @Autowired
+  lateinit var phoneNumberRepository: PhoneNumberRepository
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
@@ -634,6 +646,10 @@ class CourtResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will delete the court, along with its addresses, emails and phone numbers`() {
+        val addressId = court.addresses[0].id
+        val emailAddressId = court.emailAddresses[0].id
+        val phoneNumberId = court.phoneNumbers[0].id
+
         webTestClient.delete()
           .uri("/courts/id/SHEFCC")
           .accept(MediaType.APPLICATION_JSON)
@@ -643,6 +659,9 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(courtRepository.findByIdOrNull("SHEFCC")).isNull()
+          assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
+          assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
+          assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
         }
       }
     }
