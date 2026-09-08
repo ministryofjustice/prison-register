@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_UPDATE
@@ -187,6 +188,65 @@ class CourtResource(
       now,
     )
     return updatedCourt
+  }
+
+  @Operation(
+    summary = "Create a court address",
+    description = "Creates a new address for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdateAddressDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Court Address Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad information provided to create court address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a court address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Court Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/id/{courtId}/address")
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createCourtAddress(
+    @Schema(description = "Court ID", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+    courtId: String,
+    @RequestBody @Valid
+    updateAddressDto: UpdateAddressDto,
+  ): AgencyAddressDto {
+    val createdAddress = courtService.createCourtAddress(courtId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendCourtRegisterAmendedEvent(courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_ADDRESS_INSERT.name,
+      mapOf("courtId" to courtId, "address" to createdAddress),
+      now,
+    )
+    return createdAddress
   }
 
   @Operation(
