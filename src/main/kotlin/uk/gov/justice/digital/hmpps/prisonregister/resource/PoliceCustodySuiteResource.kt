@@ -72,7 +72,7 @@ class PoliceCustodySuiteResource(
 
   @Operation(
     summary = "Update specified police custody suite details",
-    description = "Updates police custody suite information, excluding its addresses. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Updates police custody suite information, excluding its addresses, email addresses and phone numbers. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
