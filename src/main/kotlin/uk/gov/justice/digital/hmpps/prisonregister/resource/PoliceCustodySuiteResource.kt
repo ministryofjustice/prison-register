@@ -10,14 +10,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -27,6 +30,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_EMAIL_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.PoliceCustodySuiteService
@@ -69,6 +73,54 @@ class PoliceCustodySuiteResource(
     ],
   )
   fun getPoliceCustodySuites(): List<PoliceCustodySuiteDto> = policeCustodySuiteService.getAll()
+
+  @Operation(
+    summary = "Create a new police custody suite",
+    description = "Creates a police custody suite, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = CreatePoliceCustodySuiteDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Police Custody Suite Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a police custody suite",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createPoliceCustodySuite(
+    @RequestBody @Valid
+    createPoliceCustodySuiteDto: CreatePoliceCustodySuiteDto,
+  ): PoliceCustodySuiteDto {
+    val createdPoliceCustodySuite = policeCustodySuiteService.createPoliceCustodySuite(createPoliceCustodySuiteDto)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_INSERT.name,
+      mapOf("policeCustodySuiteId" to createPoliceCustodySuiteDto.policeCustodySuiteId, "policeCustodySuite" to createPoliceCustodySuiteDto),
+      Instant.now(),
+    )
+    return createdPoliceCustodySuite
+  }
 
   @Operation(
     summary = "Update specified police custody suite details",
@@ -353,4 +405,49 @@ data class UpdatePoliceCustodySuiteDto(
   val localAuthorityCode: String?,
   @Schema(description = "Prisoner Payroll Region code", example = "NEY")
   val payrollRegionCode: String?,
+)
+
+@Schema(description = "Police Custody Suite Create Record")
+@JsonInclude(NON_NULL)
+data class CreatePoliceCustodySuiteDto(
+  @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+  @field:NotBlank(message = "Police Custody Suite id is required")
+  @field:Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+  val policeCustodySuiteId: String,
+  @Schema(description = "Name", example = "Sheffield Police Custody Suite", required = true)
+  @field:NotBlank(message = "Police Custody Suite name is required")
+  @field:Size(max = 40, message = "Police Custody Suite name must be no more than 40 characters")
+  val policeCustodySuiteName: String,
+  @Schema(description = "Description", example = "Sheffield City Centre Police Custody Suite")
+  @field:Size(max = 3000, message = "Description must be no more than 3000 characters")
+  val description: String?,
+  @Schema(description = "Whether still active", required = true)
+  val active: Boolean = true,
+  @Schema(description = "Date made inactive", example = "2023-12-31")
+  val inactiveDate: LocalDate?,
+  @Schema(description = "CJIT Code", example = "123456789")
+  @field:Size(max = 12, message = "CJIT code must be no more than 12 characters")
+  val cjitCode: String?,
+  @Schema(description = "Area code", example = "52")
+  @field:Size(max = 12, message = "Area code must be no more than 12 characters")
+  val areaCode: String?,
+  @Schema(description = "Region code", example = "YOHUM")
+  @field:Size(max = 12, message = "Region code must be no more than 12 characters")
+  val regionCode: String?,
+  @Schema(description = "Geographical Area code", example = "WYORKS")
+  @field:Size(max = 12, message = "Geographical area code must be no more than 12 characters")
+  val geographicalAreaCode: String?,
+  @Schema(description = "Local Authority code", example = "00CG")
+  val localAuthorityCode: String?,
+  @Schema(description = "Prisoner Payroll Region code", example = "NEY")
+  val payrollRegionCode: String?,
+  @Schema(description = "Addresses")
+  @field:Valid
+  val addresses: List<UpdateAddressDto> = listOf(),
+  @Schema(description = "Email addresses")
+  @field:Valid
+  val emailAddresses: List<UpdateEmailAddressDto> = listOf(),
+  @Schema(description = "Phone numbers")
+  @field:Valid
+  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
 )

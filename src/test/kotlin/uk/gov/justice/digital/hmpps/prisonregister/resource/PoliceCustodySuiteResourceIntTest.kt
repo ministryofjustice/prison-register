@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepos
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
 class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
@@ -26,6 +28,9 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var policeCustodySuiteRepository: PoliceCustodySuiteRepository
+
+  @Autowired
+  lateinit var transactionHelper: TransactionHelper
 
   @DisplayName("Get police custody suite by id")
   @Nested
@@ -944,6 +949,166 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+      }
+    }
+  }
+
+  @DisplayName("Create police custody suite")
+  @Nested
+  inner class CreatePoliceCustodySuite {
+    val createPoliceCustodySuiteRequest = CreatePoliceCustodySuiteDto(
+      policeCustodySuiteId = "NEWPCS",
+      policeCustodySuiteName = "New Police Custody Suite",
+      description = "The New Police Custody Suite",
+      active = true,
+      inactiveDate = null,
+      cjitCode = "123456789",
+      areaCode = "52",
+      regionCode = "YOHUM",
+      geographicalAreaCode = "WYORKS",
+      localAuthorityCode = "00CG",
+      payrollRegionCode = "NEY",
+      addresses = listOf(
+        UpdateAddressDto(
+          addressLine1 = "Custody Suite, 31 High Street",
+          addressLine2 = "City Centre",
+          town = "Sheffield",
+          county = "South Yorkshire",
+          postcode = "S1 3GG",
+          country = "England",
+        ),
+      ),
+      emailAddresses = listOf(
+        UpdateEmailAddressDto(address = "test@justice.gov.uk"),
+      ),
+      phoneNumbers = listOf(
+        UpdatePhoneNumberDto(number = "0114 555 8989"),
+        UpdatePhoneNumberDto(number = "0114 555 7777"),
+      ),
+    )
+
+    @AfterEach
+    fun tearDown() {
+      policeCustodySuiteRepository.findByIdOrNull(createPoliceCustodySuiteRequest.policeCustodySuiteId)?.let { policeCustodySuiteRepository.delete(it) }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createPoliceCustodySuiteRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createPoliceCustodySuiteRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPoliceCustodySuiteRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `police custody suite id already exists`() {
+        dsl.policeCustodySuite(policeCustodySuiteId = createPoliceCustodySuiteRequest.policeCustodySuiteId, name = "Existing Police Custody Suite") {}
+
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPoliceCustodySuiteRequest)
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Police custody suite ${createPoliceCustodySuiteRequest.policeCustodySuiteId} already exists")
+      }
+
+      @Test
+      fun `area code is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPoliceCustodySuiteRequest.copy(areaCode = "ZZZ"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for police custody suite ${createPoliceCustodySuiteRequest.policeCustodySuiteId}")
+      }
+
+      @Test
+      fun `police custody suite name is blank`() {
+        webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPoliceCustodySuiteRequest.copy(policeCustodySuiteName = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the police custody suite, address, email address and phone number`() {
+        webTestClient.post()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPoliceCustodySuiteRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        transactionHelper.runInTransaction {
+          val persisted = policeCustodySuiteRepository.findByIdOrNull(createPoliceCustodySuiteRequest.policeCustodySuiteId)
+
+          assertThat(persisted).isNotNull
+          assertThat(persisted!!.name).isEqualTo("New Police Custody Suite")
+          assertThat(persisted.description).isEqualTo("The New Police Custody Suite")
+          assertThat(persisted.active).isTrue
+          assertThat(persisted.cjitCode).isEqualTo("123456789")
+          assertThat(persisted.area?.code).isEqualTo("52")
+          assertThat(persisted.region?.code).isEqualTo("YOHUM")
+          assertThat(persisted.geographicalArea?.code).isEqualTo("WYORKS")
+          assertThat(persisted.localAuthority?.code).isEqualTo("00CG")
+          assertThat(persisted.payrollRegion?.code).isEqualTo("NEY")
+
+          assertThat(persisted.addresses).hasSize(1)
+          assertThat(persisted.addresses[0].addressLine1).isEqualTo("Custody Suite, 31 High Street")
+          assertThat(persisted.addresses[0].addressLine2).isEqualTo("City Centre")
+          assertThat(persisted.addresses[0].town).isEqualTo("Sheffield")
+          assertThat(persisted.addresses[0].county).isEqualTo("South Yorkshire")
+          assertThat(persisted.addresses[0].postcode).isEqualTo("S1 3GG")
+          assertThat(persisted.addresses[0].country).isEqualTo("England")
+
+          assertThat(persisted.emailAddresses).hasSize(1)
+          assertThat(persisted.emailAddresses[0].value).isEqualTo("test@justice.gov.uk")
+
+          assertThat(persisted.phoneNumbers).hasSize(2)
+          assertThat(persisted.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
+        }
       }
     }
   }
