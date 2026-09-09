@@ -412,7 +412,7 @@ data class UpdatePoliceCustodySuiteDto(
 data class CreatePoliceCustodySuiteDto(
   @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
   @field:NotBlank(message = "Police Custody Suite id is required")
-  @field:Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+  @field:Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 characters")
   val policeCustodySuiteId: String,
   @Schema(description = "Name", example = "Sheffield Police Custody Suite", required = true)
   @field:NotBlank(message = "Police Custody Suite name is required")
