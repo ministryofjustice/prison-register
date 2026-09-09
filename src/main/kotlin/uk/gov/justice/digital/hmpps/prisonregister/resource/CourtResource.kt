@@ -32,12 +32,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_DELETE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_EMAIL_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_PHONE_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_PHONE_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_UPDATE
@@ -356,6 +359,52 @@ class CourtResource(
   }
 
   @Operation(
+    summary = "Delete specified court address",
+    description = "Deletes a single address for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Court Address Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a court address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Court Id or Address Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{courtId}/address/{addressId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteCourtAddress(
+    @Schema(description = "Court ID", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+    courtId: String,
+    @Schema(description = "Address Id", example = "234231", required = true)
+    @PathVariable
+    addressId: Long,
+  ) {
+    val deletedAddress = courtService.deleteCourtAddress(courtId, addressId)
+    val now = Instant.now()
+    snsService.sendCourtRegisterAmendedEvent(courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_ADDRESS_DELETE.name,
+      mapOf("courtId" to courtId, "address" to deletedAddress),
+      now,
+    )
+  }
+
+  @Operation(
     summary = "Create a court phone number",
     description = "Creates a new phone number for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -481,6 +530,52 @@ class CourtResource(
   }
 
   @Operation(
+    summary = "Delete specified court phone number",
+    description = "Deletes a single phone number for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Court Phone Number Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a court phone number",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Court Id or Phone Number Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{courtId}/phone-number/{phoneNumberId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteCourtPhoneNumber(
+    @Schema(description = "Court ID", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+    courtId: String,
+    @Schema(description = "Phone Number Id", example = "234231", required = true)
+    @PathVariable
+    phoneNumberId: Long,
+  ) {
+    val deletedPhoneNumber = courtService.deleteCourtPhoneNumber(courtId, phoneNumberId)
+    val now = Instant.now()
+    snsService.sendCourtRegisterAmendedEvent(courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_PHONE_DELETE.name,
+      mapOf("courtId" to courtId, "phoneNumber" to deletedPhoneNumber),
+      now,
+    )
+  }
+
+  @Operation(
     summary = "Create a court email address",
     description = "Creates a new email address for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -603,6 +698,52 @@ class CourtResource(
       now,
     )
     return updatedEmailAddress
+  }
+
+  @Operation(
+    summary = "Delete specified court email address",
+    description = "Deletes a single email address for a court. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Court Email Address Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a court email address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Court Id or Email Address Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{courtId}/email-address/{emailAddressId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteCourtEmailAddress(
+    @Schema(description = "Court ID", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
+    courtId: String,
+    @Schema(description = "Email Address Id", example = "234231", required = true)
+    @PathVariable
+    emailAddressId: Long,
+  ) {
+    val deletedEmailAddress = courtService.deleteCourtEmailAddress(courtId, emailAddressId)
+    val now = Instant.now()
+    snsService.sendCourtRegisterAmendedEvent(courtId, now)
+    auditService.sendAuditEvent(
+      COURT_REGISTER_EMAIL_DELETE.name,
+      mapOf("courtId" to courtId, "emailAddress" to deletedEmailAddress),
+      now,
+    )
   }
 }
 

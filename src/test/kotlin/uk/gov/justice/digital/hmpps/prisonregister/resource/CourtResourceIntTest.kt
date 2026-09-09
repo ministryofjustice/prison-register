@@ -970,6 +970,110 @@ class CourtResourceIntTest : IntegrationTestBase() {
     }
   }
 
+  @DisplayName("Delete court address")
+  @Nested
+  inner class DeleteCourtAddress {
+    lateinit var court: Court
+    var addressId: Long = -1
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        address(
+          addressLine1 = "Court House, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+      }
+      addressId = court.addresses[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.findByIdOrNull(court.courtId)?.let { courtRepository.deleteById(court.courtId) }
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/ZZZZ/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if address not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/address/{addressId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the address`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
+          assertThat(courtRepository.findByIdOrNull("SHEFCC")?.addresses).isEmpty()
+        }
+      }
+    }
+  }
+
   @DisplayName("Create court phone number")
   @Nested
   inner class CreateCourtPhoneNumber {
@@ -1264,6 +1368,107 @@ class CourtResourceIntTest : IntegrationTestBase() {
     }
   }
 
+  @DisplayName("Delete court phone number")
+  @Nested
+  inner class DeleteCourtPhoneNumber {
+    lateinit var court: Court
+    var phoneNumberId: Long = -1
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+      phoneNumberId = court.phoneNumbers[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.findByIdOrNull(court.courtId)?.let { courtRepository.deleteById(court.courtId) }
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if phone number not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the phone number`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
+          assertThat(courtRepository.findByIdOrNull("SHEFCC")?.phoneNumbers).isEmpty()
+        }
+      }
+    }
+  }
+
   @DisplayName("Create court email address")
   @Nested
   inner class CreateCourtEmailAddress {
@@ -1554,6 +1759,107 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+      }
+    }
+  }
+
+  @DisplayName("Delete court email address")
+  @Nested
+  inner class DeleteCourtEmailAddress {
+    lateinit var court: Court
+    var emailAddressId: Long = -1
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = true,
+        inactiveDate = null,
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+      }
+      emailAddressId = court.emailAddresses[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::court.isInitialized) {
+        courtRepository.findByIdOrNull(court.courtId)?.let { courtRepository.deleteById(court.courtId) }
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if court not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if email address not found`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the email address`() {
+        webTestClient.delete()
+          .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
+          assertThat(courtRepository.findByIdOrNull("SHEFCC")?.emailAddresses).isEmpty()
+        }
       }
     }
   }
