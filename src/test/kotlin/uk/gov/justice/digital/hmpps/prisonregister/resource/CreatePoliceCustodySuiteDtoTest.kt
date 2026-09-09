@@ -63,12 +63,12 @@ class CreatePoliceCustodySuiteDtoTest {
 
     @Test
     fun `police custody suite id shorter than 2 characters fails validation`() {
-      assertThat(messagesFor(valid.copy(policeCustodySuiteId = "A"))).contains("Police Custody Suite Id must be between 2 and 6 letters")
+      assertThat(messagesFor(valid.copy(policeCustodySuiteId = "A"))).contains("Police Custody Suite Id must be between 2 and 6 characters")
     }
 
     @Test
     fun `police custody suite id longer than 6 characters fails validation`() {
-      assertThat(messagesFor(valid.copy(policeCustodySuiteId = "TOOLONG"))).contains("Police Custody Suite Id must be between 2 and 6 letters")
+      assertThat(messagesFor(valid.copy(policeCustodySuiteId = "TOOLONG"))).contains("Police Custody Suite Id must be between 2 and 6 characters")
     }
   }
 
