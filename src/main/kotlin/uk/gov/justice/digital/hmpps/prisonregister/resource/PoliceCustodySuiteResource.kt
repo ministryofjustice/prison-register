@@ -42,6 +42,18 @@ class PoliceCustodySuiteResource(private val policeCustodySuiteService: PoliceCu
     @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
     policeCustodySuiteId: String,
   ): PoliceCustodySuiteDto = policeCustodySuiteService.findById(policeCustodySuiteId)
+
+  @GetMapping
+  @Operation(summary = "Get all police custody suites", description = "Information on all police custody suites")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getPoliceCustodySuites(): List<PoliceCustodySuiteDto> = policeCustodySuiteService.getAll()
 }
 
 @Schema(description = "Police Custody Suite Information")

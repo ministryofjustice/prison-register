@@ -38,44 +38,47 @@ class PoliceCustodySuiteService(
 
   fun getAllIds(): List<String> = policeCustodySuiteRepository.findAll().map { it.policeCustodySuiteId }
 
-  fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.let {
-    PoliceCustodySuiteDto(
-      policeCustodySuiteId = it.policeCustodySuiteId,
-      policeCustodySuiteName = it.name,
-      description = it.description,
-      active = it.active,
-      inactiveDate = it.inactiveDate,
-      cjitCode = it.cjitCode,
-      area = it.area?.let { area -> CodeDescription(area.code, area.description) },
-      region = it.region?.let { region -> CodeDescription(region.code, region.description) },
-      geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
-      payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
-      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
-      addresses = it.addresses.map { address ->
-        AgencyAddressDto(
-          id = address.id,
-          addressLine1 = address.addressLine1,
-          addressLine2 = address.addressLine2,
-          town = address.town,
-          county = address.county,
-          postcode = address.postcode,
-          country = address.country,
-        )
-      },
-      emailAddresses = it.emailAddresses.map { emailAddress ->
-        AgencyEmailDto(
-          id = emailAddress.id,
-          address = emailAddress.value,
-        )
-      },
-      phoneNumbers = it.phoneNumbers.map { phoneNumber ->
-        AgencyPhoneDto(
-          id = phoneNumber.id,
-          number = phoneNumber.value,
-        )
-      },
-    )
-  } ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+  fun getAll(): List<PoliceCustodySuiteDto> = policeCustodySuiteRepository.findAll().map { it.toPoliceCustodySuiteDto() }
+
+  fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.toPoliceCustodySuiteDto()
+    ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+  private fun PoliceCustodySuite.toPoliceCustodySuiteDto() = PoliceCustodySuiteDto(
+    policeCustodySuiteId = this.policeCustodySuiteId,
+    policeCustodySuiteName = this.name,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.area?.let { area -> CodeDescription(area.code, area.description) },
+    region = this.region?.let { region -> CodeDescription(region.code, region.description) },
+    geographicalArea = this.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+    payrollRegion = this.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
+    localAuthority = this.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
+    addresses = this.addresses.map { address ->
+      AgencyAddressDto(
+        id = address.id,
+        addressLine1 = address.addressLine1,
+        addressLine2 = address.addressLine2,
+        town = address.town,
+        county = address.county,
+        postcode = address.postcode,
+        country = address.country,
+      )
+    },
+    emailAddresses = this.emailAddresses.map { emailAddress ->
+      AgencyEmailDto(
+        id = emailAddress.id,
+        address = emailAddress.value,
+      )
+    },
+    phoneNumbers = this.phoneNumbers.map { phoneNumber ->
+      AgencyPhoneDto(
+        id = phoneNumber.id,
+        number = phoneNumber.value,
+      )
+    },
+  )
 
   fun tryFindById(agencyId: String): LegacyAgencyDto? = policeCustodySuiteRepository.findByIdOrNull(agencyId)?.let { pcs ->
     LegacyAgencyDto(
