@@ -189,4 +189,107 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       }
     }
   }
+
+  @DisplayName("Get all police custody suites")
+  @Nested
+  inner class GetAll {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+    lateinit var policeCustodySuite2: PoliceCustodySuite
+    lateinit var policeCustodySuite3: PoliceCustodySuite
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = false,
+        inactiveDate = LocalDate.parse("2020-01-02"),
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        payrollRegionCode = "NEY",
+        localAuthorityCode = "00CG",
+      ) {}
+
+      policeCustodySuite2 = dsl.policeCustodySuite(
+        policeCustodySuiteId = "LEEDPC",
+        name = "Leeds Police Custody Suite",
+      ) {}
+
+      policeCustodySuite3 = dsl.policeCustodySuite(
+        policeCustodySuiteId = "BIRMPC",
+        name = "Birmingham Police Custody Suite",
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      policeCustodySuiteRepository.deleteById(policeCustodySuite2.policeCustodySuiteId)
+      policeCustodySuiteRepository.deleteById(policeCustodySuite3.policeCustodySuiteId)
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will return all police custody suites`() {
+        val policeCustodySuites = webTestClient.get()
+          .uri("/police-custody-suites")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(PoliceCustodySuiteDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(policeCustodySuites).extracting("policeCustodySuiteId").contains("SHFPCS", "LEEDPC", "BIRMPC")
+
+        val policeCustodySuiteDto = policeCustodySuites.first { it.policeCustodySuiteId == "SHFPCS" }
+        assertThat(policeCustodySuiteDto.policeCustodySuiteName).isEqualTo("Sheffield Police Custody Suite")
+        assertThat(policeCustodySuiteDto.description).isEqualTo("Sheffield City Centre Police Custody Suite")
+        assertThat(policeCustodySuiteDto.active).isFalse
+
+        val policeCustodySuite2Dto = policeCustodySuites.first { it.policeCustodySuiteId == "LEEDPC" }
+        assertThat(policeCustodySuite2Dto.policeCustodySuiteName).isEqualTo("Leeds Police Custody Suite")
+
+        val policeCustodySuite3Dto = policeCustodySuites.first { it.policeCustodySuiteId == "BIRMPC" }
+        assertThat(policeCustodySuite3Dto.policeCustodySuiteName).isEqualTo("Birmingham Police Custody Suite")
+      }
+    }
+  }
 }
