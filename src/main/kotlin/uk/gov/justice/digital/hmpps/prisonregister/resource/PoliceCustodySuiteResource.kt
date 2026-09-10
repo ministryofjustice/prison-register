@@ -28,9 +28,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_EMAIL_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_EMAIL_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.PoliceCustodySuiteService
@@ -179,6 +182,63 @@ class PoliceCustodySuiteResource(
   }
 
   @Operation(
+    summary = "Create a police custody suite address",
+    description = "Creates a new address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdateAddressDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Police Custody Suite Address Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad information provided to create police custody suite address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a police custody suite address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/id/{policeCustodySuiteId}/address")
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createPoliceCustodySuiteAddress(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+    @RequestBody @Valid
+    updateAddressDto: UpdateAddressDto,
+  ): AgencyAddressDto {
+    val createdAddress = policeCustodySuiteService.createPoliceCustodySuiteAddress(policeCustodySuiteId, updateAddressDto)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_INSERT.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId, "address" to createdAddress),
+      Instant.now(),
+    )
+    return createdAddress
+  }
+
+  @Operation(
     summary = "Update specified police custody suite address",
     description = "Updates a single address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -238,6 +298,68 @@ class PoliceCustodySuiteResource(
   }
 
   @Operation(
+    summary = "Create a police custody suite phone number",
+    description = "Creates a new phone number for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Police Custody Suite Phone Number Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad information provided to create police custody suite phone number",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a police custody suite phone number",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        description = "Phone number already exists",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/id/{policeCustodySuiteId}/phone-number")
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createPoliceCustodySuitePhoneNumber(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+    @RequestBody @Valid
+    updatePhoneNumberDto: UpdatePhoneNumberDto,
+  ): AgencyPhoneDto {
+    val createdPhoneNumber = policeCustodySuiteService.createPoliceCustodySuitePhoneNumber(policeCustodySuiteId, updatePhoneNumberDto)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_PHONE_INSERT.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId, "phoneNumber" to createdPhoneNumber),
+      Instant.now(),
+    )
+    return createdPhoneNumber
+  }
+
+  @Operation(
     summary = "Update specified police custody suite phone number",
     description = "Updates a single phone number for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -294,6 +416,68 @@ class PoliceCustodySuiteResource(
       Instant.now(),
     )
     return updatedPhoneNumber
+  }
+
+  @Operation(
+    summary = "Create a police custody suite email address",
+    description = "Creates a new email address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdateEmailAddressDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Police Custody Suite Email Address Created",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad information provided to create police custody suite email address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to create a police custody suite email address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        description = "Email address already exists",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/id/{policeCustodySuiteId}/email-address")
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createPoliceCustodySuiteEmailAddress(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+    @RequestBody @Valid
+    updateEmailAddressDto: UpdateEmailAddressDto,
+  ): AgencyEmailDto {
+    val createdEmailAddress = policeCustodySuiteService.createPoliceCustodySuiteEmailAddress(policeCustodySuiteId, updateEmailAddressDto)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_EMAIL_INSERT.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId, "emailAddress" to createdEmailAddress),
+      Instant.now(),
+    )
+    return createdEmailAddress
   }
 
   @Operation(

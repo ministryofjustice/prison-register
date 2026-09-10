@@ -5,12 +5,16 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
@@ -39,6 +43,8 @@ class PoliceCustodySuiteService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
+  private val phoneNumberRepository: PhoneNumberRepository,
+  private val emailAddressRepository: EmailAddressRepository,
 ) {
   fun deleteAll() {
     policeCustodySuiteRepository.deleteAll()
@@ -70,6 +76,24 @@ class PoliceCustodySuiteService(
     return policeCustodySuite.toPoliceCustodySuiteDto()
   }
 
+  fun createPoliceCustodySuiteAddress(policeCustodySuiteId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+    val address = updateAddressDto.toAgencyAddress()
+    policeCustodySuite.addresses += address
+    policeCustodySuiteRepository.flush()
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
   fun updatePoliceCustodySuiteAddress(policeCustodySuiteId: String, addressId: Long, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     val address = policeCustodySuite.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for police custody suite $policeCustodySuiteId")
@@ -94,6 +118,24 @@ class PoliceCustodySuiteService(
     )
   }
 
+  fun createPoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+    // phone number is unique across all establishments, could be a bit restrictive but going with db constraints
+    if (phoneNumberRepository.getByValue(updatePhoneNumberDto.number) != null) {
+      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
+    }
+
+    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    policeCustodySuite.phoneNumbers += phoneNumber
+    policeCustodySuiteRepository.flush()
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
   fun updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     val phoneNumber = policeCustodySuite.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for police custody suite $policeCustodySuiteId")
@@ -103,6 +145,24 @@ class PoliceCustodySuiteService(
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
+    )
+  }
+
+  fun createPoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+    // email address is unique across all establishments
+    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
+      throw EmailAddressAlreadyExistsException(updateEmailAddressDto.address)
+    }
+
+    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    policeCustodySuite.emailAddresses += emailAddress
+    policeCustodySuiteRepository.flush()
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
     )
   }
 
