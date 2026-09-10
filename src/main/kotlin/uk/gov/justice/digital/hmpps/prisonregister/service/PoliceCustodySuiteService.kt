@@ -76,6 +76,11 @@ class PoliceCustodySuiteService(
     return policeCustodySuite.toPoliceCustodySuiteDto()
   }
 
+  fun deletePoliceCustodySuite(policeCustodySuiteId: String) {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+    policeCustodySuiteRepository.delete(policeCustodySuite)
+  }
+
   fun createPoliceCustodySuiteAddress(policeCustodySuiteId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 
@@ -118,6 +123,24 @@ class PoliceCustodySuiteService(
     )
   }
 
+  fun deletePoliceCustodySuiteAddress(policeCustodySuiteId: String, addressId: Long): AgencyAddressDto {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+    val address = policeCustodySuite.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for police custody suite $policeCustodySuiteId")
+
+    policeCustodySuite.addresses.remove(address)
+
+    // returned for audit payload
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
   fun createPoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 
@@ -148,6 +171,18 @@ class PoliceCustodySuiteService(
     )
   }
 
+  fun deletePoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, phoneNumberId: Long): AgencyPhoneDto {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+    val phoneNumber = policeCustodySuite.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for police custody suite $policeCustodySuiteId")
+
+    policeCustodySuite.phoneNumbers.remove(phoneNumber)
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
   fun createPoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 
@@ -171,6 +206,18 @@ class PoliceCustodySuiteService(
     val emailAddress = policeCustodySuite.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for police custody suite $policeCustodySuiteId")
 
     emailAddress.value = updateEmailAddressDto.address
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
+    )
+  }
+
+  fun deletePoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, emailAddressId: Long): AgencyEmailDto {
+    val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+    val emailAddress = policeCustodySuite.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for police custody suite $policeCustodySuiteId")
+
+    policeCustodySuite.emailAddresses.remove(emailAddress)
 
     return AgencyEmailDto(
       id = emailAddress.id,

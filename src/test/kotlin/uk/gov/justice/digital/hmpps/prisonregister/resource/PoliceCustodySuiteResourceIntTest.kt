@@ -13,6 +13,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -28,6 +31,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var policeCustodySuiteRepository: PoliceCustodySuiteRepository
+
+  @Autowired
+  lateinit var agencyAddressRepository: AgencyAddressRepository
+
+  @Autowired
+  lateinit var emailAddressRepository: EmailAddressRepository
+
+  @Autowired
+  lateinit var phoneNumberRepository: PhoneNumberRepository
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
@@ -1561,6 +1573,407 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           val persistedEmailAddress = persisted.emailAddresses.find { it.id == emailDto.id }
           assertThat(persistedEmailAddress).isNotNull
           assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
+        }
+      }
+    }
+  }
+
+  @DisplayName("Delete police custody suite")
+  @Nested
+  inner class DeletePoliceCustodySuite {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        address(
+          addressLine1 = "Custody Suite, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.findByIdOrNull(policeCustodySuite.policeCustodySuiteId)?.let { policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId) }
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/ZZZZ")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the police custody suite, along with its addresses, emails and phone numbers`() {
+        val addressId = policeCustodySuite.addresses[0].id
+        val emailAddressId = policeCustodySuite.emailAddresses[0].id
+        val phoneNumberId = policeCustodySuite.phoneNumbers[0].id
+
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")).isNull()
+          assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
+          assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
+          assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
+        }
+      }
+    }
+  }
+
+  @DisplayName("Delete police custody suite address")
+  @Nested
+  inner class DeletePoliceCustodySuiteAddress {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+    var addressId: Long = -1
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        inactiveDate = null,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        address(
+          addressLine1 = "Custody Suite, 31 High Street",
+          town = "Sheffield",
+          postcode = "S1 3GG",
+          country = "England",
+        )
+      }
+      addressId = policeCustodySuite.addresses[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if police custody suite not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/ZZZZ/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if address not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the address`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
+          assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")?.addresses).isEmpty()
+        }
+      }
+    }
+  }
+
+  @DisplayName("Delete police custody suite phone number")
+  @Nested
+  inner class DeletePoliceCustodySuitePhoneNumber {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+    var phoneNumberId: Long = -1
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        inactiveDate = null,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        phoneNumber(
+          phoneNumber = "0114 555 8989",
+        )
+      }
+      phoneNumberId = policeCustodySuite.phoneNumbers[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if police custody suite not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if phone number not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the phone number`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
+          assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")?.phoneNumbers).isEmpty()
+        }
+      }
+    }
+  }
+
+  @DisplayName("Delete police custody suite email address")
+  @Nested
+  inner class DeletePoliceCustodySuiteEmailAddress {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+    var emailAddressId: Long = -1
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        inactiveDate = null,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        email(
+          emailAddress = "test@justice.gov.uk",
+        )
+      }
+      emailAddressId = policeCustodySuite.emailAddresses[0].id
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if police custody suite not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `404 if email address not found`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", 999999)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will delete the email address`() {
+        webTestClient.delete()
+          .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isNoContent
+
+        transactionHelper.runInTransaction {
+          assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
+          assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")?.emailAddresses).isEmpty()
         }
       }
     }
