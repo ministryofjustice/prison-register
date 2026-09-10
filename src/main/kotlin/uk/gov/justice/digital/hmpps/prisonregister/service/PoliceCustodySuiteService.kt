@@ -5,12 +5,16 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.CreatePoliceCustodySuiteDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
@@ -46,6 +50,19 @@ class PoliceCustodySuiteService(
 
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.toPoliceCustodySuiteDto()
     ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
+
+  fun createPoliceCustodySuite(createPoliceCustodySuiteDto: CreatePoliceCustodySuiteDto): PoliceCustodySuiteDto {
+    if (policeCustodySuiteRepository.existsById(createPoliceCustodySuiteDto.policeCustodySuiteId)) {
+      throw ValidationException("Police custody suite ${createPoliceCustodySuiteDto.policeCustodySuiteId} already exists")
+    }
+
+    val policeCustodySuite = createPoliceCustodySuiteDto.toPoliceCustodySuite()
+    policeCustodySuite.addresses += createPoliceCustodySuiteDto.addresses.map { it.toAgencyAddress() }
+    policeCustodySuite.emailAddresses += createPoliceCustodySuiteDto.emailAddresses.map { EmailAddress(it.address) }
+    policeCustodySuite.phoneNumbers += createPoliceCustodySuiteDto.phoneNumbers.map { PhoneNumber(it.number) }
+
+    return policeCustodySuiteRepository.saveAndFlush(policeCustodySuite).toPoliceCustodySuiteDto()
+  }
 
   fun updatePoliceCustodySuite(policeCustodySuiteId: String, updatePoliceCustodySuiteDto: UpdatePoliceCustodySuiteDto): PoliceCustodySuiteDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
@@ -221,4 +238,28 @@ class PoliceCustodySuiteService(
     this.payrollRegion = updatePoliceCustodySuiteDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for police custody suite $policeCustodySuiteId") }
     this.localAuthority = updatePoliceCustodySuiteDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for police custody suite $policeCustodySuiteId") }
   }
+
+  private fun CreatePoliceCustodySuiteDto.toPoliceCustodySuite() = PoliceCustodySuite(
+    policeCustodySuiteId = this.policeCustodySuiteId,
+    name = this.policeCustodySuiteName,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for police custody suite $policeCustodySuiteId") },
+    region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for police custody suite $policeCustodySuiteId") },
+    geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for police custody suite $policeCustodySuiteId") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for police custody suite $policeCustodySuiteId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for police custody suite $policeCustodySuiteId") },
+    new = true,
+  )
+
+  private fun UpdateAddressDto.toAgencyAddress() = AgencyAddress(
+    addressLine1 = this.addressLine1,
+    addressLine2 = this.addressLine2,
+    town = this.town,
+    county = this.county,
+    postcode = this.postcode,
+    country = this.country,
+  )
 }
