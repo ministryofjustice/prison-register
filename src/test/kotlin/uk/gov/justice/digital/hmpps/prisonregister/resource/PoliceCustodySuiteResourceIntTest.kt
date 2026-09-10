@@ -1112,4 +1112,457 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       }
     }
   }
+
+  @DisplayName("Create police custody suite address")
+  @Nested
+  inner class CreatePoliceCustodySuiteAddress {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+
+    val createAddressRequest = UpdateAddressDto(
+      addressLine1 = "Custody Suite, 31 High Street",
+      addressLine2 = "City Centre",
+      town = "Sheffield",
+      county = "South Yorkshire",
+      postcode = "S1 3GG",
+      country = "England",
+    )
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        inactiveDate = null,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        address(
+          addressLine1 = "Existing Custody Suite",
+          town = "Leeds",
+          postcode = "LS1 1AA",
+          country = "England",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if police custody suite not found`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/ZZZZ/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if town is missing`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if postcode is too long`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the new address against the police custody suite`() {
+        val addressDto: AgencyAddressDto = webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createAddressRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        assertThat(addressDto.addressLine1).isEqualTo("Custody Suite, 31 High Street")
+        assertThat(addressDto.addressLine2).isEqualTo("City Centre")
+        assertThat(addressDto.town).isEqualTo("Sheffield")
+        assertThat(addressDto.county).isEqualTo("South Yorkshire")
+        assertThat(addressDto.postcode).isEqualTo("S1 3GG")
+        assertThat(addressDto.country).isEqualTo("England")
+        assertThat(addressDto.id).isNotEqualTo(-1)
+
+        transactionHelper.runInTransaction {
+          val persisted = policeCustodySuiteRepository.findByIdOrNull("SHFPCS")!!
+          assertThat(persisted.addresses).hasSize(2)
+          val persistedAddress = persisted.addresses.find { it.id == addressDto.id }
+          assertThat(persistedAddress).isNotNull
+          assertThat(persistedAddress!!.addressLine1).isEqualTo("Custody Suite, 31 High Street")
+        }
+      }
+    }
+  }
+
+  @DisplayName("Create police custody suite phone number")
+  @Nested
+  inner class CreatePoliceCustodySuitePhoneNumber {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+
+    val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        inactiveDate = null,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        phoneNumber(
+          phoneNumber = "0114 555 1111",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if police custody suite not found`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/ZZZZ/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if phone number is in an incorrect format`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if phone number is blank`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest.copy(number = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `409 if phone number already exists`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Phone number ${createPhoneNumberRequest.number} already exists")
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the new phone number against the police custody suite`() {
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+        assertThat(phoneDto.id).isNotEqualTo(-1)
+
+        transactionHelper.runInTransaction {
+          val persisted = policeCustodySuiteRepository.findByIdOrNull("SHFPCS")!!
+          assertThat(persisted.phoneNumbers).hasSize(2)
+          val persistedPhoneNumber = persisted.phoneNumbers.find { it.id == phoneDto.id }
+          assertThat(persistedPhoneNumber).isNotNull
+          assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
+        }
+      }
+    }
+  }
+
+  @DisplayName("Create police custody suite email address")
+  @Nested
+  inner class CreatePoliceCustodySuiteEmailAddress {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+
+    val createEmailAddressRequest = UpdateEmailAddressDto(address = "new@justice.gov.uk")
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHFPCS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield City Centre Police Custody Suite",
+        active = true,
+        inactiveDate = null,
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+      ) {
+        email(
+          emailAddress = "existing@test.com",
+        )
+      }
+    }
+
+    @AfterEach
+    fun tearDown() {
+      if (::policeCustodySuite.isInitialized) {
+        policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      }
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `404 if police custody suite not found`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/ZZZZ/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isNotFound
+      }
+
+      @Test
+      fun `400 if email address is in an incorrect format`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `400 if email address is blank`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest.copy(address = ""))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+
+      @Test
+      fun `409 if email address already exists`() {
+        webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Email address ${createEmailAddressRequest.address} already exists")
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will persist the new email address against the police custody suite`() {
+        val emailDto: AgencyEmailDto = webTestClient.post()
+          .uri("/police-custody-suites/id/SHFPCS/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        assertThat(emailDto.address).isEqualTo("new@justice.gov.uk")
+        assertThat(emailDto.id).isNotEqualTo(-1)
+
+        transactionHelper.runInTransaction {
+          val persisted = policeCustodySuiteRepository.findByIdOrNull("SHFPCS")!!
+          assertThat(persisted.emailAddresses).hasSize(2)
+          val persistedEmailAddress = persisted.emailAddresses.find { it.id == emailDto.id }
+          assertThat(persistedEmailAddress).isNotNull
+          assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
+        }
+      }
+    }
+  }
 }
