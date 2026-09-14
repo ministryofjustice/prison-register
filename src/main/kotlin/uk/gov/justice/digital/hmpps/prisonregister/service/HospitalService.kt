@@ -5,18 +5,26 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateHospitalDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.HospitalDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateHospitalDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
@@ -29,6 +37,7 @@ class HospitalService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
+  private val phoneNumberRepository: PhoneNumberRepository,
 ) {
   fun deleteAll() {
     hospitalRepository.deleteAll()
@@ -36,39 +45,166 @@ class HospitalService(
 
   fun getAllIds(): List<String> = hospitalRepository.findAll().map { it.hospitalId }
 
-  fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.let {
-    HospitalDto(
-      hospitalId = it.hospitalId,
-      hospitalName = it.name,
-      description = it.description,
-      active = it.active,
-      inactiveDate = it.inactiveDate,
-      cjitCode = it.cjitCode,
-      area = it.area?.let { area -> CodeDescription(area.code, area.description) },
-      region = it.region?.let { area -> CodeDescription(area.code, area.description) },
-      geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
-      payrollRegion = it.payrollRegion?.let { area -> CodeDescription(area.code, area.description) },
-      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
-      highSecurity = it.highSecurity,
-      addresses = it.addresses.map { address ->
-        AgencyAddressDto(
-          id = address.id,
-          addressLine1 = address.addressLine1,
-          addressLine2 = address.addressLine2,
-          town = address.town,
-          county = address.county,
-          postcode = address.postcode,
-          country = address.country,
-        )
-      },
-      phoneNumbers = it.phoneNumbers.map { phoneNumber ->
-        AgencyPhoneDto(
-          id = phoneNumber.id,
-          number = phoneNumber.value,
-        )
-      },
+  fun getAll(): List<HospitalDto> = hospitalRepository.findAll().map { it.toHospitalDto() }
+
+  fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.toHospitalDto() ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+
+  fun createHospital(createHospitalDto: CreateHospitalDto): HospitalDto {
+    if (hospitalRepository.existsById(createHospitalDto.hospitalId)) {
+      throw ValidationException("Hospital ${createHospitalDto.hospitalId} already exists")
+    }
+
+    val hospital = createHospitalDto.toHospital()
+    hospital.addresses += createHospitalDto.addresses.map { it.toAgencyAddress() }
+    hospital.phoneNumbers += createHospitalDto.phoneNumbers.map { PhoneNumber(it.number) }
+
+    return hospitalRepository.saveAndFlush(hospital).toHospitalDto()
+  }
+
+  fun updateHospital(hospitalId: String, updateHospitalDto: UpdateHospitalDto): HospitalDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+    hospital.update(updateHospitalDto)
+    return hospital.toHospitalDto()
+  }
+
+  fun createHospitalAddress(hospitalId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+
+    val address = updateAddressDto.toAgencyAddress()
+    hospital.addresses += address
+    hospitalRepository.flush()
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
     )
-  } ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+  }
+
+  fun updateHospitalAddress(hospitalId: String, addressId: Long, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+    val address = hospital.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for hospital $hospitalId")
+
+    with(updateAddressDto) {
+      address.addressLine1 = addressLine1
+      address.addressLine2 = addressLine2
+      address.town = town
+      address.county = county
+      address.postcode = postcode
+      address.country = country
+    }
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  fun createHospitalPhoneNumber(hospitalId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+
+    // phone number is unique across all establishments, could be a bit restrictive but going with db constraints
+    if (phoneNumberRepository.getByValue(updatePhoneNumberDto.number) != null) {
+      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
+    }
+
+    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    hospital.phoneNumbers += phoneNumber
+    hospitalRepository.flush()
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  fun updateHospitalPhoneNumber(hospitalId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+    val phoneNumber = hospital.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for hospital $hospitalId")
+
+    phoneNumber.value = updatePhoneNumberDto.number
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  fun deleteHospital(hospitalId: String) {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+    hospitalRepository.delete(hospital)
+  }
+
+  fun deleteHospitalAddress(hospitalId: String, addressId: Long): AgencyAddressDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+    val address = hospital.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for hospital $hospitalId")
+
+    hospital.addresses.remove(address)
+
+    // returned for audit payload
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  fun deleteHospitalPhoneNumber(hospitalId: String, phoneNumberId: Long): AgencyPhoneDto {
+    val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
+    val phoneNumber = hospital.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for hospital $hospitalId")
+
+    hospital.phoneNumbers.remove(phoneNumber)
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  private fun Hospital.toHospitalDto() = HospitalDto(
+    hospitalId = this.hospitalId,
+    hospitalName = this.name,
+    description = this.description,
+    active = this.active,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.area?.let { area -> CodeDescription(area.code, area.description) },
+    region = this.region?.let { area -> CodeDescription(area.code, area.description) },
+    geographicalArea = this.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+    payrollRegion = this.payrollRegion?.let { area -> CodeDescription(area.code, area.description) },
+    localAuthority = this.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
+    highSecurity = this.highSecurity,
+    addresses = this.addresses.map { address ->
+      AgencyAddressDto(
+        id = address.id,
+        addressLine1 = address.addressLine1,
+        addressLine2 = address.addressLine2,
+        town = address.town,
+        county = address.county,
+        postcode = address.postcode,
+        country = address.country,
+      )
+    },
+    phoneNumbers = this.phoneNumbers.map { phoneNumber ->
+      AgencyPhoneDto(
+        id = phoneNumber.id,
+        number = phoneNumber.value,
+      )
+    },
+  )
 
   fun tryFindById(agencyId: String): LegacyAgencyDto? = hospitalRepository.findByIdOrNull(agencyId)?.let { hospital ->
     LegacyAgencyDto(
@@ -139,5 +275,43 @@ class HospitalService(
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $hospitalId") }
     this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $hospitalId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $hospitalId") }
+  }
+
+  private fun CreateHospitalDto.toHospital() = Hospital(
+    hospitalId = this.hospitalId,
+    name = this.hospitalName,
+    description = this.description,
+    active = this.active,
+    highSecurity = this.highSecurity,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for hospital ${this.hospitalId}") },
+    region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for hospital ${this.hospitalId}") },
+    geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for hospital ${this.hospitalId}") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for hospital ${this.hospitalId}") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for hospital ${this.hospitalId}") },
+  )
+
+  private fun UpdateAddressDto.toAgencyAddress() = AgencyAddress(
+    addressLine1 = this.addressLine1,
+    addressLine2 = this.addressLine2,
+    town = this.town,
+    county = this.county,
+    postcode = this.postcode,
+    country = this.country,
+  )
+
+  private fun Hospital.update(updateHospitalDto: UpdateHospitalDto) {
+    this.name = updateHospitalDto.hospitalName
+    this.description = updateHospitalDto.description
+    this.active = updateHospitalDto.active
+    this.highSecurity = updateHospitalDto.highSecurity
+    this.inactiveDate = updateHospitalDto.inactiveDate
+    this.cjitCode = updateHospitalDto.cjitCode
+    this.area = updateHospitalDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for hospital $hospitalId") }
+    this.region = updateHospitalDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for hospital $hospitalId") }
+    this.geographicalArea = updateHospitalDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for hospital $hospitalId") }
+    this.payrollRegion = updateHospitalDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for hospital $hospitalId") }
+    this.localAuthority = updateHospitalDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for hospital $hospitalId") }
   }
 }
