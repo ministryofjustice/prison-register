@@ -405,6 +405,26 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
+
+      @Test
+      fun `409 if phone numbers contain a duplicate`() {
+        val errorResponse: ErrorResponse = webTestClient.post()
+          .uri("/hospitals")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(
+            createHospitalRequest.copy(
+              phoneNumbers = listOf(
+                UpdatePhoneNumberDto(number = "0114 555 8989"),
+                UpdatePhoneNumberDto(number = "0114 555 8989"),
+              ),
+            ),
+          )
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Phone number 0114 555 8989 already exists")
+      }
     }
 
     @Nested
@@ -704,29 +724,36 @@ class HospitalResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `409 if phone number already exists`() {
-        webTestClient.post()
+      fun `409 if phone number already exists on this hospital`() {
+        val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/hospitals/id/SHFHOS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest.copy(number = "0114 555 1111"))
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Phone number 0114 555 1111 already exists")
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      @Test
+      fun `will allow the same phone number to be used by a different hospital`() {
+        dsl.hospital(hospitalId = "OTHHOS", name = "Other Hospital") {}
+
+        webTestClient.post()
+          .uri("/hospitals/id/OTHHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated
 
-        val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/hospitals/id/SHFHOS/phone-number")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createPhoneNumberRequest)
-          .exchange()
-          .expectStatus().isEqualTo(409).expectBodyResponse()
-
-        assertThat(errorResponse.developerMessage).isEqualTo("Phone number ${createPhoneNumberRequest.number} already exists")
+        hospitalRepository.deleteById("OTHHOS")
       }
-    }
 
-    @Nested
-    inner class HappyPath {
       @Test
       fun `will persist the new phone number against the hospital`() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
@@ -1452,8 +1479,11 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         phoneNumber(
           phoneNumber = "0114 555 8989",
         )
+        phoneNumber(
+          phoneNumber = "0114 555 4321",
+        )
       }
-      phoneNumberId = hospital.phoneNumbers[0].id
+      phoneNumberId = hospital.phoneNumbers.first { it.value == "0114 555 8989" }.id
     }
 
     @AfterEach
@@ -1543,6 +1573,19 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
+
+      @Test
+      fun `409 if phone number already exists on this hospital`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 4321"))
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Phone number 0114 555 4321 already exists")
+      }
     }
 
     @Nested
@@ -1559,6 +1602,19 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+      }
+
+      @Test
+      fun `will allow updating a phone number to its own current value`() {
+        val phoneDto: AgencyPhoneDto = webTestClient.put()
+          .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(phoneDto.number).isEqualTo("0114 555 8989")
       }
     }
   }
