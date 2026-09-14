@@ -214,12 +214,12 @@ class HospitalResourceIntTest : IntegrationTestBase() {
       ) {}
 
       hospital2 = dsl.hospital(
-        hospitalId = "LEEDHOS",
+        hospitalId = "LEEDHO",
         name = "Leeds Hospital",
       ) {}
 
       hospital3 = dsl.hospital(
-        hospitalId = "BIRMHOS",
+        hospitalId = "BIRMHO",
         name = "Birmingham Hospital",
       ) {}
     }
@@ -277,17 +277,17 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .returnResult()
           .responseBody!!
 
-        assertThat(hospitals).extracting("hospitalId").contains("SHFHOS", "LEEDHOS", "BIRMHOS")
+        assertThat(hospitals).extracting("hospitalId").contains("SHFHOS", "LEEDHO", "BIRMHO")
 
         val hospitalDto = hospitals.first { it.hospitalId == "SHFHOS" }
         assertThat(hospitalDto.hospitalName).isEqualTo("Sheffield Secure Hospital")
         assertThat(hospitalDto.description).isEqualTo("Sheffield Central Secure Hospital")
         assertThat(hospitalDto.active).isFalse
 
-        val hospital2Dto = hospitals.first { it.hospitalId == "LEEDHOS" }
+        val hospital2Dto = hospitals.first { it.hospitalId == "LEEDHO" }
         assertThat(hospital2Dto.hospitalName).isEqualTo("Leeds Hospital")
 
-        val hospital3Dto = hospitals.first { it.hospitalId == "BIRMHOS" }
+        val hospital3Dto = hospitals.first { it.hospitalId == "BIRMHO" }
         assertThat(hospital3Dto.hospitalName).isEqualTo("Birmingham Hospital")
       }
     }
