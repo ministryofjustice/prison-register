@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
-import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateCourtDto
@@ -48,7 +47,6 @@ class CourtService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val emailAddressRepository: EmailAddressRepository,
-  private val phoneNumberRepository: PhoneNumberRepository,
 ) {
   fun deleteAll() {
     courtRepository.deleteAll()
@@ -154,8 +152,8 @@ class CourtService(
   fun createCourtPhoneNumber(courtId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
-    // phone number is unique across all establishments, could be a bit restrictive but going with db constraints
-    if (phoneNumberRepository.getByValue(updatePhoneNumberDto.number) != null) {
+    // phone number must be unique within the court
+    if (court.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
       throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
     }
 
@@ -173,6 +171,11 @@ class CourtService(
   fun updateCourtPhoneNumber(courtId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     val phoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
+
+    // phone number must be unique within the court
+    if (court.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
+      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
+    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 

@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
-import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
@@ -43,7 +42,6 @@ class PoliceCustodySuiteService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
-  private val phoneNumberRepository: PhoneNumberRepository,
   private val emailAddressRepository: EmailAddressRepository,
 ) {
   fun deleteAll() {
@@ -144,8 +142,8 @@ class PoliceCustodySuiteService(
   fun createPoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 
-    // phone number is unique across all establishments, could be a bit restrictive but going with db constraints
-    if (phoneNumberRepository.getByValue(updatePhoneNumberDto.number) != null) {
+    // phone number must be unique within the police custody suite
+    if (policeCustodySuite.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
       throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
     }
 
@@ -162,6 +160,11 @@ class PoliceCustodySuiteService(
   fun updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     val phoneNumber = policeCustodySuite.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for police custody suite $policeCustodySuiteId")
+
+    // phone number must be unique within the police custody suite
+    if (policeCustodySuite.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
+      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
+    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 

@@ -717,8 +717,11 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         phoneNumber(
           phoneNumber = "0114 555 8989",
         )
+        phoneNumber(
+          phoneNumber = "0114 555 4321",
+        )
       }
-      phoneNumberId = policeCustodySuite.phoneNumbers[0].id
+      phoneNumberId = policeCustodySuite.phoneNumbers.first { it.value == "0114 555 8989" }.id
     }
 
     @AfterEach
@@ -808,6 +811,19 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
+
+      @Test
+      fun `409 if phone number already exists on this police custody suite`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 4321"))
+          .exchange()
+          .expectStatus().isEqualTo(409).expectBodyResponse()
+
+        assertThat(errorResponse.developerMessage).isEqualTo("Phone number 0114 555 4321 already exists")
+      }
     }
 
     @Nested
@@ -824,6 +840,19 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+      }
+
+      @Test
+      fun `will allow updating a phone number to its own current value`() {
+        val phoneDto: AgencyPhoneDto = webTestClient.put()
+          .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
+          .exchange()
+          .expectStatus().isOk.expectBodyResponse()
+
+        assertThat(phoneDto.number).isEqualTo("0114 555 8989")
       }
     }
   }
@@ -1401,6 +1430,21 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
     @Nested
     inner class HappyPath {
+      @Test
+      fun `will allow the same phone number to be used by a different police custody suite`() {
+        dsl.policeCustodySuite(policeCustodySuiteId = "OTHPCS", name = "Other Police Custody Suite") {}
+
+        webTestClient.post()
+          .uri("/police-custody-suites/id/OTHPCS/phone-number")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .bodyValue(createPhoneNumberRequest)
+          .exchange()
+          .expectStatus().isCreated
+
+        policeCustodySuiteRepository.deleteById("OTHPCS")
+      }
+
       @Test
       fun `will persist the new phone number against the police custody suite`() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
