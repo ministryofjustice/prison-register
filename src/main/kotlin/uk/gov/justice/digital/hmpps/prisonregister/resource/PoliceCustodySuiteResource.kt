@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,11 +29,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_DELETE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_EMAIL_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_EMAIL_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_EMAIL_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_UPDATE
@@ -182,6 +187,47 @@ class PoliceCustodySuiteResource(
   }
 
   @Operation(
+    summary = "Delete specified police custody suite",
+    description = "Deletes a police custody suite, along with any addresses, email addresses and phone numbers associated with it. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Police Custody Suite Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a police custody suite",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{policeCustodySuiteId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deletePoliceCustodySuite(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+  ) {
+    policeCustodySuiteService.deletePoliceCustodySuite(policeCustodySuiteId)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_DELETE.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId),
+      Instant.now(),
+    )
+  }
+
+  @Operation(
     summary = "Create a police custody suite address",
     description = "Creates a new address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -295,6 +341,50 @@ class PoliceCustodySuiteResource(
       Instant.now(),
     )
     return updatedAddress
+  }
+
+  @Operation(
+    summary = "Delete specified police custody suite address",
+    description = "Deletes a single address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Police Custody Suite Address Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a police custody suite address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id or Address Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{policeCustodySuiteId}/address/{addressId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deletePoliceCustodySuiteAddress(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+    @Schema(description = "Address Id", example = "234231", required = true)
+    @PathVariable
+    addressId: Long,
+  ) {
+    val deletedAddress = policeCustodySuiteService.deletePoliceCustodySuiteAddress(policeCustodySuiteId, addressId)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_DELETE.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId, "address" to deletedAddress),
+      Instant.now(),
+    )
   }
 
   @Operation(
@@ -419,6 +509,50 @@ class PoliceCustodySuiteResource(
   }
 
   @Operation(
+    summary = "Delete specified police custody suite phone number",
+    description = "Deletes a single phone number for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Police Custody Suite Phone Number Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a police custody suite phone number",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id or Phone Number Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{policeCustodySuiteId}/phone-number/{phoneNumberId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deletePoliceCustodySuitePhoneNumber(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+    @Schema(description = "Phone Number Id", example = "234231", required = true)
+    @PathVariable
+    phoneNumberId: Long,
+  ) {
+    val deletedPhoneNumber = policeCustodySuiteService.deletePoliceCustodySuitePhoneNumber(policeCustodySuiteId, phoneNumberId)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_PHONE_DELETE.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId, "phoneNumber" to deletedPhoneNumber),
+      Instant.now(),
+    )
+  }
+
+  @Operation(
     summary = "Create a police custody suite email address",
     description = "Creates a new email address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -537,6 +671,50 @@ class PoliceCustodySuiteResource(
       Instant.now(),
     )
     return updatedEmailAddress
+  }
+
+  @Operation(
+    summary = "Delete specified police custody suite email address",
+    description = "Deletes a single email address for a police custody suite. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "204",
+        description = "Police Custody Suite Email Address Deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to delete a police custody suite email address",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Police Custody Suite Id or Email Address Id not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @DeleteMapping("/id/{policeCustodySuiteId}/email-address/{emailAddressId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deletePoliceCustodySuiteEmailAddress(
+    @Schema(description = "Police Custody Suite ID", example = "SHFPCS", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
+    policeCustodySuiteId: String,
+    @Schema(description = "Email Address Id", example = "234231", required = true)
+    @PathVariable
+    emailAddressId: Long,
+  ) {
+    val deletedEmailAddress = policeCustodySuiteService.deletePoliceCustodySuiteEmailAddress(policeCustodySuiteId, emailAddressId)
+    auditService.sendAuditEvent(
+      POLICE_CUSTODY_SUITE_REGISTER_EMAIL_DELETE.name,
+      mapOf("policeCustodySuiteId" to policeCustodySuiteId, "emailAddress" to deletedEmailAddress),
+      Instant.now(),
+    )
   }
 }
 
