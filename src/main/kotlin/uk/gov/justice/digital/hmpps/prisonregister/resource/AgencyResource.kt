@@ -75,7 +75,7 @@ class AgencyResource(
   ): AgencyDto = agencyService.findById(agencyId)
 
   @GetMapping
-  @Operation(summary = "Get all agencys", description = "Information on all agencys")
+  @Operation(summary = "Get all agencies", description = "Information on all agencies")
   @ApiResponses(
     value = [
       ApiResponse(
