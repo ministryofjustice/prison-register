@@ -5,15 +5,22 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
+import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
+import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
@@ -21,6 +28,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
@@ -34,6 +45,7 @@ class AgencyService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
+  private val emailAddressRepository: EmailAddressRepository,
 ) {
   fun deleteAll() {
     agencyRepository.deleteAll()
@@ -41,46 +53,223 @@ class AgencyService(
 
   fun getAllIds(): List<String> = agencyRepository.findAll().map { it.agencyId }
 
-  fun findById(agencyId: String): AgencyDto = agencyRepository.findByIdOrNull(agencyId)?.let {
-    AgencyDto(
-      agencyId = it.agencyId,
-      agencyName = it.name,
-      description = it.description,
-      active = it.active,
-      accessibleAccess = it.accessibleAccess?.name,
-      agencyType = it.agencyType.name,
-      inactiveDate = it.inactiveDate,
-      cjitCode = it.cjitCode,
-      area = it.area?.let { area -> CodeDescription(area.code, area.description) },
-      region = it.region?.let { region -> CodeDescription(region.code, region.description) },
-      geographicalArea = it.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
-      payrollRegion = it.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
-      localAuthority = it.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
-      addresses = it.addresses.map { address ->
-        AgencyAddressDto(
-          id = address.id,
-          addressLine1 = address.addressLine1,
-          addressLine2 = address.addressLine2,
-          town = address.town,
-          county = address.county,
-          postcode = address.postcode,
-          country = address.country,
-        )
-      },
-      emailAddresses = it.emailAddresses.map { emailAddress ->
-        AgencyEmailDto(
-          id = emailAddress.id,
-          address = emailAddress.value,
-        )
-      },
-      phoneNumbers = it.phoneNumbers.map { phoneNumber ->
-        AgencyPhoneDto(
-          id = phoneNumber.id,
-          number = phoneNumber.value,
-        )
-      },
+  fun getAll(): List<AgencyDto> = agencyRepository.findAll().map { it.toAgencyDto() }
+
+  fun findById(agencyId: String): AgencyDto = agencyRepository.findByIdOrNull(agencyId)?.toAgencyDto()
+    ?: throw EntityNotFoundException("Agency $agencyId not found")
+
+  fun createAgency(createAgencyDto: CreateAgencyDto): AgencyDto {
+    if (agencyRepository.existsById(createAgencyDto.agencyId)) {
+      throw ValidationException("Agency ${createAgencyDto.agencyId} already exists")
+    }
+
+    val agency = createAgencyDto.toAgency()
+    // TODO add validation once constraints known
+    agency.addresses += createAgencyDto.addresses.map { it.toAgencyAddress() }
+    agency.emailAddresses += createAgencyDto.emailAddresses.map { EmailAddress(it.address) }
+    agency.phoneNumbers += createAgencyDto.phoneNumbers.map { PhoneNumber(it.number) }
+
+    return agencyRepository.saveAndFlush(agency).toAgencyDto()
+  }
+
+  fun updateAgency(agencyId: String, updateAgencyDto: UpdateAgencyDto): AgencyDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    agency.update(updateAgencyDto)
+    return agency.toAgencyDto()
+  }
+
+  fun deleteAgency(agencyId: String) {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    agencyRepository.delete(agency)
+  }
+
+  fun createAgencyAddress(agencyId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+
+    val address = updateAddressDto.toAgencyAddress()
+    agency.addresses += address
+    agencyRepository.flush()
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
     )
-  } ?: throw EntityNotFoundException("Agency $agencyId not found")
+  }
+
+  fun updateAgencyAddress(agencyId: String, addressId: Long, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    val address = agency.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for agency $agencyId")
+
+    with(updateAddressDto) {
+      address.addressLine1 = addressLine1
+      address.addressLine2 = addressLine2
+      address.town = town
+      address.county = county
+      address.postcode = postcode
+      address.country = country
+    }
+
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  fun deleteAgencyAddress(agencyId: String, addressId: Long): AgencyAddressDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    val address = agency.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for agency $agencyId")
+
+    agency.addresses.remove(address)
+
+    // returned for audit payload
+    return AgencyAddressDto(
+      id = address.id,
+      addressLine1 = address.addressLine1,
+      addressLine2 = address.addressLine2,
+      town = address.town,
+      county = address.county,
+      postcode = address.postcode,
+      country = address.country,
+    )
+  }
+
+  fun createAgencyPhoneNumber(agencyId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+
+    // phone number must be unique within the agency
+    if (agency.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
+      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
+    }
+
+    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    agency.phoneNumbers += phoneNumber
+    agencyRepository.flush()
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  fun updateAgencyPhoneNumber(agencyId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    val phoneNumber = agency.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for agency $agencyId")
+
+    // phone number must be unique within the agency
+    if (agency.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
+      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
+    }
+
+    phoneNumber.value = updatePhoneNumberDto.number
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  fun deleteAgencyPhoneNumber(agencyId: String, phoneNumberId: Long): AgencyPhoneDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    val phoneNumber = agency.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for agency $agencyId")
+
+    agency.phoneNumbers.remove(phoneNumber)
+
+    return AgencyPhoneDto(
+      id = phoneNumber.id,
+      number = phoneNumber.value,
+    )
+  }
+
+  fun createAgencyEmailAddress(agencyId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+
+    // email address is unique across all establishments
+    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
+      throw EmailAddressAlreadyExistsException(updateEmailAddressDto.address)
+    }
+
+    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    agency.emailAddresses += emailAddress
+    agencyRepository.flush()
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
+    )
+  }
+
+  fun updateAgencyEmailAddress(agencyId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    val emailAddress = agency.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for agency $agencyId")
+
+    emailAddress.value = updateEmailAddressDto.address
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
+    )
+  }
+
+  fun deleteAgencyEmailAddress(agencyId: String, emailAddressId: Long): AgencyEmailDto {
+    val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
+    val emailAddress = agency.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for agency $agencyId")
+
+    agency.emailAddresses.remove(emailAddress)
+
+    return AgencyEmailDto(
+      id = emailAddress.id,
+      address = emailAddress.value,
+    )
+  }
+
+  private fun Agency.toAgencyDto() = AgencyDto(
+    agencyId = this.agencyId,
+    agencyName = this.name,
+    description = this.description,
+    active = this.active,
+    accessibleAccess = this.accessibleAccess?.name,
+    agencyType = this.agencyType.name,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.area?.let { area -> CodeDescription(area.code, area.description) },
+    region = this.region?.let { region -> CodeDescription(region.code, region.description) },
+    geographicalArea = this.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+    payrollRegion = this.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
+    localAuthority = this.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
+    addresses = this.addresses.map { address ->
+      AgencyAddressDto(
+        id = address.id,
+        addressLine1 = address.addressLine1,
+        addressLine2 = address.addressLine2,
+        town = address.town,
+        county = address.county,
+        postcode = address.postcode,
+        country = address.country,
+      )
+    },
+    emailAddresses = this.emailAddresses.map { emailAddress ->
+      AgencyEmailDto(
+        id = emailAddress.id,
+        address = emailAddress.value,
+      )
+    },
+    phoneNumbers = this.phoneNumbers.map { phoneNumber ->
+      AgencyPhoneDto(
+        id = phoneNumber.id,
+        number = phoneNumber.value,
+      )
+    },
+  )
 
   fun tryFindById(agencyId: String): LegacyAgencyDto? = agencyRepository.findByIdOrNull(agencyId)?.let { agency ->
     LegacyAgencyDto(
@@ -156,4 +345,45 @@ class AgencyService(
     this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $agencyId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $agencyId") }
   }
+
+  private fun Agency.update(updateAgencyDto: UpdateAgencyDto) {
+    this.name = updateAgencyDto.agencyName
+    this.description = updateAgencyDto.description
+    this.active = updateAgencyDto.active
+    this.accessibleAccess = updateAgencyDto.accessibleAccess
+    this.agencyType = updateAgencyDto.agencyType
+    this.inactiveDate = updateAgencyDto.inactiveDate
+    this.cjitCode = updateAgencyDto.cjitCode
+    this.area = updateAgencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $agencyId") }
+    this.region = updateAgencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $agencyId") }
+    this.geographicalArea = updateAgencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $agencyId") }
+    this.payrollRegion = updateAgencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $agencyId") }
+    this.localAuthority = updateAgencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $agencyId") }
+  }
+
+  private fun CreateAgencyDto.toAgency() = Agency(
+    agencyId = this.agencyId,
+    name = this.agencyName,
+    description = this.description,
+    active = this.active,
+    accessibleAccess = this.accessibleAccess,
+    agencyType = this.agencyType,
+    inactiveDate = this.inactiveDate,
+    cjitCode = this.cjitCode,
+    area = this.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $agencyId") },
+    region = this.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $agencyId") },
+    geographicalArea = this.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $agencyId") },
+    payrollRegion = this.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $agencyId") },
+    localAuthority = this.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $agencyId") },
+    new = true,
+  )
+
+  private fun UpdateAddressDto.toAgencyAddress() = AgencyAddress(
+    addressLine1 = this.addressLine1,
+    addressLine2 = this.addressLine2,
+    town = this.town,
+    county = this.county,
+    postcode = this.postcode,
+    country = this.country,
+  )
 }

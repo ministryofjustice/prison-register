@@ -78,6 +78,39 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendAgencyRegisterInsertedEvent(agencyId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSAgencyDomainEvent(
+        "register.agency.inserted",
+        AgencyAdditionalInformation(agencyId),
+        occurredAt,
+        "An agency has been inserted",
+      ),
+    )
+  }
+
+  fun sendAgencyRegisterAmendedEvent(agencyId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSAgencyDomainEvent(
+        "register.agency.amended",
+        AgencyAdditionalInformation(agencyId),
+        occurredAt,
+        "An agency has been updated",
+      ),
+    )
+  }
+
+  fun sendAgencyRegisterDeletedEvent(agencyId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSAgencyDomainEvent(
+        "register.agency.deleted",
+        AgencyAdditionalInformation(agencyId),
+        occurredAt,
+        "An agency has been deleted",
+      ),
+    )
+  }
+
   private fun publishToDomainEventsTopic(payload: HMPPSDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.prisonId)
     publish(payload.eventType, payload)
@@ -85,6 +118,11 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
 
   private fun publishToDomainEventsTopic(payload: HMPPSCourtDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.courtId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publishToDomainEventsTopic(payload: HMPPSAgencyDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.agencyId)
     publish(payload.eventType, payload)
   }
 
@@ -110,6 +148,10 @@ data class AdditionalInformation(
 
 data class CourtAdditionalInformation(
   val courtId: String,
+)
+
+data class AgencyAdditionalInformation(
+  val agencyId: String,
 )
 
 data class HMPPSDomainEvent(
@@ -143,6 +185,27 @@ data class HMPPSCourtDomainEvent(
   constructor(
     eventType: String,
     additionalInformation: CourtAdditionalInformation,
+    occurredAt: Instant,
+    description: String,
+  ) : this(
+    eventType,
+    additionalInformation,
+    1,
+    occurredAt.toOffsetDateFormat(),
+    description,
+  )
+}
+
+data class HMPPSAgencyDomainEvent(
+  val eventType: String,
+  val additionalInformation: AgencyAdditionalInformation,
+  val version: Int,
+  val occurredAt: String,
+  val description: String,
+) {
+  constructor(
+    eventType: String,
+    additionalInformation: AgencyAdditionalInformation,
     occurredAt: Instant,
     description: String,
   ) : this(
