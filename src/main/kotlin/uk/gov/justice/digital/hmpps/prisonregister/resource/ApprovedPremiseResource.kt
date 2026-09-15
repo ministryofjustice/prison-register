@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PR
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_PHONE_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
 import java.time.LocalDate
 
@@ -53,6 +54,7 @@ import java.time.LocalDate
 class ApprovedPremiseResource(
   private val approvedPremiseService: ApprovedPremiseService,
   private val auditService: AuditService,
+  private val snsService: SnsService,
 ) {
   @GetMapping("/id/{approvedPremiseId}")
   @Operation(summary = "Get specified approved premise", description = "Information on a specific approved premise")
@@ -123,10 +125,12 @@ class ApprovedPremiseResource(
     createApprovedPremiseDto: CreateApprovedPremiseDto,
   ): ApprovedPremiseDto {
     val createdApprovedPremise = approvedPremiseService.createApprovedPremise(createApprovedPremiseDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterInsertedEvent(createApprovedPremiseDto.approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_INSERT.name,
       mapOf("approvedPremiseId" to createApprovedPremiseDto.approvedPremiseId, "approvedPremise" to createApprovedPremiseDto),
-      Instant.now(),
+      now,
     )
     return createdApprovedPremise
   }
@@ -179,10 +183,12 @@ class ApprovedPremiseResource(
     updateApprovedPremiseDto: UpdateApprovedPremiseDto,
   ): ApprovedPremiseDto {
     val updatedApprovedPremise = approvedPremiseService.updateApprovedPremise(approvedPremiseId, updateApprovedPremiseDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_UPDATE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "approvedPremise" to updateApprovedPremiseDto),
-      Instant.now(),
+      now,
     )
     return updatedApprovedPremise
   }
@@ -221,10 +227,12 @@ class ApprovedPremiseResource(
     approvedPremiseId: String,
   ) {
     approvedPremiseService.deleteApprovedPremise(approvedPremiseId)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterDeletedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_DELETE.name,
       mapOf("approvedPremiseId" to approvedPremiseId),
-      Instant.now(),
+      now,
     )
   }
 
@@ -277,10 +285,12 @@ class ApprovedPremiseResource(
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
     val createdAddress = approvedPremiseService.createApprovedPremiseAddress(approvedPremiseId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_ADDRESS_INSERT.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "address" to createdAddress),
-      Instant.now(),
+      now,
     )
     return createdAddress
   }
@@ -336,10 +346,12 @@ class ApprovedPremiseResource(
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
     val updatedAddress = approvedPremiseService.updateApprovedPremiseAddress(approvedPremiseId, addressId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_ADDRESS_UPDATE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "address" to updatedAddress),
-      Instant.now(),
+      now,
     )
     return updatedAddress
   }
@@ -381,10 +393,12 @@ class ApprovedPremiseResource(
     addressId: Long,
   ) {
     val deletedAddress = approvedPremiseService.deleteApprovedPremiseAddress(approvedPremiseId, addressId)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_ADDRESS_DELETE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "address" to deletedAddress),
-      Instant.now(),
+      now,
     )
   }
 
@@ -442,10 +456,12 @@ class ApprovedPremiseResource(
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
     val createdPhoneNumber = approvedPremiseService.createApprovedPremisePhoneNumber(approvedPremiseId, updatePhoneNumberDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_PHONE_INSERT.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "phoneNumber" to createdPhoneNumber),
-      Instant.now(),
+      now,
     )
     return createdPhoneNumber
   }
@@ -501,10 +517,12 @@ class ApprovedPremiseResource(
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
     val updatedPhoneNumber = approvedPremiseService.updateApprovedPremisePhoneNumber(approvedPremiseId, phoneNumberId, updatePhoneNumberDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_PHONE_UPDATE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "phoneNumber" to updatedPhoneNumber),
-      Instant.now(),
+      now,
     )
     return updatedPhoneNumber
   }
@@ -546,10 +564,12 @@ class ApprovedPremiseResource(
     phoneNumberId: Long,
   ) {
     val deletedPhoneNumber = approvedPremiseService.deleteApprovedPremisePhoneNumber(approvedPremiseId, phoneNumberId)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_PHONE_DELETE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "phoneNumber" to deletedPhoneNumber),
-      Instant.now(),
+      now,
     )
   }
 
@@ -607,10 +627,12 @@ class ApprovedPremiseResource(
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
     val createdEmailAddress = approvedPremiseService.createApprovedPremiseEmailAddress(approvedPremiseId, updateEmailAddressDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_EMAIL_INSERT.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "emailAddress" to createdEmailAddress),
-      Instant.now(),
+      now,
     )
     return createdEmailAddress
   }
@@ -666,10 +688,12 @@ class ApprovedPremiseResource(
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
     val updatedEmailAddress = approvedPremiseService.updateApprovedPremiseEmailAddress(approvedPremiseId, emailAddressId, updateEmailAddressDto)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_EMAIL_UPDATE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "emailAddress" to updatedEmailAddress),
-      Instant.now(),
+      now,
     )
     return updatedEmailAddress
   }
@@ -711,10 +735,12 @@ class ApprovedPremiseResource(
     emailAddressId: Long,
   ) {
     val deletedEmailAddress = approvedPremiseService.deleteApprovedPremiseEmailAddress(approvedPremiseId, emailAddressId)
+    val now = Instant.now()
+    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
     auditService.sendAuditEvent(
       APPROVED_PREMISE_REGISTER_EMAIL_DELETE.name,
       mapOf("approvedPremiseId" to approvedPremiseId, "emailAddress" to deletedEmailAddress),
-      Instant.now(),
+      now,
     )
   }
 }
