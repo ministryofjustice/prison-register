@@ -111,6 +111,138 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendHospitalRegisterInsertedEvent(hospitalId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSHospitalDomainEvent(
+        "register.hospital.inserted",
+        HospitalAdditionalInformation(hospitalId),
+        occurredAt,
+        "A hospital has been inserted",
+      ),
+    )
+  }
+
+  fun sendHospitalRegisterAmendedEvent(hospitalId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSHospitalDomainEvent(
+        "register.hospital.amended",
+        HospitalAdditionalInformation(hospitalId),
+        occurredAt,
+        "A hospital has been updated",
+      ),
+    )
+  }
+
+  fun sendHospitalRegisterDeletedEvent(hospitalId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSHospitalDomainEvent(
+        "register.hospital.deleted",
+        HospitalAdditionalInformation(hospitalId),
+        occurredAt,
+        "A hospital has been deleted",
+      ),
+    )
+  }
+
+  fun sendPoliceCustodySuiteRegisterInsertedEvent(policeCustodySuiteId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSPoliceCustodySuiteDomainEvent(
+        "register.policecustodysuite.inserted",
+        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId),
+        occurredAt,
+        "A police custody suite has been inserted",
+      ),
+    )
+  }
+
+  fun sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSPoliceCustodySuiteDomainEvent(
+        "register.policecustodysuite.amended",
+        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId),
+        occurredAt,
+        "A police custody suite has been updated",
+      ),
+    )
+  }
+
+  fun sendPoliceCustodySuiteRegisterDeletedEvent(policeCustodySuiteId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSPoliceCustodySuiteDomainEvent(
+        "register.policecustodysuite.deleted",
+        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId),
+        occurredAt,
+        "A police custody suite has been deleted",
+      ),
+    )
+  }
+
+  fun sendProbationOfficeRegisterInsertedEvent(probationOfficeId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSProbationOfficeDomainEvent(
+        "register.probationoffice.inserted",
+        ProbationOfficeAdditionalInformation(probationOfficeId),
+        occurredAt,
+        "A probation office has been inserted",
+      ),
+    )
+  }
+
+  fun sendProbationOfficeRegisterAmendedEvent(probationOfficeId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSProbationOfficeDomainEvent(
+        "register.probationoffice.amended",
+        ProbationOfficeAdditionalInformation(probationOfficeId),
+        occurredAt,
+        "A probation office has been updated",
+      ),
+    )
+  }
+
+  fun sendProbationOfficeRegisterDeletedEvent(probationOfficeId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSProbationOfficeDomainEvent(
+        "register.probationoffice.deleted",
+        ProbationOfficeAdditionalInformation(probationOfficeId),
+        occurredAt,
+        "A probation office has been deleted",
+      ),
+    )
+  }
+
+  fun sendApprovedPremiseRegisterInsertedEvent(approvedPremiseId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSApprovedPremiseDomainEvent(
+        "register.approvedpremise.inserted",
+        ApprovedPremiseAdditionalInformation(approvedPremiseId),
+        occurredAt,
+        "An approved premise has been inserted",
+      ),
+    )
+  }
+
+  fun sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSApprovedPremiseDomainEvent(
+        "register.approvedpremise.amended",
+        ApprovedPremiseAdditionalInformation(approvedPremiseId),
+        occurredAt,
+        "An approved premise has been updated",
+      ),
+    )
+  }
+
+  fun sendApprovedPremiseRegisterDeletedEvent(approvedPremiseId: String, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSApprovedPremiseDomainEvent(
+        "register.approvedpremise.deleted",
+        ApprovedPremiseAdditionalInformation(approvedPremiseId),
+        occurredAt,
+        "An approved premise has been deleted",
+      ),
+    )
+  }
+
   private fun publishToDomainEventsTopic(payload: HMPPSDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.prisonId)
     publish(payload.eventType, payload)
@@ -123,6 +255,26 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
 
   private fun publishToDomainEventsTopic(payload: HMPPSAgencyDomainEvent) {
     log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.agencyId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publishToDomainEventsTopic(payload: HMPPSHospitalDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.hospitalId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publishToDomainEventsTopic(payload: HMPPSPoliceCustodySuiteDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.policeCustodySuiteId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publishToDomainEventsTopic(payload: HMPPSProbationOfficeDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.probationOfficeId)
+    publish(payload.eventType, payload)
+  }
+
+  private fun publishToDomainEventsTopic(payload: HMPPSApprovedPremiseDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.approvedPremiseId)
     publish(payload.eventType, payload)
   }
 
@@ -152,6 +304,22 @@ data class CourtAdditionalInformation(
 
 data class AgencyAdditionalInformation(
   val agencyId: String,
+)
+
+data class HospitalAdditionalInformation(
+  val hospitalId: String,
+)
+
+data class PoliceCustodySuiteAdditionalInformation(
+  val policeCustodySuiteId: String,
+)
+
+data class ProbationOfficeAdditionalInformation(
+  val probationOfficeId: String,
+)
+
+data class ApprovedPremiseAdditionalInformation(
+  val approvedPremiseId: String,
 )
 
 data class HMPPSDomainEvent(
@@ -206,6 +374,90 @@ data class HMPPSAgencyDomainEvent(
   constructor(
     eventType: String,
     additionalInformation: AgencyAdditionalInformation,
+    occurredAt: Instant,
+    description: String,
+  ) : this(
+    eventType,
+    additionalInformation,
+    1,
+    occurredAt.toOffsetDateFormat(),
+    description,
+  )
+}
+
+data class HMPPSHospitalDomainEvent(
+  val eventType: String,
+  val additionalInformation: HospitalAdditionalInformation,
+  val version: Int,
+  val occurredAt: String,
+  val description: String,
+) {
+  constructor(
+    eventType: String,
+    additionalInformation: HospitalAdditionalInformation,
+    occurredAt: Instant,
+    description: String,
+  ) : this(
+    eventType,
+    additionalInformation,
+    1,
+    occurredAt.toOffsetDateFormat(),
+    description,
+  )
+}
+
+data class HMPPSPoliceCustodySuiteDomainEvent(
+  val eventType: String,
+  val additionalInformation: PoliceCustodySuiteAdditionalInformation,
+  val version: Int,
+  val occurredAt: String,
+  val description: String,
+) {
+  constructor(
+    eventType: String,
+    additionalInformation: PoliceCustodySuiteAdditionalInformation,
+    occurredAt: Instant,
+    description: String,
+  ) : this(
+    eventType,
+    additionalInformation,
+    1,
+    occurredAt.toOffsetDateFormat(),
+    description,
+  )
+}
+
+data class HMPPSProbationOfficeDomainEvent(
+  val eventType: String,
+  val additionalInformation: ProbationOfficeAdditionalInformation,
+  val version: Int,
+  val occurredAt: String,
+  val description: String,
+) {
+  constructor(
+    eventType: String,
+    additionalInformation: ProbationOfficeAdditionalInformation,
+    occurredAt: Instant,
+    description: String,
+  ) : this(
+    eventType,
+    additionalInformation,
+    1,
+    occurredAt.toOffsetDateFormat(),
+    description,
+  )
+}
+
+data class HMPPSApprovedPremiseDomainEvent(
+  val eventType: String,
+  val additionalInformation: ApprovedPremiseAdditionalInformation,
+  val version: Int,
+  val occurredAt: String,
+  val description: String,
+) {
+  constructor(
+    eventType: String,
+    additionalInformation: ApprovedPremiseAdditionalInformation,
     occurredAt: Instant,
     description: String,
   ) : this(

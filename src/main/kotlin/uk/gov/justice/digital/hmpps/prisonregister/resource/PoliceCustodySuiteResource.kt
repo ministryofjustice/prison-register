@@ -42,6 +42,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUST
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.PoliceCustodySuiteService
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
 import java.time.LocalDate
 
@@ -52,6 +53,7 @@ import java.time.LocalDate
 class PoliceCustodySuiteResource(
   private val policeCustodySuiteService: PoliceCustodySuiteService,
   private val auditService: AuditService,
+  private val snsService: SnsService,
 ) {
   @GetMapping("/id/{policeCustodySuiteId}")
   @Operation(summary = "Get specified police custody suite", description = "Information on a specific police custody suite")
@@ -122,10 +124,12 @@ class PoliceCustodySuiteResource(
     createPoliceCustodySuiteDto: CreatePoliceCustodySuiteDto,
   ): PoliceCustodySuiteDto {
     val createdPoliceCustodySuite = policeCustodySuiteService.createPoliceCustodySuite(createPoliceCustodySuiteDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterInsertedEvent(createPoliceCustodySuiteDto.policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_INSERT.name,
       mapOf("policeCustodySuiteId" to createPoliceCustodySuiteDto.policeCustodySuiteId, "policeCustodySuite" to createPoliceCustodySuiteDto),
-      Instant.now(),
+      now,
     )
     return createdPoliceCustodySuite
   }
@@ -178,10 +182,12 @@ class PoliceCustodySuiteResource(
     updatePoliceCustodySuiteDto: UpdatePoliceCustodySuiteDto,
   ): PoliceCustodySuiteDto {
     val updatedPoliceCustodySuite = policeCustodySuiteService.updatePoliceCustodySuite(policeCustodySuiteId, updatePoliceCustodySuiteDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_UPDATE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "policeCustodySuite" to updatePoliceCustodySuiteDto),
-      Instant.now(),
+      now,
     )
     return updatedPoliceCustodySuite
   }
@@ -220,10 +226,12 @@ class PoliceCustodySuiteResource(
     policeCustodySuiteId: String,
   ) {
     policeCustodySuiteService.deletePoliceCustodySuite(policeCustodySuiteId)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterDeletedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_DELETE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId),
-      Instant.now(),
+      now,
     )
   }
 
@@ -276,10 +284,12 @@ class PoliceCustodySuiteResource(
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
     val createdAddress = policeCustodySuiteService.createPoliceCustodySuiteAddress(policeCustodySuiteId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_INSERT.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "address" to createdAddress),
-      Instant.now(),
+      now,
     )
     return createdAddress
   }
@@ -335,10 +345,12 @@ class PoliceCustodySuiteResource(
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
     val updatedAddress = policeCustodySuiteService.updatePoliceCustodySuiteAddress(policeCustodySuiteId, addressId, updateAddressDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_UPDATE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "address" to updatedAddress),
-      Instant.now(),
+      now,
     )
     return updatedAddress
   }
@@ -380,10 +392,12 @@ class PoliceCustodySuiteResource(
     addressId: Long,
   ) {
     val deletedAddress = policeCustodySuiteService.deletePoliceCustodySuiteAddress(policeCustodySuiteId, addressId)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_DELETE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "address" to deletedAddress),
-      Instant.now(),
+      now,
     )
   }
 
@@ -441,10 +455,12 @@ class PoliceCustodySuiteResource(
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
     val createdPhoneNumber = policeCustodySuiteService.createPoliceCustodySuitePhoneNumber(policeCustodySuiteId, updatePhoneNumberDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_PHONE_INSERT.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "phoneNumber" to createdPhoneNumber),
-      Instant.now(),
+      now,
     )
     return createdPhoneNumber
   }
@@ -500,10 +516,12 @@ class PoliceCustodySuiteResource(
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
     val updatedPhoneNumber = policeCustodySuiteService.updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId, phoneNumberId, updatePhoneNumberDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_PHONE_UPDATE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "phoneNumber" to updatedPhoneNumber),
-      Instant.now(),
+      now,
     )
     return updatedPhoneNumber
   }
@@ -545,10 +563,12 @@ class PoliceCustodySuiteResource(
     phoneNumberId: Long,
   ) {
     val deletedPhoneNumber = policeCustodySuiteService.deletePoliceCustodySuitePhoneNumber(policeCustodySuiteId, phoneNumberId)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_PHONE_DELETE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "phoneNumber" to deletedPhoneNumber),
-      Instant.now(),
+      now,
     )
   }
 
@@ -606,10 +626,12 @@ class PoliceCustodySuiteResource(
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
     val createdEmailAddress = policeCustodySuiteService.createPoliceCustodySuiteEmailAddress(policeCustodySuiteId, updateEmailAddressDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_EMAIL_INSERT.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "emailAddress" to createdEmailAddress),
-      Instant.now(),
+      now,
     )
     return createdEmailAddress
   }
@@ -665,10 +687,12 @@ class PoliceCustodySuiteResource(
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
     val updatedEmailAddress = policeCustodySuiteService.updatePoliceCustodySuiteEmailAddress(policeCustodySuiteId, emailAddressId, updateEmailAddressDto)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_EMAIL_UPDATE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "emailAddress" to updatedEmailAddress),
-      Instant.now(),
+      now,
     )
     return updatedEmailAddress
   }
@@ -710,10 +734,12 @@ class PoliceCustodySuiteResource(
     emailAddressId: Long,
   ) {
     val deletedEmailAddress = policeCustodySuiteService.deletePoliceCustodySuiteEmailAddress(policeCustodySuiteId, emailAddressId)
+    val now = Instant.now()
+    snsService.sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId, now)
     auditService.sendAuditEvent(
       POLICE_CUSTODY_SUITE_REGISTER_EMAIL_DELETE.name,
       mapOf("policeCustodySuiteId" to policeCustodySuiteId, "emailAddress" to deletedEmailAddress),
-      Instant.now(),
+      now,
     )
   }
 }
