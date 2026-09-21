@@ -236,7 +236,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val webAddress = "https://visits.justice.gov.uk/official"
 
     @Test
-    fun `When official visit contact details are created with the maintain reference date role, isCreated is return and persisted`() {
+    fun `When official visit contact details are created with the maintain reference date role, isCreated is returned and persisted`() {
       val dto = ContactDetailsDto(departmentType, emailAddress, phoneNumber, webAddress)
 
       val responseSpec = doCreateContactDetailsAction(endPoint, prisonId, dto, headers = createMaintainRefRoleWithWriteScope())

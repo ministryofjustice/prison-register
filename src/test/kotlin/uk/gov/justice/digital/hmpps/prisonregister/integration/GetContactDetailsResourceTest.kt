@@ -150,7 +150,7 @@ class GetContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     val webAddress = "https://visits.justice.gov.uk/official"
 
     @Test
-    fun `When full request details are avalailable the full official visit contact details are returned`() {
+    fun `When full request details are available the full official visit contact details are returned`() {
       val departmentType = OFFICIAL_VISIT
       createDBData(prisonId, departmentType, phoneNumber, emailAddress, webAddress)
 
