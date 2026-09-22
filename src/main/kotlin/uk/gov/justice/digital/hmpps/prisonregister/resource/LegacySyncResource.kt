@@ -155,7 +155,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
 
   @Operation(
     summary = "Returns details of an agency of any type for reconciliation",
-    description = "Returns the details of any agency (court, hospital, probation office, approved premise, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "200",
@@ -266,7 +266,7 @@ enum class LegacyAgencyType {
   SECURE_HOSPITAL,
   PROBATION_OFFICE,
   POLICE_CUSTODY_SUITE,
-  APPROVED_PREMISE,
+  APPROVED_PREMISES,
   AIRPORT,
   PROBATION_CRC,
   FOREIGN_NATIONAL_PRISON,

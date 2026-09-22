@@ -21,8 +21,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBa
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -31,13 +31,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
-class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
+class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var dsl: Root
 
   @Autowired
-  lateinit var approvedPremiseRepository: ApprovedPremiseRepository
+  lateinit var approvedPremisesRepository: ApprovedPremisesRepository
 
   @Autowired
   lateinit var agencyAddressRepository: AgencyAddressRepository
@@ -54,17 +54,17 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
 
-  @DisplayName("Get approved premise by id")
+  @DisplayName("Get approved premises by id")
   @Nested
   inner class GetById {
-    lateinit var approvedPremise: ApprovedPremise
+    lateinit var approvedPremises: ApprovedPremises
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         contact = "John Smith",
         active = false,
         accessibleAccess = AccessibleAccess.ACCESSIBLE,
@@ -77,7 +77,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         localAuthorityCode = "00CG",
       ) {
         address(
-          addressLine1 = "Approved Premise House, 31 High Street",
+          addressLine1 = "Approved Premises House, 31 High Street",
           addressLine2 = "City Centre",
           town = "Sheffield",
           county = "South Yorkshire",
@@ -104,8 +104,8 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -158,16 +158,16 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will return core details`() {
-        val dto: ApprovedPremiseDto = webTestClient.get()
+        val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
           .expectBodyResponse()
 
-        assertThat(dto.approvedPremiseId).isEqualTo("SHEFAP")
-        assertThat(dto.approvedPremiseName).isEqualTo("Sheffield Approved Premise")
-        assertThat(dto.description).isEqualTo("Sheffield City Centre Approved Premise")
+        assertThat(dto.approvedPremisesId).isEqualTo("SHEFAP")
+        assertThat(dto.approvedPremisesName).isEqualTo("Sheffield Approved Premises")
+        assertThat(dto.description).isEqualTo("Sheffield City Centre Approved Premises")
         assertThat(dto.contact).isEqualTo("John Smith")
         assertThat(dto.active).isFalse
         assertThat(dto.accessibleAccess).isEqualTo("ACCESSIBLE")
@@ -181,7 +181,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return addresses`() {
-        val dto: ApprovedPremiseDto = webTestClient.get()
+        val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
@@ -189,7 +189,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .expectBodyResponse()
 
         assertThat(dto.addresses).hasSize(2)
-        assertThat(dto.addresses[0].addressLine1).isEqualTo("Approved Premise House, 31 High Street")
+        assertThat(dto.addresses[0].addressLine1).isEqualTo("Approved Premises House, 31 High Street")
         assertThat(dto.addresses[0].addressLine2).isEqualTo("City Centre")
         assertThat(dto.addresses[0].town).isEqualTo("Sheffield")
         assertThat(dto.addresses[0].county).isEqualTo("South Yorkshire")
@@ -199,7 +199,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return emails`() {
-        val dto: ApprovedPremiseDto = webTestClient.get()
+        val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
@@ -212,7 +212,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return phone numbers`() {
-        val dto: ApprovedPremiseDto = webTestClient.get()
+        val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
@@ -228,16 +228,16 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
   @DisplayName("Get all approved premises")
   @Nested
   inner class GetAll {
-    lateinit var approvedPremise: ApprovedPremise
-    lateinit var approvedPremise2: ApprovedPremise
-    lateinit var approvedPremise3: ApprovedPremise
+    lateinit var approvedPremises: ApprovedPremises
+    lateinit var approvedPremises2: ApprovedPremises
+    lateinit var approvedPremises3: ApprovedPremises
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = false,
         inactiveDate = LocalDate.parse("2020-01-02"),
         cjitCode = "C00SH00",
@@ -248,22 +248,22 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         localAuthorityCode = "00CG",
       ) {}
 
-      approvedPremise2 = dsl.approvedPremise(
-        approvedPremiseId = "LEEDAP",
-        name = "Leeds Approved Premise",
+      approvedPremises2 = dsl.approvedPremises(
+        approvedPremisesId = "LEEDAP",
+        name = "Leeds Approved Premises",
       ) {}
 
-      approvedPremise3 = dsl.approvedPremise(
-        approvedPremiseId = "BIRMAP",
-        name = "Birmingham Approved Premise",
+      approvedPremises3 = dsl.approvedPremises(
+        approvedPremisesId = "BIRMAP",
+        name = "Birmingham Approved Premises",
       ) {}
     }
 
     @AfterEach
     fun tearDown() {
-      approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
-      approvedPremiseRepository.deleteById(approvedPremise2.approvedPremiseId)
-      approvedPremiseRepository.deleteById(approvedPremise3.approvedPremiseId)
+      approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
+      approvedPremisesRepository.deleteById(approvedPremises2.approvedPremisesId)
+      approvedPremisesRepository.deleteById(approvedPremises3.approvedPremisesId)
     }
 
     @Nested
@@ -308,34 +308,34 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
           .expectStatus().isOk
-          .expectBodyList(ApprovedPremiseDto::class.java)
+          .expectBodyList(ApprovedPremisesDto::class.java)
           .returnResult()
           .responseBody!!
 
-        assertThat(approvedPremises).extracting("approvedPremiseId").contains("SHEFAP", "LEEDAP", "BIRMAP")
+        assertThat(approvedPremises).extracting("approvedPremisesId").contains("SHEFAP", "LEEDAP", "BIRMAP")
 
-        val approvedPremiseDto = approvedPremises.first { it.approvedPremiseId == "SHEFAP" }
-        assertThat(approvedPremiseDto.approvedPremiseName).isEqualTo("Sheffield Approved Premise")
-        assertThat(approvedPremiseDto.description).isEqualTo("Sheffield City Centre Approved Premise")
-        assertThat(approvedPremiseDto.active).isFalse
+        val approvedPremisesDto = approvedPremises.first { it.approvedPremisesId == "SHEFAP" }
+        assertThat(approvedPremisesDto.approvedPremisesName).isEqualTo("Sheffield Approved Premises")
+        assertThat(approvedPremisesDto.description).isEqualTo("Sheffield City Centre Approved Premises")
+        assertThat(approvedPremisesDto.active).isFalse
 
-        val approvedPremise2Dto = approvedPremises.first { it.approvedPremiseId == "LEEDAP" }
-        assertThat(approvedPremise2Dto.approvedPremiseName).isEqualTo("Leeds Approved Premise")
+        val approvedPremises2Dto = approvedPremises.first { it.approvedPremisesId == "LEEDAP" }
+        assertThat(approvedPremises2Dto.approvedPremisesName).isEqualTo("Leeds Approved Premises")
 
-        val approvedPremise3Dto = approvedPremises.first { it.approvedPremiseId == "BIRMAP" }
-        assertThat(approvedPremise3Dto.approvedPremiseName).isEqualTo("Birmingham Approved Premise")
+        val approvedPremises3Dto = approvedPremises.first { it.approvedPremisesId == "BIRMAP" }
+        assertThat(approvedPremises3Dto.approvedPremisesName).isEqualTo("Birmingham Approved Premises")
       }
     }
   }
 
-  @DisplayName("Update approved premise")
+  @DisplayName("Update approved premises")
   @Nested
-  inner class UpdateApprovedPremise {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class UpdateApprovedPremises {
+    lateinit var approvedPremises: ApprovedPremises
 
-    val updateApprovedPremiseRequest = UpdateApprovedPremiseDto(
-      approvedPremiseName = "Sheffield Central Approved Premise",
-      description = "Sheffield City Approved Premise",
+    val updateApprovedPremisesRequest = UpdateApprovedPremisesDto(
+      approvedPremisesName = "Sheffield Central Approved Premises",
+      description = "Sheffield City Approved Premises",
       contact = "Alex Taylor",
       active = true,
       accessibleAccess = AccessibleAccess.WHEELCHAIR_ACCESS,
@@ -350,10 +350,10 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         contact = "John Smith",
         active = false,
         accessibleAccess = AccessibleAccess.ACCESSIBLE,
@@ -366,7 +366,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         payrollRegionCode = "NEY",
       ) {
         address(
-          addressLine1 = "Approved Premise House, 31 High Street",
+          addressLine1 = "Approved Premises House, 31 High Street",
           town = "Sheffield",
           postcode = "S1 3GG",
           country = "England",
@@ -382,8 +382,8 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -394,7 +394,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .bodyValue(updateApprovedPremiseRequest)
+          .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isUnauthorized
       }
@@ -405,7 +405,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
-          .bodyValue(updateApprovedPremiseRequest)
+          .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isForbidden
       }
@@ -416,7 +416,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest)
+          .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isOk
       }
@@ -430,7 +430,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest)
+          .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isNotFound
       }
@@ -441,11 +441,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(areaCode = "ZZZ"))
+          .bodyValue(updateApprovedPremisesRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for approved premise SHEFAP")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -454,11 +454,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(regionCode = "ZZZ"))
+          .bodyValue(updateApprovedPremisesRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for approved premise SHEFAP")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -467,11 +467,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(geographicalAreaCode = "ZZZ"))
+          .bodyValue(updateApprovedPremisesRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for approved premise SHEFAP")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -480,11 +480,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(localAuthorityCode = "ZZZ"))
+          .bodyValue(updateApprovedPremisesRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for approved premise SHEFAP")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -493,20 +493,20 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(payrollRegionCode = "ZZZ"))
+          .bodyValue(updateApprovedPremisesRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for approved premise SHEFAP")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for approved premises SHEFAP")
       }
 
       @Test
-      fun `approved premise name is blank`() {
+      fun `approved premises name is blank`() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(approvedPremiseName = ""))
+          .bodyValue(updateApprovedPremisesRequest.copy(approvedPremisesName = ""))
           .exchange()
           .expectStatus().isBadRequest
       }
@@ -515,18 +515,18 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class HappyPath {
       @Test
-      fun `will update the core approved premise data`() {
-        val dto: ApprovedPremiseDto = webTestClient.put()
+      fun `will update the core approved premises data`() {
+        val dto: ApprovedPremisesDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
+          .bodyValue(updateApprovedPremisesRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
 
-        assertThat(dto.approvedPremiseId).isEqualTo("SHEFAP")
-        assertThat(dto.approvedPremiseName).isEqualTo("Sheffield Central Approved Premise")
-        assertThat(dto.description).isEqualTo("Sheffield City Approved Premise")
+        assertThat(dto.approvedPremisesId).isEqualTo("SHEFAP")
+        assertThat(dto.approvedPremisesName).isEqualTo("Sheffield Central Approved Premises")
+        assertThat(dto.description).isEqualTo("Sheffield City Approved Premises")
         assertThat(dto.contact).isEqualTo("Alex Taylor")
         assertThat(dto.active).isFalse
         assertThat(dto.accessibleAccess).isEqualTo("WHEELCHAIR_ACCESS")
@@ -541,7 +541,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-updated"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
           },
           isNull(),
         )
@@ -549,16 +549,16 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will not affect addresses, emails or phone numbers`() {
-        val dto: ApprovedPremiseDto = webTestClient.put()
+        val dto: ApprovedPremisesDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updateApprovedPremiseRequest)
+          .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(dto.addresses).hasSize(1)
-        assertThat(dto.addresses[0].addressLine1).isEqualTo("Approved Premise House, 31 High Street")
+        assertThat(dto.addresses[0].addressLine1).isEqualTo("Approved Premises House, 31 High Street")
         assertThat(dto.emailAddresses).hasSize(1)
         assertThat(dto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
         assertThat(dto.phoneNumbers).hasSize(1)
@@ -567,7 +567,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-updated"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
           },
           isNull(),
         )
@@ -575,14 +575,14 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Update approved premise address")
+  @DisplayName("Update approved premises address")
   @Nested
-  inner class UpdateApprovedPremiseAddress {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class UpdateApprovedPremisesAddress {
+    lateinit var approvedPremises: ApprovedPremises
     var addressId: Long = -1
 
     val updateAddressRequest = UpdateAddressDto(
-      addressLine1 = "Updated Approved Premise House, 31 High Street",
+      addressLine1 = "Updated Approved Premises House, 31 High Street",
       addressLine2 = "Updated City Centre",
       town = "Updated Sheffield",
       county = "Updated South Yorkshire",
@@ -592,10 +592,10 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -606,19 +606,19 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         payrollRegionCode = "NEY",
       ) {
         address(
-          addressLine1 = "Approved Premise House, 31 High Street",
+          addressLine1 = "Approved Premises House, 31 High Street",
           town = "Sheffield",
           postcode = "S1 3GG",
           country = "England",
         )
       }
-      addressId = approvedPremise.addresses[0].id
+      addressId = approvedPremises.addresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -660,7 +660,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
@@ -717,7 +717,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(addressDto.id).isEqualTo(addressId)
-        assertThat(addressDto.addressLine1).isEqualTo("Updated Approved Premise House, 31 High Street")
+        assertThat(addressDto.addressLine1).isEqualTo("Updated Approved Premises House, 31 High Street")
         assertThat(addressDto.addressLine2).isEqualTo("Updated City Centre")
         assertThat(addressDto.town).isEqualTo("Updated Sheffield")
         assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
@@ -727,7 +727,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-address-updated"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["addressId"]).isEqualTo(addressId.toString())
           },
           isNull(),
@@ -736,20 +736,20 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Update approved premise phone number")
+  @DisplayName("Update approved premises phone number")
   @Nested
-  inner class UpdateApprovedPremisePhoneNumber {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class UpdateApprovedPremisesPhoneNumber {
+    lateinit var approvedPremises: ApprovedPremises
     var phoneNumberId: Long = -1
 
     val updatePhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 1234")
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -766,13 +766,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           phoneNumber = "0114 555 4321",
         )
       }
-      phoneNumberId = approvedPremise.phoneNumbers.first { it.value == "0114 555 8989" }.id
+      phoneNumberId = approvedPremises.phoneNumbers.first { it.value == "0114 555 8989" }.id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -814,7 +814,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
@@ -858,7 +858,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `409 if phone number already exists on this approved premise`() {
+      fun `409 if phone number already exists on this approved premises`() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
@@ -889,7 +889,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-phone-number-updated"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
           },
           isNull(),
@@ -911,7 +911,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-phone-number-updated"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
           },
           isNull(),
@@ -920,20 +920,20 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Update approved premise email address")
+  @DisplayName("Update approved premises email address")
   @Nested
-  inner class UpdateApprovedPremiseEmailAddress {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class UpdateApprovedPremisesEmailAddress {
+    lateinit var approvedPremises: ApprovedPremises
     var emailAddressId: Long = -1
 
     val updateEmailAddressRequest = UpdateEmailAddressDto(address = "updated@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -947,13 +947,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           emailAddress = "test@justice.gov.uk",
         )
       }
-      emailAddressId = approvedPremise.emailAddresses[0].id
+      emailAddressId = approvedPremises.emailAddresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -995,7 +995,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
@@ -1057,7 +1057,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-email-address-updated"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
           },
           isNull(),
@@ -1066,13 +1066,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Create approved premise")
+  @DisplayName("Create approved premises")
   @Nested
-  inner class CreateApprovedPremise {
-    val createApprovedPremiseRequest = CreateApprovedPremiseDto(
-      approvedPremiseId = "NEWAPR",
-      approvedPremiseName = "New Approved Premise",
-      description = "The New Approved Premise",
+  inner class CreateApprovedPremises {
+    val createApprovedPremisesRequest = CreateApprovedPremisesDto(
+      approvedPremisesId = "NEWAPR",
+      approvedPremisesName = "New Approved Premises",
+      description = "The New Approved Premises",
       contact = "John Smith",
       active = true,
       accessibleAccess = AccessibleAccess.BY_ARRANGEMENT_ONLY,
@@ -1085,7 +1085,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
       payrollRegionCode = "NEY",
       addresses = listOf(
         UpdateAddressDto(
-          addressLine1 = "Approved Premise House, 31 High Street",
+          addressLine1 = "Approved Premises House, 31 High Street",
           addressLine2 = "City Centre",
           town = "Sheffield",
           county = "South Yorkshire",
@@ -1104,7 +1104,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      approvedPremiseRepository.findByIdOrNull(createApprovedPremiseRequest.approvedPremiseId)?.let { approvedPremiseRepository.delete(it) }
+      approvedPremisesRepository.findByIdOrNull(createApprovedPremisesRequest.approvedPremisesId)?.let { approvedPremisesRepository.delete(it) }
     }
 
     @Nested
@@ -1114,7 +1114,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .bodyValue(createApprovedPremiseRequest)
+          .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isUnauthorized
       }
@@ -1125,7 +1125,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
-          .bodyValue(createApprovedPremiseRequest)
+          .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isForbidden
       }
@@ -1136,7 +1136,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest)
+          .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isCreated
       }
@@ -1145,18 +1145,18 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `approved premise id already exists`() {
-        dsl.approvedPremise(approvedPremiseId = createApprovedPremiseRequest.approvedPremiseId, name = "Existing Approved Premise") {}
+      fun `approved premises id already exists`() {
+        dsl.approvedPremises(approvedPremisesId = createApprovedPremisesRequest.approvedPremisesId, name = "Existing Approved Premises") {}
 
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest)
+          .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Approved premise ${createApprovedPremiseRequest.approvedPremiseId} already exists")
+        assertThat(errorResponse.developerMessage).isEqualTo("Approved premises ${createApprovedPremisesRequest.approvedPremisesId} already exists")
       }
 
       @Test
@@ -1165,11 +1165,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest.copy(areaCode = "ZZZ"))
+          .bodyValue(createApprovedPremisesRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for approved premise ${createApprovedPremiseRequest.approvedPremiseId}")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1178,11 +1178,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest.copy(regionCode = "ZZZ"))
+          .bodyValue(createApprovedPremisesRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for approved premise ${createApprovedPremiseRequest.approvedPremiseId}")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1191,11 +1191,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest.copy(geographicalAreaCode = "ZZZ"))
+          .bodyValue(createApprovedPremisesRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for approved premise ${createApprovedPremiseRequest.approvedPremiseId}")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1204,11 +1204,11 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest.copy(localAuthorityCode = "ZZZ"))
+          .bodyValue(createApprovedPremisesRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for approved premise ${createApprovedPremiseRequest.approvedPremiseId}")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1217,20 +1217,20 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest.copy(payrollRegionCode = "ZZZ"))
+          .bodyValue(createApprovedPremisesRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for approved premise ${createApprovedPremiseRequest.approvedPremiseId}")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
-      fun `approved premise name is blank`() {
+      fun `approved premises name is blank`() {
         webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest.copy(approvedPremiseName = ""))
+          .bodyValue(createApprovedPremisesRequest.copy(approvedPremisesName = ""))
           .exchange()
           .expectStatus().isBadRequest
       }
@@ -1239,21 +1239,21 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class HappyPath {
       @Test
-      fun `will persist the approved premise, address, email address and phone number`() {
+      fun `will persist the approved premises, address, email address and phone number`() {
         webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createApprovedPremiseRequest)
+          .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isCreated
 
         transactionHelper.runInTransaction {
-          val persisted = approvedPremiseRepository.findByIdOrNull(createApprovedPremiseRequest.approvedPremiseId)
+          val persisted = approvedPremisesRepository.findByIdOrNull(createApprovedPremisesRequest.approvedPremisesId)
 
           assertThat(persisted).isNotNull
-          assertThat(persisted!!.name).isEqualTo("New Approved Premise")
-          assertThat(persisted.description).isEqualTo("The New Approved Premise")
+          assertThat(persisted!!.name).isEqualTo("New Approved Premises")
+          assertThat(persisted.description).isEqualTo("The New Approved Premises")
           assertThat(persisted.contact).isEqualTo("John Smith")
           assertThat(persisted.active).isTrue
           assertThat(persisted.accessibleAccess).isEqualTo(AccessibleAccess.BY_ARRANGEMENT_ONLY)
@@ -1265,7 +1265,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(persisted.payrollRegion?.code).isEqualTo("NEY")
 
           assertThat(persisted.addresses).hasSize(1)
-          assertThat(persisted.addresses[0].addressLine1).isEqualTo("Approved Premise House, 31 High Street")
+          assertThat(persisted.addresses[0].addressLine1).isEqualTo("Approved Premises House, 31 High Street")
           assertThat(persisted.addresses[0].addressLine2).isEqualTo("City Centre")
           assertThat(persisted.addresses[0].town).isEqualTo("Sheffield")
           assertThat(persisted.addresses[0].county).isEqualTo("South Yorkshire")
@@ -1282,7 +1282,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-created"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo(createApprovedPremiseRequest.approvedPremiseId)
+            assertThat(it["approvedPremisesId"]).isEqualTo(createApprovedPremisesRequest.approvedPremisesId)
           },
           isNull(),
         )
@@ -1290,13 +1290,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Create approved premise address")
+  @DisplayName("Create approved premises address")
   @Nested
-  inner class CreateApprovedPremiseAddress {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class CreateApprovedPremisesAddress {
+    lateinit var approvedPremises: ApprovedPremises
 
     val createAddressRequest = UpdateAddressDto(
-      addressLine1 = "Approved Premise House, 31 High Street",
+      addressLine1 = "Approved Premises House, 31 High Street",
       addressLine2 = "City Centre",
       town = "Sheffield",
       county = "South Yorkshire",
@@ -1306,10 +1306,10 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -1320,7 +1320,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         payrollRegionCode = "NEY",
       ) {
         address(
-          addressLine1 = "Existing Approved Premise House",
+          addressLine1 = "Existing Approved Premises House",
           town = "Leeds",
           postcode = "LS1 1AA",
           country = "England",
@@ -1330,8 +1330,8 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -1373,7 +1373,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.post()
           .uri("/approved-premises/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
@@ -1409,7 +1409,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class HappyPath {
       @Test
-      fun `will persist the new address against the approved premise`() {
+      fun `will persist the new address against the approved premises`() {
         val addressDto: AgencyAddressDto = webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/address")
           .accept(MediaType.APPLICATION_JSON)
@@ -1418,7 +1418,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
 
-        assertThat(addressDto.addressLine1).isEqualTo("Approved Premise House, 31 High Street")
+        assertThat(addressDto.addressLine1).isEqualTo("Approved Premises House, 31 High Street")
         assertThat(addressDto.addressLine2).isEqualTo("City Centre")
         assertThat(addressDto.town).isEqualTo("Sheffield")
         assertThat(addressDto.county).isEqualTo("South Yorkshire")
@@ -1427,17 +1427,17 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.id).isNotEqualTo(-1)
 
         transactionHelper.runInTransaction {
-          val persisted = approvedPremiseRepository.findByIdOrNull("SHEFAP")!!
+          val persisted = approvedPremisesRepository.findByIdOrNull("SHEFAP")!!
           assertThat(persisted.addresses).hasSize(2)
           val persistedAddress = persisted.addresses.find { it.id == addressDto.id }
           assertThat(persistedAddress).isNotNull
-          assertThat(persistedAddress!!.addressLine1).isEqualTo("Approved Premise House, 31 High Street")
+          assertThat(persistedAddress!!.addressLine1).isEqualTo("Approved Premises House, 31 High Street")
         }
 
         verify(telemetryClient).trackEvent(
           eq("approved-premises-address-created"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
           },
           isNull(),
@@ -1446,19 +1446,19 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Create approved premise phone number")
+  @DisplayName("Create approved premises phone number")
   @Nested
-  inner class CreateApprovedPremisePhoneNumber {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class CreateApprovedPremisesPhoneNumber {
+    lateinit var approvedPremises: ApprovedPremises
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -1476,10 +1476,10 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
-      approvedPremiseRepository.findByIdOrNull("OTHAP")?.let { approvedPremiseRepository.deleteById("OTHAP") }
+      approvedPremisesRepository.findByIdOrNull("OTHAP")?.let { approvedPremisesRepository.deleteById("OTHAP") }
     }
 
     @Nested
@@ -1520,7 +1520,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.post()
           .uri("/approved-premises/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
@@ -1577,8 +1577,8 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class HappyPath {
       @Test
-      fun `will allow the same phone number to be used by a different approved premise`() {
-        dsl.approvedPremise(approvedPremiseId = "OTHAP", name = "Other Approved Premise") {}
+      fun `will allow the same phone number to be used by a different approved premises`() {
+        dsl.approvedPremises(approvedPremisesId = "OTHAP", name = "Other Approved Premises") {}
 
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/approved-premises/id/OTHAP/phone-number")
@@ -1591,7 +1591,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-phone-number-created"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("OTHAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("OTHAP")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
           },
           isNull(),
@@ -1599,7 +1599,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `will persist the new phone number against the approved premise`() {
+      fun `will persist the new phone number against the approved premises`() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
@@ -1612,7 +1612,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(phoneDto.id).isNotEqualTo(-1)
 
         transactionHelper.runInTransaction {
-          val persisted = approvedPremiseRepository.findByIdOrNull("SHEFAP")!!
+          val persisted = approvedPremisesRepository.findByIdOrNull("SHEFAP")!!
           assertThat(persisted.phoneNumbers).hasSize(2)
           val persistedPhoneNumber = persisted.phoneNumbers.find { it.id == phoneDto.id }
           assertThat(persistedPhoneNumber).isNotNull
@@ -1622,7 +1622,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-phone-number-created"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
           },
           isNull(),
@@ -1631,19 +1631,19 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Create approved premise email address")
+  @DisplayName("Create approved premises email address")
   @Nested
-  inner class CreateApprovedPremiseEmailAddress {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class CreateApprovedPremisesEmailAddress {
+    lateinit var approvedPremises: ApprovedPremises
 
     val createEmailAddressRequest = UpdateEmailAddressDto(address = "new@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -1661,8 +1661,8 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -1704,7 +1704,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.post()
           .uri("/approved-premises/id/ZZZZ/email-address")
           .accept(MediaType.APPLICATION_JSON)
@@ -1761,7 +1761,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class HappyPath {
       @Test
-      fun `will persist the new email address against the approved premise`() {
+      fun `will persist the new email address against the approved premises`() {
         val emailDto: AgencyEmailDto = webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/email-address")
           .accept(MediaType.APPLICATION_JSON)
@@ -1774,7 +1774,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(emailDto.id).isNotEqualTo(-1)
 
         transactionHelper.runInTransaction {
-          val persisted = approvedPremiseRepository.findByIdOrNull("SHEFAP")!!
+          val persisted = approvedPremisesRepository.findByIdOrNull("SHEFAP")!!
           assertThat(persisted.emailAddresses).hasSize(2)
           val persistedEmailAddress = persisted.emailAddresses.find { it.id == emailDto.id }
           assertThat(persistedEmailAddress).isNotNull
@@ -1784,7 +1784,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-email-address-created"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
           },
           isNull(),
@@ -1793,17 +1793,17 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Delete approved premise")
+  @DisplayName("Delete approved premises")
   @Nested
-  inner class DeleteApprovedPremise {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class DeleteApprovedPremises {
+    lateinit var approvedPremises: ApprovedPremises
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -1813,7 +1813,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         payrollRegionCode = "NEY",
       ) {
         address(
-          addressLine1 = "Approved Premise House, 31 High Street",
+          addressLine1 = "Approved Premises House, 31 High Street",
           town = "Sheffield",
           postcode = "S1 3GG",
           country = "England",
@@ -1829,8 +1829,8 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.findByIdOrNull(approvedPremise.approvedPremiseId)?.let { approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId) }
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.findByIdOrNull(approvedPremises.approvedPremisesId)?.let { approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId) }
       }
     }
 
@@ -1872,10 +1872,10 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class HappyPath {
       @Test
-      fun `will delete the approved premise, along with its addresses, emails and phone numbers`() {
-        val addressId = approvedPremise.addresses[0].id
-        val emailAddressId = approvedPremise.emailAddresses[0].id
-        val phoneNumberId = approvedPremise.phoneNumbers[0].id
+      fun `will delete the approved premises, along with its addresses, emails and phone numbers`() {
+        val addressId = approvedPremises.addresses[0].id
+        val emailAddressId = approvedPremises.emailAddresses[0].id
+        val phoneNumberId = approvedPremises.phoneNumbers[0].id
 
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP")
@@ -1885,7 +1885,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .expectStatus().isNoContent
 
         transactionHelper.runInTransaction {
-          assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")).isNull()
+          assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")).isNull()
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
@@ -1894,7 +1894,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("approved-premises-deleted"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
           },
           isNull(),
         )
@@ -1902,18 +1902,18 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Delete approved premise address")
+  @DisplayName("Delete approved premises address")
   @Nested
-  inner class DeleteApprovedPremiseAddress {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class DeleteApprovedPremisesAddress {
+    lateinit var approvedPremises: ApprovedPremises
     var addressId: Long = -1
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -1924,19 +1924,19 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         payrollRegionCode = "NEY",
       ) {
         address(
-          addressLine1 = "Approved Premise House, 31 High Street",
+          addressLine1 = "Approved Premises House, 31 High Street",
           town = "Sheffield",
           postcode = "S1 3GG",
           country = "England",
         )
       }
-      addressId = approvedPremise.addresses[0].id
+      addressId = approvedPremises.addresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -1965,7 +1965,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
@@ -1998,13 +1998,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
-          assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")?.addresses).isEmpty()
+          assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")?.addresses).isEmpty()
         }
 
         verify(telemetryClient).trackEvent(
           eq("approved-premises-address-deleted"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["addressId"]).isEqualTo(addressId.toString())
           },
           isNull(),
@@ -2013,18 +2013,18 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Delete approved premise phone number")
+  @DisplayName("Delete approved premises phone number")
   @Nested
-  inner class DeleteApprovedPremisePhoneNumber {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class DeleteApprovedPremisesPhoneNumber {
+    lateinit var approvedPremises: ApprovedPremises
     var phoneNumberId: Long = -1
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -2038,13 +2038,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           phoneNumber = "0114 555 8989",
         )
       }
-      phoneNumberId = approvedPremise.phoneNumbers[0].id
+      phoneNumberId = approvedPremises.phoneNumbers[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -2073,7 +2073,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
@@ -2106,13 +2106,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
-          assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")?.phoneNumbers).isEmpty()
+          assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")?.phoneNumbers).isEmpty()
         }
 
         verify(telemetryClient).trackEvent(
           eq("approved-premises-phone-number-deleted"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
           },
           isNull(),
@@ -2121,18 +2121,18 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  @DisplayName("Delete approved premise email address")
+  @DisplayName("Delete approved premises email address")
   @Nested
-  inner class DeleteApprovedPremiseEmailAddress {
-    lateinit var approvedPremise: ApprovedPremise
+  inner class DeleteApprovedPremisesEmailAddress {
+    lateinit var approvedPremises: ApprovedPremises
     var emailAddressId: Long = -1
 
     @BeforeEach
     fun setUp() {
-      approvedPremise = dsl.approvedPremise(
-        approvedPremiseId = "SHEFAP",
-        name = "Sheffield Approved Premise",
-        description = "Sheffield City Centre Approved Premise",
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield City Centre Approved Premises",
         active = true,
         inactiveDate = null,
         cjitCode = "C00SH00",
@@ -2146,13 +2146,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           emailAddress = "test@justice.gov.uk",
         )
       }
-      emailAddressId = approvedPremise.emailAddresses[0].id
+      emailAddressId = approvedPremises.emailAddresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::approvedPremise.isInitialized) {
-        approvedPremiseRepository.deleteById(approvedPremise.approvedPremiseId)
+      if (::approvedPremises.isInitialized) {
+        approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       }
     }
 
@@ -2181,7 +2181,7 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
     @Nested
     inner class Validation {
       @Test
-      fun `404 if approved premise not found`() {
+      fun `404 if approved premises not found`() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
@@ -2214,13 +2214,13 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
-          assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")?.emailAddresses).isEmpty()
+          assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")?.emailAddresses).isEmpty()
         }
 
         verify(telemetryClient).trackEvent(
           eq("approved-premises-email-address-deleted"),
           check {
-            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["approvedPremisesId"]).isEqualTo("SHEFAP")
             assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
           },
           isNull(),

@@ -15,15 +15,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
-class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
+class LegacySyncApprovedPremisesResourceIntTest : IntegrationTestBase() {
 
   @Autowired
-  lateinit var approvedPremiseRepository: ApprovedPremiseRepository
+  lateinit var approvedPremisesRepository: ApprovedPremisesRepository
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
@@ -36,7 +36,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
   @AfterEach
   fun tearDown() {
-    approvedPremiseRepository.deleteAll()
+    approvedPremisesRepository.deleteAll()
   }
 
   @Nested
@@ -44,9 +44,9 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
   inner class CreateOrUpdateAgency {
 
     @Nested
-    inner class WhenApprovedPremise {
-      val approvedPremiseRequest = LegacyAgencyDto(
-        agencyType = LegacyAgencyType.APPROVED_PREMISE,
+    inner class WhenApprovedPremises {
+      val approvedPremisesRequest = LegacyAgencyDto(
+        agencyType = LegacyAgencyType.APPROVED_PREMISES,
         name = "Sheffield Approved Premises",
         description = "Sheffield City Centre Approved Premises",
         active = true,
@@ -85,7 +85,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-              .bodyValue(approvedPremiseRequest.copy(areaCode = "ZZZ"))
+              .bodyValue(approvedPremisesRequest.copy(areaCode = "ZZZ"))
               .exchange()
               .expectStatus().isBadRequest.expectBodyResponse()
 
@@ -98,7 +98,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-              .bodyValue(approvedPremiseRequest.copy(regionCode = "ZZZ"))
+              .bodyValue(approvedPremisesRequest.copy(regionCode = "ZZZ"))
               .exchange()
               .expectStatus().isBadRequest.expectBodyResponse()
 
@@ -111,7 +111,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-              .bodyValue(approvedPremiseRequest.copy(geographicalAreaCode = "ZZZ"))
+              .bodyValue(approvedPremisesRequest.copy(geographicalAreaCode = "ZZZ"))
               .exchange()
               .expectStatus().isBadRequest.expectBodyResponse()
 
@@ -124,7 +124,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-              .bodyValue(approvedPremiseRequest.copy(localAuthorityCode = "ZZZ"))
+              .bodyValue(approvedPremisesRequest.copy(localAuthorityCode = "ZZZ"))
               .exchange()
               .expectStatus().isBadRequest.expectBodyResponse()
 
@@ -137,7 +137,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-              .bodyValue(approvedPremiseRequest.copy(payrollRegionCode = "ZZZ"))
+              .bodyValue(approvedPremisesRequest.copy(payrollRegionCode = "ZZZ"))
               .exchange()
               .expectStatus().isBadRequest.expectBodyResponse()
 
@@ -149,13 +149,13 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
         inner class HappyPath {
 
           @Test
-          fun `will create the core approved premise data`() {
+          fun `will create the core approved premises data`() {
             val response: LegacyAgencyResponse = webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(
-                approvedPremiseRequest.copy(
+                approvedPremisesRequest.copy(
                   addresses = emptyList(),
                   emailAddresses = emptyList(),
                   phoneNumbers = emptyList(),
@@ -167,9 +167,9 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
             assertThat(response.updated).isFalse
 
             transactionHelper.runInTransaction {
-              val approvedPremise = approvedPremiseRepository.findByIdOrNull("SHEFAP")!!
+              val approvedPremises = approvedPremisesRepository.findByIdOrNull("SHEFAP")!!
 
-              with(approvedPremise) {
+              with(approvedPremises) {
                 assertThat(name).isEqualTo("Sheffield Approved Premises")
                 assertThat(description).isEqualTo("Sheffield City Centre Approved Premises")
                 assertThat(active).isTrue
@@ -195,7 +195,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(
-                approvedPremiseRequest.copy(
+                approvedPremisesRequest.copy(
                   addresses = listOf(
                     LegacyAgencyAddressDto(
                       addressLine1 = "14 West Bar",
@@ -214,7 +214,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!) {
+              with(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!) {
                 assertThat(addresses).hasSize(1)
                 with(addresses[0]) {
                   assertThat(addressLine1).isEqualTo("14 West Bar")
@@ -235,7 +235,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(
-                approvedPremiseRequest.copy(
+                approvedPremisesRequest.copy(
                   emailAddresses = listOf(LegacyAgencyEmailDto(address = "sheffield.approvedpremises@justice.gov.uk")),
                   addresses = emptyList(),
                   phoneNumbers = emptyList(),
@@ -245,7 +245,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!) {
+              with(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!) {
                 assertThat(emailAddresses).hasSize(1)
                 assertThat(emailAddresses[0].value).isEqualTo("sheffield.approvedpremises@justice.gov.uk")
               }
@@ -259,7 +259,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(
-                approvedPremiseRequest.copy(
+                approvedPremisesRequest.copy(
                   emailAddresses = emptyList(),
                   addresses = emptyList(),
                   phoneNumbers = listOf(
@@ -272,7 +272,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!) {
+              with(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!) {
                 assertThat(phoneNumbers).hasSize(2)
                 assertThat(phoneNumbers[0].value).isEqualTo("0114 555 8888")
                 assertThat(phoneNumbers[1].value).isEqualTo("0114 999 8888")
@@ -285,7 +285,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
       @Nested
       inner class Update {
         val updateRequest = LegacyAgencyDto(
-          agencyType = LegacyAgencyType.APPROVED_PREMISE,
+          agencyType = LegacyAgencyType.APPROVED_PREMISES,
           name = "Sheffield Approved Premises",
           description = "Sheffield City Centre Approved Premises",
           active = true,
@@ -313,12 +313,12 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 8888")),
         )
 
-        lateinit var approvedPremise: ApprovedPremise
+        lateinit var approvedPremises: ApprovedPremises
 
         @BeforeEach
         fun setUp() {
-          approvedPremise = dsl.approvedPremise(
-            approvedPremiseId = "SHEFAP",
+          approvedPremises = dsl.approvedPremises(
+            approvedPremisesId = "SHEFAP",
             name = "Sheffield Approved Premises",
             description = "Sheffield City Centre Approved Premises",
             active = true,
@@ -415,7 +415,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
         inner class HappyPath {
 
           @Test
-          fun `will update the core approved premise data`() {
+          fun `will update the core approved premises data`() {
             val response: LegacyAgencyResponse = webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "SHEFAP")
               .accept(MediaType.APPLICATION_JSON)
@@ -427,7 +427,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
             assertThat(response.updated).isTrue
 
             transactionHelper.runInTransaction {
-              val updated = approvedPremiseRepository.findByIdOrNull("SHEFAP")!!
+              val updated = approvedPremisesRepository.findByIdOrNull("SHEFAP")!!
 
               with(updated) {
                 assertThat(name).isEqualTo("Sheffield Approved Premises")
@@ -471,7 +471,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!) {
+              with(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!) {
                 assertThat(addresses).hasSize(1)
                 with(addresses[0]) {
                   assertThat(addressLine1).isEqualTo("14 West Bar")
@@ -484,7 +484,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
           @Test
           fun `will remove existing address`() {
             transactionHelper.runInTransaction {
-              assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!.addresses).hasSize(1)
+              assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!.addresses).hasSize(1)
             }
 
             webTestClient.post()
@@ -502,7 +502,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!.addresses).isEmpty()
+              assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!.addresses).isEmpty()
             }
           }
 
@@ -523,7 +523,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!) {
+              with(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!) {
                 assertThat(emailAddresses).hasSize(1)
                 assertThat(emailAddresses[0].value).isEqualTo("new.sheffield.ap@justice.gov.uk")
               }
@@ -533,7 +533,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
           @Test
           fun `will remove email addresses`() {
             transactionHelper.runInTransaction {
-              assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!.emailAddresses).hasSize(1)
+              assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!.emailAddresses).hasSize(1)
             }
 
             webTestClient.post()
@@ -551,7 +551,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!.emailAddresses).isEmpty()
+              assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!.emailAddresses).isEmpty()
             }
           }
 
@@ -572,7 +572,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!) {
+              with(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!) {
                 assertThat(phoneNumbers).hasSize(1)
                 assertThat(phoneNumbers[0].value).isEqualTo("0114 999 8888")
               }
@@ -582,7 +582,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
           @Test
           fun `will remove phone numbers`() {
             transactionHelper.runInTransaction {
-              assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!.phoneNumbers).hasSize(1)
+              assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!.phoneNumbers).hasSize(1)
             }
 
             webTestClient.post()
@@ -600,7 +600,7 @@ class LegacySyncApprovedPremiseResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")!!.phoneNumbers).isEmpty()
+              assertThat(approvedPremisesRepository.findByIdOrNull("SHEFAP")!!.phoneNumbers).isEmpty()
             }
           }
         }
