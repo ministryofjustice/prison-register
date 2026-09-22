@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
@@ -43,6 +44,7 @@ class PoliceCustodySuiteService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val emailAddressRepository: EmailAddressRepository,
+  private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
     policeCustodySuiteRepository.deleteAll()
@@ -65,18 +67,45 @@ class PoliceCustodySuiteService(
     policeCustodySuite.emailAddresses += createPoliceCustodySuiteDto.emailAddresses.map { EmailAddress(it.address) }
     policeCustodySuite.phoneNumbers += createPoliceCustodySuiteDto.phoneNumbers.map { PhoneNumber(it.number) }
 
-    return policeCustodySuiteRepository.saveAndFlush(policeCustodySuite).toPoliceCustodySuiteDto()
+    val savedPoliceCustodySuite = policeCustodySuiteRepository.saveAndFlush(policeCustodySuite)
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-created",
+      mapOf(
+        "policeCustodySuiteId" to savedPoliceCustodySuite.policeCustodySuiteId,
+      ),
+      null,
+    )
+
+    return savedPoliceCustodySuite.toPoliceCustodySuiteDto()
   }
 
   fun updatePoliceCustodySuite(policeCustodySuiteId: String, updatePoliceCustodySuiteDto: UpdatePoliceCustodySuiteDto): PoliceCustodySuiteDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     policeCustodySuite.update(updatePoliceCustodySuiteDto)
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-updated",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+      ),
+      null,
+    )
+
     return policeCustodySuite.toPoliceCustodySuiteDto()
   }
 
   fun deletePoliceCustodySuite(policeCustodySuiteId: String) {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     policeCustodySuiteRepository.delete(policeCustodySuite)
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-deleted",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+      ),
+      null,
+    )
   }
 
   fun createPoliceCustodySuiteAddress(policeCustodySuiteId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
@@ -85,6 +114,15 @@ class PoliceCustodySuiteService(
     val address = updateAddressDto.toAgencyAddress()
     policeCustodySuite.addresses += address
     policeCustodySuiteRepository.flush()
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-address-created",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyAddressDto(
       id = address.id,
@@ -110,6 +148,15 @@ class PoliceCustodySuiteService(
       address.country = country
     }
 
+    telemetryClient.trackEvent(
+      "police-custody-suite-address-updated",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyAddressDto(
       id = address.id,
       addressLine1 = address.addressLine1,
@@ -126,6 +173,15 @@ class PoliceCustodySuiteService(
     val address = policeCustodySuite.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for police custody suite $policeCustodySuiteId")
 
     policeCustodySuite.addresses.remove(address)
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-address-deleted",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     // returned for audit payload
     return AgencyAddressDto(
@@ -151,6 +207,15 @@ class PoliceCustodySuiteService(
     policeCustodySuite.phoneNumbers += phoneNumber
     policeCustodySuiteRepository.flush()
 
+    telemetryClient.trackEvent(
+      "police-custody-suite-phone-number-created",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -168,6 +233,15 @@ class PoliceCustodySuiteService(
 
     phoneNumber.value = updatePhoneNumberDto.number
 
+    telemetryClient.trackEvent(
+      "police-custody-suite-phone-number-updated",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -179,6 +253,15 @@ class PoliceCustodySuiteService(
     val phoneNumber = policeCustodySuite.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for police custody suite $policeCustodySuiteId")
 
     policeCustodySuite.phoneNumbers.remove(phoneNumber)
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-phone-number-deleted",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyPhoneDto(
       id = phoneNumber.id,
@@ -198,6 +281,15 @@ class PoliceCustodySuiteService(
     policeCustodySuite.emailAddresses += emailAddress
     policeCustodySuiteRepository.flush()
 
+    telemetryClient.trackEvent(
+      "police-custody-suite-email-address-created",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -210,6 +302,15 @@ class PoliceCustodySuiteService(
 
     emailAddress.value = updateEmailAddressDto.address
 
+    telemetryClient.trackEvent(
+      "police-custody-suite-email-address-updated",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -221,6 +322,15 @@ class PoliceCustodySuiteService(
     val emailAddress = policeCustodySuite.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for police custody suite $policeCustodySuiteId")
 
     policeCustodySuite.emailAddresses.remove(emailAddress)
+
+    telemetryClient.trackEvent(
+      "police-custody-suite-email-address-deleted",
+      mapOf(
+        "policeCustodySuiteId" to policeCustodySuite.policeCustodySuiteId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyEmailDto(
       id = emailAddress.id,

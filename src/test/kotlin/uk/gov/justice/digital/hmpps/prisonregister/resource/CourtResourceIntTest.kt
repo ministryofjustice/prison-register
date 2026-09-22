@@ -1,14 +1,20 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -44,6 +50,9 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
+
+  @MockitoBean
+  private lateinit var telemetryClient: TelemetryClient
 
   @DisplayName("Get court by id")
   @Nested
@@ -543,6 +552,14 @@ class CourtResourceIntTest : IntegrationTestBase() {
         assertThat(courtDto.localAuthority?.description).isEqualTo("Sheffield City Council")
         assertThat(courtDto.payrollRegion?.code).isEqualTo("NEY")
         assertThat(courtDto.courtType?.description).isEqualTo("Magistrates Court")
+
+        verify(telemetryClient).trackEvent(
+          eq("court-updated"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -561,6 +578,14 @@ class CourtResourceIntTest : IntegrationTestBase() {
         assertThat(courtDto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
         assertThat(courtDto.phoneNumbers).hasSize(1)
         assertThat(courtDto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("court-updated"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -663,6 +688,14 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-deleted"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -812,6 +845,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(persistedAddress).isNotNull
           assertThat(persistedAddress!!.addressLine1).isEqualTo("Court House, 31 High Street")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-address-created"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -966,6 +1008,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
         assertThat(addressDto.postcode).isEqualTo("S1 4HH")
         assertThat(addressDto.country).isEqualTo("Wales")
+
+        verify(telemetryClient).trackEvent(
+          eq("court-address-updated"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1070,6 +1121,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(courtRepository.findByIdOrNull("SHEFCC")?.addresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-address-deleted"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1209,13 +1269,22 @@ class CourtResourceIntTest : IntegrationTestBase() {
       fun `will allow the same phone number to be used by a different court`() {
         dsl.court(courtId = "OTHCRT", name = "Other Court") {}
 
-        webTestClient.post()
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/courts/id/OTHCRT/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
-          .expectStatus().isCreated
+          .expectStatus().isCreated.expectBodyResponse()
+
+        verify(telemetryClient).trackEvent(
+          eq("court-phone-number-created"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("OTHCRT")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
 
         courtRepository.deleteById("OTHCRT")
       }
@@ -1240,6 +1309,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(persistedPhoneNumber).isNotNull
           assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-phone-number-created"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1395,6 +1473,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+
+        verify(telemetryClient).trackEvent(
+          eq("court-phone-number-updated"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -1408,6 +1495,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("court-phone-number-updated"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1509,6 +1605,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
           assertThat(courtRepository.findByIdOrNull("SHEFCC")?.phoneNumbers).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-phone-number-deleted"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1664,6 +1769,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(persistedEmailAddress).isNotNull
           assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-email-address-created"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1803,6 +1917,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+
+        verify(telemetryClient).trackEvent(
+          eq("court-email-address-updated"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1904,6 +2027,15 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(courtRepository.findByIdOrNull("SHEFCC")?.emailAddresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-email-address-deleted"),
+          check {
+            assertThat(it["courtId"]).isEqualTo("SHEFCC")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -2081,6 +2213,14 @@ class CourtResourceIntTest : IntegrationTestBase() {
           assertThat(persistedCourt.phoneNumbers).hasSize(2)
           assertThat(persistedCourt.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("court-created"),
+          check {
+            assertThat(it["courtId"]).isEqualTo(createCourtRequest.courtId)
+          },
+          isNull(),
+        )
       }
     }
   }

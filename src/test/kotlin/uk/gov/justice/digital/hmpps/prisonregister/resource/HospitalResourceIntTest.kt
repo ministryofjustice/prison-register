@@ -1,14 +1,20 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -38,6 +44,9 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
+
+  @MockitoBean
+  private lateinit var telemetryClient: TelemetryClient
 
   @DisplayName("Get hospital by id")
   @Nested
@@ -465,6 +474,14 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           assertThat(persistedHospital.phoneNumbers).hasSize(2)
           assertThat(persistedHospital.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-created"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo(createHospitalRequest.hospitalId)
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -613,6 +630,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           assertThat(persistedAddress).isNotNull
           assertThat(persistedAddress!!.addressLine1).isEqualTo("Hospital House, 31 High Street")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-address-created"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -743,13 +769,22 @@ class HospitalResourceIntTest : IntegrationTestBase() {
       fun `will allow the same phone number to be used by a different hospital`() {
         dsl.hospital(hospitalId = "OTHHOS", name = "Other Hospital") {}
 
-        webTestClient.post()
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/hospitals/id/OTHHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
-          .expectStatus().isCreated
+          .expectStatus().isCreated.expectBodyResponse()
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-phone-number-created"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("OTHHOS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
 
         hospitalRepository.deleteById("OTHHOS")
       }
@@ -774,6 +809,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           assertThat(persistedPhoneNumber).isNotNull
           assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-phone-number-created"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -871,6 +915,14 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-deleted"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -974,6 +1026,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(hospitalRepository.findByIdOrNull("SHFHOS")?.addresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-address-deleted"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1074,6 +1135,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
           assertThat(hospitalRepository.findByIdOrNull("SHFHOS")?.phoneNumbers).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-phone-number-deleted"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1281,6 +1351,14 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         assertThat(hospitalDto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(hospitalDto.localAuthority?.description).isEqualTo("Sheffield City Council")
         assertThat(hospitalDto.payrollRegion?.code).isEqualTo("NEY")
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-updated"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -1297,6 +1375,14 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         assertThat(hospitalDto.addresses[0].addressLine1).isEqualTo("Hospital House, 31 High Street")
         assertThat(hospitalDto.phoneNumbers).hasSize(1)
         assertThat(hospitalDto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-updated"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1449,6 +1535,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
         assertThat(addressDto.postcode).isEqualTo("S1 4HH")
         assertThat(addressDto.country).isEqualTo("Wales")
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-address-updated"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1602,6 +1697,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-phone-number-updated"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -1615,6 +1719,15 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("hospital-phone-number-updated"),
+          check {
+            assertThat(it["hospitalId"]).isEqualTo("SHFHOS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }

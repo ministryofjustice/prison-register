@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
@@ -46,6 +47,7 @@ class AgencyService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val emailAddressRepository: EmailAddressRepository,
+  private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
     agencyRepository.deleteAll()
@@ -69,18 +71,45 @@ class AgencyService(
     agency.emailAddresses += createAgencyDto.emailAddresses.map { EmailAddress(it.address) }
     agency.phoneNumbers += createAgencyDto.phoneNumbers.map { PhoneNumber(it.number) }
 
-    return agencyRepository.saveAndFlush(agency).toAgencyDto()
+    val savedAgency = agencyRepository.saveAndFlush(agency)
+
+    telemetryClient.trackEvent(
+      "agency-created",
+      mapOf(
+        "agencyId" to savedAgency.agencyId,
+      ),
+      null,
+    )
+
+    return savedAgency.toAgencyDto()
   }
 
   fun updateAgency(agencyId: String, updateAgencyDto: UpdateAgencyDto): AgencyDto {
     val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
     agency.update(updateAgencyDto)
+
+    telemetryClient.trackEvent(
+      "agency-updated",
+      mapOf(
+        "agencyId" to agency.agencyId,
+      ),
+      null,
+    )
+
     return agency.toAgencyDto()
   }
 
   fun deleteAgency(agencyId: String) {
     val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
     agencyRepository.delete(agency)
+
+    telemetryClient.trackEvent(
+      "agency-deleted",
+      mapOf(
+        "agencyId" to agency.agencyId,
+      ),
+      null,
+    )
   }
 
   fun createAgencyAddress(agencyId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
@@ -89,6 +118,15 @@ class AgencyService(
     val address = updateAddressDto.toAgencyAddress()
     agency.addresses += address
     agencyRepository.flush()
+
+    telemetryClient.trackEvent(
+      "agency-address-created",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyAddressDto(
       id = address.id,
@@ -114,6 +152,15 @@ class AgencyService(
       address.country = country
     }
 
+    telemetryClient.trackEvent(
+      "agency-address-updated",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyAddressDto(
       id = address.id,
       addressLine1 = address.addressLine1,
@@ -130,6 +177,15 @@ class AgencyService(
     val address = agency.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for agency $agencyId")
 
     agency.addresses.remove(address)
+
+    telemetryClient.trackEvent(
+      "agency-address-deleted",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     // returned for audit payload
     return AgencyAddressDto(
@@ -155,6 +211,15 @@ class AgencyService(
     agency.phoneNumbers += phoneNumber
     agencyRepository.flush()
 
+    telemetryClient.trackEvent(
+      "agency-phone-number-created",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -172,6 +237,15 @@ class AgencyService(
 
     phoneNumber.value = updatePhoneNumberDto.number
 
+    telemetryClient.trackEvent(
+      "agency-phone-number-updated",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -183,6 +257,15 @@ class AgencyService(
     val phoneNumber = agency.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for agency $agencyId")
 
     agency.phoneNumbers.remove(phoneNumber)
+
+    telemetryClient.trackEvent(
+      "agency-phone-number-deleted",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyPhoneDto(
       id = phoneNumber.id,
@@ -202,6 +285,15 @@ class AgencyService(
     agency.emailAddresses += emailAddress
     agencyRepository.flush()
 
+    telemetryClient.trackEvent(
+      "agency-email-address-created",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -214,6 +306,15 @@ class AgencyService(
 
     emailAddress.value = updateEmailAddressDto.address
 
+    telemetryClient.trackEvent(
+      "agency-email-address-updated",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -225,6 +326,15 @@ class AgencyService(
     val emailAddress = agency.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for agency $agencyId")
 
     agency.emailAddresses.remove(emailAddress)
+
+    telemetryClient.trackEvent(
+      "agency-email-address-deleted",
+      mapOf(
+        "agencyId" to agency.agencyId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyEmailDto(
       id = emailAddress.id,

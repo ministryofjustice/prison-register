@@ -1,14 +1,20 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -44,6 +50,9 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
+
+  @MockitoBean
+  private lateinit var telemetryClient: TelemetryClient
 
   @DisplayName("Get approved premise by id")
   @Nested
@@ -528,6 +537,14 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(dto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(dto.localAuthority?.description).isEqualTo("Sheffield City Council")
         assertThat(dto.payrollRegion?.code).isEqualTo("NEY")
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-updated"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -546,6 +563,14 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(dto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
         assertThat(dto.phoneNumbers).hasSize(1)
         assertThat(dto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-updated"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -698,6 +723,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
         assertThat(addressDto.postcode).isEqualTo("S1 4HH")
         assertThat(addressDto.country).isEqualTo("Wales")
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-address-updated"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -851,6 +885,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-phone-number-updated"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -864,6 +907,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-phone-number-updated"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1001,6 +1053,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-email-address-updated"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1217,6 +1278,14 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(persisted.phoneNumbers).hasSize(2)
           assertThat(persisted.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-created"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo(createApprovedPremiseRequest.approvedPremiseId)
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1364,6 +1433,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(persistedAddress).isNotNull
           assertThat(persistedAddress!!.addressLine1).isEqualTo("Approved Premise House, 31 High Street")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-address-created"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1502,13 +1580,22 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
       fun `will allow the same phone number to be used by a different approved premise`() {
         dsl.approvedPremise(approvedPremiseId = "OTHAP", name = "Other Approved Premise") {}
 
-        webTestClient.post()
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/approved-premises/id/OTHAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
-          .expectStatus().isCreated
+          .expectStatus().isCreated.expectBodyResponse()
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-phone-number-created"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("OTHAP")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -1531,6 +1618,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(persistedPhoneNumber).isNotNull
           assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-phone-number-created"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1684,6 +1780,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(persistedEmailAddress).isNotNull
           assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-email-address-created"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1785,6 +1890,14 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-deleted"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1887,6 +2000,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")?.addresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-address-deleted"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1986,6 +2108,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
           assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")?.phoneNumbers).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-phone-number-deleted"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -2085,6 +2216,15 @@ class ApprovedPremiseResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(approvedPremiseRepository.findByIdOrNull("SHEFAP")?.emailAddresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("approved-premises-email-address-deleted"),
+          check {
+            assertThat(it["approvedPremiseId"]).isEqualTo("SHEFAP")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
