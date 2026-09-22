@@ -29,20 +29,20 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
-import uk.gov.justice.digital.hmpps.prisonregister.service.ApprovedPremiseService
+import uk.gov.justice.digital.hmpps.prisonregister.service.ApprovedPremisesService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_ADDRESS_DELETE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_ADDRESS_INSERT
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_ADDRESS_UPDATE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_DELETE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_EMAIL_DELETE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_EMAIL_INSERT
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_EMAIL_UPDATE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_INSERT
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_PHONE_DELETE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_PHONE_INSERT
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_PHONE_UPDATE
-import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISE_REGISTER_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_ADDRESS_DELETE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_ADDRESS_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_ADDRESS_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_DELETE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_EMAIL_DELETE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_EMAIL_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_EMAIL_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_PHONE_DELETE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_PHONE_INSERT
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_PHONE_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.APPROVED_PREMISES_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
 import java.time.LocalDate
@@ -51,13 +51,13 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/approved-premises", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
-class ApprovedPremiseResource(
-  private val approvedPremiseService: ApprovedPremiseService,
+class ApprovedPremisesResource(
+  private val approvedPremisesService: ApprovedPremisesService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
-  @GetMapping("/id/{approvedPremiseId}")
-  @Operation(summary = "Get specified approved premise", description = "Information on a specific approved premise")
+  @GetMapping("/id/{approvedPremisesId}")
+  @Operation(summary = "Get specified approved premises", description = "Information on a specific approved premises")
   @ApiResponses(
     value = [
       ApiResponse(
@@ -66,12 +66,12 @@ class ApprovedPremiseResource(
       ),
     ],
   )
-  fun getApprovedPremiseFromId(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun getApprovedPremisesFromId(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
-  ): ApprovedPremiseDto = approvedPremiseService.findById(approvedPremiseId)
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
+  ): ApprovedPremisesDto = approvedPremisesService.findById(approvedPremisesId)
 
   @GetMapping
   @Operation(summary = "Get all approved premises", description = "Information on all approved premises")
@@ -83,23 +83,23 @@ class ApprovedPremiseResource(
       ),
     ],
   )
-  fun getApprovedPremises(): List<ApprovedPremiseDto> = approvedPremiseService.getAll()
+  fun getApprovedPremises(): List<ApprovedPremisesDto> = approvedPremisesService.getAll()
 
   @Operation(
-    summary = "Create a new approved premise",
-    description = "Creates a approved premise, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Create a new approved premises",
+    description = "Creates a approved premises, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = CreateApprovedPremiseDto::class),
+          schema = Schema(implementation = CreateApprovedPremisesDto::class),
         ),
       ],
     ),
     responses = [
       ApiResponse(
         responseCode = "201",
-        description = "Approved Premise Created",
+        description = "Approved Premises Created",
       ),
       ApiResponse(
         responseCode = "400",
@@ -113,47 +113,47 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to create a approved premise",
+        description = "Incorrect permissions to create a approved premises",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  fun createApprovedPremise(
+  fun createApprovedPremises(
     @RequestBody @Valid
-    createApprovedPremiseDto: CreateApprovedPremiseDto,
-  ): ApprovedPremiseDto {
-    val createdApprovedPremise = approvedPremiseService.createApprovedPremise(createApprovedPremiseDto)
+    createApprovedPremisesDto: CreateApprovedPremisesDto,
+  ): ApprovedPremisesDto {
+    val createdApprovedPremises = approvedPremisesService.createApprovedPremises(createApprovedPremisesDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterInsertedEvent(createApprovedPremiseDto.approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterInsertedEvent(createApprovedPremisesDto.approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_INSERT.name,
-      mapOf("approvedPremiseId" to createApprovedPremiseDto.approvedPremiseId, "approvedPremise" to createApprovedPremiseDto),
+      APPROVED_PREMISES_REGISTER_INSERT.name,
+      mapOf("approvedPremisesId" to createApprovedPremisesDto.approvedPremisesId, "approvedPremises" to createApprovedPremisesDto),
       now,
     )
-    return createdApprovedPremise
+    return createdApprovedPremises
   }
 
   @Operation(
-    summary = "Update specified approved premise details",
-    description = "Updates approved premise information, excluding its addresses, email addresses and phone numbers. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Update specified approved premises details",
+    description = "Updates approved premises information, excluding its addresses, email addresses and phone numbers. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateApprovedPremiseDto::class),
+          schema = Schema(implementation = UpdateApprovedPremisesDto::class),
         ),
       ],
     ),
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Approved Premise Information Updated",
+        description = "Approved Premises Information Updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to update approved premise",
+        description = "Bad information provided to update approved premises",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -163,43 +163,43 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to make approved premise update",
+        description = "Incorrect permissions to make approved premises update",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id not found",
+        description = "Approved Premises Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @PutMapping("/id/{approvedPremiseId}")
-  fun updateApprovedPremise(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  @PutMapping("/id/{approvedPremisesId}")
+  fun updateApprovedPremises(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @RequestBody @Valid
-    updateApprovedPremiseDto: UpdateApprovedPremiseDto,
-  ): ApprovedPremiseDto {
-    val updatedApprovedPremise = approvedPremiseService.updateApprovedPremise(approvedPremiseId, updateApprovedPremiseDto)
+    updateApprovedPremisesDto: UpdateApprovedPremisesDto,
+  ): ApprovedPremisesDto {
+    val updatedApprovedPremises = approvedPremisesService.updateApprovedPremises(approvedPremisesId, updateApprovedPremisesDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_UPDATE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "approvedPremise" to updateApprovedPremiseDto),
+      APPROVED_PREMISES_REGISTER_UPDATE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "approvedPremises" to updateApprovedPremisesDto),
       now,
     )
-    return updatedApprovedPremise
+    return updatedApprovedPremises
   }
 
   @Operation(
-    summary = "Delete specified approved premise",
-    description = "Deletes a approved premise, along with any addresses, email addresses and phone numbers associated with it. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Delete specified approved premises",
+    description = "Deletes a approved premises, along with any addresses, email addresses and phone numbers associated with it. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "204",
-        description = "Approved Premise Deleted",
+        description = "Approved Premises Deleted",
       ),
       ApiResponse(
         responseCode = "401",
@@ -208,37 +208,37 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to delete a approved premise",
+        description = "Incorrect permissions to delete a approved premises",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id not found",
+        description = "Approved Premises Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @DeleteMapping("/id/{approvedPremiseId}")
+  @DeleteMapping("/id/{approvedPremisesId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteApprovedPremise(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun deleteApprovedPremises(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
   ) {
-    approvedPremiseService.deleteApprovedPremise(approvedPremiseId)
+    approvedPremisesService.deleteApprovedPremises(approvedPremisesId)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterDeletedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterDeletedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_DELETE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId),
+      APPROVED_PREMISES_REGISTER_DELETE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId),
       now,
     )
   }
 
   @Operation(
-    summary = "Create a approved premise address",
-    description = "Creates a new address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Create a approved premises address",
+    description = "Creates a new address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -250,11 +250,11 @@ class ApprovedPremiseResource(
     responses = [
       ApiResponse(
         responseCode = "201",
-        description = "Approved Premise Address Created",
+        description = "Approved Premises Address Created",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to create approved premise address",
+        description = "Bad information provided to create approved premises address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -264,40 +264,40 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to create a approved premise address",
+        description = "Incorrect permissions to create a approved premises address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id not found",
+        description = "Approved Premises Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @PostMapping("/id/{approvedPremiseId}/address")
+  @PostMapping("/id/{approvedPremisesId}/address")
   @ResponseStatus(HttpStatus.CREATED)
-  fun createApprovedPremiseAddress(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun createApprovedPremisesAddress(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @RequestBody @Valid
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
-    val createdAddress = approvedPremiseService.createApprovedPremiseAddress(approvedPremiseId, updateAddressDto)
+    val createdAddress = approvedPremisesService.createApprovedPremisesAddress(approvedPremisesId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_ADDRESS_INSERT.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "address" to createdAddress),
+      APPROVED_PREMISES_REGISTER_ADDRESS_INSERT.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "address" to createdAddress),
       now,
     )
     return createdAddress
   }
 
   @Operation(
-    summary = "Update specified approved premise address",
-    description = "Updates a single address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Update specified approved premises address",
+    description = "Updates a single address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -309,11 +309,11 @@ class ApprovedPremiseResource(
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Approved Premise Address Updated",
+        description = "Approved Premises Address Updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to update approved premise address",
+        description = "Bad information provided to update approved premises address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -323,46 +323,46 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to make approved premise address update",
+        description = "Incorrect permissions to make approved premises address update",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id or Address Id not found",
+        description = "Approved Premises Id or Address Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @PutMapping("/id/{approvedPremiseId}/address/{addressId}")
-  fun updateApprovedPremiseAddress(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  @PutMapping("/id/{approvedPremisesId}/address/{addressId}")
+  fun updateApprovedPremisesAddress(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @Schema(description = "Address Id", example = "234231", required = true)
     @PathVariable
     addressId: Long,
     @RequestBody @Valid
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
-    val updatedAddress = approvedPremiseService.updateApprovedPremiseAddress(approvedPremiseId, addressId, updateAddressDto)
+    val updatedAddress = approvedPremisesService.updateApprovedPremisesAddress(approvedPremisesId, addressId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_ADDRESS_UPDATE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "address" to updatedAddress),
+      APPROVED_PREMISES_REGISTER_ADDRESS_UPDATE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "address" to updatedAddress),
       now,
     )
     return updatedAddress
   }
 
   @Operation(
-    summary = "Delete specified approved premise address",
-    description = "Deletes a single address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Delete specified approved premises address",
+    description = "Deletes a single address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "204",
-        description = "Approved Premise Address Deleted",
+        description = "Approved Premises Address Deleted",
       ),
       ApiResponse(
         responseCode = "401",
@@ -371,40 +371,40 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to delete a approved premise address",
+        description = "Incorrect permissions to delete a approved premises address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id or Address Id not found",
+        description = "Approved Premises Id or Address Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @DeleteMapping("/id/{approvedPremiseId}/address/{addressId}")
+  @DeleteMapping("/id/{approvedPremisesId}/address/{addressId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteApprovedPremiseAddress(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun deleteApprovedPremisesAddress(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @Schema(description = "Address Id", example = "234231", required = true)
     @PathVariable
     addressId: Long,
   ) {
-    val deletedAddress = approvedPremiseService.deleteApprovedPremiseAddress(approvedPremiseId, addressId)
+    val deletedAddress = approvedPremisesService.deleteApprovedPremisesAddress(approvedPremisesId, addressId)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_ADDRESS_DELETE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "address" to deletedAddress),
+      APPROVED_PREMISES_REGISTER_ADDRESS_DELETE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "address" to deletedAddress),
       now,
     )
   }
 
   @Operation(
-    summary = "Create a approved premise phone number",
-    description = "Creates a new phone number for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Create a approved premises phone number",
+    description = "Creates a new phone number for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -416,11 +416,11 @@ class ApprovedPremiseResource(
     responses = [
       ApiResponse(
         responseCode = "201",
-        description = "Approved Premise Phone Number Created",
+        description = "Approved Premises Phone Number Created",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to create approved premise phone number",
+        description = "Bad information provided to create approved premises phone number",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -430,12 +430,12 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to create a approved premise phone number",
+        description = "Incorrect permissions to create a approved premises phone number",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id not found",
+        description = "Approved Premises Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -445,30 +445,30 @@ class ApprovedPremiseResource(
       ),
     ],
   )
-  @PostMapping("/id/{approvedPremiseId}/phone-number")
+  @PostMapping("/id/{approvedPremisesId}/phone-number")
   @ResponseStatus(HttpStatus.CREATED)
-  fun createApprovedPremisePhoneNumber(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun createApprovedPremisesPhoneNumber(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @RequestBody @Valid
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = approvedPremiseService.createApprovedPremisePhoneNumber(approvedPremiseId, updatePhoneNumberDto)
+    val createdPhoneNumber = approvedPremisesService.createApprovedPremisesPhoneNumber(approvedPremisesId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_PHONE_INSERT.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "phoneNumber" to createdPhoneNumber),
+      APPROVED_PREMISES_REGISTER_PHONE_INSERT.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "phoneNumber" to createdPhoneNumber),
       now,
     )
     return createdPhoneNumber
   }
 
   @Operation(
-    summary = "Update specified approved premise phone number",
-    description = "Updates a single phone number for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Update specified approved premises phone number",
+    description = "Updates a single phone number for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -480,11 +480,11 @@ class ApprovedPremiseResource(
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Approved Premise Phone Number Updated",
+        description = "Approved Premises Phone Number Updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to update approved premise phone number",
+        description = "Bad information provided to update approved premises phone number",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -494,46 +494,46 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to make approved premise phone number update",
+        description = "Incorrect permissions to make approved premises phone number update",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id or Phone Number Id not found",
+        description = "Approved Premises Id or Phone Number Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @PutMapping("/id/{approvedPremiseId}/phone-number/{phoneNumberId}")
-  fun updateApprovedPremisePhoneNumber(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  @PutMapping("/id/{approvedPremisesId}/phone-number/{phoneNumberId}")
+  fun updateApprovedPremisesPhoneNumber(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @Schema(description = "Phone Number Id", example = "234231", required = true)
     @PathVariable
     phoneNumberId: Long,
     @RequestBody @Valid
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = approvedPremiseService.updateApprovedPremisePhoneNumber(approvedPremiseId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = approvedPremisesService.updateApprovedPremisesPhoneNumber(approvedPremisesId, phoneNumberId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_PHONE_UPDATE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "phoneNumber" to updatedPhoneNumber),
+      APPROVED_PREMISES_REGISTER_PHONE_UPDATE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "phoneNumber" to updatedPhoneNumber),
       now,
     )
     return updatedPhoneNumber
   }
 
   @Operation(
-    summary = "Delete specified approved premise phone number",
-    description = "Deletes a single phone number for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Delete specified approved premises phone number",
+    description = "Deletes a single phone number for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "204",
-        description = "Approved Premise Phone Number Deleted",
+        description = "Approved Premises Phone Number Deleted",
       ),
       ApiResponse(
         responseCode = "401",
@@ -542,40 +542,40 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to delete a approved premise phone number",
+        description = "Incorrect permissions to delete a approved premises phone number",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id or Phone Number Id not found",
+        description = "Approved Premises Id or Phone Number Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @DeleteMapping("/id/{approvedPremiseId}/phone-number/{phoneNumberId}")
+  @DeleteMapping("/id/{approvedPremisesId}/phone-number/{phoneNumberId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteApprovedPremisePhoneNumber(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun deleteApprovedPremisesPhoneNumber(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @Schema(description = "Phone Number Id", example = "234231", required = true)
     @PathVariable
     phoneNumberId: Long,
   ) {
-    val deletedPhoneNumber = approvedPremiseService.deleteApprovedPremisePhoneNumber(approvedPremiseId, phoneNumberId)
+    val deletedPhoneNumber = approvedPremisesService.deleteApprovedPremisesPhoneNumber(approvedPremisesId, phoneNumberId)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_PHONE_DELETE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "phoneNumber" to deletedPhoneNumber),
+      APPROVED_PREMISES_REGISTER_PHONE_DELETE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "phoneNumber" to deletedPhoneNumber),
       now,
     )
   }
 
   @Operation(
-    summary = "Create a approved premise email address",
-    description = "Creates a new email address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Create a approved premises email address",
+    description = "Creates a new email address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -587,11 +587,11 @@ class ApprovedPremiseResource(
     responses = [
       ApiResponse(
         responseCode = "201",
-        description = "Approved Premise Email Address Created",
+        description = "Approved Premises Email Address Created",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to create approved premise email address",
+        description = "Bad information provided to create approved premises email address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -601,12 +601,12 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to create a approved premise email address",
+        description = "Incorrect permissions to create a approved premises email address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id not found",
+        description = "Approved Premises Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -616,30 +616,30 @@ class ApprovedPremiseResource(
       ),
     ],
   )
-  @PostMapping("/id/{approvedPremiseId}/email-address")
+  @PostMapping("/id/{approvedPremisesId}/email-address")
   @ResponseStatus(HttpStatus.CREATED)
-  fun createApprovedPremiseEmailAddress(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun createApprovedPremisesEmailAddress(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @RequestBody @Valid
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val createdEmailAddress = approvedPremiseService.createApprovedPremiseEmailAddress(approvedPremiseId, updateEmailAddressDto)
+    val createdEmailAddress = approvedPremisesService.createApprovedPremisesEmailAddress(approvedPremisesId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_EMAIL_INSERT.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "emailAddress" to createdEmailAddress),
+      APPROVED_PREMISES_REGISTER_EMAIL_INSERT.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "emailAddress" to createdEmailAddress),
       now,
     )
     return createdEmailAddress
   }
 
   @Operation(
-    summary = "Update specified approved premise email address",
-    description = "Updates a single email address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Update specified approved premises email address",
+    description = "Updates a single email address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -651,11 +651,11 @@ class ApprovedPremiseResource(
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "Approved Premise Email Address Updated",
+        description = "Approved Premises Email Address Updated",
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad information provided to update approved premise email address",
+        description = "Bad information provided to update approved premises email address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -665,46 +665,46 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to make approved premise email address update",
+        description = "Incorrect permissions to make approved premises email address update",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id or Email Address Id not found",
+        description = "Approved Premises Id or Email Address Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @PutMapping("/id/{approvedPremiseId}/email-address/{emailAddressId}")
-  fun updateApprovedPremiseEmailAddress(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  @PutMapping("/id/{approvedPremisesId}/email-address/{emailAddressId}")
+  fun updateApprovedPremisesEmailAddress(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @Schema(description = "Email Address Id", example = "234231", required = true)
     @PathVariable
     emailAddressId: Long,
     @RequestBody @Valid
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val updatedEmailAddress = approvedPremiseService.updateApprovedPremiseEmailAddress(approvedPremiseId, emailAddressId, updateEmailAddressDto)
+    val updatedEmailAddress = approvedPremisesService.updateApprovedPremisesEmailAddress(approvedPremisesId, emailAddressId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_EMAIL_UPDATE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "emailAddress" to updatedEmailAddress),
+      APPROVED_PREMISES_REGISTER_EMAIL_UPDATE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "emailAddress" to updatedEmailAddress),
       now,
     )
     return updatedEmailAddress
   }
 
   @Operation(
-    summary = "Delete specified approved premise email address",
-    description = "Deletes a single email address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    summary = "Delete specified approved premises email address",
+    description = "Deletes a single email address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "204",
-        description = "Approved Premise Email Address Deleted",
+        description = "Approved Premises Email Address Deleted",
       ),
       ApiResponse(
         responseCode = "401",
@@ -713,44 +713,44 @@ class ApprovedPremiseResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to delete a approved premise email address",
+        description = "Incorrect permissions to delete a approved premises email address",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Approved Premise Id or Email Address Id not found",
+        description = "Approved Premises Id or Email Address Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
-  @DeleteMapping("/id/{approvedPremiseId}/email-address/{emailAddressId}")
+  @DeleteMapping("/id/{approvedPremisesId}/email-address/{emailAddressId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteApprovedPremiseEmailAddress(
-    @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
+  fun deleteApprovedPremisesEmailAddress(
+    @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
     @PathVariable
-    @Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 letters")
-    approvedPremiseId: String,
+    @Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 letters")
+    approvedPremisesId: String,
     @Schema(description = "Email Address Id", example = "234231", required = true)
     @PathVariable
     emailAddressId: Long,
   ) {
-    val deletedEmailAddress = approvedPremiseService.deleteApprovedPremiseEmailAddress(approvedPremiseId, emailAddressId)
+    val deletedEmailAddress = approvedPremisesService.deleteApprovedPremisesEmailAddress(approvedPremisesId, emailAddressId)
     val now = Instant.now()
-    snsService.sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId, now)
+    snsService.sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId, now)
     auditService.sendAuditEvent(
-      APPROVED_PREMISE_REGISTER_EMAIL_DELETE.name,
-      mapOf("approvedPremiseId" to approvedPremiseId, "emailAddress" to deletedEmailAddress),
+      APPROVED_PREMISES_REGISTER_EMAIL_DELETE.name,
+      mapOf("approvedPremisesId" to approvedPremisesId, "emailAddress" to deletedEmailAddress),
       now,
     )
   }
 }
 
-@Schema(description = "Approved Premise Information")
+@Schema(description = "Approved Premises Information")
 @JsonInclude(NON_NULL)
-data class ApprovedPremiseDto(
-  @Schema(description = "Approved Premise ID", example = "SHEFAP") val approvedPremiseId: String,
-  @Schema(description = "Name", example = "Sheffield Approved Premise") val approvedPremiseName: String,
-  @Schema(description = "Description", example = "Sheffield City Centre Approved Premise") val description: String?,
+data class ApprovedPremisesDto(
+  @Schema(description = "Approved Premises ID", example = "SHEFAP") val approvedPremisesId: String,
+  @Schema(description = "Name", example = "Sheffield Approved Premises") val approvedPremisesName: String,
+  @Schema(description = "Description", example = "Sheffield City Centre Approved Premises") val description: String?,
   @Schema(description = "Contact", example = "John Smith") val contact: String?,
   @Schema(description = "Whether still active") val active: Boolean,
   @Schema(description = "Accessible access", example = "ACCESSIBLE") val accessibleAccess: String?,
@@ -766,14 +766,14 @@ data class ApprovedPremiseDto(
   @Schema(description = "phoneNumbers") val phoneNumbers: List<AgencyPhoneDto>,
 )
 
-@Schema(description = "Approved Premise Update Record")
+@Schema(description = "Approved Premises Update Record")
 @JsonInclude(NON_NULL)
-data class UpdateApprovedPremiseDto(
-  @Schema(description = "Name", example = "Sheffield Approved Premise", required = true)
-  @field:NotBlank(message = "Approved Premise name is required")
-  @field:Size(max = 40, message = "Approved Premise name must be no more than 40 characters")
-  val approvedPremiseName: String,
-  @Schema(description = "Description", example = "Sheffield City Centre Approved Premise")
+data class UpdateApprovedPremisesDto(
+  @Schema(description = "Name", example = "Sheffield Approved Premises", required = true)
+  @field:NotBlank(message = "Approved Premises name is required")
+  @field:Size(max = 40, message = "Approved Premises name must be no more than 40 characters")
+  val approvedPremisesName: String,
+  @Schema(description = "Description", example = "Sheffield City Centre Approved Premises")
   @field:Size(max = 3000, message = "Description must be no more than 3000 characters")
   val description: String?,
   @Schema(description = "Contact", example = "John Smith")
@@ -803,18 +803,18 @@ data class UpdateApprovedPremiseDto(
   val payrollRegionCode: String?,
 )
 
-@Schema(description = "Approved Premise Create Record")
+@Schema(description = "Approved Premises Create Record")
 @JsonInclude(NON_NULL)
-data class CreateApprovedPremiseDto(
-  @Schema(description = "Approved Premise ID", example = "SHEFAP", required = true)
-  @field:NotBlank(message = "Approved Premise id is required")
-  @field:Size(min = 2, max = 6, message = "Approved Premise Id must be between 2 and 6 characters")
-  val approvedPremiseId: String,
-  @Schema(description = "Name", example = "Sheffield Approved Premise", required = true)
-  @field:NotBlank(message = "Approved Premise name is required")
-  @field:Size(max = 40, message = "Approved Premise name must be no more than 40 characters")
-  val approvedPremiseName: String,
-  @Schema(description = "Description", example = "Sheffield City Centre Approved Premise")
+data class CreateApprovedPremisesDto(
+  @Schema(description = "Approved Premises ID", example = "SHEFAP", required = true)
+  @field:NotBlank(message = "Approved Premises id is required")
+  @field:Size(min = 2, max = 6, message = "Approved Premises Id must be between 2 and 6 characters")
+  val approvedPremisesId: String,
+  @Schema(description = "Name", example = "Sheffield Approved Premises", required = true)
+  @field:NotBlank(message = "Approved Premises name is required")
+  @field:Size(max = 40, message = "Approved Premises name must be no more than 40 characters")
+  val approvedPremisesName: String,
+  @Schema(description = "Description", example = "Sheffield City Centre Approved Premises")
   @field:Size(max = 3000, message = "Description must be no more than 3000 characters")
   val description: String?,
   @Schema(description = "Contact", example = "John Smith")

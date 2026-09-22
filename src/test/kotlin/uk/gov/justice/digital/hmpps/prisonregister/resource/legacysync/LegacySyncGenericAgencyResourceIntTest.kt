@@ -72,7 +72,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           "COURT",
           "HOSPITAL",
           "SECURE_HOSPITAL",
-          "APPROVED_PREMISE",
+          "APPROVED_PREMISES",
           "POLICE_CUSTODY_SUITE",
           "PROBATION_OFFICE",
         )

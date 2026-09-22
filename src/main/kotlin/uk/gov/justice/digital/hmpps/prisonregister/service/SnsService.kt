@@ -210,35 +210,35 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
-  fun sendApprovedPremiseRegisterInsertedEvent(approvedPremiseId: String, occurredAt: Instant) {
+  fun sendApprovedPremisesRegisterInsertedEvent(approvedPremisesId: String, occurredAt: Instant) {
     publishToDomainEventsTopic(
-      HMPPSApprovedPremiseDomainEvent(
-        "register.approvedpremise.inserted",
-        ApprovedPremiseAdditionalInformation(approvedPremiseId),
+      HMPPSApprovedPremisesDomainEvent(
+        "register.approvedpremises.inserted",
+        ApprovedPremisesAdditionalInformation(approvedPremisesId),
         occurredAt,
-        "An approved premise has been inserted",
+        "An approved premises has been inserted",
       ),
     )
   }
 
-  fun sendApprovedPremiseRegisterAmendedEvent(approvedPremiseId: String, occurredAt: Instant) {
+  fun sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId: String, occurredAt: Instant) {
     publishToDomainEventsTopic(
-      HMPPSApprovedPremiseDomainEvent(
-        "register.approvedpremise.amended",
-        ApprovedPremiseAdditionalInformation(approvedPremiseId),
+      HMPPSApprovedPremisesDomainEvent(
+        "register.approvedpremises.amended",
+        ApprovedPremisesAdditionalInformation(approvedPremisesId),
         occurredAt,
-        "An approved premise has been updated",
+        "An approved premises has been updated",
       ),
     )
   }
 
-  fun sendApprovedPremiseRegisterDeletedEvent(approvedPremiseId: String, occurredAt: Instant) {
+  fun sendApprovedPremisesRegisterDeletedEvent(approvedPremisesId: String, occurredAt: Instant) {
     publishToDomainEventsTopic(
-      HMPPSApprovedPremiseDomainEvent(
-        "register.approvedpremise.deleted",
-        ApprovedPremiseAdditionalInformation(approvedPremiseId),
+      HMPPSApprovedPremisesDomainEvent(
+        "register.approvedpremises.deleted",
+        ApprovedPremisesAdditionalInformation(approvedPremisesId),
         occurredAt,
-        "An approved premise has been deleted",
+        "An approved premises has been deleted",
       ),
     )
   }
@@ -273,8 +273,8 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     publish(payload.eventType, payload)
   }
 
-  private fun publishToDomainEventsTopic(payload: HMPPSApprovedPremiseDomainEvent) {
-    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.approvedPremiseId)
+  private fun publishToDomainEventsTopic(payload: HMPPSApprovedPremisesDomainEvent) {
+    log.debug("Event {} for id {}", payload.eventType, payload.additionalInformation.approvedPremisesId)
     publish(payload.eventType, payload)
   }
 
@@ -318,8 +318,8 @@ data class ProbationOfficeAdditionalInformation(
   val probationOfficeId: String,
 )
 
-data class ApprovedPremiseAdditionalInformation(
-  val approvedPremiseId: String,
+data class ApprovedPremisesAdditionalInformation(
+  val approvedPremisesId: String,
 )
 
 data class HMPPSDomainEvent(
@@ -448,16 +448,16 @@ data class HMPPSProbationOfficeDomainEvent(
   )
 }
 
-data class HMPPSApprovedPremiseDomainEvent(
+data class HMPPSApprovedPremisesDomainEvent(
   val eventType: String,
-  val additionalInformation: ApprovedPremiseAdditionalInformation,
+  val additionalInformation: ApprovedPremisesAdditionalInformation,
   val version: Int,
   val occurredAt: String,
   val description: String,
 ) {
   constructor(
     eventType: String,
-    additionalInformation: ApprovedPremiseAdditionalInformation,
+    additionalInformation: ApprovedPremisesAdditionalInformation,
     occurredAt: Instant,
     description: String,
   ) : this(

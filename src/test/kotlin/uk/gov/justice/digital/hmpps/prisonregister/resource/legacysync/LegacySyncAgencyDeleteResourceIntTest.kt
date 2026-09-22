@@ -11,7 +11,7 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
@@ -33,7 +33,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
   lateinit var probationOfficeRepository: ProbationOfficeRepository
 
   @Autowired
-  lateinit var approvedPremiseRepository: ApprovedPremiseRepository
+  lateinit var approvedPremisesRepository: ApprovedPremisesRepository
 
   @Autowired
   lateinit var policeCustodySuiteRepository: PoliceCustodySuiteRepository
@@ -49,7 +49,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
     courtRepository.deleteAll()
     hospitalRepository.deleteAll()
     probationOfficeRepository.deleteAll()
-    approvedPremiseRepository.deleteAll()
+    approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
     agencyRepository.deleteAll()
   }
@@ -118,9 +118,9 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
           geographicalAreaCode = "WYORKS",
           localAuthorityCode = "00CG",
         ) { }
-        dsl.approvedPremise(
-          approvedPremiseId = "DELAPR",
-          name = "Approved Premise One",
+        dsl.approvedPremises(
+          approvedPremisesId = "DELAPR",
+          name = "Approved Premises One",
           areaCode = "52",
           regionCode = "YOHUM",
           geographicalAreaCode = "WYORKS",
@@ -151,7 +151,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
         assertThat(courtRepository.existsById("DELCRT")).isTrue
         assertThat(hospitalRepository.existsById("DELHSP")).isTrue
         assertThat(probationOfficeRepository.existsById("DELPBO")).isTrue
-        assertThat(approvedPremiseRepository.existsById("DELAPR")).isTrue
+        assertThat(approvedPremisesRepository.existsById("DELAPR")).isTrue
         assertThat(policeCustodySuiteRepository.existsById("DELPCS")).isTrue
         assertThat(agencyRepository.existsById("DELAGY")).isTrue
         assertThat(prisonRepository.existsById("DELPRI")).isTrue
@@ -166,7 +166,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
         assertThat(courtRepository.existsById("DELCRT")).isFalse
         assertThat(hospitalRepository.existsById("DELHSP")).isFalse
         assertThat(probationOfficeRepository.existsById("DELPBO")).isFalse
-        assertThat(approvedPremiseRepository.existsById("DELAPR")).isFalse
+        assertThat(approvedPremisesRepository.existsById("DELAPR")).isFalse
         assertThat(policeCustodySuiteRepository.existsById("DELPCS")).isFalse
         assertThat(agencyRepository.existsById("DELAGY")).isFalse
         assertThat(prisonRepository.existsById("DELPRI")).isTrue

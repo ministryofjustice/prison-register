@@ -22,7 +22,7 @@ class Root(
   val hospitalBuilder: HospitalBuilder,
   val probationOfficeBuilder: ProbationOfficeBuilder,
   val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder,
-  val approvedPremiseBuilder: ApprovedPremiseBuilder,
+  val approvedPremisesBuilder: ApprovedPremisesBuilder,
   val agencyBuilder: AgencyBuilder,
 ) {
   fun agency(
@@ -125,8 +125,8 @@ class Root(
     dsl.invoke(probationOfficeBuilder)
   }
 
-  fun approvedPremise(
-    approvedPremiseId: String,
+  fun approvedPremises(
+    approvedPremisesId: String,
     name: String,
     description: String = name,
     contact: String? = null,
@@ -139,9 +139,9 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: ApprovedPremiseBuilder.() -> Unit,
-  ): uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise = approvedPremiseBuilder.build(
-    approvedPremiseId = approvedPremiseId,
+    dsl: ApprovedPremisesBuilder.() -> Unit,
+  ): uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises = approvedPremisesBuilder.build(
+    approvedPremisesId = approvedPremisesId,
     name = name,
     description = description,
     contact = contact,
@@ -155,7 +155,7 @@ class Root(
     payrollRegionCode = payrollRegionCode,
     localAuthorityCode = localAuthorityCode,
   ).also {
-    dsl.invoke(approvedPremiseBuilder)
+    dsl.invoke(approvedPremisesBuilder)
   }
 
   fun policeCustodySuite(

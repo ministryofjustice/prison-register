@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyRespons
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
@@ -39,7 +39,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
   lateinit var probationOfficeRepository: ProbationOfficeRepository
 
   @Autowired
-  lateinit var approvedPremiseRepository: ApprovedPremiseRepository
+  lateinit var approvedPremisesRepository: ApprovedPremisesRepository
 
   @Autowired
   lateinit var policeCustodySuiteRepository: PoliceCustodySuiteRepository
@@ -52,7 +52,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
     courtRepository.deleteAll()
     hospitalRepository.deleteAll()
     probationOfficeRepository.deleteAll()
-    approvedPremiseRepository.deleteAll()
+    approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
     agencyRepository.deleteAll()
   }
@@ -100,7 +100,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
         dsl.court(courtId = "RECCRT", name = "Reconciliation Court") { }
         dsl.hospital(hospitalId = "RECHSP", name = "Reconciliation Hospital", highSecurity = false) { }
         dsl.probationOffice(probationOfficeId = "RECPBO", name = "Reconciliation Probation Office") { }
-        dsl.approvedPremise(approvedPremiseId = "RECAPR", name = "Reconciliation Approved Premise") { }
+        dsl.approvedPremises(approvedPremisesId = "RECAPR", name = "Reconciliation Approved Premises") { }
         dsl.policeCustodySuite(policeCustodySuiteId = "RECPCS", name = "Reconciliation Police Custody Suite") { }
         dsl.agency(agencyId = "RECAGY", name = "Reconciliation Agency") { }
       }
@@ -124,7 +124,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
         courtRepository.deleteAll()
         hospitalRepository.deleteAll()
         probationOfficeRepository.deleteAll()
-        approvedPremiseRepository.deleteAll()
+        approvedPremisesRepository.deleteAll()
         policeCustodySuiteRepository.deleteAll()
         agencyRepository.deleteAll()
 
@@ -330,9 +330,9 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `returns details for an approved premise`() {
-        dsl.approvedPremise(
-          approvedPremiseId = "SHEFAP",
+      fun `returns details for an approved premises`() {
+        dsl.approvedPremises(
+          approvedPremisesId = "SHEFAP",
           name = "Sheffield Approved Premises",
           description = "Sheffield City Centre Approved Premises",
           contact = "Gemma Smith",
@@ -355,7 +355,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk
           .expectBodyResponse()
 
-        assertThat(response.agencyType).isEqualTo(LegacyAgencyType.APPROVED_PREMISE)
+        assertThat(response.agencyType).isEqualTo(LegacyAgencyType.APPROVED_PREMISES)
         assertThat(response.name).isEqualTo("Sheffield Approved Premises")
         assertThat(response.description).isEqualTo("Sheffield City Centre Approved Premises")
         assertThat(response.contact).isEqualTo("Gemma Smith")

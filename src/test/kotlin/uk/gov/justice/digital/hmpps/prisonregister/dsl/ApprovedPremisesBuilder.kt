@@ -4,8 +4,8 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremise
-import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremiseRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
@@ -15,24 +15,24 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
 
 @DslMarker
-annotation class ApprovedPremiseDslMarker
+annotation class ApprovedPremisesDslMarker
 
-@ApprovedPremiseDslMarker
+@ApprovedPremisesDslMarker
 @Component
-class ApprovedPremiseBuilder(
+class ApprovedPremisesBuilder(
   private val areaRepository: AreaRepository,
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
-  private val approvedPremiseRepository: ApprovedPremiseRepository,
+  private val approvedPremisesRepository: ApprovedPremisesRepository,
   private val addressBuilder: AgencyAddressBuilder,
   private val phoneBuilder: PhoneNumberBuilder,
   private val emailBuilder: EmailAddressBuilder,
 ) {
-  lateinit var approvedPremise: ApprovedPremise
+  lateinit var approvedPremises: ApprovedPremises
 
   fun build(
-    approvedPremiseId: String,
+    approvedPremisesId: String,
     name: String,
     description: String,
     contact: String?,
@@ -45,8 +45,8 @@ class ApprovedPremiseBuilder(
     geographicalAreaCode: String?,
     payrollRegionCode: String?,
     localAuthorityCode: String?,
-  ): ApprovedPremise = ApprovedPremise(
-    approvedPremiseId = approvedPremiseId,
+  ): ApprovedPremises = ApprovedPremises(
+    approvedPremisesId = approvedPremisesId,
     name = name,
     description = description,
     contact = contact,
@@ -60,9 +60,9 @@ class ApprovedPremiseBuilder(
     payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) },
     localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
-    approvedPremiseRepository.saveAndFlush(it)
+    approvedPremisesRepository.saveAndFlush(it)
   }.also {
-    approvedPremise = it
+    approvedPremises = it
   }
 
   fun address(
@@ -80,8 +80,8 @@ class ApprovedPremiseBuilder(
     postcode = postcode,
     country = country,
   ).also {
-    approvedPremise.addresses.add(it)
-    approvedPremiseRepository.save(approvedPremise)
+    approvedPremises.addresses.add(it)
+    approvedPremisesRepository.save(approvedPremises)
   }
 
   fun email(
@@ -89,8 +89,8 @@ class ApprovedPremiseBuilder(
   ): EmailAddress = emailBuilder.build(
     emailAddress = emailAddress,
   ).also {
-    approvedPremise.emailAddresses.add(it)
-    approvedPremiseRepository.save(approvedPremise)
+    approvedPremises.emailAddresses.add(it)
+    approvedPremisesRepository.save(approvedPremises)
   }
 
   fun phoneNumber(
@@ -98,7 +98,7 @@ class ApprovedPremiseBuilder(
   ): PhoneNumber = phoneBuilder.build(
     phoneNumber = phoneNumber,
   ).also {
-    approvedPremise.phoneNumbers.add(it)
-    approvedPremiseRepository.save(approvedPremise)
+    approvedPremises.phoneNumbers.add(it)
+    approvedPremisesRepository.save(approvedPremises)
   }
 }
