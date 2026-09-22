@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
@@ -45,6 +46,7 @@ class ApprovedPremiseService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val emailAddressRepository: EmailAddressRepository,
+  private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
     approvedPremiseRepository.deleteAll()
@@ -68,18 +70,45 @@ class ApprovedPremiseService(
     approvedPremise.emailAddresses += createApprovedPremiseDto.emailAddresses.map { EmailAddress(it.address) }
     approvedPremise.phoneNumbers += createApprovedPremiseDto.phoneNumbers.map { PhoneNumber(it.number) }
 
-    return approvedPremiseRepository.saveAndFlush(approvedPremise).toApprovedPremiseDto()
+    val savedApprovedPremise = approvedPremiseRepository.saveAndFlush(approvedPremise)
+
+    telemetryClient.trackEvent(
+      "approved-premises-created",
+      mapOf(
+        "approvedPremiseId" to savedApprovedPremise.approvedPremiseId,
+      ),
+      null,
+    )
+
+    return savedApprovedPremise.toApprovedPremiseDto()
   }
 
   fun updateApprovedPremise(approvedPremiseId: String, updateApprovedPremiseDto: UpdateApprovedPremiseDto): ApprovedPremiseDto {
     val approvedPremise = approvedPremiseRepository.findByIdOrNull(approvedPremiseId) ?: throw EntityNotFoundException("Approved premise $approvedPremiseId not found")
     approvedPremise.update(updateApprovedPremiseDto)
+
+    telemetryClient.trackEvent(
+      "approved-premises-updated",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+      ),
+      null,
+    )
+
     return approvedPremise.toApprovedPremiseDto()
   }
 
   fun deleteApprovedPremise(approvedPremiseId: String) {
     val approvedPremise = approvedPremiseRepository.findByIdOrNull(approvedPremiseId) ?: throw EntityNotFoundException("Approved premise $approvedPremiseId not found")
     approvedPremiseRepository.delete(approvedPremise)
+
+    telemetryClient.trackEvent(
+      "approved-premises-deleted",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+      ),
+      null,
+    )
   }
 
   fun createApprovedPremiseAddress(approvedPremiseId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
@@ -88,6 +117,15 @@ class ApprovedPremiseService(
     val address = updateAddressDto.toAgencyAddress()
     approvedPremise.addresses += address
     approvedPremiseRepository.flush()
+
+    telemetryClient.trackEvent(
+      "approved-premises-address-created",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyAddressDto(
       id = address.id,
@@ -113,6 +151,15 @@ class ApprovedPremiseService(
       address.country = country
     }
 
+    telemetryClient.trackEvent(
+      "approved-premises-address-updated",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyAddressDto(
       id = address.id,
       addressLine1 = address.addressLine1,
@@ -129,6 +176,15 @@ class ApprovedPremiseService(
     val address = approvedPremise.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for approved premise $approvedPremiseId")
 
     approvedPremise.addresses.remove(address)
+
+    telemetryClient.trackEvent(
+      "approved-premises-address-deleted",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     // returned for audit payload
     return AgencyAddressDto(
@@ -154,6 +210,15 @@ class ApprovedPremiseService(
     approvedPremise.phoneNumbers += phoneNumber
     approvedPremiseRepository.flush()
 
+    telemetryClient.trackEvent(
+      "approved-premises-phone-number-created",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -171,6 +236,15 @@ class ApprovedPremiseService(
 
     phoneNumber.value = updatePhoneNumberDto.number
 
+    telemetryClient.trackEvent(
+      "approved-premises-phone-number-updated",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -182,6 +256,15 @@ class ApprovedPremiseService(
     val phoneNumber = approvedPremise.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for approved premise $approvedPremiseId")
 
     approvedPremise.phoneNumbers.remove(phoneNumber)
+
+    telemetryClient.trackEvent(
+      "approved-premises-phone-number-deleted",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyPhoneDto(
       id = phoneNumber.id,
@@ -201,6 +284,15 @@ class ApprovedPremiseService(
     approvedPremise.emailAddresses += emailAddress
     approvedPremiseRepository.flush()
 
+    telemetryClient.trackEvent(
+      "approved-premises-email-address-created",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -213,6 +305,15 @@ class ApprovedPremiseService(
 
     emailAddress.value = updateEmailAddressDto.address
 
+    telemetryClient.trackEvent(
+      "approved-premises-email-address-updated",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -224,6 +325,15 @@ class ApprovedPremiseService(
     val emailAddress = approvedPremise.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for approved premise $approvedPremiseId")
 
     approvedPremise.emailAddresses.remove(emailAddress)
+
+    telemetryClient.trackEvent(
+      "approved-premises-email-address-deleted",
+      mapOf(
+        "approvedPremiseId" to approvedPremise.approvedPremiseId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyEmailDto(
       id = emailAddress.id,

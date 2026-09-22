@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
@@ -47,6 +48,7 @@ class CourtService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val emailAddressRepository: EmailAddressRepository,
+  private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
     courtRepository.deleteAll()
@@ -69,13 +71,32 @@ class CourtService(
     court.emailAddresses += createCourtDto.emailAddresses.map { EmailAddress(it.address) }
     court.phoneNumbers += createCourtDto.phoneNumbers.map { PhoneNumber(it.number) }
 
-    return courtRepository.saveAndFlush(court).toCourtDto()
+    val savedCourt = courtRepository.saveAndFlush(court)
+
+    telemetryClient.trackEvent(
+      "court-created",
+      mapOf(
+        "courtId" to savedCourt.courtId,
+      ),
+      null,
+    )
+
+    return savedCourt.toCourtDto()
   }
 
   @Transactional
   fun updateCourt(courtId: String, updateCourtDto: UpdateCourtDto): CourtDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     court.update(updateCourtDto)
+
+    telemetryClient.trackEvent(
+      "court-updated",
+      mapOf(
+        "courtId" to court.courtId,
+      ),
+      null,
+    )
+
     return court.toCourtDto()
   }
 
@@ -83,6 +104,14 @@ class CourtService(
   fun deleteCourt(courtId: String) {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     courtRepository.delete(court)
+
+    telemetryClient.trackEvent(
+      "court-deleted",
+      mapOf(
+        "courtId" to court.courtId,
+      ),
+      null,
+    )
   }
 
   @Transactional
@@ -92,6 +121,15 @@ class CourtService(
     val address = updateAddressDto.toAgencyAddress()
     court.addresses += address
     courtRepository.flush()
+
+    telemetryClient.trackEvent(
+      "court-address-created",
+      mapOf(
+        "courtId" to court.courtId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyAddressDto(
       id = address.id,
@@ -118,6 +156,15 @@ class CourtService(
       address.country = country
     }
 
+    telemetryClient.trackEvent(
+      "court-address-updated",
+      mapOf(
+        "courtId" to court.courtId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyAddressDto(
       id = address.id,
       addressLine1 = address.addressLine1,
@@ -135,6 +182,15 @@ class CourtService(
     val address = court.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for court $courtId")
 
     court.addresses.remove(address)
+
+    telemetryClient.trackEvent(
+      "court-address-deleted",
+      mapOf(
+        "courtId" to court.courtId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     // returned for audit payload
     return AgencyAddressDto(
@@ -161,6 +217,15 @@ class CourtService(
     court.phoneNumbers += phoneNumber
     courtRepository.flush()
 
+    telemetryClient.trackEvent(
+      "court-phone-number-created",
+      mapOf(
+        "courtId" to court.courtId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -179,6 +244,15 @@ class CourtService(
 
     phoneNumber.value = updatePhoneNumberDto.number
 
+    telemetryClient.trackEvent(
+      "court-phone-number-updated",
+      mapOf(
+        "courtId" to court.courtId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -191,6 +265,15 @@ class CourtService(
     val phoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
 
     court.phoneNumbers.remove(phoneNumber)
+
+    telemetryClient.trackEvent(
+      "court-phone-number-deleted",
+      mapOf(
+        "courtId" to court.courtId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyPhoneDto(
       id = phoneNumber.id,
@@ -211,6 +294,15 @@ class CourtService(
     court.emailAddresses += emailAddress
     courtRepository.flush()
 
+    telemetryClient.trackEvent(
+      "court-email-address-created",
+      mapOf(
+        "courtId" to court.courtId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -224,6 +316,15 @@ class CourtService(
 
     emailAddress.value = updateEmailAddressDto.address
 
+    telemetryClient.trackEvent(
+      "court-email-address-updated",
+      mapOf(
+        "courtId" to court.courtId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -236,6 +337,15 @@ class CourtService(
     val emailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
 
     court.emailAddresses.remove(emailAddress)
+
+    telemetryClient.trackEvent(
+      "court-email-address-deleted",
+      mapOf(
+        "courtId" to court.courtId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyEmailDto(
       id = emailAddress.id,

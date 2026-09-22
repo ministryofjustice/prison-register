@@ -1,14 +1,20 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -44,6 +50,9 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
+
+  @MockitoBean
+  private lateinit var telemetryClient: TelemetryClient
 
   @DisplayName("Get probation office by id")
   @Nested
@@ -546,6 +555,14 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(dto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(dto.localAuthority?.description).isEqualTo("Sheffield City Council")
         assertThat(dto.payrollRegion?.code).isEqualTo("NEY")
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-updated"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -564,6 +581,14 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(dto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
         assertThat(dto.phoneNumbers).hasSize(1)
         assertThat(dto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-updated"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -716,6 +741,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
         assertThat(addressDto.postcode).isEqualTo("S1 4HH")
         assertThat(addressDto.country).isEqualTo("Wales")
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-address-updated"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -869,6 +903,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-phone-number-updated"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -882,6 +925,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-phone-number-updated"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1019,6 +1071,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-email-address-updated"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1250,6 +1311,14 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(persisted.phoneNumbers).hasSize(2)
           assertThat(persisted.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-created"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo(createProbationOfficeRequest.probationOfficeId)
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1397,6 +1466,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(persistedAddress).isNotNull
           assertThat(persistedAddress!!.addressLine1).isEqualTo("Probation House, 31 High Street")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-address-created"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1534,13 +1612,22 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
       fun `will allow the same phone number to be used by a different probation office`() {
         dsl.probationOffice(probationOfficeId = "OTHPBO", name = "Other Probation Office") {}
 
-        webTestClient.post()
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/probation-offices/id/OTHPBO/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
-          .expectStatus().isCreated
+          .expectStatus().isCreated.expectBodyResponse()
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-phone-number-created"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("OTHPBO")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
 
         probationOfficeRepository.deleteById("OTHPBO")
       }
@@ -1565,6 +1652,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(persistedPhoneNumber).isNotNull
           assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-phone-number-created"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1718,6 +1814,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(persistedEmailAddress).isNotNull
           assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-email-address-created"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1819,6 +1924,14 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-deleted"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1921,6 +2034,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")?.addresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-address-deleted"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -2020,6 +2142,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
           assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")?.phoneNumbers).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-phone-number-deleted"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -2119,6 +2250,15 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(probationOfficeRepository.findByIdOrNull("SHEFPB")?.emailAddresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("probation-office-email-address-deleted"),
+          check {
+            assertThat(it["probationOfficeId"]).isEqualTo("SHEFPB")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }

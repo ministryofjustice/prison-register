@@ -1,14 +1,20 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -43,6 +49,9 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
+
+  @MockitoBean
+  private lateinit var telemetryClient: TelemetryClient
 
   @DisplayName("Get police custody suite by id")
   @Nested
@@ -517,6 +526,14 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         assertThat(dto.geographicalArea?.description).isEqualTo("West Yorkshire")
         assertThat(dto.localAuthority?.description).isEqualTo("Sheffield City Council")
         assertThat(dto.payrollRegion?.code).isEqualTo("NEY")
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-updated"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -535,6 +552,14 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         assertThat(dto.emailAddresses[0].address).isEqualTo("test@justice.gov.uk")
         assertThat(dto.phoneNumbers).hasSize(1)
         assertThat(dto.phoneNumbers[0].number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-updated"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -687,6 +712,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.county).isEqualTo("Updated South Yorkshire")
         assertThat(addressDto.postcode).isEqualTo("S1 4HH")
         assertThat(addressDto.country).isEqualTo("Wales")
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-address-updated"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -840,6 +874,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
         assertThat(phoneDto.id).isEqualTo(phoneNumberId)
         assertThat(phoneDto.number).isEqualTo("0114 555 1234")
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-phone-number-updated"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
 
       @Test
@@ -853,6 +896,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .expectStatus().isOk.expectBodyResponse()
 
         assertThat(phoneDto.number).isEqualTo("0114 555 8989")
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-phone-number-updated"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -990,6 +1042,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
         assertThat(emailDto.id).isEqualTo(emailAddressId)
         assertThat(emailDto.address).isEqualTo("updated@justice.gov.uk")
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-email-address-updated"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1150,6 +1211,14 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(persisted.phoneNumbers).hasSize(2)
           assertThat(persisted.phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 8989", "0114 555 7777")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-created"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo(createPoliceCustodySuiteRequest.policeCustodySuiteId)
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1297,6 +1366,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(persistedAddress).isNotNull
           assertThat(persistedAddress!!.addressLine1).isEqualTo("Custody Suite, 31 High Street")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-address-created"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1434,13 +1512,22 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
       fun `will allow the same phone number to be used by a different police custody suite`() {
         dsl.policeCustodySuite(policeCustodySuiteId = "OTHPCS", name = "Other Police Custody Suite") {}
 
-        webTestClient.post()
+        val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/police-custody-suites/id/OTHPCS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
-          .expectStatus().isCreated
+          .expectStatus().isCreated.expectBodyResponse()
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-phone-number-created"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("OTHPCS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
 
         policeCustodySuiteRepository.deleteById("OTHPCS")
       }
@@ -1465,6 +1552,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(persistedPhoneNumber).isNotNull
           assertThat(persistedPhoneNumber!!.value).isEqualTo("0114 555 8989")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-phone-number-created"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1618,6 +1714,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(persistedEmailAddress).isNotNull
           assertThat(persistedEmailAddress!!.value).isEqualTo("new@justice.gov.uk")
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-email-address-created"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1719,6 +1824,14 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-deleted"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1821,6 +1934,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")?.addresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-address-deleted"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["addressId"]).isEqualTo(addressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -1920,6 +2042,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
           assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")?.phoneNumbers).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-phone-number-deleted"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }
@@ -2019,6 +2150,15 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(policeCustodySuiteRepository.findByIdOrNull("SHFPCS")?.emailAddresses).isEmpty()
         }
+
+        verify(telemetryClient).trackEvent(
+          eq("police-custody-suite-email-address-deleted"),
+          check {
+            assertThat(it["policeCustodySuiteId"]).isEqualTo("SHFPCS")
+            assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
+          },
+          isNull(),
+        )
       }
     }
   }

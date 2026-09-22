@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
@@ -36,6 +37,7 @@ class HospitalService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
+  private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
     hospitalRepository.deleteAll()
@@ -64,12 +66,31 @@ class HospitalService(
     hospital.addresses += createHospitalDto.addresses.map { it.toAgencyAddress() }
     hospital.phoneNumbers += createHospitalDto.phoneNumbers.map { PhoneNumber(it.number) }
 
-    return hospitalRepository.saveAndFlush(hospital).toHospitalDto()
+    val savedHospital = hospitalRepository.saveAndFlush(hospital)
+
+    telemetryClient.trackEvent(
+      "hospital-created",
+      mapOf(
+        "hospitalId" to savedHospital.hospitalId,
+      ),
+      null,
+    )
+
+    return savedHospital.toHospitalDto()
   }
 
   fun updateHospital(hospitalId: String, updateHospitalDto: UpdateHospitalDto): HospitalDto {
     val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
     hospital.update(updateHospitalDto)
+
+    telemetryClient.trackEvent(
+      "hospital-updated",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+      ),
+      null,
+    )
+
     return hospital.toHospitalDto()
   }
 
@@ -79,6 +100,15 @@ class HospitalService(
     val address = updateAddressDto.toAgencyAddress()
     hospital.addresses += address
     hospitalRepository.flush()
+
+    telemetryClient.trackEvent(
+      "hospital-address-created",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyAddressDto(
       id = address.id,
@@ -104,6 +134,15 @@ class HospitalService(
       address.country = country
     }
 
+    telemetryClient.trackEvent(
+      "hospital-address-updated",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyAddressDto(
       id = address.id,
       addressLine1 = address.addressLine1,
@@ -127,6 +166,15 @@ class HospitalService(
     hospital.phoneNumbers += phoneNumber
     hospitalRepository.flush()
 
+    telemetryClient.trackEvent(
+      "hospital-phone-number-created",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -144,6 +192,15 @@ class HospitalService(
 
     phoneNumber.value = updatePhoneNumberDto.number
 
+    telemetryClient.trackEvent(
+      "hospital-phone-number-updated",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -153,6 +210,14 @@ class HospitalService(
   fun deleteHospital(hospitalId: String) {
     val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
     hospitalRepository.delete(hospital)
+
+    telemetryClient.trackEvent(
+      "hospital-deleted",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+      ),
+      null,
+    )
   }
 
   fun deleteHospitalAddress(hospitalId: String, addressId: Long): AgencyAddressDto {
@@ -160,6 +225,15 @@ class HospitalService(
     val address = hospital.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for hospital $hospitalId")
 
     hospital.addresses.remove(address)
+
+    telemetryClient.trackEvent(
+      "hospital-address-deleted",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     // returned for audit payload
     return AgencyAddressDto(
@@ -178,6 +252,15 @@ class HospitalService(
     val phoneNumber = hospital.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for hospital $hospitalId")
 
     hospital.phoneNumbers.remove(phoneNumber)
+
+    telemetryClient.trackEvent(
+      "hospital-phone-number-deleted",
+      mapOf(
+        "hospitalId" to hospital.hospitalId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyPhoneDto(
       id = phoneNumber.id,

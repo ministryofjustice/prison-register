@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
@@ -47,6 +48,7 @@ class ProbationOfficeService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val emailAddressRepository: EmailAddressRepository,
+  private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
     probationOfficeRepository.deleteAll()
@@ -69,18 +71,45 @@ class ProbationOfficeService(
     probationOffice.emailAddresses += createProbationOfficeDto.emailAddresses.map { EmailAddress(it.address) }
     probationOffice.phoneNumbers += createProbationOfficeDto.phoneNumbers.map { PhoneNumber(it.number) }
 
-    return probationOfficeRepository.saveAndFlush(probationOffice).toProbationOfficeDto()
+    val savedProbationOffice = probationOfficeRepository.saveAndFlush(probationOffice)
+
+    telemetryClient.trackEvent(
+      "probation-office-created",
+      mapOf(
+        "probationOfficeId" to savedProbationOffice.probationOfficeId,
+      ),
+      null,
+    )
+
+    return savedProbationOffice.toProbationOfficeDto()
   }
 
   fun updateProbationOffice(probationOfficeId: String, updateProbationOfficeDto: UpdateProbationOfficeDto): ProbationOfficeDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
     probationOffice.update(updateProbationOfficeDto)
+
+    telemetryClient.trackEvent(
+      "probation-office-updated",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+      ),
+      null,
+    )
+
     return probationOffice.toProbationOfficeDto()
   }
 
   fun deleteProbationOffice(probationOfficeId: String) {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
     probationOfficeRepository.delete(probationOffice)
+
+    telemetryClient.trackEvent(
+      "probation-office-deleted",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+      ),
+      null,
+    )
   }
 
   fun createProbationOfficeAddress(probationOfficeId: String, updateAddressDto: UpdateAddressDto): AgencyAddressDto {
@@ -89,6 +118,15 @@ class ProbationOfficeService(
     val address = updateAddressDto.toAgencyAddress()
     probationOffice.addresses += address
     probationOfficeRepository.flush()
+
+    telemetryClient.trackEvent(
+      "probation-office-address-created",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyAddressDto(
       id = address.id,
@@ -114,6 +152,15 @@ class ProbationOfficeService(
       address.country = country
     }
 
+    telemetryClient.trackEvent(
+      "probation-office-address-updated",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyAddressDto(
       id = address.id,
       addressLine1 = address.addressLine1,
@@ -130,6 +177,15 @@ class ProbationOfficeService(
     val address = probationOffice.addresses.find { it.id == addressId } ?: throw EntityNotFoundException("Address $addressId not found for probation office $probationOfficeId")
 
     probationOffice.addresses.remove(address)
+
+    telemetryClient.trackEvent(
+      "probation-office-address-deleted",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "addressId" to address.id.toString(),
+      ),
+      null,
+    )
 
     // returned for audit payload
     return AgencyAddressDto(
@@ -155,6 +211,15 @@ class ProbationOfficeService(
     probationOffice.phoneNumbers += phoneNumber
     probationOfficeRepository.flush()
 
+    telemetryClient.trackEvent(
+      "probation-office-phone-number-created",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -172,6 +237,15 @@ class ProbationOfficeService(
 
     phoneNumber.value = updatePhoneNumberDto.number
 
+    telemetryClient.trackEvent(
+      "probation-office-phone-number-updated",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyPhoneDto(
       id = phoneNumber.id,
       number = phoneNumber.value,
@@ -183,6 +257,15 @@ class ProbationOfficeService(
     val phoneNumber = probationOffice.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for probation office $probationOfficeId")
 
     probationOffice.phoneNumbers.remove(phoneNumber)
+
+    telemetryClient.trackEvent(
+      "probation-office-phone-number-deleted",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "phoneNumberId" to phoneNumber.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyPhoneDto(
       id = phoneNumber.id,
@@ -202,6 +285,15 @@ class ProbationOfficeService(
     probationOffice.emailAddresses += emailAddress
     probationOfficeRepository.flush()
 
+    telemetryClient.trackEvent(
+      "probation-office-email-address-created",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -214,6 +306,15 @@ class ProbationOfficeService(
 
     emailAddress.value = updateEmailAddressDto.address
 
+    telemetryClient.trackEvent(
+      "probation-office-email-address-updated",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
+
     return AgencyEmailDto(
       id = emailAddress.id,
       address = emailAddress.value,
@@ -225,6 +326,15 @@ class ProbationOfficeService(
     val emailAddress = probationOffice.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for probation office $probationOfficeId")
 
     probationOffice.emailAddresses.remove(emailAddress)
+
+    telemetryClient.trackEvent(
+      "probation-office-email-address-deleted",
+      mapOf(
+        "probationOfficeId" to probationOffice.probationOfficeId,
+        "emailAddressId" to emailAddress.id.toString(),
+      ),
+      null,
+    )
 
     return AgencyEmailDto(
       id = emailAddress.id,
