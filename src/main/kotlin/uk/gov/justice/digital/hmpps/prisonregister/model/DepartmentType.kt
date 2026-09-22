@@ -5,6 +5,7 @@ enum class DepartmentType {
   SOCIAL_VISIT,
   VIDEOLINK_CONFERENCING_CENTRE,
   OFFENDER_MANAGEMENT_UNIT,
+  OFFICIAL_VISIT,
   ;
 
   fun toMessage(): String = this.name.lowercase().replace("_", " ")
