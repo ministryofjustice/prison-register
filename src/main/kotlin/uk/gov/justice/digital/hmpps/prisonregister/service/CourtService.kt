@@ -12,7 +12,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
+import uk.gov.justice.digital.hmpps.prisonregister.model.CourtFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.CourtType
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
@@ -58,7 +60,9 @@ class CourtService(
 
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
 
-  fun getAll(): List<CourtDto> = courtRepository.findAll().map { it.toCourtDto() }
+  fun getAll(active: Boolean?, textSearch: String?, courtTypeCodes: List<CourtType.Companion.Type>?): List<CourtDto> = courtRepository.findAll(
+    CourtFilter(active, textSearch, courtTypeCodes),
+  ).map { it.toCourtDto() }
 
   @Transactional
   fun createCourt(createCourtDto: CreateCourtDto): CourtDto {
