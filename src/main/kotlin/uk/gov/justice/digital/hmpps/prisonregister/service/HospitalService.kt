@@ -6,7 +6,6 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
@@ -52,14 +51,6 @@ class HospitalService(
   fun createHospital(createHospitalDto: CreateHospitalDto): HospitalDto {
     if (hospitalRepository.existsById(createHospitalDto.hospitalId)) {
       throw ValidationException("Hospital ${createHospitalDto.hospitalId} already exists")
-    }
-
-    // phone numbers must be unique within the hospital
-    val existingNumbers = mutableSetOf<String>()
-    createHospitalDto.phoneNumbers.forEach {
-      if (!existingNumbers.add(it.number)) {
-        throw PhoneNumberAlreadyExistsException(it.number)
-      }
     }
 
     val hospital = createHospitalDto.toHospital()
@@ -157,11 +148,6 @@ class HospitalService(
   fun createHospitalPhoneNumber(hospitalId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
 
-    // phone number must be unique within the hospital
-    if (hospital.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
-
     val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
     hospital.phoneNumbers += phoneNumber
     hospitalRepository.flush()
@@ -184,11 +170,6 @@ class HospitalService(
   fun updateHospitalPhoneNumber(hospitalId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val hospital = hospitalRepository.findByIdOrNull(hospitalId) ?: throw EntityNotFoundException("Hospital $hospitalId not found")
     val phoneNumber = hospital.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for hospital $hospitalId")
-
-    // phone number must be unique within the hospital
-    if (hospital.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 
