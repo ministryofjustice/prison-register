@@ -6,8 +6,6 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
@@ -202,11 +200,6 @@ class AgencyService(
   fun createAgencyPhoneNumber(agencyId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
 
-    // phone number must be unique within the agency
-    if (agency.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
-
     val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
     agency.phoneNumbers += phoneNumber
     agencyRepository.flush()
@@ -229,11 +222,6 @@ class AgencyService(
   fun updateAgencyPhoneNumber(agencyId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
     val phoneNumber = agency.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for agency $agencyId")
-
-    // phone number must be unique within the agency
-    if (agency.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 
@@ -275,11 +263,6 @@ class AgencyService(
 
   fun createAgencyEmailAddress(agencyId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val agency = agencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
-
-    // email address is unique across all establishments
-    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
-      throw EmailAddressAlreadyExistsException(updateEmailAddressDto.address)
-    }
 
     val emailAddress = EmailAddress(updateEmailAddressDto.address)
     agency.emailAddresses += emailAddress

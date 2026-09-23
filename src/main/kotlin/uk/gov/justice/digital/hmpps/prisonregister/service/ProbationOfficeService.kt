@@ -6,8 +6,6 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
@@ -202,11 +200,6 @@ class ProbationOfficeService(
   fun createProbationOfficePhoneNumber(probationOfficeId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
 
-    // phone number must be unique within the probation office
-    if (probationOffice.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
-
     val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
     probationOffice.phoneNumbers += phoneNumber
     probationOfficeRepository.flush()
@@ -229,11 +222,6 @@ class ProbationOfficeService(
   fun updateProbationOfficePhoneNumber(probationOfficeId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
     val phoneNumber = probationOffice.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for probation office $probationOfficeId")
-
-    // phone number must be unique within the probation office
-    if (probationOffice.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 
@@ -275,11 +263,6 @@ class ProbationOfficeService(
 
   fun createProbationOfficeEmailAddress(probationOfficeId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
-
-    // email address is unique across all establishments
-    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
-      throw EmailAddressAlreadyExistsException(updateEmailAddressDto.address)
-    }
 
     val emailAddress = EmailAddress(updateEmailAddressDto.address)
     probationOffice.emailAddresses += emailAddress

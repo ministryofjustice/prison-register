@@ -6,8 +6,6 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
@@ -212,11 +210,6 @@ class CourtService(
   fun createCourtPhoneNumber(courtId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
-    // phone number must be unique within the court
-    if (court.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
-
     val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
     court.phoneNumbers += phoneNumber
     courtRepository.flush()
@@ -240,11 +233,6 @@ class CourtService(
   fun updateCourtPhoneNumber(courtId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     val phoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
-
-    // phone number must be unique within the court
-    if (court.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 
@@ -288,11 +276,6 @@ class CourtService(
   @Transactional
   fun createCourtEmailAddress(courtId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
-
-    // email address is unique across all establishments
-    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
-      throw EmailAddressAlreadyExistsException(updateEmailAddressDto.address)
-    }
 
     val emailAddress = EmailAddress(updateEmailAddressDto.address)
     court.emailAddresses += emailAddress

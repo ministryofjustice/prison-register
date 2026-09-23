@@ -6,8 +6,6 @@ import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.EmailAddressAlreadyExistsException
-import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PhoneNumberAlreadyExistsException
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
@@ -201,11 +199,6 @@ class ApprovedPremisesService(
   fun createApprovedPremisesPhoneNumber(approvedPremisesId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
 
-    // phone number must be unique within the approved premises
-    if (approvedPremises.phoneNumbers.any { it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
-
     val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
     approvedPremises.phoneNumbers += phoneNumber
     approvedPremisesRepository.flush()
@@ -228,11 +221,6 @@ class ApprovedPremisesService(
   fun updateApprovedPremisesPhoneNumber(approvedPremisesId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
     val phoneNumber = approvedPremises.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for approved premises $approvedPremisesId")
-
-    // phone number must be unique within the approved premises
-    if (approvedPremises.phoneNumbers.any { it.id != phoneNumberId && it.value == updatePhoneNumberDto.number }) {
-      throw PhoneNumberAlreadyExistsException(updatePhoneNumberDto.number)
-    }
 
     phoneNumber.value = updatePhoneNumberDto.number
 
@@ -274,11 +262,6 @@ class ApprovedPremisesService(
 
   fun createApprovedPremisesEmailAddress(approvedPremisesId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
-
-    // email address is unique across all establishments
-    if (emailAddressRepository.getByValue(updateEmailAddressDto.address) != null) {
-      throw EmailAddressAlreadyExistsException(updateEmailAddressDto.address)
-    }
 
     val emailAddress = EmailAddress(updateEmailAddressDto.address)
     approvedPremises.emailAddresses += emailAddress

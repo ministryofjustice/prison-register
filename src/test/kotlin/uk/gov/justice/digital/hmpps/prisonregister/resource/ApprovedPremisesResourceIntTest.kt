@@ -856,19 +856,6 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
-
-      @Test
-      fun `409 if phone number already exists on this approved premises`() {
-        val errorResponse: ErrorResponse = webTestClient.put()
-          .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 4321"))
-          .exchange()
-          .expectStatus().isEqualTo(409).expectBodyResponse()
-
-        assertThat(errorResponse.developerMessage).isEqualTo("Phone number 0114 555 4321 already exists")
-      }
     }
 
     @Nested
@@ -1551,27 +1538,6 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
-
-      @Test
-      fun `409 if phone number already exists`() {
-        webTestClient.post()
-          .uri("/approved-premises/id/SHEFAP/phone-number")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createPhoneNumberRequest)
-          .exchange()
-          .expectStatus().isCreated
-
-        val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/approved-premises/id/SHEFAP/phone-number")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createPhoneNumberRequest)
-          .exchange()
-          .expectStatus().isEqualTo(409).expectBodyResponse()
-
-        assertThat(errorResponse.developerMessage).isEqualTo("Phone number ${createPhoneNumberRequest.number} already exists")
-      }
     }
 
     @Nested
@@ -1734,27 +1700,6 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .bodyValue(createEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
-      }
-
-      @Test
-      fun `409 if email address already exists`() {
-        webTestClient.post()
-          .uri("/approved-premises/id/SHEFAP/email-address")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createEmailAddressRequest)
-          .exchange()
-          .expectStatus().isCreated
-
-        val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/approved-premises/id/SHEFAP/email-address")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
-          .bodyValue(createEmailAddressRequest)
-          .exchange()
-          .expectStatus().isEqualTo(409).expectBodyResponse()
-
-        assertThat(errorResponse.developerMessage).isEqualTo("Email address ${createEmailAddressRequest.address} already exists")
       }
     }
 
