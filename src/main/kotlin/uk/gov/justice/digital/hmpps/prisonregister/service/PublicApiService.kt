@@ -7,8 +7,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
-import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencySummaryDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 
 @Service
 class PublicApiService(
