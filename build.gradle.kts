@@ -1,10 +1,9 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import uk.gov.justice.digital.hmpps.gradle.PortForwardRDSTask
 import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.9"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.10"
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
   id("org.jetbrains.kotlinx.kover") version "0.9.9"
@@ -22,7 +21,7 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:33.7.1-jre")
   implementation("commons-validator:commons-validator:1.11.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.39")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.40")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.1")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -34,11 +33,10 @@ dependencies {
 
   implementation("com.jayway.jsonpath:json-path:3.0.0")
 
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.3")
 
   implementation("net.javacrumbs.shedlock:shedlock-spring:7.10.1")
   implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.10.1")
@@ -73,17 +71,9 @@ dependencies {
 kotlin {
   jvmToolchain(25)
   compilerOptions {
-    freeCompilerArgs.addAll("-Xwhen-guards", "-Xannotation-default-target=param-property")
+    freeCompilerArgs.add("-Xcollection-literals")
+    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25)
   }
-}
-
-java {
-  sourceCompatibility = JavaVersion.VERSION_25
-  targetCompatibility = JavaVersion.VERSION_25
-}
-
-repositories {
-  mavenCentral()
 }
 
 tasks {
@@ -97,10 +87,6 @@ tasks {
 
   register<RevealSecretsTask>("revealSecrets") {
     namespacePrefix = "hmpps-registers"
-  }
-
-  withType<KotlinCompile> {
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 
   test {
