@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import java.time.LocalDate
 
@@ -24,6 +25,7 @@ class Root(
   val policeCustodySuiteBuilder: PoliceCustodySuiteBuilder,
   val approvedPremisesBuilder: ApprovedPremisesBuilder,
   val agencyBuilder: AgencyBuilder,
+  val prisonBuilder: PrisonBuilder,
 ) {
   fun agency(
     agencyId: String,
@@ -216,5 +218,32 @@ class Root(
     localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(hospitalBuilder)
+  }
+
+  fun prison(
+    prisonId: String,
+    name: String,
+    description: String? = name,
+    active: Boolean = true,
+    male: Boolean = false,
+    female: Boolean = false,
+    contracted: Boolean = false,
+    lthse: Boolean = false,
+    prisonNameInWelsh: String? = null,
+    inactiveDate: LocalDate? = null,
+    dsl: PrisonBuilder.() -> Unit,
+  ): Prison = prisonBuilder.build(
+    prisonId = prisonId,
+    name = name,
+    description = description,
+    active = active,
+    male = male,
+    female = female,
+    contracted = contracted,
+    lthse = lthse,
+    prisonNameInWelsh = prisonNameInWelsh,
+    inactiveDate = inactiveDate,
+  ).also {
+    dsl.invoke(prisonBuilder)
   }
 }
