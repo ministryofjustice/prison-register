@@ -137,7 +137,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -150,7 +150,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/other-agencies/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -163,7 +163,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencyDto: OtherAgencyDto = webTestClient.get()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -186,7 +186,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencyDto: OtherAgencyDto = webTestClient.get()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -204,7 +204,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencyDto: OtherAgencyDto = webTestClient.get()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -217,7 +217,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencyDto: OtherAgencyDto = webTestClient.get()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -230,7 +230,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencyDto: OtherAgencyDto = webTestClient.get()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -310,7 +310,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -323,7 +323,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencies = webTestClient.get()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList<OtherAgencyDto>()
@@ -352,7 +352,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencies = webTestClient.get()
           .uri("/other-agencies?active=false")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList<OtherAgencyDto>()
@@ -367,7 +367,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencies = webTestClient.get()
           .uri("/other-agencies?textSearch=Leeds")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList<OtherAgencyDto>()
@@ -382,7 +382,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val agencies = webTestClient.get()
           .uri("/other-agencies?otherAgencyTypeCodes=AIRPORT")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList<OtherAgencyDto>()
@@ -463,7 +463,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest)
           .exchange()
           .expectStatus().isCreated
@@ -479,7 +479,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest)
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -492,7 +492,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -505,7 +505,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -518,7 +518,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -531,7 +531,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -544,7 +544,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -557,7 +557,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest.copy(agencyName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -571,7 +571,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val dto: OtherAgencyDto = webTestClient.post()
           .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAgencyRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -695,7 +695,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -709,7 +709,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -720,7 +720,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -731,7 +731,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -745,7 +745,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -843,7 +843,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated
@@ -857,7 +857,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -868,7 +868,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -879,7 +879,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -895,7 +895,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/other-agencies/id/OTHAG/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -915,7 +915,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1007,7 +1007,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1021,7 +1021,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/ZZZZ/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1032,7 +1032,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1043,7 +1043,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1057,7 +1057,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.post()
           .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1172,7 +1172,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest)
           .exchange()
           .expectStatus().isOk
@@ -1186,7 +1186,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1197,7 +1197,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1210,7 +1210,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1223,7 +1223,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1236,7 +1236,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1249,7 +1249,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1262,7 +1262,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(agencyName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1276,7 +1276,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val dto: OtherAgencyDto = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1309,7 +1309,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val dto: OtherAgencyDto = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAgencyRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1408,7 +1408,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -1422,7 +1422,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1433,7 +1433,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1444,7 +1444,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1455,7 +1455,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1469,7 +1469,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1563,7 +1563,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk
@@ -1577,7 +1577,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1588,7 +1588,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1599,7 +1599,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1610,7 +1610,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1624,7 +1624,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1647,7 +1647,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1732,7 +1732,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -1746,7 +1746,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1757,7 +1757,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1768,7 +1768,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1779,7 +1779,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1793,7 +1793,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1884,7 +1884,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1901,7 +1901,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1991,7 +1991,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2001,7 +2001,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2014,7 +2014,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2100,7 +2100,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2110,7 +2110,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2123,7 +2123,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2209,7 +2209,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2219,7 +2219,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2232,7 +2232,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 

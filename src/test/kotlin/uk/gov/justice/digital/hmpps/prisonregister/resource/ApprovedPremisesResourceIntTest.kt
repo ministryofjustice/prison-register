@@ -135,7 +135,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -148,7 +148,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/approved-premises/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -161,7 +161,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -184,7 +184,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -202,7 +202,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -215,7 +215,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val dto: ApprovedPremisesDto = webTestClient.get()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -292,7 +292,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -305,7 +305,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val approvedPremises = webTestClient.get()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(ApprovedPremisesDto::class.java)
@@ -415,7 +415,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isOk
@@ -429,7 +429,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -440,7 +440,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -453,7 +453,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -466,7 +466,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -479,7 +479,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -492,7 +492,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -505,7 +505,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(approvedPremisesName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -519,7 +519,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val dto: ApprovedPremisesDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -552,7 +552,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val dto: ApprovedPremisesDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateApprovedPremisesRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -650,7 +650,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -664,7 +664,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -675,7 +675,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -686,7 +686,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -697,7 +697,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -711,7 +711,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -804,7 +804,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk
@@ -818,7 +818,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -829,7 +829,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -840,7 +840,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -851,7 +851,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -865,7 +865,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -888,7 +888,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -972,7 +972,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -986,7 +986,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -997,7 +997,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1008,7 +1008,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1019,7 +1019,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1033,7 +1033,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.put()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1122,7 +1122,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1138,7 +1138,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1151,7 +1151,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1164,7 +1164,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1177,7 +1177,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1190,7 +1190,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1203,7 +1203,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1216,7 +1216,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest.copy(approvedPremisesName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1230,7 +1230,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createApprovedPremisesRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1350,7 +1350,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1364,7 +1364,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1375,7 +1375,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1386,7 +1386,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1400,7 +1400,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1497,7 +1497,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1511,7 +1511,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1522,7 +1522,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1533,7 +1533,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1549,7 +1549,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/approved-premises/id/OTHAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1569,7 +1569,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1660,7 +1660,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1674,7 +1674,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/ZZZZ/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1685,7 +1685,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1696,7 +1696,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1710,7 +1710,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.post()
           .uri("/approved-premises/id/SHEFAP/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1808,7 +1808,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1825,7 +1825,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1914,7 +1914,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1924,7 +1924,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1937,7 +1937,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2022,7 +2022,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2032,7 +2032,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2045,7 +2045,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2130,7 +2130,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2140,7 +2140,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2153,7 +2153,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 

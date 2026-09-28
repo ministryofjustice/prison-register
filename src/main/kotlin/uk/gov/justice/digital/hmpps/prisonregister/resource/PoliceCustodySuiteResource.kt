@@ -49,7 +49,7 @@ import java.time.LocalDate
 @RestController
 @Validated
 @RequestMapping("/police-custody-suites", produces = [MediaType.APPLICATION_JSON_VALUE])
-@PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
+@PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
 class PoliceCustodySuiteResource(
   private val policeCustodySuiteService: PoliceCustodySuiteService,
   private val auditService: AuditService,
