@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 
 @Service
+@Transactional
 class PublicApiService(
   private val courtRepository: CourtRepository,
   private val hospitalRepository: HospitalRepository,
