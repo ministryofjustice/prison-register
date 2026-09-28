@@ -122,7 +122,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -135,7 +135,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/hospitals/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -148,7 +148,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val hospitalDto: HospitalDto = webTestClient.get()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -170,7 +170,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val hospitalDto: HospitalDto = webTestClient.get()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -188,7 +188,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val hospitalDto: HospitalDto = webTestClient.get()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -266,7 +266,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -279,7 +279,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val hospitals = webTestClient.get()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(HospitalDto::class.java)
@@ -367,7 +367,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createHospitalRequest)
           .exchange()
           .expectStatus().isCreated
@@ -383,7 +383,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createHospitalRequest)
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -396,7 +396,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createHospitalRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -409,7 +409,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createHospitalRequest.copy(hospitalName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -423,7 +423,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createHospitalRequest)
           .exchange()
           .expectStatus().isCreated
@@ -540,7 +540,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/SHFHOS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -554,7 +554,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -565,7 +565,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/SHFHOS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -576,7 +576,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/SHFHOS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -590,7 +590,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.post()
           .uri("/hospitals/id/SHFHOS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -687,7 +687,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/SHFHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated
@@ -701,7 +701,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -712,7 +712,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/SHFHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -723,7 +723,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/hospitals/id/SHFHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -739,7 +739,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/hospitals/id/OTHHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -761,7 +761,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/hospitals/id/SHFHOS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -857,7 +857,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -873,7 +873,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -962,7 +962,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -972,7 +972,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -985,7 +985,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1071,7 +1071,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1081,7 +1081,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1094,7 +1094,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1197,7 +1197,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest)
           .exchange()
           .expectStatus().isOk
@@ -1211,7 +1211,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1222,7 +1222,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1235,7 +1235,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1248,7 +1248,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1261,7 +1261,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1274,7 +1274,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1287,7 +1287,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(hospitalName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1301,7 +1301,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val hospitalDto: HospitalDto = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1333,7 +1333,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val hospitalDto: HospitalDto = webTestClient.put()
           .uri("/hospitals/id/SHFHOS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateHospitalRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1429,7 +1429,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -1443,7 +1443,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1454,7 +1454,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1465,7 +1465,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1476,7 +1476,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1490,7 +1490,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.put()
           .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1583,7 +1583,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk
@@ -1597,7 +1597,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1608,7 +1608,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1619,7 +1619,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1630,7 +1630,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1644,7 +1644,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1667,7 +1667,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()

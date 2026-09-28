@@ -132,7 +132,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -145,7 +145,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/police-custody-suites/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -158,7 +158,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -179,7 +179,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -197,7 +197,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -210,7 +210,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val dto: PoliceCustodySuiteDto = webTestClient.get()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -287,7 +287,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -300,7 +300,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val policeCustodySuites = webTestClient.get()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(PoliceCustodySuiteDto::class.java)
@@ -406,7 +406,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest)
           .exchange()
           .expectStatus().isOk
@@ -420,7 +420,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -431,7 +431,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -444,7 +444,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -457,7 +457,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -470,7 +470,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -483,7 +483,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -496,7 +496,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(policeCustodySuiteName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -510,7 +510,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val dto: PoliceCustodySuiteDto = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -541,7 +541,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val dto: PoliceCustodySuiteDto = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePoliceCustodySuiteRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -639,7 +639,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -653,7 +653,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -664,7 +664,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -675,7 +675,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -686,7 +686,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -700,7 +700,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -793,7 +793,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk
@@ -807,7 +807,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -818,7 +818,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -829,7 +829,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -840,7 +840,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -854,7 +854,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -877,7 +877,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -961,7 +961,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -975,7 +975,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -986,7 +986,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -997,7 +997,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1008,7 +1008,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1022,7 +1022,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.put()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1109,7 +1109,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPoliceCustodySuiteRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1125,7 +1125,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPoliceCustodySuiteRequest)
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1138,7 +1138,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPoliceCustodySuiteRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1151,7 +1151,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPoliceCustodySuiteRequest.copy(policeCustodySuiteName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1165,7 +1165,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPoliceCustodySuiteRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1283,7 +1283,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1297,7 +1297,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1308,7 +1308,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1319,7 +1319,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1333,7 +1333,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1429,7 +1429,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1443,7 +1443,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1454,7 +1454,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1465,7 +1465,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1481,7 +1481,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/police-custody-suites/id/OTHPCS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1503,7 +1503,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1594,7 +1594,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1608,7 +1608,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/ZZZZ/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1619,7 +1619,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1630,7 +1630,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1644,7 +1644,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.post()
           .uri("/police-custody-suites/id/SHFPCS/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1742,7 +1742,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1759,7 +1759,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1848,7 +1848,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1858,7 +1858,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1871,7 +1871,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1956,7 +1956,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1966,7 +1966,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1979,7 +1979,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2064,7 +2064,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2074,7 +2074,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2087,7 +2087,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/police-custody-suites/id/SHFPCS/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 

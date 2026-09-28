@@ -45,7 +45,7 @@ import java.time.LocalDate
 @RestController
 @Validated
 @RequestMapping("/hospitals", produces = [MediaType.APPLICATION_JSON_VALUE])
-@PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
+@PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
 class HospitalResource(
   private val hospitalService: HospitalService,
   private val auditService: AuditService,

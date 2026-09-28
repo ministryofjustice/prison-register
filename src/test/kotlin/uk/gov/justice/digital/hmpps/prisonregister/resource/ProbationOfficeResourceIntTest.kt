@@ -136,7 +136,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -149,7 +149,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/probation-offices/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -162,7 +162,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val probationOfficeDto: ProbationOfficeDto = webTestClient.get()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -186,7 +186,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val probationOfficeDto: ProbationOfficeDto = webTestClient.get()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -204,7 +204,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val probationOfficeDto: ProbationOfficeDto = webTestClient.get()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -217,7 +217,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val probationOfficeDto: ProbationOfficeDto = webTestClient.get()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectBodyResponse()
 
@@ -294,7 +294,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.get()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
       }
@@ -307,7 +307,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val probationOffices = webTestClient.get()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(ProbationOfficeDto::class.java)
@@ -419,7 +419,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest)
           .exchange()
           .expectStatus().isOk
@@ -433,7 +433,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -444,7 +444,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -457,7 +457,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(subareaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -470,7 +470,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -483,7 +483,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -496,7 +496,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -509,7 +509,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -522,7 +522,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(probationOfficeName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -536,7 +536,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val dto: ProbationOfficeDto = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -570,7 +570,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val dto: ProbationOfficeDto = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateProbationOfficeRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -668,7 +668,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -682,7 +682,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -693,7 +693,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -704,7 +704,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -715,7 +715,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -729,7 +729,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -822,7 +822,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk
@@ -836,7 +836,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -847,7 +847,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -858,7 +858,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -869,7 +869,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -883,7 +883,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -906,7 +906,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -990,7 +990,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk
@@ -1004,7 +1004,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1015,7 +1015,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1026,7 +1026,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1037,7 +1037,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1051,7 +1051,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.put()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(updateEmailAddressRequest)
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
@@ -1141,7 +1141,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1157,7 +1157,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest)
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1170,7 +1170,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1183,7 +1183,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(subareaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1196,7 +1196,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1209,7 +1209,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1222,7 +1222,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1235,7 +1235,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val errorResponse: ErrorResponse = webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
@@ -1248,7 +1248,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest.copy(probationOfficeName = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1262,7 +1262,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createProbationOfficeRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1383,7 +1383,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1397,7 +1397,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1408,7 +1408,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1419,7 +1419,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1433,7 +1433,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val addressDto: AgencyAddressDto = webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1529,7 +1529,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1543,7 +1543,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1554,7 +1554,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1565,7 +1565,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1581,7 +1581,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/probation-offices/id/OTHPBO/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1603,7 +1603,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/phone-number")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1694,7 +1694,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated
@@ -1708,7 +1708,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/ZZZZ/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isNotFound
@@ -1719,7 +1719,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
           .exchange()
           .expectStatus().isBadRequest
@@ -1730,7 +1730,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = ""))
           .exchange()
           .expectStatus().isBadRequest
@@ -1744,7 +1744,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val emailDto: AgencyEmailDto = webTestClient.post()
           .uri("/probation-offices/id/SHEFPB/email-address")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .bodyValue(createEmailAddressRequest)
           .exchange()
           .expectStatus().isCreated.expectBodyResponse()
@@ -1842,7 +1842,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1859,7 +1859,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB")
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -1948,7 +1948,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1958,7 +1958,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -1971,7 +1971,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2056,7 +2056,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2066,7 +2066,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2079,7 +2079,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 
@@ -2164,7 +2164,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2174,7 +2174,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -2187,7 +2187,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         webTestClient.delete()
           .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
           .expectStatus().isNoContent
 

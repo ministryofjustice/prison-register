@@ -53,7 +53,7 @@ import java.time.LocalDate
 @RestController
 @Validated
 @RequestMapping("/other-agencies", produces = [MediaType.APPLICATION_JSON_VALUE])
-@PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
+@PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
 class OtherAgencyResource(
   private val otherAgencyService: OtherAgencyService,
   private val auditService: AuditService,
