@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -21,16 +22,16 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
-import uk.gov.justice.digital.hmpps.prisonregister.service.AgencyService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_ADDRESS_INSERT
@@ -44,16 +45,17 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGI
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_PHONE_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_PHONE_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_UPDATE
+import uk.gov.justice.digital.hmpps.prisonregister.service.OtherAgencyService
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
 import java.time.LocalDate
 
 @RestController
 @Validated
-@RequestMapping("/agencies", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/other-agencies", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
-class AgencyResource(
-  private val agencyService: AgencyService,
+class OtherAgencyResource(
+  private val otherAgencyService: OtherAgencyService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
@@ -67,12 +69,12 @@ class AgencyResource(
       ),
     ],
   )
-  fun getAgencyFromId(
+  fun getOtherAgencyFromId(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
     agencyId: String,
-  ): AgencyDto = agencyService.findById(agencyId)
+  ): OtherAgencyDto = otherAgencyService.findById(agencyId)
 
   @GetMapping
   @Operation(summary = "Get all agencies", description = "Information on all agencies")
@@ -84,7 +86,15 @@ class AgencyResource(
       ),
     ],
   )
-  fun getAgencys(): List<AgencyDto> = agencyService.getAll()
+  fun getOtherAgencies(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "Agency type codes to filter by", example = "AIRPORT, PECS", required = false) @RequestParam otherAgencyTypeCodes: List<OtherAgencyType>? = listOf(),
+  ): List<OtherAgencyDto> = otherAgencyService.getAll(
+    active = active,
+    textSearch = textSearch,
+    otherAgencyTypeCodes = otherAgencyTypeCodes,
+  )
 
   @Operation(
     summary = "Create a new agency",
@@ -93,7 +103,7 @@ class AgencyResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = CreateAgencyDto::class),
+          schema = Schema(implementation = CreateOtherAgencyDto::class),
         ),
       ],
     ),
@@ -121,11 +131,11 @@ class AgencyResource(
   )
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  fun createAgency(
+  fun createOtherAgency(
     @RequestBody @Valid
-    createAgencyDto: CreateAgencyDto,
-  ): AgencyDto {
-    val createdAgency = agencyService.createAgency(createAgencyDto)
+    createAgencyDto: CreateOtherAgencyDto,
+  ): OtherAgencyDto {
+    val createdAgency = otherAgencyService.createAgency(createAgencyDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterInsertedEvent(createAgencyDto.agencyId, now)
     auditService.sendAuditEvent(
@@ -143,7 +153,7 @@ class AgencyResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateAgencyDto::class),
+          schema = Schema(implementation = UpdateOtherAgencyDto::class),
         ),
       ],
     ),
@@ -175,15 +185,15 @@ class AgencyResource(
     ],
   )
   @PutMapping("/id/{agencyId}")
-  fun updateAgency(
+  fun updateOtherAgency(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
     agencyId: String,
     @RequestBody @Valid
-    updateAgencyDto: UpdateAgencyDto,
-  ): AgencyDto {
-    val updatedAgency = agencyService.updateAgency(agencyId, updateAgencyDto)
+    updateAgencyDto: UpdateOtherAgencyDto,
+  ): OtherAgencyDto {
+    val updatedAgency = otherAgencyService.updateAgency(agencyId, updateAgencyDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -221,13 +231,13 @@ class AgencyResource(
   )
   @DeleteMapping("/id/{agencyId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteAgency(
+  fun deleteOtherAgency(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
     agencyId: String,
   ) {
-    agencyService.deleteAgency(agencyId)
+    otherAgencyService.deleteAgency(agencyId)
     val now = Instant.now()
     snsService.sendAgencyRegisterDeletedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -277,7 +287,7 @@ class AgencyResource(
   )
   @PostMapping("/id/{agencyId}/address")
   @ResponseStatus(HttpStatus.CREATED)
-  fun createAgencyAddress(
+  fun createOtherAgencyAddress(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -285,7 +295,7 @@ class AgencyResource(
     @RequestBody @Valid
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
-    val createdAddress = agencyService.createAgencyAddress(agencyId, updateAddressDto)
+    val createdAddress = otherAgencyService.createAgencyAddress(agencyId, updateAddressDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -335,7 +345,7 @@ class AgencyResource(
     ],
   )
   @PutMapping("/id/{agencyId}/address/{addressId}")
-  fun updateAgencyAddress(
+  fun updateOtherAgencyAddress(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -346,7 +356,7 @@ class AgencyResource(
     @RequestBody @Valid
     updateAddressDto: UpdateAddressDto,
   ): AgencyAddressDto {
-    val updatedAddress = agencyService.updateAgencyAddress(agencyId, addressId, updateAddressDto)
+    val updatedAddress = otherAgencyService.updateAgencyAddress(agencyId, addressId, updateAddressDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -384,7 +394,7 @@ class AgencyResource(
   )
   @DeleteMapping("/id/{agencyId}/address/{addressId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteAgencyAddress(
+  fun deleteOtherAgencyAddress(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -393,7 +403,7 @@ class AgencyResource(
     @PathVariable
     addressId: Long,
   ) {
-    val deletedAddress = agencyService.deleteAgencyAddress(agencyId, addressId)
+    val deletedAddress = otherAgencyService.deleteAgencyAddress(agencyId, addressId)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -448,7 +458,7 @@ class AgencyResource(
   )
   @PostMapping("/id/{agencyId}/phone-number")
   @ResponseStatus(HttpStatus.CREATED)
-  fun createAgencyPhoneNumber(
+  fun createOtherAgencyPhoneNumber(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -456,7 +466,7 @@ class AgencyResource(
     @RequestBody @Valid
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = agencyService.createAgencyPhoneNumber(agencyId, updatePhoneNumberDto)
+    val createdPhoneNumber = otherAgencyService.createAgencyPhoneNumber(agencyId, updatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -506,7 +516,7 @@ class AgencyResource(
     ],
   )
   @PutMapping("/id/{agencyId}/phone-number/{phoneNumberId}")
-  fun updateAgencyPhoneNumber(
+  fun updateOtherAgencyPhoneNumber(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -517,7 +527,7 @@ class AgencyResource(
     @RequestBody @Valid
     updatePhoneNumberDto: UpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = agencyService.updateAgencyPhoneNumber(agencyId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = otherAgencyService.updateAgencyPhoneNumber(agencyId, phoneNumberId, updatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -555,7 +565,7 @@ class AgencyResource(
   )
   @DeleteMapping("/id/{agencyId}/phone-number/{phoneNumberId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteAgencyPhoneNumber(
+  fun deleteOtherAgencyPhoneNumber(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -564,7 +574,7 @@ class AgencyResource(
     @PathVariable
     phoneNumberId: Long,
   ) {
-    val deletedPhoneNumber = agencyService.deleteAgencyPhoneNumber(agencyId, phoneNumberId)
+    val deletedPhoneNumber = otherAgencyService.deleteAgencyPhoneNumber(agencyId, phoneNumberId)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -619,7 +629,7 @@ class AgencyResource(
   )
   @PostMapping("/id/{agencyId}/email-address")
   @ResponseStatus(HttpStatus.CREATED)
-  fun createAgencyEmailAddress(
+  fun createOtherAgencyEmailAddress(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -627,7 +637,7 @@ class AgencyResource(
     @RequestBody @Valid
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val createdEmailAddress = agencyService.createAgencyEmailAddress(agencyId, updateEmailAddressDto)
+    val createdEmailAddress = otherAgencyService.createAgencyEmailAddress(agencyId, updateEmailAddressDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -666,18 +676,18 @@ class AgencyResource(
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Incorrect permissions to make agency email address update",
+        description = "Incorrect permissions to make other agency email address update",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Agency Id or Email Address Id not found",
+        description = "Other Agency Id or Email Address Id not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ],
   )
   @PutMapping("/id/{agencyId}/email-address/{emailAddressId}")
-  fun updateAgencyEmailAddress(
+  fun updateOtherAgencyEmailAddress(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -688,7 +698,7 @@ class AgencyResource(
     @RequestBody @Valid
     updateEmailAddressDto: UpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val updatedEmailAddress = agencyService.updateAgencyEmailAddress(agencyId, emailAddressId, updateEmailAddressDto)
+    val updatedEmailAddress = otherAgencyService.updateAgencyEmailAddress(agencyId, emailAddressId, updateEmailAddressDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -726,7 +736,7 @@ class AgencyResource(
   )
   @DeleteMapping("/id/{agencyId}/email-address/{emailAddressId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  fun deleteAgencyEmailAddress(
+  fun deleteOtherAgencyEmailAddress(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
@@ -735,7 +745,7 @@ class AgencyResource(
     @PathVariable
     emailAddressId: Long,
   ) {
-    val deletedEmailAddress = agencyService.deleteAgencyEmailAddress(agencyId, emailAddressId)
+    val deletedEmailAddress = otherAgencyService.deleteAgencyEmailAddress(agencyId, emailAddressId)
     val now = Instant.now()
     snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
     auditService.sendAuditEvent(
@@ -746,9 +756,9 @@ class AgencyResource(
   }
 }
 
-@Schema(description = "Agency Information")
+@Schema(description = "Other Agency Information")
 @JsonInclude(NON_NULL)
-data class AgencyDto(
+data class OtherAgencyDto(
   @Schema(description = "Agency ID", example = "SHEFCC") val agencyId: String,
   @Schema(description = "Name", example = "Sheffield Agency") val agencyName: String,
   @Schema(description = "Description", example = "Sheffield City Centre Agency") val description: String?,
@@ -767,9 +777,9 @@ data class AgencyDto(
   @Schema(description = "phoneNumbers") val phoneNumbers: List<AgencyPhoneDto>,
 )
 
-@Schema(description = "Agency Update Record")
+@Schema(description = "Other Agency Update Record")
 @JsonInclude(NON_NULL)
-data class UpdateAgencyDto(
+data class UpdateOtherAgencyDto(
   @Schema(description = "Name", example = "Sheffield Agency", required = true)
   @field:NotBlank(message = "Agency name is required")
   @field:Size(max = 40, message = "Agency name must be no more than 40 characters")
@@ -782,7 +792,7 @@ data class UpdateAgencyDto(
   @Schema(description = "Accessible access", example = "ACCESSIBLE")
   val accessibleAccess: AccessibleAccess?,
   @Schema(description = "Agency type", example = "PROBATION_CRC", required = true)
-  val agencyType: AgencyType,
+  val otherAgencyType: OtherAgencyType,
   @Schema(description = "Date made inactive", example = "2023-12-31")
   val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789")
@@ -803,12 +813,12 @@ data class UpdateAgencyDto(
   val payrollRegionCode: String?,
 )
 
-@Schema(description = "Agency Create Record")
+@Schema(description = "Other Agency Create Record")
 @JsonInclude(NON_NULL)
-data class CreateAgencyDto(
-  @Schema(description = "Agency ID", example = "SHEFCC", required = true)
-  @field:NotBlank(message = "Agency id is required")
-  @field:Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+data class CreateOtherAgencyDto(
+  @Schema(description = "Other Agency ID", example = "SHEFCC", required = true)
+  @field:NotBlank(message = "Other Agency id is required")
+  @field:Size(min = 2, max = 6, message = "Other Agency Id must be between 2 and 6 characters")
   val agencyId: String,
   @Schema(description = "Name", example = "Sheffield Agency", required = true)
   @field:NotBlank(message = "Agency name is required")
@@ -822,7 +832,7 @@ data class CreateAgencyDto(
   @Schema(description = "Accessible access", example = "ACCESSIBLE")
   val accessibleAccess: AccessibleAccess?,
   @Schema(description = "Agency type", example = "PROBATION_CRC", required = true)
-  val agencyType: AgencyType,
+  val otherAgencyType: OtherAgencyType,
   @Schema(description = "Date made inactive", example = "2023-12-31")
   val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789")

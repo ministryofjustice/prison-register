@@ -15,16 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
-import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgency
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
@@ -32,13 +33,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
-class AgencyResourceIntTest : IntegrationTestBase() {
+class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var dsl: Root
 
   @Autowired
-  lateinit var agencyRepository: AgencyRepository
+  lateinit var otherAgencyRepository: OtherAgencyRepository
 
   @Autowired
   lateinit var agencyAddressRepository: AgencyAddressRepository
@@ -58,17 +59,17 @@ class AgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Get agency by id")
   @Nested
   inner class GetById {
-    lateinit var agency: Agency
+    lateinit var otherAgency: OtherAgency
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = false,
         accessibleAccess = AccessibleAccess.ACCESSIBLE,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = LocalDate.parse("2020-01-02"),
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -105,8 +106,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -115,7 +116,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -124,7 +125,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -134,7 +135,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -147,7 +148,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if not found`() {
         webTestClient.get()
-          .uri("/agencies/id/ZZZZ")
+          .uri("/other-agencies/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -159,16 +160,16 @@ class AgencyResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will return core details`() {
-        val agencyDto: AgencyDto = webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+        val agencyDto: OtherAgencyDto = webTestClient.get()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
           .expectBodyResponse()
 
-        assertThat(agencyDto.agencyId).isEqualTo("SHEFCC")
-        assertThat(agencyDto.agencyName).isEqualTo("Sheffield Crown Court")
-        assertThat(agencyDto.description).isEqualTo("Sheffield Crown Court City Centre")
+        assertThat(agencyDto.agencyId).isEqualTo("SHFCRC")
+        assertThat(agencyDto.agencyName).isEqualTo("Sheffield CRC")
+        assertThat(agencyDto.description).isEqualTo("Sheffield CRC City Centre")
         assertThat(agencyDto.active).isFalse
         assertThat(agencyDto.accessibleAccess).isEqualTo("ACCESSIBLE")
         assertThat(agencyDto.agencyType).isEqualTo("PROBATION_CRC")
@@ -182,8 +183,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return addresses`() {
-        val agencyDto: AgencyDto = webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+        val agencyDto: OtherAgencyDto = webTestClient.get()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -200,8 +201,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return emails`() {
-        val agencyDto: AgencyDto = webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+        val agencyDto: OtherAgencyDto = webTestClient.get()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -213,8 +214,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return phone numbers`() {
-        val agencyDto: AgencyDto = webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+        val agencyDto: OtherAgencyDto = webTestClient.get()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -226,8 +227,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return payroll region`() {
-        val agencyDto: AgencyDto = webTestClient.get()
-          .uri("/agencies/id/SHEFCC")
+        val agencyDto: OtherAgencyDto = webTestClient.get()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -242,18 +243,18 @@ class AgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Get all agencies")
   @Nested
   inner class GetAll {
-    lateinit var agency: Agency
-    lateinit var agency2: Agency
-    lateinit var agency3: Agency
+    lateinit var otherAgency: OtherAgency
+    lateinit var otherAgency2: OtherAgency
+    lateinit var otherAgency3: OtherAgency
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = false,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = LocalDate.parse("2020-01-02"),
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -263,24 +264,24 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         localAuthorityCode = "00CG",
       ) {}
 
-      agency2 = dsl.agency(
-        agencyId = "LEEDCC",
-        name = "Leeds Crown Court",
-        agencyType = AgencyType.AIRPORT,
+      otherAgency2 = dsl.agency(
+        agencyId = "LEDAIR",
+        name = "Leeds Airport",
+        otherAgencyType = OtherAgencyType.AIRPORT,
       ) {}
 
-      agency3 = dsl.agency(
-        agencyId = "BIRMMC",
-        name = "Birmingham Magistrates Court",
-        agencyType = AgencyType.YOT,
+      otherAgency3 = dsl.agency(
+        agencyId = "BIRYOT",
+        name = "Birmingham Young Offenders",
+        otherAgencyType = OtherAgencyType.YOT,
       ) {}
     }
 
     @AfterEach
     fun tearDown() {
-      agencyRepository.deleteById(agency.agencyId)
-      agencyRepository.deleteById(agency2.agencyId)
-      agencyRepository.deleteById(agency3.agencyId)
+      otherAgencyRepository.deleteById(otherAgency.agencyId)
+      otherAgencyRepository.deleteById(otherAgency2.agencyId)
+      otherAgencyRepository.deleteById(otherAgency3.agencyId)
     }
 
     @Nested
@@ -288,7 +289,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.get()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -297,7 +298,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.get()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -307,7 +308,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.get()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -320,44 +321,89 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return all agencies`() {
         val agencies = webTestClient.get()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
           .expectStatus().isOk
-          .expectBodyList(AgencyDto::class.java)
+          .expectBodyList<OtherAgencyDto>()
           .returnResult()
           .responseBody!!
 
-        assertThat(agencies).extracting("agencyId").contains("SHEFCC", "LEEDCC", "BIRMMC")
+        assertThat(agencies).extracting("agencyId").contains("SHFCRC", "LEDAIR", "BIRYOT")
 
-        val sheffieldAgency = agencies.first { it.agencyId == "SHEFCC" }
-        assertThat(sheffieldAgency.agencyName).isEqualTo("Sheffield Crown Court")
-        assertThat(sheffieldAgency.description).isEqualTo("Sheffield Crown Court City Centre")
+        val sheffieldAgency = agencies.first { it.agencyId == "SHFCRC" }
+        assertThat(sheffieldAgency.agencyName).isEqualTo("Sheffield CRC")
+        assertThat(sheffieldAgency.description).isEqualTo("Sheffield CRC City Centre")
         assertThat(sheffieldAgency.active).isFalse
         assertThat(sheffieldAgency.agencyType).isEqualTo("PROBATION_CRC")
 
-        val leedsAgency = agencies.first { it.agencyId == "LEEDCC" }
-        assertThat(leedsAgency.agencyName).isEqualTo("Leeds Crown Court")
+        val leedsAgency = agencies.first { it.agencyId == "LEDAIR" }
+        assertThat(leedsAgency.agencyName).isEqualTo("Leeds Airport")
         assertThat(leedsAgency.agencyType).isEqualTo("AIRPORT")
 
-        val birminghamAgency = agencies.first { it.agencyId == "BIRMMC" }
-        assertThat(birminghamAgency.agencyName).isEqualTo("Birmingham Magistrates Court")
+        val birminghamAgency = agencies.first { it.agencyId == "BIRYOT" }
+        assertThat(birminghamAgency.agencyName).isEqualTo("Birmingham Young Offenders")
         assertThat(birminghamAgency.agencyType).isEqualTo("YOT")
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        val agencies = webTestClient.get()
+          .uri("/other-agencies?active=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<OtherAgencyDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(agencies).extracting("agencyId").containsExactly("SHFCRC")
+      }
+
+      @Test
+      fun `will filter by text search`() {
+        val agencies = webTestClient.get()
+          .uri("/other-agencies?textSearch=Leeds")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<OtherAgencyDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(agencies).extracting("agencyId").containsExactly("LEDAIR")
+      }
+
+      @Test
+      fun `will filter by agency type`() {
+        val agencies = webTestClient.get()
+          .uri("/other-agencies?otherAgencyTypeCodes=AIRPORT")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<OtherAgencyDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(agencies).extracting("agencyId").containsExactly("LEDAIR")
       }
     }
   }
 
   @DisplayName("Create agency")
   @Nested
-  inner class CreateAgency {
-    val createAgencyRequest = CreateAgencyDto(
+  inner class CreateOtherAgency {
+    val createAgencyRequest = CreateOtherAgencyDto(
       agencyId = "NEWAIR",
       agencyName = "New Airport Agency",
       description = "The New Airport Agency",
       active = true,
       accessibleAccess = AccessibleAccess.BY_ARRANGEMENT_ONLY,
-      agencyType = AgencyType.AIRPORT,
+      otherAgencyType = OtherAgencyType.AIRPORT,
       inactiveDate = null,
       cjitCode = "123456789",
       areaCode = "52",
@@ -386,7 +432,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      agencyRepository.findByIdOrNull(createAgencyRequest.agencyId)?.let { agencyRepository.delete(it) }
+      otherAgencyRepository.findByIdOrNull(createAgencyRequest.agencyId)?.let { otherAgencyRepository.delete(it) }
     }
 
     @Nested
@@ -394,7 +440,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(createAgencyRequest)
           .exchange()
@@ -404,7 +450,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(createAgencyRequest)
@@ -415,7 +461,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest)
@@ -431,7 +477,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         dsl.agency(agencyId = createAgencyRequest.agencyId, name = "Existing Agency") {}
 
         val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest)
@@ -444,7 +490,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `area code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest.copy(areaCode = "ZZZ"))
@@ -457,7 +503,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `region code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest.copy(regionCode = "ZZZ"))
@@ -470,7 +516,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `geographical area code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest.copy(geographicalAreaCode = "ZZZ"))
@@ -483,7 +529,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `local authority code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest.copy(localAuthorityCode = "ZZZ"))
@@ -496,7 +542,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `payroll region code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest.copy(payrollRegionCode = "ZZZ"))
@@ -509,7 +555,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `agency name is blank`() {
         webTestClient.post()
-          .uri("/agencies")
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest.copy(agencyName = ""))
@@ -522,8 +568,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will persist the agency, address, email address and phone number`() {
-        val dto: AgencyDto = webTestClient.post()
-          .uri("/agencies")
+        val dto: OtherAgencyDto = webTestClient.post()
+          .uri("/other-agencies")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAgencyRequest)
@@ -534,14 +580,14 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         assertThat(dto.agencyType).isEqualTo("AIRPORT")
 
         transactionHelper.runInTransaction {
-          val persisted = agencyRepository.findByIdOrNull(createAgencyRequest.agencyId)
+          val persisted = otherAgencyRepository.findByIdOrNull(createAgencyRequest.agencyId)
 
           assertThat(persisted).isNotNull
           assertThat(persisted!!.name).isEqualTo("New Airport Agency")
           assertThat(persisted.description).isEqualTo("The New Airport Agency")
           assertThat(persisted.active).isTrue
           assertThat(persisted.accessibleAccess).isEqualTo(AccessibleAccess.BY_ARRANGEMENT_ONLY)
-          assertThat(persisted.agencyType).isEqualTo(AgencyType.AIRPORT)
+          assertThat(persisted.otherAgencyType).isEqualTo(OtherAgencyType.AIRPORT)
           assertThat(persisted.cjitCode).isEqualTo("123456789")
           assertThat(persisted.area?.code).isEqualTo("52")
           assertThat(persisted.region?.code).isEqualTo("YOHUM")
@@ -577,8 +623,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Create agency address")
   @Nested
-  inner class CreateAgencyAddress {
-    lateinit var agency: Agency
+  inner class CreateOtherAgencyAddress {
+    lateinit var otherAgency: OtherAgency
 
     val createAddressRequest = UpdateAddressDto(
       addressLine1 = "Court House, 31 High Street",
@@ -591,12 +637,12 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -616,8 +662,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -626,7 +672,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/address")
+          .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(createAddressRequest)
           .exchange()
@@ -636,7 +682,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/address")
+          .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(createAddressRequest)
@@ -647,7 +693,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/address")
+          .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAddressRequest)
@@ -661,7 +707,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.post()
-          .uri("/agencies/id/ZZZZ/address")
+          .uri("/other-agencies/id/ZZZZ/address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAddressRequest)
@@ -672,7 +718,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if town is missing`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/address")
+          .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
@@ -683,7 +729,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if postcode is too long`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/address")
+          .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
@@ -697,7 +743,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will persist the new address against the agency`() {
         val addressDto: AgencyAddressDto = webTestClient.post()
-          .uri("/agencies/id/SHEFCC/address")
+          .uri("/other-agencies/id/SHFCRC/address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createAddressRequest)
@@ -713,7 +759,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         assertThat(addressDto.id).isNotEqualTo(-1)
 
         transactionHelper.runInTransaction {
-          val persisted = agencyRepository.findByIdOrNull("SHEFCC")!!
+          val persisted = otherAgencyRepository.findByIdOrNull("SHFCRC")!!
           assertThat(persisted.addresses).hasSize(2)
           val persistedAddress = persisted.addresses.find { it.id == addressDto.id }
           assertThat(persistedAddress).isNotNull
@@ -723,7 +769,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-address-created"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["addressId"]).isEqualTo(addressDto.id.toString())
           },
           isNull(),
@@ -734,19 +780,19 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Create agency phone number")
   @Nested
-  inner class CreateAgencyPhoneNumber {
-    lateinit var agency: Agency
+  inner class CreateOtherAgencyPhoneNumber {
+    lateinit var otherAgency: OtherAgency
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -763,10 +809,10 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
-      agencyRepository.findByIdOrNull("OTHAG")?.let { agencyRepository.deleteById("OTHAG") }
+      otherAgencyRepository.findByIdOrNull("OTHAG")?.let { otherAgencyRepository.deleteById("OTHAG") }
     }
 
     @Nested
@@ -774,7 +820,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/phone-number")
+          .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(createPhoneNumberRequest)
           .exchange()
@@ -784,7 +830,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/phone-number")
+          .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(createPhoneNumberRequest)
@@ -795,7 +841,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/phone-number")
+          .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
@@ -809,7 +855,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.post()
-          .uri("/agencies/id/ZZZZ/phone-number")
+          .uri("/other-agencies/id/ZZZZ/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
@@ -820,7 +866,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if phone number is in an incorrect format`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/phone-number")
+          .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
@@ -831,7 +877,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if phone number is blank`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/phone-number")
+          .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest.copy(number = ""))
@@ -844,10 +890,10 @@ class AgencyResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will allow the same phone number to be used by a different agency`() {
-        dsl.agency(agencyId = "OTHAG", name = "Other Agency", agencyType = AgencyType.PECS) {}
+        dsl.agency(agencyId = "OTHAG", name = "Other Agency", otherAgencyType = OtherAgencyType.PECS) {}
 
         val phoneDto: AgencyPhoneDto = webTestClient.post()
-          .uri("/agencies/id/OTHAG/phone-number")
+          .uri("/other-agencies/id/OTHAG/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
@@ -867,7 +913,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will persist the new phone number against the agency`() {
         val phoneDto: AgencyPhoneDto = webTestClient.post()
-          .uri("/agencies/id/SHEFCC/phone-number")
+          .uri("/other-agencies/id/SHFCRC/phone-number")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createPhoneNumberRequest)
@@ -878,7 +924,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         assertThat(phoneDto.id).isNotEqualTo(-1)
 
         transactionHelper.runInTransaction {
-          val persisted = agencyRepository.findByIdOrNull("SHEFCC")!!
+          val persisted = otherAgencyRepository.findByIdOrNull("SHFCRC")!!
           assertThat(persisted.phoneNumbers).hasSize(2)
           val persistedPhoneNumber = persisted.phoneNumbers.find { it.id == phoneDto.id }
           assertThat(persistedPhoneNumber).isNotNull
@@ -888,7 +934,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-phone-number-created"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneDto.id.toString())
           },
           isNull(),
@@ -899,19 +945,19 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Create agency email address")
   @Nested
-  inner class CreateAgencyEmailAddress {
-    lateinit var agency: Agency
+  inner class CreateOtherAgencyEmailAddress {
+    lateinit var otherAgency: OtherAgency
 
     val createEmailAddressRequest = UpdateEmailAddressDto(address = "newagency@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -928,8 +974,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -938,7 +984,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/email-address")
+          .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(createEmailAddressRequest)
           .exchange()
@@ -948,7 +994,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/email-address")
+          .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(createEmailAddressRequest)
@@ -959,7 +1005,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/email-address")
+          .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createEmailAddressRequest)
@@ -973,7 +1019,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.post()
-          .uri("/agencies/id/ZZZZ/email-address")
+          .uri("/other-agencies/id/ZZZZ/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createEmailAddressRequest)
@@ -984,7 +1030,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if email address is in an incorrect format`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/email-address")
+          .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = "not-an-email"))
@@ -995,7 +1041,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if email address is blank`() {
         webTestClient.post()
-          .uri("/agencies/id/SHEFCC/email-address")
+          .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createEmailAddressRequest.copy(address = ""))
@@ -1009,7 +1055,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will persist the new email address against the agency`() {
         val emailDto: AgencyEmailDto = webTestClient.post()
-          .uri("/agencies/id/SHEFCC/email-address")
+          .uri("/other-agencies/id/SHFCRC/email-address")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(createEmailAddressRequest)
@@ -1020,7 +1066,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         assertThat(emailDto.id).isNotEqualTo(-1)
 
         transactionHelper.runInTransaction {
-          val persisted = agencyRepository.findByIdOrNull("SHEFCC")!!
+          val persisted = otherAgencyRepository.findByIdOrNull("SHFCRC")!!
           assertThat(persisted.emailAddresses).hasSize(2)
           val persistedEmailAddress = persisted.emailAddresses.find { it.id == emailDto.id }
           assertThat(persistedEmailAddress).isNotNull
@@ -1030,7 +1076,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-email-address-created"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
           },
           isNull(),
@@ -1041,15 +1087,15 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Update agency")
   @Nested
-  inner class UpdateAgency {
-    lateinit var agency: Agency
+  inner class UpdateOtherAgency {
+    lateinit var otherAgency: OtherAgency
 
-    val updateAgencyRequest = UpdateAgencyDto(
+    val updateAgencyRequest = UpdateOtherAgencyDto(
       agencyName = "Sheffield Transport Agency",
       description = "Sheffield City Transport Agency",
       active = true,
       accessibleAccess = AccessibleAccess.WHEELCHAIR_ACCESS,
-      agencyType = AgencyType.PECS,
+      otherAgencyType = OtherAgencyType.PECS,
       inactiveDate = null,
       cjitCode = "123456789",
       areaCode = "52",
@@ -1061,13 +1107,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = false,
         accessibleAccess = AccessibleAccess.ACCESSIBLE,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = LocalDate.parse("2020-01-02"),
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -1093,8 +1139,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -1103,7 +1149,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(updateAgencyRequest)
           .exchange()
@@ -1113,7 +1159,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(updateAgencyRequest)
@@ -1124,7 +1170,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest)
@@ -1138,7 +1184,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if not found`() {
         webTestClient.put()
-          .uri("/agencies/id/ZZZZ")
+          .uri("/other-agencies/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest)
@@ -1149,72 +1195,72 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `area code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(areaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency SHEFCC")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency SHFCRC")
       }
 
       @Test
       fun `region code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(regionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for agency SHEFCC")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for agency SHFCRC")
       }
 
       @Test
       fun `geographical area code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(geographicalAreaCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHEFCC")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHFCRC")
       }
 
       @Test
       fun `local authority code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(localAuthorityCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHEFCC")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHFCRC")
       }
 
       @Test
       fun `payroll region code is not valid`() {
         val errorResponse: ErrorResponse = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(payrollRegionCode = "ZZZ"))
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHEFCC")
+        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHFCRC")
       }
 
       @Test
       fun `agency name is blank`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(agencyName = ""))
@@ -1227,15 +1273,15 @@ class AgencyResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will update the core agency data`() {
-        val dto: AgencyDto = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+        val dto: OtherAgencyDto = webTestClient.put()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest.copy(active = false, inactiveDate = LocalDate.parse("2026-01-01")))
           .exchange()
           .expectStatus().isOk.expectBodyResponse()
 
-        assertThat(dto.agencyId).isEqualTo("SHEFCC")
+        assertThat(dto.agencyId).isEqualTo("SHFCRC")
         assertThat(dto.agencyName).isEqualTo("Sheffield Transport Agency")
         assertThat(dto.description).isEqualTo("Sheffield City Transport Agency")
         assertThat(dto.active).isFalse
@@ -1252,7 +1298,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-updated"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
           },
           isNull(),
         )
@@ -1260,8 +1306,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will not affect addresses, emails or phone numbers`() {
-        val dto: AgencyDto = webTestClient.put()
-          .uri("/agencies/id/SHEFCC")
+        val dto: OtherAgencyDto = webTestClient.put()
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAgencyRequest)
@@ -1278,7 +1324,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-updated"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
           },
           isNull(),
         )
@@ -1288,8 +1334,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Update agency address")
   @Nested
-  inner class UpdateAgencyAddress {
-    lateinit var agency: Agency
+  inner class UpdateOtherAgencyAddress {
+    lateinit var otherAgency: OtherAgency
     var addressId: Long = -1
 
     val updateAddressRequest = UpdateAddressDto(
@@ -1303,12 +1349,12 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -1324,13 +1370,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
           country = "England",
         )
       }
-      addressId = agency.addresses[0].id
+      addressId = otherAgency.addresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -1339,7 +1385,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(updateAddressRequest)
           .exchange()
@@ -1349,7 +1395,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(updateAddressRequest)
@@ -1360,7 +1406,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAddressRequest)
@@ -1374,7 +1420,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.put()
-          .uri("/agencies/id/ZZZZ/address/{addressId}", addressId)
+          .uri("/other-agencies/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAddressRequest)
@@ -1385,7 +1431,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if address not found`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", 999999)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAddressRequest)
@@ -1396,7 +1442,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if town is missing`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(mapOf("postcode" to "S1 3GG", "country" to "England"))
@@ -1407,7 +1453,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if postcode is too long`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAddressRequest.copy(postcode = "TOOLONGPOSTCODE"))
@@ -1421,7 +1467,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will update the address and preserve its id`() {
         val addressDto: AgencyAddressDto = webTestClient.put()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateAddressRequest)
@@ -1439,7 +1485,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-address-updated"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["addressId"]).isEqualTo(addressId.toString())
           },
           isNull(),
@@ -1450,20 +1496,20 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Update agency phone number")
   @Nested
-  inner class UpdateAgencyPhoneNumber {
-    lateinit var agency: Agency
+  inner class UpdateOtherAgencyPhoneNumber {
+    lateinit var otherAgency: OtherAgency
     var phoneNumberId: Long = -1
 
     val updatePhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 1234")
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -1479,13 +1525,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
           phoneNumber = "0114 555 4321",
         )
       }
-      phoneNumberId = agency.phoneNumbers.first { it.value == "0114 555 8989" }.id
+      phoneNumberId = otherAgency.phoneNumbers.first { it.value == "0114 555 8989" }.id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -1494,7 +1540,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
@@ -1504,7 +1550,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(updatePhoneNumberRequest)
@@ -1515,7 +1561,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest)
@@ -1529,7 +1575,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.put()
-          .uri("/agencies/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest)
@@ -1540,7 +1586,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if phone number not found`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", 999999)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest)
@@ -1551,7 +1597,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if phone number is in an incorrect format`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
@@ -1562,7 +1608,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if phone number is blank`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = ""))
@@ -1576,7 +1622,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will update the phone number and preserve its id`() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest)
@@ -1589,7 +1635,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-phone-number-updated"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
           },
           isNull(),
@@ -1599,7 +1645,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will allow updating a phone number to its own current value`() {
         val phoneDto: AgencyPhoneDto = webTestClient.put()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updatePhoneNumberRequest.copy(number = "0114 555 8989"))
@@ -1611,7 +1657,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-phone-number-updated"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
           },
           isNull(),
@@ -1622,20 +1668,20 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Update agency email address")
   @Nested
-  inner class UpdateAgencyEmailAddress {
-    lateinit var agency: Agency
+  inner class UpdateOtherAgencyEmailAddress {
+    lateinit var otherAgency: OtherAgency
     var emailAddressId: Long = -1
 
     val updateEmailAddressRequest = UpdateEmailAddressDto(address = "updatedagency@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -1648,13 +1694,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
           emailAddress = "sheffield-update@justice.gov.uk",
         )
       }
-      emailAddressId = agency.emailAddresses[0].id
+      emailAddressId = otherAgency.emailAddresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -1663,7 +1709,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .bodyValue(updateEmailAddressRequest)
           .exchange()
@@ -1673,7 +1719,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .bodyValue(updateEmailAddressRequest)
@@ -1684,7 +1730,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `allowed with correct role`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateEmailAddressRequest)
@@ -1698,7 +1744,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.put()
-          .uri("/agencies/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateEmailAddressRequest)
@@ -1709,7 +1755,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if email address not found`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", 999999)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateEmailAddressRequest)
@@ -1720,7 +1766,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if email address is in an incorrect format`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = "not-an-email"))
@@ -1731,7 +1777,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `400 if email address is blank`() {
         webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateEmailAddressRequest.copy(address = ""))
@@ -1745,7 +1791,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will update the email address and preserve its id`() {
         val emailDto: AgencyEmailDto = webTestClient.put()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .bodyValue(updateEmailAddressRequest)
@@ -1758,7 +1804,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-email-address-updated"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
           },
           isNull(),
@@ -1769,17 +1815,17 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Delete agency")
   @Nested
-  inner class DeleteAgency {
-    lateinit var agency: Agency
+  inner class DeleteOtherAgency {
+    lateinit var otherAgency: OtherAgency
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         cjitCode = "C00SH00",
         areaCode = "52",
         regionCode = "YOHUM",
@@ -1804,8 +1850,8 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.findByIdOrNull(agency.agencyId)?.let { agencyRepository.deleteById(agency.agencyId) }
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.findByIdOrNull(otherAgency.agencyId)?.let { otherAgencyRepository.deleteById(otherAgency.agencyId) }
       }
     }
 
@@ -1814,7 +1860,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -1823,7 +1869,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -1836,7 +1882,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/ZZZZ")
+          .uri("/other-agencies/id/ZZZZ")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -1848,19 +1894,19 @@ class AgencyResourceIntTest : IntegrationTestBase() {
     inner class HappyPath {
       @Test
       fun `will delete the agency, along with its addresses, emails and phone numbers`() {
-        val addressId = agency.addresses[0].id
-        val emailAddressId = agency.emailAddresses[0].id
-        val phoneNumberId = agency.phoneNumbers[0].id
+        val addressId = otherAgency.addresses[0].id
+        val emailAddressId = otherAgency.emailAddresses[0].id
+        val phoneNumberId = otherAgency.phoneNumbers[0].id
 
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC")
+          .uri("/other-agencies/id/SHFCRC")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
           .expectStatus().isNoContent
 
         transactionHelper.runInTransaction {
-          assertThat(agencyRepository.findByIdOrNull("SHEFCC")).isNull()
+          assertThat(otherAgencyRepository.findByIdOrNull("SHFCRC")).isNull()
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
@@ -1869,7 +1915,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
         verify(telemetryClient).trackEvent(
           eq("agency-deleted"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
           },
           isNull(),
         )
@@ -1879,18 +1925,18 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Delete agency address")
   @Nested
-  inner class DeleteAgencyAddress {
-    lateinit var agency: Agency
+  inner class DeleteOtherAgencyAddress {
+    lateinit var otherAgency: OtherAgency
     var addressId: Long = -1
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -1906,13 +1952,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
           country = "England",
         )
       }
-      addressId = agency.addresses[0].id
+      addressId = otherAgency.addresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -1921,7 +1967,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -1930,7 +1976,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -1943,7 +1989,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/ZZZZ/address/{addressId}", addressId)
+          .uri("/other-agencies/id/ZZZZ/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -1953,7 +1999,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if address not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", 999999)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -1966,7 +2012,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will delete the address`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/address/{addressId}", addressId)
+          .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -1974,13 +2020,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(agencyAddressRepository.findByIdOrNull(addressId)).isNull()
-          assertThat(agencyRepository.findByIdOrNull("SHEFCC")?.addresses).isEmpty()
+          assertThat(otherAgencyRepository.findByIdOrNull("SHFCRC")?.addresses).isEmpty()
         }
 
         verify(telemetryClient).trackEvent(
           eq("agency-address-deleted"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["addressId"]).isEqualTo(addressId.toString())
           },
           isNull(),
@@ -1991,18 +2037,18 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Delete agency phone number")
   @Nested
-  inner class DeleteAgencyPhoneNumber {
-    lateinit var agency: Agency
+  inner class DeleteOtherAgencyPhoneNumber {
+    lateinit var otherAgency: OtherAgency
     var phoneNumberId: Long = -1
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -2015,13 +2061,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
           phoneNumber = "0114 555 8989",
         )
       }
-      phoneNumberId = agency.phoneNumbers[0].id
+      phoneNumberId = otherAgency.phoneNumbers[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -2030,7 +2076,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -2039,7 +2085,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -2052,7 +2098,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/ZZZZ/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -2062,7 +2108,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if phone number not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", 999999)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -2075,7 +2121,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will delete the phone number`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -2083,13 +2129,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(phoneNumberRepository.findByIdOrNull(phoneNumberId)).isNull()
-          assertThat(agencyRepository.findByIdOrNull("SHEFCC")?.phoneNumbers).isEmpty()
+          assertThat(otherAgencyRepository.findByIdOrNull("SHFCRC")?.phoneNumbers).isEmpty()
         }
 
         verify(telemetryClient).trackEvent(
           eq("agency-phone-number-deleted"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["phoneNumberId"]).isEqualTo(phoneNumberId.toString())
           },
           isNull(),
@@ -2100,18 +2146,18 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
   @DisplayName("Delete agency email address")
   @Nested
-  inner class DeleteAgencyEmailAddress {
-    lateinit var agency: Agency
+  inner class DeleteOtherAgencyEmailAddress {
+    lateinit var otherAgency: OtherAgency
     var emailAddressId: Long = -1
 
     @BeforeEach
     fun setUp() {
-      agency = dsl.agency(
-        agencyId = "SHEFCC",
-        name = "Sheffield Crown Court",
-        description = "Sheffield Crown Court City Centre",
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield CRC City Centre",
         active = true,
-        agencyType = AgencyType.PROBATION_CRC,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
         inactiveDate = null,
         cjitCode = "C00SH00",
         areaCode = "52",
@@ -2124,13 +2170,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
           emailAddress = "sheffield-delete-email@justice.gov.uk",
         )
       }
-      emailAddressId = agency.emailAddresses[0].id
+      emailAddressId = otherAgency.emailAddresses[0].id
     }
 
     @AfterEach
     fun tearDown() {
-      if (::agency.isInitialized) {
-        agencyRepository.deleteById(agency.agencyId)
+      if (::otherAgency.isInitialized) {
+        otherAgencyRepository.deleteById(otherAgency.agencyId)
       }
     }
 
@@ -2139,7 +2185,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires a valid authentication token`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .exchange()
           .expectStatus().isUnauthorized
@@ -2148,7 +2194,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `requires correct role`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("BANANAS")))
           .exchange()
@@ -2161,7 +2207,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if agency not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/ZZZZ/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -2171,7 +2217,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `404 if email address not found`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", 999999)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", 999999)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -2184,7 +2230,7 @@ class AgencyResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will delete the email address`() {
         webTestClient.delete()
-          .uri("/agencies/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+          .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
           .exchange()
@@ -2192,13 +2238,13 @@ class AgencyResourceIntTest : IntegrationTestBase() {
 
         transactionHelper.runInTransaction {
           assertThat(emailAddressRepository.findByIdOrNull(emailAddressId)).isNull()
-          assertThat(agencyRepository.findByIdOrNull("SHEFCC")?.emailAddresses).isEmpty()
+          assertThat(otherAgencyRepository.findByIdOrNull("SHFCRC")?.emailAddresses).isEmpty()
         }
 
         verify(telemetryClient).trackEvent(
           eq("agency-email-address-deleted"),
           check {
-            assertThat(it["agencyId"]).isEqualTo("SHEFCC")
+            assertThat(it["agencyId"]).isEqualTo("SHFCRC")
             assertThat(it["emailAddressId"]).isEqualTo(emailAddressId.toString())
           },
           isNull(),

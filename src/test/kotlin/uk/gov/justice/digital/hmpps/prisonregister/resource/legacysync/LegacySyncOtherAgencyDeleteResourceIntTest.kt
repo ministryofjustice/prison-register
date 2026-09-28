@@ -10,18 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 
-class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
+class LegacySyncOtherAgencyDeleteResourceIntTest : IntegrationTestBase() {
   @Autowired
-  lateinit var agencyRepository: AgencyRepository
+  lateinit var otherAgencyRepository: OtherAgencyRepository
 
   @Autowired
   lateinit var courtRepository: CourtRepository
@@ -51,7 +51,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
     probationOfficeRepository.deleteAll()
     approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
-    agencyRepository.deleteAll()
+    otherAgencyRepository.deleteAll()
   }
 
   @Nested
@@ -153,7 +153,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
         assertThat(probationOfficeRepository.existsById("DELPBO")).isTrue
         assertThat(approvedPremisesRepository.existsById("DELAPR")).isTrue
         assertThat(policeCustodySuiteRepository.existsById("DELPCS")).isTrue
-        assertThat(agencyRepository.existsById("DELAGY")).isTrue
+        assertThat(otherAgencyRepository.existsById("DELAGY")).isTrue
         assertThat(prisonRepository.existsById("DELPRI")).isTrue
 
         webTestClient.delete()
@@ -168,7 +168,7 @@ class LegacySyncAgencyDeleteResourceIntTest : IntegrationTestBase() {
         assertThat(probationOfficeRepository.existsById("DELPBO")).isFalse
         assertThat(approvedPremisesRepository.existsById("DELAPR")).isFalse
         assertThat(policeCustodySuiteRepository.existsById("DELPCS")).isFalse
-        assertThat(agencyRepository.existsById("DELAGY")).isFalse
+        assertThat(otherAgencyRepository.existsById("DELAGY")).isFalse
         assertThat(prisonRepository.existsById("DELPRI")).isTrue
       }
     }

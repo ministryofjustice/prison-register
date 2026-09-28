@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import jakarta.persistence.Transient
 import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +19,8 @@ import org.springframework.data.domain.Persistable
 import java.time.LocalDate
 
 @Entity
-data class Agency(
+@Table(name = "AGENCY")
+data class OtherAgency(
   @Id
   @Column(unique = true)
   val agencyId: String,
@@ -28,7 +30,8 @@ data class Agency(
   @Enumerated(EnumType.STRING)
   var accessibleAccess: AccessibleAccess?,
   @Enumerated(EnumType.STRING)
-  var agencyType: AgencyType,
+  @Column(name = "agency_type")
+  var otherAgencyType: OtherAgencyType,
   var inactiveDate: LocalDate?,
   var cjitCode: String?,
 
@@ -81,7 +84,7 @@ data class Agency(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-    other as Agency
+    other as OtherAgency
 
     return agencyId == other.agencyId
   }
@@ -93,7 +96,7 @@ data class Agency(
   override fun isNew(): Boolean = new
 }
 
-enum class AgencyType {
+enum class OtherAgencyType {
   AIRPORT,
   PROBATION_CRC,
   FOREIGN_NATIONAL_PRISON,

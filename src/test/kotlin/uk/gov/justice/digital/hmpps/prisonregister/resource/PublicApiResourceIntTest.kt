@@ -12,13 +12,13 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgency
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -47,7 +47,7 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
   lateinit var prisonRepository: PrisonRepository
 
   @Autowired
-  lateinit var agencyRepository: AgencyRepository
+  lateinit var otherAgencyRepository: OtherAgencyRepository
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
@@ -60,7 +60,7 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
     lateinit var policeCustodySuite: PoliceCustodySuite
     lateinit var probationOffice: ProbationOffice
     lateinit var prison: Prison
-    lateinit var agency: Agency
+    lateinit var otherAgency: OtherAgency
 
     @BeforeEach
     fun setUp() {
@@ -100,14 +100,14 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
         active = true,
       ) {}
 
-      agency = agencyRepository.save(
-        Agency(
+      otherAgency = otherAgencyRepository.save(
+        OtherAgency(
           agencyId = "EAGEN",
           name = "Example Agency",
           description = "Example Agency Description",
           active = true,
           accessibleAccess = null,
-          agencyType = AgencyType.AIRPORT,
+          otherAgencyType = OtherAgencyType.AIRPORT,
           inactiveDate = null,
           cjitCode = null,
           area = null,
@@ -126,7 +126,7 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
       policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
       probationOfficeRepository.deleteById(probationOffice.probationOfficeId)
       prisonRepository.deleteById(prison.prisonId)
-      agencyRepository.deleteById(agency.agencyId)
+      otherAgencyRepository.deleteById(otherAgency.agencyId)
     }
 
     @Nested
