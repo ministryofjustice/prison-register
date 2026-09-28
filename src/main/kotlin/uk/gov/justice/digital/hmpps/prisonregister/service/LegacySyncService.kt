@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 
 @Service
 @Transactional
-class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val agencyService: AgencyService) {
+class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val otherAgencyService: OtherAgencyService) {
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = false)
@@ -25,7 +25,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.createOrUpdateProbationOfficeFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.APPROVED_PREMISES -> approvedPremisesService.createOrUpdateApprovedPremisesFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.createOrUpdatePoliceCustodySuiteFromLegacyData(agencyId, agencyDto)
-    else -> agencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
+    else -> otherAgencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
   }
 
   fun deleteAll() {
@@ -34,7 +34,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     probationOfficeService.deleteAll()
     approvedPremisesService.deleteAll()
     policeCustodySuiteService.deleteAll()
-    agencyService.deleteAll()
+    otherAgencyService.deleteAll()
   }
 
   fun getAllIds(): AgencyIdsResponse {
@@ -44,7 +44,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
         probationOfficeService.getAllIds() +
         approvedPremisesService.getAllIds() +
         policeCustodySuiteService.getAllIds() +
-        agencyService.getAllIds()
+        otherAgencyService.getAllIds()
       )
       .sorted()
       .map { AgencyId(it) }
@@ -57,7 +57,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     ?: probationOfficeService.tryFindById(agencyId)
     ?: approvedPremisesService.tryFindById(agencyId)
     ?: policeCustodySuiteService.tryFindById(agencyId)
-    ?: agencyService.tryFindById(agencyId)
+    ?: otherAgencyService.tryFindById(agencyId)
     ?: throw EntityNotFoundException("Agency $agencyId not found")
 }
 

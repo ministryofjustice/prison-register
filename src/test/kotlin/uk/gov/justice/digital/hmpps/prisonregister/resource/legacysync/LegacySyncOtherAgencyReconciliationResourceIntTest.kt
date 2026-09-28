@@ -12,11 +12,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyIdsResponse
@@ -24,10 +24,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAcce
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 
-class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
+class LegacySyncOtherAgencyReconciliationResourceIntTest : IntegrationTestBase() {
 
   @Autowired
-  lateinit var agencyRepository: AgencyRepository
+  lateinit var otherAgencyRepository: OtherAgencyRepository
 
   @Autowired
   lateinit var courtRepository: CourtRepository
@@ -54,12 +54,12 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
     probationOfficeRepository.deleteAll()
     approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
-    agencyRepository.deleteAll()
+    otherAgencyRepository.deleteAll()
   }
 
   @Nested
   @DisplayName("GET /legacy/reconciliation/ids/all")
-  inner class GetAllAgencyIds {
+  inner class GetAllOtherAgencyIds {
 
     @Nested
     inner class Security {
@@ -126,7 +126,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
         probationOfficeRepository.deleteAll()
         approvedPremisesRepository.deleteAll()
         policeCustodySuiteRepository.deleteAll()
-        agencyRepository.deleteAll()
+        otherAgencyRepository.deleteAll()
 
         val response: AgencyIdsResponse = webTestClient.get()
           .uri("/legacy/reconciliation/ids/all")
@@ -143,7 +143,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
 
   @Nested
   @DisplayName("GET /legacy/reconciliation/{agencyId}")
-  inner class GetAgencyDetails {
+  inner class GetOtherAgencyDetails {
 
     @Nested
     inner class Security {
@@ -426,7 +426,7 @@ class LegacySyncAgencyReconciliationResourceIntTest : IntegrationTestBase() {
           agencyId = "SFCRC",
           name = "Sheffield CRC",
           description = "Sheffield Community Rehabilitation Company",
-          agencyType = AgencyType.PROBATION_CRC,
+          otherAgencyType = OtherAgencyType.PROBATION_CRC,
           cjitCode = "123456789",
           areaCode = "52",
           regionCode = "YOHUM",

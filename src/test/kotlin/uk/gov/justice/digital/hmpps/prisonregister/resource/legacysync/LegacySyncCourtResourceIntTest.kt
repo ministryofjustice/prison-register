@@ -48,7 +48,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
 
   @Nested
   @DisplayName("POST /legacy/sync/agency/id/{agencyId}")
-  inner class CreateOrUpdateAgency {
+  inner class CreateOrUpdateOtherAgency {
 
     @Nested
     inner class WhenCourt {

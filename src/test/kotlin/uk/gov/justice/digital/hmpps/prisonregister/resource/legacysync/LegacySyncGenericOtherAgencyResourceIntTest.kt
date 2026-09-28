@@ -18,9 +18,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
-import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgency
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
@@ -30,9 +30,9 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
-class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
+class LegacySyncGenericOtherAgencyResourceIntTest : IntegrationTestBase() {
   @Autowired
-  lateinit var agencyRepository: AgencyRepository
+  lateinit var otherAgencyRepository: OtherAgencyRepository
 
   @Autowired
   lateinit var transactionHelper: TransactionHelper
@@ -81,12 +81,12 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
 
   @AfterEach
   fun tearDown() {
-    agencyRepository.deleteAll()
+    otherAgencyRepository.deleteAll()
   }
 
   @Nested
   @DisplayName("POST /legacy/sync/agency/id/{agencyId}")
-  inner class CreateOrUpdateAgency {
+  inner class CreateOrUpdateOtherAgency {
     @Nested
     inner class Security {
       @Test
@@ -123,7 +123,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
     }
 
     @Nested
-    inner class WhenGenericAgency {
+    inner class WhenGenericOtherAgency {
       // Uses PROBATION_CRC as a representative unhandled LegacyAgencyType that maps to AgencyType
       val agencyRequest = LegacyAgencyDto(
         agencyType = LegacyAgencyType.PROBATION_CRC,
@@ -273,13 +273,13 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
             assertThat(response.updated).isFalse
 
             transactionHelper.runInTransaction {
-              val agency = agencyRepository.findByIdOrNull("SFCRC")!!
+              val agency = otherAgencyRepository.findByIdOrNull("SFCRC")!!
 
               with(agency) {
                 assertThat(name).isEqualTo("Sheffield CRC")
                 assertThat(description).isEqualTo("Sheffield Community Rehabilitation Company")
                 assertThat(active).isTrue
-                assertThat(agencyType).isEqualTo(AgencyType.PROBATION_CRC)
+                assertThat(otherAgencyType).isEqualTo(OtherAgencyType.PROBATION_CRC)
                 assertThat(inactiveDate).isNull()
                 assertThat(cjitCode).isEqualTo("123456789")
                 assertThat(area?.description).isEqualTo("South Yorkshire")
@@ -295,7 +295,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           }
 
           @ParameterizedTest
-          @MethodSource("uk.gov.justice.digital.hmpps.prisonregister.resource.legacysync.LegacySyncGenericAgencyResourceIntTest#legacyAgencyTypes")
+          @MethodSource("uk.gov.justice.digital.hmpps.prisonregister.resource.legacysync.LegacySyncGenericOtherAgencyResourceIntTest#legacyAgencyTypes")
           fun `can create all legacy agency types`(agencyType: LegacyAgencyType) {
             val response: LegacyAgencyResponse = webTestClient.post()
               .uri("/legacy/sync/agency/id/{agencyId}", "AGY123")
@@ -307,9 +307,9 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
 
             assertThat(response.updated).isFalse
 
-            val agency = agencyRepository.findByIdOrNull("AGY123")
+            val agency = otherAgencyRepository.findByIdOrNull("AGY123")
             assertThat(agency).isNotNull
-            assertThat(agency!!.agencyType.name).isEqualTo(agencyType.name)
+            assertThat(agency!!.otherAgencyType.name).isEqualTo(agencyType.name)
           }
 
           @Test
@@ -338,7 +338,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(agencyRepository.findByIdOrNull("SFCRC")!!) {
+              with(otherAgencyRepository.findByIdOrNull("SFCRC")!!) {
                 assertThat(addresses).hasSize(1)
                 with(addresses[0]) {
                   assertThat(addressLine1).isEqualTo("1 Charter Row")
@@ -369,7 +369,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(agencyRepository.findByIdOrNull("SFCRC")!!) {
+              with(otherAgencyRepository.findByIdOrNull("SFCRC")!!) {
                 assertThat(emailAddresses).hasSize(1)
                 assertThat(emailAddresses[0].value).isEqualTo("sheffield.crc@justice.gov.uk")
               }
@@ -396,7 +396,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(agencyRepository.findByIdOrNull("SFCRC")!!) {
+              with(otherAgencyRepository.findByIdOrNull("SFCRC")!!) {
                 assertThat(phoneNumbers).hasSize(2)
                 assertThat(phoneNumbers[0].value).isEqualTo("0114 555 1234")
                 assertThat(phoneNumbers[1].value).isEqualTo("0114 555 5678")
@@ -437,16 +437,16 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1234")),
         )
 
-        lateinit var agency: Agency
+        lateinit var otherAgency: OtherAgency
 
         @BeforeEach
         fun setUp() {
-          agency = dsl.agency(
+          otherAgency = dsl.agency(
             agencyId = "SFCRC",
             name = "Sheffield CRC",
             description = "Sheffield Community Rehabilitation Company",
             active = true,
-            agencyType = AgencyType.PROBATION_CRC,
+            otherAgencyType = OtherAgencyType.PROBATION_CRC,
             inactiveDate = null,
             cjitCode = "123456789",
             areaCode = "52",
@@ -564,13 +564,13 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
             assertThat(response.updated).isTrue
 
             transactionHelper.runInTransaction {
-              val updated = agencyRepository.findByIdOrNull("SFCRC")!!
+              val updated = otherAgencyRepository.findByIdOrNull("SFCRC")!!
 
               with(updated) {
                 assertThat(name).isEqualTo("Sheffield CRC")
                 assertThat(description).isEqualTo("Sheffield Community Rehabilitation Company")
                 assertThat(active).isFalse
-                assertThat(agencyType).isEqualTo(AgencyType.PROBATION_CRC)
+                assertThat(otherAgencyType).isEqualTo(OtherAgencyType.PROBATION_CRC)
                 assertThat(inactiveDate).isEqualTo(LocalDate.parse("2026-01-01"))
                 assertThat(cjitCode).isEqualTo("123456789")
                 assertThat(area?.description).isEqualTo("South Yorkshire")
@@ -608,7 +608,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(agencyRepository.findByIdOrNull("SFCRC")!!) {
+              with(otherAgencyRepository.findByIdOrNull("SFCRC")!!) {
                 assertThat(addresses).hasSize(1)
                 with(addresses[0]) {
                   assertThat(addressLine1).isEqualTo("1 Charter Row")
@@ -621,7 +621,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           @Test
           fun `will remove existing address`() {
             transactionHelper.runInTransaction {
-              assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.addresses).hasSize(1)
+              assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.addresses).hasSize(1)
             }
 
             webTestClient.post()
@@ -639,7 +639,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.addresses).isEmpty()
+              assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.addresses).isEmpty()
             }
           }
 
@@ -660,7 +660,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(agencyRepository.findByIdOrNull("SFCRC")!!) {
+              with(otherAgencyRepository.findByIdOrNull("SFCRC")!!) {
                 assertThat(emailAddresses).hasSize(1)
                 assertThat(emailAddresses[0].value).isEqualTo("new.sheffield.crc@justice.gov.uk")
               }
@@ -670,7 +670,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           @Test
           fun `will remove email addresses`() {
             transactionHelper.runInTransaction {
-              assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.emailAddresses).hasSize(1)
+              assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.emailAddresses).hasSize(1)
             }
 
             webTestClient.post()
@@ -688,7 +688,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.emailAddresses).isEmpty()
+              assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.emailAddresses).isEmpty()
             }
           }
 
@@ -709,7 +709,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(agencyRepository.findByIdOrNull("SFCRC")!!) {
+              with(otherAgencyRepository.findByIdOrNull("SFCRC")!!) {
                 assertThat(phoneNumbers).hasSize(1)
                 assertThat(phoneNumbers[0].value).isEqualTo("0114 555 9999")
               }
@@ -719,7 +719,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           @Test
           fun `will remove phone numbers`() {
             transactionHelper.runInTransaction {
-              assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.phoneNumbers).hasSize(1)
+              assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.phoneNumbers).hasSize(1)
             }
 
             webTestClient.post()
@@ -737,7 +737,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.phoneNumbers).isEmpty()
+              assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.phoneNumbers).isEmpty()
             }
           }
         }
@@ -747,7 +747,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
 
   @Nested
   @DisplayName("POST /legacy/migrate/agency/id/{agencyId}")
-  inner class MigrateAgency {
+  inner class MigrateOtherAgency {
     @Nested
     inner class Security {
       @Test
@@ -784,7 +784,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
     }
 
     @Nested
-    inner class WhenGenericAgency {
+    inner class WhenGenericOtherAgency {
 
       @Nested
       inner class Created {
@@ -830,7 +830,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           verify(telemetry).trackEvent("legacy-migration-agency-created", mapOf("agencyId" to "S1"), null)
 
           transactionHelper.runInTransaction {
-            assertThat(agencyRepository.findByIdOrNull("S1")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
+            assertThat(otherAgencyRepository.findByIdOrNull("S1")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
           }
         }
       }
@@ -873,7 +873,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
             name = "Sheffield CRC",
             description = "Sheffield Community Rehabilitation Company",
             active = true,
-            agencyType = AgencyType.PROBATION_CRC,
+            otherAgencyType = OtherAgencyType.PROBATION_CRC,
             inactiveDate = null,
             cjitCode = "123456789",
             areaCode = "52",
@@ -908,7 +908,7 @@ class LegacySyncGenericAgencyResourceIntTest : IntegrationTestBase() {
           verify(telemetry).trackEvent("legacy-migration-agency-updated", mapOf("agencyId" to "SFCRC"), null)
 
           transactionHelper.runInTransaction {
-            assertThat(agencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
+            assertThat(otherAgencyRepository.findByIdOrNull("SFCRC")!!.localAuthority?.description).isEqualTo("Sheffield City Council")
           }
         }
       }

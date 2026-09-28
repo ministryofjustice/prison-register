@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
@@ -17,7 +17,7 @@ class PublicApiService(
   private val policeCustodySuiteRepository: PoliceCustodySuiteRepository,
   private val probationOfficeRepository: ProbationOfficeRepository,
   private val prisonRepository: PrisonRepository,
-  private val agencyRepository: AgencyRepository,
+  private val otherAgencyRepository: OtherAgencyRepository,
 ) {
   fun getAll(): List<AgencySummaryDto> {
     val courts = courtRepository.findAll().map {
@@ -41,8 +41,8 @@ class PublicApiService(
       AgencySummaryDto(agencyId = it.prisonId, description = it.description, agencyType = LegacyAgencyType.PRISON, active = it.active)
     }
 
-    val agencies = agencyRepository.findAll().map {
-      AgencySummaryDto(agencyId = it.agencyId, description = it.description, agencyType = LegacyAgencyType.valueOf(it.agencyType.name), active = it.active)
+    val agencies = otherAgencyRepository.findAll().map {
+      AgencySummaryDto(agencyId = it.agencyId, description = it.description, agencyType = LegacyAgencyType.valueOf(it.otherAgencyType.name), active = it.active)
     }
 
     return (courts + hospitals + policeCustodySuites + probationOffices + prisons + agencies)

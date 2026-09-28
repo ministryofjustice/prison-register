@@ -3,10 +3,10 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
-import uk.gov.justice.digital.hmpps.prisonregister.model.Agency
-import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgency
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
@@ -33,7 +33,7 @@ class Root(
     description: String = name,
     active: Boolean = true,
     accessibleAccess: AccessibleAccess = AccessibleAccess.NONE,
-    agencyType: AgencyType = AgencyType.PROBATION_CRC,
+    otherAgencyType: OtherAgencyType = OtherAgencyType.PROBATION_CRC,
     inactiveDate: LocalDate? = null,
     cjitCode: String? = null,
     areaCode: String? = null,
@@ -42,13 +42,13 @@ class Root(
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
     dsl: AgencyBuilder.() -> Unit,
-  ): Agency = agencyBuilder.build(
+  ): OtherAgency = agencyBuilder.build(
     agencyId = agencyId,
     name = name,
     description = description,
     active = active,
     accessibleAccess = accessibleAccess,
-    agencyType = agencyType,
+    otherAgencyType = otherAgencyType,
     inactiveDate = inactiveDate,
     cjitCode = cjitCode,
     areaCode = areaCode,
