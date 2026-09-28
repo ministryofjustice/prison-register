@@ -616,7 +616,7 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return 404 when agency does not exist`() {
         webTestClient.get()
-          .uri("/api/agencies/UNKNOWN")
+          .uri("/api/agencies/NONE")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
           .exchange()
