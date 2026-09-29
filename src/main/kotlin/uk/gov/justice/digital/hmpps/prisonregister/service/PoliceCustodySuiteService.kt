@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
+import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CreatePoliceCustodySuiteDto
@@ -41,7 +41,6 @@ class PoliceCustodySuiteService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
-  private val emailAddressRepository: EmailAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
@@ -50,7 +49,7 @@ class PoliceCustodySuiteService(
 
   fun getAllIds(): List<String> = policeCustodySuiteRepository.findAll().map { it.policeCustodySuiteId }
 
-  fun getAll(): List<PoliceCustodySuiteDto> = policeCustodySuiteRepository.findAll().map { it.toPoliceCustodySuiteDto() }
+  fun getAll(active: Boolean?, textSearch: String?): List<PoliceCustodySuiteDto> = policeCustodySuiteRepository.findAll(PoliceCustodySuiteFilter(active, textSearch)).map { it.toPoliceCustodySuiteDto() }
 
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.toPoliceCustodySuiteDto()
     ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")

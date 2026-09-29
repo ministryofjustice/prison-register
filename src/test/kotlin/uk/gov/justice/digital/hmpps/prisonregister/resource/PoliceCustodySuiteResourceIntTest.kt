@@ -320,6 +320,36 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
         val policeCustodySuite3Dto = policeCustodySuites.first { it.policeCustodySuiteId == "BIRMPC" }
         assertThat(policeCustodySuite3Dto.policeCustodySuiteName).isEqualTo("Birmingham Police Custody Suite")
       }
+
+      @Test
+      fun `will filter by active flag`() {
+        val policeCustodySuites = webTestClient.get()
+          .uri("/police-custody-suites?active=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(PoliceCustodySuiteDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(policeCustodySuites).extracting("policeCustodySuiteId").containsExactly("SHFPCS")
+      }
+
+      @Test
+      fun `will filter by text search`() {
+        val policeCustodySuites = webTestClient.get()
+          .uri("/police-custody-suites?textSearch=Leeds")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(PoliceCustodySuiteDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(policeCustodySuites).extracting("policeCustodySuiteId").containsExactly("LEEDPC")
+      }
     }
   }
 
