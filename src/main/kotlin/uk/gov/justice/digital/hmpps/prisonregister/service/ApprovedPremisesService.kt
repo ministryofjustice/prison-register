@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
@@ -43,7 +43,6 @@ class ApprovedPremisesService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
-  private val emailAddressRepository: EmailAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
@@ -52,7 +51,7 @@ class ApprovedPremisesService(
 
   fun getAllIds(): List<String> = approvedPremisesRepository.findAll().map { it.approvedPremisesId }
 
-  fun getAll(): List<ApprovedPremisesDto> = approvedPremisesRepository.findAll().map { it.toApprovedPremisesDto() }
+  fun getAll(active: Boolean?, textSearch: String?): List<ApprovedPremisesDto> = approvedPremisesRepository.findAll(ApprovedPremisesFilter(active, textSearch)).map { it.toApprovedPremisesDto() }
 
   fun findById(approvedPremisesId: String): ApprovedPremisesDto = approvedPremisesRepository.findByIdOrNull(approvedPremisesId)?.toApprovedPremisesDto()
     ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
