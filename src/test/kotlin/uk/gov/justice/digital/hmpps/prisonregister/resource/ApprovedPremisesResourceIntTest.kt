@@ -325,6 +325,36 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
         val approvedPremises3Dto = approvedPremises.first { it.approvedPremisesId == "BIRMAP" }
         assertThat(approvedPremises3Dto.approvedPremisesName).isEqualTo("Birmingham Approved Premises")
       }
+
+      @Test
+      fun `will filter by active flag`() {
+        val approvedPremises = webTestClient.get()
+          .uri("/approved-premises?active=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(ApprovedPremisesDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(approvedPremises).extracting("approvedPremisesId").containsExactly("SHEFAP")
+      }
+
+      @Test
+      fun `will filter by text search`() {
+        val approvedPremises = webTestClient.get()
+          .uri("/approved-premises?textSearch=Leeds")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(ApprovedPremisesDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(approvedPremises).extracting("approvedPremisesId").containsExactly("LEEDAP")
+      }
     }
   }
 
