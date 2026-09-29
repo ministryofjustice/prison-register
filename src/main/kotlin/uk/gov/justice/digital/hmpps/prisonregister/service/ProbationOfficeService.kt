@@ -10,11 +10,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
+import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SubareaRepository
@@ -45,7 +45,6 @@ class ProbationOfficeService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
-  private val emailAddressRepository: EmailAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
@@ -54,7 +53,7 @@ class ProbationOfficeService(
 
   fun getAllIds(): List<String> = probationOfficeRepository.findAll().map { it.probationOfficeId }
 
-  fun getAll(): List<ProbationOfficeDto> = probationOfficeRepository.findAll().map { it.toProbationOfficeDto() }
+  fun getAll(active: Boolean?, textSearch: String?): List<ProbationOfficeDto> = probationOfficeRepository.findAll(ProbationOfficeFilter(active, textSearch)).map { it.toProbationOfficeDto() }
 
   fun findById(probationOfficeId: String): ProbationOfficeDto = probationOfficeRepository.findByIdOrNull(probationOfficeId)?.toProbationOfficeDto()
     ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
