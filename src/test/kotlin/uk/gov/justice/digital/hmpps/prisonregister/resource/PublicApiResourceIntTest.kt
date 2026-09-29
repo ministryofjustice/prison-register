@@ -788,4 +788,182 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
       }
     }
   }
+
+  @DisplayName("Get agencies by legacy type")
+  @Nested
+  inner class GetByLegacyType {
+    lateinit var activeCourt: Court
+    lateinit var inactiveCourt: Court
+    lateinit var activeOtherAgency: OtherAgency
+    lateinit var inactiveOtherAgency: OtherAgency
+    lateinit var prison: Prison
+
+    @BeforeEach
+    fun setUp() {
+      activeCourt = dsl.court(
+        courtId = "ACOURT",
+        name = "Active Court",
+        description = "Active Court Description",
+        active = true,
+      ) {}
+
+      inactiveCourt = dsl.court(
+        courtId = "ICOURT",
+        name = "Inactive Court",
+        description = "Inactive Court Description",
+        active = false,
+      ) {}
+
+      activeOtherAgency = otherAgencyRepository.save(
+        OtherAgency(
+          agencyId = "AAGEN",
+          name = "Active Airport",
+          description = "Active Airport Description",
+          active = true,
+          accessibleAccess = null,
+          otherAgencyType = OtherAgencyType.AIRPORT,
+          inactiveDate = null,
+          cjitCode = null,
+          area = null,
+          region = null,
+          geographicalArea = null,
+          payrollRegion = null,
+          localAuthority = null,
+        ),
+      )
+
+      inactiveOtherAgency = otherAgencyRepository.save(
+        OtherAgency(
+          agencyId = "IAGEN",
+          name = "Inactive Airport",
+          description = "Inactive Airport Description",
+          active = false,
+          accessibleAccess = null,
+          otherAgencyType = OtherAgencyType.AIRPORT,
+          inactiveDate = null,
+          cjitCode = null,
+          area = null,
+          region = null,
+          geographicalArea = null,
+          payrollRegion = null,
+          localAuthority = null,
+        ),
+      )
+
+      prison = dsl.prison(
+        prisonId = "LPRIS",
+        name = "Legacy Prison",
+        description = "Legacy Prison Description",
+        active = true,
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      courtRepository.deleteById(activeCourt.courtId)
+      courtRepository.deleteById(inactiveCourt.courtId)
+      otherAgencyRepository.deleteById(activeOtherAgency.agencyId)
+      otherAgencyRepository.deleteById(inactiveOtherAgency.agencyId)
+      prisonRepository.deleteById(prison.prisonId)
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/api/agencies/legacy-type/CRT")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/api/agencies/legacy-type/CRT")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/api/agencies/legacy-type/CRT")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+      private fun getAgenciesByLegacyType(type: String, activeOnly: Boolean? = null) = webTestClient.get()
+        .uri { builder ->
+          builder.path("/api/agencies/legacy-type/$type")
+            .apply { activeOnly?.let { queryParam("activeOnly", it) } }
+            .build()
+        }
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyList(AgencyDetailsDto::class.java)
+        .returnResult()
+        .responseBody!!
+
+      @Test
+      fun `CRT maps to courts and only returns active ones by default`() {
+        val dtos = getAgenciesByLegacyType("CRT")
+
+        assertThat(dtos).extracting("agencyId").contains("ACOURT").doesNotContain("ICOURT")
+        val dto = dtos.first { it.agencyId == "ACOURT" }
+        assertThat(dto.agencyType).isEqualTo(LegacyAgencyType.COURT)
+      }
+
+      @Test
+      fun `CRT with activeOnly false returns all courts`() {
+        val dtos = getAgenciesByLegacyType("CRT", activeOnly = false)
+
+        assertThat(dtos).extracting("agencyId").contains("ACOURT", "ICOURT")
+      }
+
+      @Test
+      fun `AIRPORT maps to other agencies of type AIRPORT`() {
+        val dtos = getAgenciesByLegacyType("AIRPORT")
+
+        assertThat(dtos).extracting("agencyId").contains("AAGEN").doesNotContain("IAGEN")
+        val dto = dtos.first { it.agencyId == "AAGEN" }
+        assertThat(dto.agencyType).isEqualTo(LegacyAgencyType.AIRPORT)
+      }
+
+      @Test
+      fun `INST maps to prisons`() {
+        val dtos = getAgenciesByLegacyType("INST")
+
+        assertThat(dtos).extracting("agencyId").contains("LPRIS")
+        val dto = dtos.first { it.agencyId == "LPRIS" }
+        assertThat(dto.agencyType).isEqualTo(LegacyAgencyType.PRISON)
+      }
+
+      @Test
+      fun `POLSTN and POLICE both map to police custody suite`() {
+        assertThat(getAgenciesByLegacyType("POLICE")).isEmpty()
+        assertThat(getAgenciesByLegacyType("POLSTN")).isEmpty()
+      }
+
+      @Test
+      fun `will return 400 for an unrecognised legacy type`() {
+        webTestClient.get()
+          .uri("/api/agencies/legacy-type/NOT_A_LEGACY_TYPE")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isBadRequest
+      }
+    }
+  }
 }
