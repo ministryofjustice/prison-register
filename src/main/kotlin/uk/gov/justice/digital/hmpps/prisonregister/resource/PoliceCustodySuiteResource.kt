@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
@@ -82,7 +84,10 @@ class PoliceCustodySuiteResource(
       ),
     ],
   )
-  fun getPoliceCustodySuites(): List<PoliceCustodySuiteDto> = policeCustodySuiteService.getAll()
+  fun getPoliceCustodySuites(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+  ): List<PoliceCustodySuiteDto> = policeCustodySuiteService.getAll(active, textSearch)
 
   @Operation(
     summary = "Create a new police custody suite",
