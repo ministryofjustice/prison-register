@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
+import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
@@ -44,7 +45,7 @@ class HospitalService(
 
   fun getAllIds(): List<String> = hospitalRepository.findAll().map { it.hospitalId }
 
-  fun getAll(): List<HospitalDto> = hospitalRepository.findAll().map { it.toHospitalDto() }
+  fun getAll(active: Boolean?, textSearch: String?, highSecurity: Boolean?): List<HospitalDto> = hospitalRepository.findAll(HospitalFilter(active, textSearch, highSecurity)).map { it.toHospitalDto() }
 
   fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.toHospitalDto() ?: throw EntityNotFoundException("Hospital $hospitalId not found")
 
