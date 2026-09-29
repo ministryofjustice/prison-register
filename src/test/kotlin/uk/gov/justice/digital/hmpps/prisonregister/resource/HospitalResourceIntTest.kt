@@ -225,6 +225,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
       hospital2 = dsl.hospital(
         hospitalId = "LEEDHO",
         name = "Leeds Hospital",
+        highSecurity = false,
       ) {}
 
       hospital3 = dsl.hospital(
@@ -298,6 +299,51 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
         val hospital3Dto = hospitals.first { it.hospitalId == "BIRMHO" }
         assertThat(hospital3Dto.hospitalName).isEqualTo("Birmingham Hospital")
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        val hospitals = webTestClient.get()
+          .uri("/hospitals?active=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(HospitalDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(hospitals).extracting("hospitalId").containsExactly("SHFHOS")
+      }
+
+      @Test
+      fun `will filter by text search`() {
+        val hospitals = webTestClient.get()
+          .uri("/hospitals?textSearch=Leeds")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(HospitalDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(hospitals).extracting("hospitalId").containsExactly("LEEDHO")
+      }
+
+      @Test
+      fun `will filter by high security flag`() {
+        val hospitals = webTestClient.get()
+          .uri("/hospitals?highSecurity=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(HospitalDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(hospitals).extracting("hospitalId").containsExactly("LEEDHO")
       }
     }
   }
