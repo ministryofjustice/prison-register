@@ -6,15 +6,23 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Area
+import uk.gov.justice.digital.hmpps.prisonregister.model.Court
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.Hospital
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgency
 import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuite
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOffice
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Region
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyDetailsDto
@@ -67,122 +75,151 @@ class PublicApiService(
   }
 
   fun getAgency(agencyId: String): AgencyDetailsDto {
-    courtRepository.findByIdOrNull(agencyId)?.let {
-      return AgencyDetailsDto(
-        agencyId = it.courtId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = LegacyAgencyType.COURT,
-        active = it.active,
-        courtType = it.courtType.code,
-        courtTypeDescription = it.courtType.description,
-        inactiveDate = it.inactiveDate,
-        area = it.area?.toCodeDescription(),
-        region = it.region?.toCodeDescription(),
-        addresses = it.addresses.map(AgencyAddress::toAgencyAddressDto),
-        emails = it.emailAddresses.map(EmailAddress::toAgencyEmailDto),
-        phones = it.phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
-      )
-    }
-
-    hospitalRepository.findByIdOrNull(agencyId)?.let {
-      val agencyType = if (it.highSecurity) LegacyAgencyType.SECURE_HOSPITAL else LegacyAgencyType.HOSPITAL
-      return AgencyDetailsDto(
-        agencyId = it.hospitalId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = agencyType,
-        active = it.active,
-        inactiveDate = it.inactiveDate,
-        area = it.area?.toCodeDescription(),
-        region = it.region?.toCodeDescription(),
-        addresses = it.addresses.map(AgencyAddress::toAgencyAddressDto),
-        emails = emptyList(),
-        phones = it.phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
-      )
-    }
-
-    policeCustodySuiteRepository.findByIdOrNull(agencyId)?.let {
-      return AgencyDetailsDto(
-        agencyId = it.policeCustodySuiteId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = LegacyAgencyType.POLICE_CUSTODY_SUITE,
-        active = it.active,
-        inactiveDate = it.inactiveDate,
-        area = it.area?.toCodeDescription(),
-        region = it.region?.toCodeDescription(),
-        addresses = it.addresses.map(AgencyAddress::toAgencyAddressDto),
-        emails = it.emailAddresses.map(EmailAddress::toAgencyEmailDto),
-        phones = it.phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
-      )
-    }
-
-    probationOfficeRepository.findByIdOrNull(agencyId)?.let {
-      return AgencyDetailsDto(
-        agencyId = it.probationOfficeId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = LegacyAgencyType.PROBATION_OFFICE,
-        active = it.active,
-        inactiveDate = it.inactiveDate,
-        area = it.area?.toCodeDescription(),
-        region = it.region?.toCodeDescription(),
-        addresses = it.addresses.map(AgencyAddress::toAgencyAddressDto),
-        emails = it.emailAddresses.map(EmailAddress::toAgencyEmailDto),
-        phones = it.phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
-      )
-    }
-
-    approvedPremisesRepository.findByIdOrNull(agencyId)?.let {
-      return AgencyDetailsDto(
-        agencyId = it.approvedPremisesId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = LegacyAgencyType.APPROVED_PREMISES,
-        active = it.active,
-        inactiveDate = it.inactiveDate,
-        area = it.area?.toCodeDescription(),
-        region = it.region?.toCodeDescription(),
-        addresses = it.addresses.map(AgencyAddress::toAgencyAddressDto),
-        emails = it.emailAddresses.map(EmailAddress::toAgencyEmailDto),
-        phones = it.phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
-      )
-    }
-
-    prisonRepository.findByIdOrNull(agencyId)?.let {
-      return AgencyDetailsDto(
-        agencyId = it.prisonId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = LegacyAgencyType.PRISON,
-        active = it.active,
-        inactiveDate = it.inactiveDate,
-        addresses = it.addresses.map(Address::toAgencyAddressDto),
-        emails = emptyList(),
-        phones = emptyList(),
-      )
-    }
-
-    otherAgencyRepository.findByIdOrNull(agencyId)?.let {
-      return AgencyDetailsDto(
-        agencyId = it.agencyId,
-        description = it.name,
-        longDescription = it.description,
-        agencyType = LegacyAgencyType.valueOf(it.otherAgencyType.name),
-        active = it.active,
-        inactiveDate = it.inactiveDate,
-        area = it.area?.toCodeDescription(),
-        region = it.region?.toCodeDescription(),
-        addresses = it.addresses.map(AgencyAddress::toAgencyAddressDto),
-        emails = it.emailAddresses.map(EmailAddress::toAgencyEmailDto),
-        phones = it.phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
-      )
-    }
+    courtRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
+    hospitalRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
+    policeCustodySuiteRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
+    probationOfficeRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
+    approvedPremisesRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
+    prisonRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
+    otherAgencyRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
 
     throw ItemNotFoundException("Agency $agencyId not found")
   }
+
+  fun getAgenciesByType(type: LegacyAgencyType, activeOnly: Boolean): List<AgencyDetailsDto> {
+    fun Boolean.matchesActiveFilter() = if (activeOnly) this else true
+
+    val agencies = when (type) {
+      LegacyAgencyType.COURT ->
+        courtRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      LegacyAgencyType.HOSPITAL ->
+        hospitalRepository.findAll().filter { !it.highSecurity && it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      LegacyAgencyType.SECURE_HOSPITAL ->
+        hospitalRepository.findAll().filter { it.highSecurity && it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      LegacyAgencyType.POLICE_CUSTODY_SUITE ->
+        policeCustodySuiteRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      LegacyAgencyType.PROBATION_OFFICE ->
+        probationOfficeRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      LegacyAgencyType.APPROVED_PREMISES ->
+        approvedPremisesRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      LegacyAgencyType.PRISON ->
+        prisonRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+
+      else -> {
+        val otherAgencyType = OtherAgencyType.valueOf(type.name)
+        otherAgencyRepository.findAll()
+          .filter { it.otherAgencyType == otherAgencyType && it.active.matchesActiveFilter() }
+          .map { it.toAgencyDetailsDto() }
+      }
+    }
+
+    return agencies.sortedBy { it.agencyId }
+  }
 }
+
+private fun Court.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = courtId,
+  description = name,
+  longDescription = description,
+  agencyType = LegacyAgencyType.COURT,
+  active = active,
+  courtType = courtType.code,
+  courtTypeDescription = courtType.description,
+  inactiveDate = inactiveDate,
+  area = area?.toCodeDescription(),
+  region = region?.toCodeDescription(),
+  addresses = addresses.map(AgencyAddress::toAgencyAddressDto),
+  emails = emailAddresses.map(EmailAddress::toAgencyEmailDto),
+  phones = phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
+)
+
+private fun Hospital.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = hospitalId,
+  description = name,
+  longDescription = description,
+  agencyType = if (highSecurity) LegacyAgencyType.SECURE_HOSPITAL else LegacyAgencyType.HOSPITAL,
+  active = active,
+  inactiveDate = inactiveDate,
+  area = area?.toCodeDescription(),
+  region = region?.toCodeDescription(),
+  addresses = addresses.map(AgencyAddress::toAgencyAddressDto),
+  emails = emptyList(),
+  phones = phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
+)
+
+private fun PoliceCustodySuite.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = policeCustodySuiteId,
+  description = name,
+  longDescription = description,
+  agencyType = LegacyAgencyType.POLICE_CUSTODY_SUITE,
+  active = active,
+  inactiveDate = inactiveDate,
+  area = area?.toCodeDescription(),
+  region = region?.toCodeDescription(),
+  addresses = addresses.map(AgencyAddress::toAgencyAddressDto),
+  emails = emailAddresses.map(EmailAddress::toAgencyEmailDto),
+  phones = phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
+)
+
+private fun ProbationOffice.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = probationOfficeId,
+  description = name,
+  longDescription = description,
+  agencyType = LegacyAgencyType.PROBATION_OFFICE,
+  active = active,
+  inactiveDate = inactiveDate,
+  area = area?.toCodeDescription(),
+  region = region?.toCodeDescription(),
+  addresses = addresses.map(AgencyAddress::toAgencyAddressDto),
+  emails = emailAddresses.map(EmailAddress::toAgencyEmailDto),
+  phones = phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
+)
+
+private fun ApprovedPremises.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = approvedPremisesId,
+  description = name,
+  longDescription = description,
+  agencyType = LegacyAgencyType.APPROVED_PREMISES,
+  active = active,
+  inactiveDate = inactiveDate,
+  area = area?.toCodeDescription(),
+  region = region?.toCodeDescription(),
+  addresses = addresses.map(AgencyAddress::toAgencyAddressDto),
+  emails = emailAddresses.map(EmailAddress::toAgencyEmailDto),
+  phones = phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
+)
+
+private fun Prison.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = prisonId,
+  description = name,
+  longDescription = description,
+  agencyType = LegacyAgencyType.PRISON,
+  active = active,
+  inactiveDate = inactiveDate,
+  addresses = addresses.map(Address::toAgencyAddressDto),
+  emails = emptyList(),
+  phones = emptyList(),
+)
+
+private fun OtherAgency.toAgencyDetailsDto() = AgencyDetailsDto(
+  agencyId = agencyId,
+  description = name,
+  longDescription = description,
+  agencyType = LegacyAgencyType.valueOf(otherAgencyType.name),
+  active = active,
+  inactiveDate = inactiveDate,
+  area = area?.toCodeDescription(),
+  region = region?.toCodeDescription(),
+  addresses = addresses.map(AgencyAddress::toAgencyAddressDto),
+  emails = emailAddresses.map(EmailAddress::toAgencyEmailDto),
+  phones = phoneNumbers.map(PhoneNumber::toAgencyPhoneDto),
+)
 
 private fun AgencyAddress.toAgencyAddressDto() = AgencyAddressDto(
   id = this.id,

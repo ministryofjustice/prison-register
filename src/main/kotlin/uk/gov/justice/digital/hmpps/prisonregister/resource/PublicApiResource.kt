@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -68,6 +69,28 @@ class PublicApiResource(
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
     agencyId: String,
   ): AgencyDetailsDto = publicApiService.getAgency(agencyId)
+
+  @GetMapping("/type/{type}")
+  @Operation(
+    summary = "Get all agencies of a type",
+    description = "Details of all agencies of the specified type (for example: court, hospital, secure hospital, police custody suite, probation office, approved premises, prison)",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getAgenciesByType(
+    @Schema(description = "Agency type", example = "COURT", required = true)
+    @PathVariable
+    type: LegacyAgencyType,
+    @Schema(description = "When true (the default) only active agencies are returned", example = "true")
+    @RequestParam(defaultValue = "true")
+    activeOnly: Boolean,
+  ): List<AgencyDetailsDto> = publicApiService.getAgenciesByType(type, activeOnly)
 }
 
 @Schema(description = "Summary information about an agency")
