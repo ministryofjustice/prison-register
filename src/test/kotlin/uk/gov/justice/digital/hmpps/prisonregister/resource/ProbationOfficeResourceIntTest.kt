@@ -327,6 +327,36 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
         val probationOffice3Dto = probationOffices.first { it.probationOfficeId == "BIRMPB" }
         assertThat(probationOffice3Dto.probationOfficeName).isEqualTo("Birmingham Probation Office")
       }
+
+      @Test
+      fun `will filter by active flag`() {
+        val probationOffices = webTestClient.get()
+          .uri("/probation-offices?active=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(ProbationOfficeDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(probationOffices).extracting("probationOfficeId").containsExactly("SHEFPB")
+      }
+
+      @Test
+      fun `will filter by text search`() {
+        val probationOffices = webTestClient.get()
+          .uri("/probation-offices?textSearch=Leeds")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(ProbationOfficeDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(probationOffices).extracting("probationOfficeId").containsExactly("LEEDPB")
+      }
     }
   }
 
