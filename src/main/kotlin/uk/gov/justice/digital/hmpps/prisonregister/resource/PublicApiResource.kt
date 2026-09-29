@@ -91,6 +91,33 @@ class PublicApiResource(
     @RequestParam(defaultValue = "true")
     activeOnly: Boolean,
   ): List<AgencyDetailsDto> = publicApiService.getAgenciesByType(type, activeOnly)
+
+  @GetMapping("/legacy-type/{type}")
+  @Operation(
+    summary = "Get all agencies using the NOMIS type",
+    description = "Details of all agencies of the specified legacy (NOMIS) agency type code, e.g. INST, CRT, HOSPITAL, HSHOSP, COMM, CRC, POLICE, POLSTN, APPR, AIRPORT, HOST, IMDC, OUT, PECS, PSY, SCH, STC, YOT, FNP",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Legacy agency type not recognised",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  fun getAgenciesByLegacyType(
+    @Schema(description = "Legacy agency type", example = "CRT", required = true)
+    @PathVariable
+    type: String,
+    @Schema(description = "When true (the default) only active agencies are returned", example = "true")
+    @RequestParam(defaultValue = "true")
+    activeOnly: Boolean,
+  ): List<AgencyDetailsDto> = publicApiService.getAgenciesByLegacyType(type, activeOnly)
 }
 
 @Schema(description = "Summary information about an agency")

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
+import jakarta.validation.ValidationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -121,6 +122,30 @@ class PublicApiService(
 
     return agencies.sortedBy { it.agencyId }
   }
+
+  fun getAgenciesByLegacyType(legacyType: String, activeOnly: Boolean): List<AgencyDetailsDto> = getAgenciesByType(legacyType.toLegacyAgencyType(), activeOnly)
+}
+
+private fun String.toLegacyAgencyType(): LegacyAgencyType = when (this) {
+  "INST" -> LegacyAgencyType.PRISON
+  "CRT" -> LegacyAgencyType.COURT
+  "HOSPITAL" -> LegacyAgencyType.HOSPITAL
+  "HSHOSP" -> LegacyAgencyType.SECURE_HOSPITAL
+  "COMM" -> LegacyAgencyType.PROBATION_OFFICE
+  "CRC" -> LegacyAgencyType.PROBATION_CRC
+  "POLICE", "POLSTN" -> LegacyAgencyType.POLICE_CUSTODY_SUITE
+  "APPR" -> LegacyAgencyType.APPROVED_PREMISES
+  "AIRPORT" -> LegacyAgencyType.AIRPORT
+  "HOST" -> LegacyAgencyType.VOLUNTARY_HOSTEL
+  "IMDC" -> LegacyAgencyType.IMMIGRATION_DETENTION_CENTRE
+  "OUT" -> LegacyAgencyType.OUTSIDE
+  "PECS" -> LegacyAgencyType.PECS
+  "PSY" -> LegacyAgencyType.PSYCHIATRIC_CARE
+  "SCH" -> LegacyAgencyType.CHILDREN_SECURE_HOME
+  "STC" -> LegacyAgencyType.SECURE_TRAINING_CENTRE
+  "YOT" -> LegacyAgencyType.YOT
+  "FNP" -> LegacyAgencyType.FOREIGN_NATIONAL_PRISON
+  else -> throw ValidationException("Unknown nomis agency type $this")
 }
 
 private fun Court.toAgencyDetailsDto() = AgencyDetailsDto(
