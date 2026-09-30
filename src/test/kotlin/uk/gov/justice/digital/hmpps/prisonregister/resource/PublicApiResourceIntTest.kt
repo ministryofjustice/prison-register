@@ -188,7 +188,7 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
       @Test
       fun `will return all agencies, ordered by agency ID ascending`() {
         val agencies = webTestClient.get()
-          .uri("/api/agencies")
+          .uri("/api/agencies?activeOnly=false")
           .accept(MediaType.APPLICATION_JSON)
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
           .exchange()
@@ -231,6 +231,22 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
         assertThat(otherAgencyDto.description).isEqualTo("Example Agency Description")
         assertThat(otherAgencyDto.agencyType).isEqualTo(LegacyAgencyType.AIRPORT)
         assertThat(otherAgencyDto.active).isTrue
+      }
+
+      @Test
+      fun `will only return active agencies by default`() {
+        val agencies = webTestClient.get()
+          .uri("/api/agencies")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(AgencySummaryDto::class.java)
+          .returnResult()
+          .responseBody!!
+
+        assertThat(agencies).extracting("agencyId").contains("DCOURT", "CHOSP", "APROB", "FPRIS", "EAGEN")
+        assertThat(agencies).extracting("agencyId").doesNotContain("BPOLIC")
       }
     }
   }

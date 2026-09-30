@@ -45,29 +45,31 @@ class PublicApiService(
   private val prisonRepository: PrisonRepository,
   private val otherAgencyRepository: OtherAgencyRepository,
 ) {
-  fun getAll(): List<AgencySummaryDto> {
-    val courts = courtRepository.findAll().map {
+  fun getAll(activeOnly: Boolean = true): List<AgencySummaryDto> {
+    fun Boolean.matchesActiveFilter() = if (activeOnly) this else true
+
+    val courts = courtRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
       AgencySummaryDto(agencyId = it.courtId, description = it.description, agencyType = LegacyAgencyType.COURT, active = it.active)
     }
 
-    val hospitals = hospitalRepository.findAll().map {
+    val hospitals = hospitalRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
       val agencyType = if (it.highSecurity) LegacyAgencyType.SECURE_HOSPITAL else LegacyAgencyType.HOSPITAL
       AgencySummaryDto(agencyId = it.hospitalId, description = it.description, agencyType = agencyType, active = it.active)
     }
 
-    val policeCustodySuites = policeCustodySuiteRepository.findAll().map {
+    val policeCustodySuites = policeCustodySuiteRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
       AgencySummaryDto(agencyId = it.policeCustodySuiteId, description = it.description, agencyType = LegacyAgencyType.POLICE_CUSTODY_SUITE, active = it.active)
     }
 
-    val probationOffices = probationOfficeRepository.findAll().map {
+    val probationOffices = probationOfficeRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
       AgencySummaryDto(agencyId = it.probationOfficeId, description = it.description, agencyType = LegacyAgencyType.PROBATION_OFFICE, active = it.active)
     }
 
-    val prisons = prisonRepository.findAll().map {
+    val prisons = prisonRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
       AgencySummaryDto(agencyId = it.prisonId, description = it.description, agencyType = LegacyAgencyType.PRISON, active = it.active)
     }
 
-    val agencies = otherAgencyRepository.findAll().map {
+    val agencies = otherAgencyRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
       AgencySummaryDto(agencyId = it.agencyId, description = it.description, agencyType = LegacyAgencyType.valueOf(it.otherAgencyType.name), active = it.active)
     }
 
