@@ -637,7 +637,7 @@ class CourtResource(
   ): AgencyEmailDto {
     val createdEmailAddress = courtService.createCourtEmailAddress(courtId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now)
+    snsService.sendCourtRegisterEmailInsertedEvent(courtId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
       COURT_REGISTER_EMAIL_INSERT.name,
       mapOf("courtId" to courtId, "emailAddress" to createdEmailAddress),
