@@ -56,6 +56,17 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendCourtRegisterEmailInsertedEvent(courtId: String, emailId: Long, occurredAt: Instant) {
+    publishToDomainEventsTopic(
+      HMPPSCourtDomainEvent(
+        "register.court.email.inserted",
+        CourtEmailAdditionalInformation(courtId, emailId),
+        occurredAt,
+        "A court email has been inserted",
+      ),
+    )
+  }
+
   fun sendCourtRegisterInsertedEvent(courtId: String, occurredAt: Instant) {
     publishToDomainEventsTopic(
       HMPPSCourtDomainEvent(
@@ -298,9 +309,14 @@ data class AdditionalInformation(
   val prisonId: String,
 )
 
-data class CourtAdditionalInformation(
-  val courtId: String,
+open class CourtAdditionalInformation(
+  open val courtId: String,
 )
+
+data class CourtEmailAdditionalInformation(
+  override val courtId: String,
+  val emailId: Long,
+) : CourtAdditionalInformation(courtId)
 
 data class AgencyAdditionalInformation(
   val agencyId: String,

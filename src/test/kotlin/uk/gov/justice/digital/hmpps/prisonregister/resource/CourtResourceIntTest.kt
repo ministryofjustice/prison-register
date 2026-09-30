@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
@@ -54,6 +56,9 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
+
+  @MockitoBean
+  private lateinit var snsService: SnsService
 
   @DisplayName("Get court by id")
   @Nested
@@ -1847,6 +1852,23 @@ class CourtResourceIntTest : IntegrationTestBase() {
             assertThat(it["emailAddressId"]).isEqualTo(emailDto.id.toString())
           },
           isNull(),
+        )
+      }
+
+      @Test
+      fun `will send a domain event`() {
+        val emailDto: AgencyEmailDto = webTestClient.post()
+          .uri("/courts/id/SHEFCC/email-address")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(createEmailAddressRequest)
+          .exchange()
+          .expectStatus().isCreated.expectBodyResponse()
+
+        verify(snsService).sendCourtRegisterEmailInsertedEvent(
+          courtId = eq("SHEFCC"),
+          emailId = eq(emailDto.id),
+          any(),
         )
       }
     }
