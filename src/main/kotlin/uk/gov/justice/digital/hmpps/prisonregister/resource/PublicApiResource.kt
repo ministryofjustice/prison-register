@@ -43,7 +43,11 @@ class PublicApiResource(
       ),
     ],
   )
-  fun getAgencies(): List<AgencySummaryDto> = publicApiService.getAll()
+  fun getAgencies(
+    @Schema(description = "When true (the default) only active agencies are returned", example = "true")
+    @RequestParam(defaultValue = "true")
+    activeOnly: Boolean,
+  ): List<AgencySummaryDto> = publicApiService.getAll(activeOnly)
 
   @GetMapping("/{agencyId}")
   @Operation(
