@@ -3,10 +3,10 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
-  id("org.jetbrains.kotlinx.kover") version "0.9.9"
+  id("org.jetbrains.kotlinx.kover") version "0.9.11"
   idea
 }
 
@@ -19,10 +19,10 @@ configurations {
 }
 
 dependencies {
-  implementation("com.google.guava:guava:33.7.1-jre")
+  implementation("com.google.guava:guava:33.7.2-jre")
   implementation("commons-validator:commons-validator:1.11.0")
   implementation("com.googlecode.libphonenumber:libphonenumber:9.0.40")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.1")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
@@ -50,7 +50,7 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.2")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
