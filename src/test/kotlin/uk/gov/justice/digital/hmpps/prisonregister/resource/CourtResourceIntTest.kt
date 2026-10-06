@@ -1868,7 +1868,8 @@ class CourtResourceIntTest : IntegrationTestBase() {
         verify(snsService).sendCourtRegisterEmailInsertedEvent(
           courtId = eq("SHEFCC"),
           emailId = eq(emailDto.id),
-          any(),
+          occurredAt = any(),
+          source = eq("DPS"),
         )
       }
     }
