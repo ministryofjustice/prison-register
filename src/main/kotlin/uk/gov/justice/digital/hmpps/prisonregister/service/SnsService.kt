@@ -45,209 +45,209 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
-  fun sendCourtRegisterAmendedEvent(courtId: String, occurredAt: Instant) {
+  fun sendCourtRegisterAmendedEvent(courtId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSCourtDomainEvent(
         "register.court.amended",
-        CourtAdditionalInformation(courtId),
+        CourtAdditionalInformation(courtId = courtId, source = source),
         occurredAt,
         "A court has been updated",
       ),
     )
   }
 
-  fun sendCourtRegisterEmailInsertedEvent(courtId: String, emailId: Long, occurredAt: Instant) {
+  fun sendCourtRegisterEmailInsertedEvent(courtId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSCourtDomainEvent(
         "register.court.email.inserted",
-        CourtEmailAdditionalInformation(courtId, emailId),
+        CourtEmailAdditionalInformation(courtId = courtId, emailId = emailId, source = source),
         occurredAt,
         "A court email has been inserted",
       ),
     )
   }
 
-  fun sendCourtRegisterInsertedEvent(courtId: String, occurredAt: Instant) {
+  fun sendCourtRegisterInsertedEvent(courtId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSCourtDomainEvent(
         "register.court.inserted",
-        CourtAdditionalInformation(courtId),
+        CourtAdditionalInformation(courtId = courtId, source = source),
         occurredAt,
         "A court has been inserted",
       ),
     )
   }
 
-  fun sendCourtRegisterDeletedEvent(courtId: String, occurredAt: Instant) {
+  fun sendCourtRegisterDeletedEvent(courtId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSCourtDomainEvent(
         "register.court.deleted",
-        CourtAdditionalInformation(courtId),
+        CourtAdditionalInformation(courtId = courtId, source = source),
         occurredAt,
         "A court has been deleted",
       ),
     )
   }
 
-  fun sendAgencyRegisterInsertedEvent(agencyId: String, occurredAt: Instant) {
+  fun sendAgencyRegisterInsertedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
         "register.agency.inserted",
-        AgencyAdditionalInformation(agencyId),
+        AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been inserted",
       ),
     )
   }
 
-  fun sendAgencyRegisterAmendedEvent(agencyId: String, occurredAt: Instant) {
+  fun sendAgencyRegisterAmendedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
         "register.agency.amended",
-        AgencyAdditionalInformation(agencyId),
+        AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been updated",
       ),
     )
   }
 
-  fun sendAgencyRegisterDeletedEvent(agencyId: String, occurredAt: Instant) {
+  fun sendAgencyRegisterDeletedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
         "register.agency.deleted",
-        AgencyAdditionalInformation(agencyId),
+        AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been deleted",
       ),
     )
   }
 
-  fun sendHospitalRegisterInsertedEvent(hospitalId: String, occurredAt: Instant) {
+  fun sendHospitalRegisterInsertedEvent(hospitalId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSHospitalDomainEvent(
         "register.hospital.inserted",
-        HospitalAdditionalInformation(hospitalId),
+        HospitalAdditionalInformation(hospitalId = hospitalId, source = source),
         occurredAt,
         "A hospital has been inserted",
       ),
     )
   }
 
-  fun sendHospitalRegisterAmendedEvent(hospitalId: String, occurredAt: Instant) {
+  fun sendHospitalRegisterAmendedEvent(hospitalId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSHospitalDomainEvent(
         "register.hospital.amended",
-        HospitalAdditionalInformation(hospitalId),
+        HospitalAdditionalInformation(hospitalId = hospitalId, source = source),
         occurredAt,
         "A hospital has been updated",
       ),
     )
   }
 
-  fun sendHospitalRegisterDeletedEvent(hospitalId: String, occurredAt: Instant) {
+  fun sendHospitalRegisterDeletedEvent(hospitalId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSHospitalDomainEvent(
         "register.hospital.deleted",
-        HospitalAdditionalInformation(hospitalId),
+        HospitalAdditionalInformation(hospitalId = hospitalId, source = source),
         occurredAt,
         "A hospital has been deleted",
       ),
     )
   }
 
-  fun sendPoliceCustodySuiteRegisterInsertedEvent(policeCustodySuiteId: String, occurredAt: Instant) {
+  fun sendPoliceCustodySuiteRegisterInsertedEvent(policeCustodySuiteId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSPoliceCustodySuiteDomainEvent(
         "register.policecustodysuite.inserted",
-        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId),
+        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId = policeCustodySuiteId, source = source),
         occurredAt,
         "A police custody suite has been inserted",
       ),
     )
   }
 
-  fun sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId: String, occurredAt: Instant) {
+  fun sendPoliceCustodySuiteRegisterAmendedEvent(policeCustodySuiteId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSPoliceCustodySuiteDomainEvent(
         "register.policecustodysuite.amended",
-        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId),
+        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId = policeCustodySuiteId, source = source),
         occurredAt,
         "A police custody suite has been updated",
       ),
     )
   }
 
-  fun sendPoliceCustodySuiteRegisterDeletedEvent(policeCustodySuiteId: String, occurredAt: Instant) {
+  fun sendPoliceCustodySuiteRegisterDeletedEvent(policeCustodySuiteId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSPoliceCustodySuiteDomainEvent(
         "register.policecustodysuite.deleted",
-        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId),
+        PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId = policeCustodySuiteId, source = source),
         occurredAt,
         "A police custody suite has been deleted",
       ),
     )
   }
 
-  fun sendProbationOfficeRegisterInsertedEvent(probationOfficeId: String, occurredAt: Instant) {
+  fun sendProbationOfficeRegisterInsertedEvent(probationOfficeId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSProbationOfficeDomainEvent(
         "register.probationoffice.inserted",
-        ProbationOfficeAdditionalInformation(probationOfficeId),
+        ProbationOfficeAdditionalInformation(probationOfficeId = probationOfficeId, source = source),
         occurredAt,
         "A probation office has been inserted",
       ),
     )
   }
 
-  fun sendProbationOfficeRegisterAmendedEvent(probationOfficeId: String, occurredAt: Instant) {
+  fun sendProbationOfficeRegisterAmendedEvent(probationOfficeId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSProbationOfficeDomainEvent(
         "register.probationoffice.amended",
-        ProbationOfficeAdditionalInformation(probationOfficeId),
+        ProbationOfficeAdditionalInformation(probationOfficeId = probationOfficeId, source = source),
         occurredAt,
         "A probation office has been updated",
       ),
     )
   }
 
-  fun sendProbationOfficeRegisterDeletedEvent(probationOfficeId: String, occurredAt: Instant) {
+  fun sendProbationOfficeRegisterDeletedEvent(probationOfficeId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSProbationOfficeDomainEvent(
         "register.probationoffice.deleted",
-        ProbationOfficeAdditionalInformation(probationOfficeId),
+        ProbationOfficeAdditionalInformation(probationOfficeId = probationOfficeId, source = source),
         occurredAt,
         "A probation office has been deleted",
       ),
     )
   }
 
-  fun sendApprovedPremisesRegisterInsertedEvent(approvedPremisesId: String, occurredAt: Instant) {
+  fun sendApprovedPremisesRegisterInsertedEvent(approvedPremisesId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSApprovedPremisesDomainEvent(
         "register.approvedpremises.inserted",
-        ApprovedPremisesAdditionalInformation(approvedPremisesId),
+        ApprovedPremisesAdditionalInformation(approvedPremisesId = approvedPremisesId, source = source),
         occurredAt,
         "An approved premises has been inserted",
       ),
     )
   }
 
-  fun sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId: String, occurredAt: Instant) {
+  fun sendApprovedPremisesRegisterAmendedEvent(approvedPremisesId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSApprovedPremisesDomainEvent(
         "register.approvedpremises.amended",
-        ApprovedPremisesAdditionalInformation(approvedPremisesId),
+        ApprovedPremisesAdditionalInformation(approvedPremisesId = approvedPremisesId, source = source),
         occurredAt,
         "An approved premises has been updated",
       ),
     )
   }
 
-  fun sendApprovedPremisesRegisterDeletedEvent(approvedPremisesId: String, occurredAt: Instant) {
+  fun sendApprovedPremisesRegisterDeletedEvent(approvedPremisesId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSApprovedPremisesDomainEvent(
         "register.approvedpremises.deleted",
-        ApprovedPremisesAdditionalInformation(approvedPremisesId),
+        ApprovedPremisesAdditionalInformation(approvedPremisesId = approvedPremisesId, source = source),
         occurredAt,
         "An approved premises has been deleted",
       ),
@@ -309,34 +309,45 @@ data class AdditionalInformation(
   val prisonId: String,
 )
 
+open class SourcedAdditionalInformation(
+  val source: String,
+)
+
 open class CourtAdditionalInformation(
-  open val courtId: String,
-)
+  val courtId: String,
+  source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
-data class CourtEmailAdditionalInformation(
-  override val courtId: String,
+class CourtEmailAdditionalInformation(
+  courtId: String,
   val emailId: Long,
-) : CourtAdditionalInformation(courtId)
+  source: String = "DPS",
+) : CourtAdditionalInformation(courtId = courtId, source = source)
 
-data class AgencyAdditionalInformation(
+class AgencyAdditionalInformation(
   val agencyId: String,
-)
+  source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
-data class HospitalAdditionalInformation(
+class HospitalAdditionalInformation(
   val hospitalId: String,
-)
+  source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
-data class PoliceCustodySuiteAdditionalInformation(
+class PoliceCustodySuiteAdditionalInformation(
   val policeCustodySuiteId: String,
-)
+  source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
-data class ProbationOfficeAdditionalInformation(
+class ProbationOfficeAdditionalInformation(
   val probationOfficeId: String,
-)
+  source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
-data class ApprovedPremisesAdditionalInformation(
+class ApprovedPremisesAdditionalInformation(
   val approvedPremisesId: String,
-)
+  source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
 data class HMPPSDomainEvent(
   val eventType: String,
