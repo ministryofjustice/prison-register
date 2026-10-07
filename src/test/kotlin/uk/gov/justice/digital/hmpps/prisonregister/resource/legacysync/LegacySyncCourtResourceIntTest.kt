@@ -709,12 +709,10 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
             transactionHelper.runInTransaction {
               with(courtRepository.findByIdOrNull("SHEFMC")!!) {
                 assertThat(emailAddresses).hasSize(2)
-                with(emailAddresses[0]) {
-                  assertThat(value).isEqualTo("test.sheffield.mc@justice.gov.uk")
-                }
-                with(emailAddresses[1]) {
-                  assertThat(value).isEqualTo("test.2.sheffield.mc@justice.gov.uk")
-                }
+                assertThat(emailAddresses.map { it.value }).containsExactlyInAnyOrder(
+                  "test.sheffield.mc@justice.gov.uk",
+                  "test.2.sheffield.mc@justice.gov.uk",
+                )
               }
             }
           }
@@ -827,12 +825,7 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
             transactionHelper.runInTransaction {
               with(courtRepository.findByIdOrNull("SHEFMC")!!) {
                 assertThat(phoneNumbers).hasSize(2)
-                with(phoneNumbers[0]) {
-                  assertThat(value).isEqualTo("0114 555 5555")
-                }
-                with(phoneNumbers[1]) {
-                  assertThat(value).isEqualTo("0114 999 5555")
-                }
+                assertThat(phoneNumbers.map { it.value }).containsExactlyInAnyOrder("0114 555 5555", "0114 999 5555")
               }
             }
           }
