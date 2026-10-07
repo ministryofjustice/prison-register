@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeReposito
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
@@ -53,6 +55,9 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
+
+  @MockitoBean
+  private lateinit var snsService: SnsService
 
   @DisplayName("Get probation office by id")
   @Nested
@@ -626,6 +631,24 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update probation office address")
   @Nested
   inner class UpdateProbationOfficeAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendProbationOfficeRegisterAddressAmendedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
     var addressId: Long = -1
 
@@ -787,6 +810,24 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update probation office phone number")
   @Nested
   inner class UpdateProbationOfficePhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updatePhoneNumberRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendProbationOfficeRegisterPhoneAmendedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
     var phoneNumberId: Long = -1
 
@@ -958,6 +999,24 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update probation office email address")
   @Nested
   inner class UpdateProbationOfficeEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateEmailAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendProbationOfficeRegisterEmailAmendedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
     var emailAddressId: Long = -1
 
@@ -1343,6 +1402,24 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create probation office address")
   @Nested
   inner class CreateProbationOfficeAddress {
+    @Test
+    fun `will send a domain event`() {
+      val addressDto: AgencyAddressDto = webTestClient.post()
+        .uri("/probation-offices/id/SHEFPB/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendProbationOfficeRegisterAddressInsertedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        addressId = eq(addressDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
 
     val createAddressRequest = UpdateAddressDto(
@@ -1499,6 +1576,24 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create probation office phone number")
   @Nested
   inner class CreateProbationOfficePhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      val phoneDto: AgencyPhoneDto = webTestClient.post()
+        .uri("/probation-offices/id/SHEFPB/phone-number")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createPhoneNumberRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendProbationOfficeRegisterPhoneInsertedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        phoneId = eq(phoneDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
@@ -1664,6 +1759,24 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create probation office email address")
   @Nested
   inner class CreateProbationOfficeEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      val emailDto: AgencyEmailDto = webTestClient.post()
+        .uri("/probation-offices/id/SHEFPB/email-address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createEmailAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendProbationOfficeRegisterEmailInsertedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        emailId = eq(emailDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
 
     val createEmailAddressRequest = UpdateEmailAddressDto(address = "new@justice.gov.uk")
@@ -1914,6 +2027,23 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete probation office address")
   @Nested
   inner class DeleteProbationOfficeAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/probation-offices/id/SHEFPB/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendProbationOfficeRegisterAddressDeletedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
     var addressId: Long = -1
 
@@ -2025,6 +2155,23 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete probation office phone number")
   @Nested
   inner class DeleteProbationOfficePhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/probation-offices/id/SHEFPB/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendProbationOfficeRegisterPhoneDeletedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
     var phoneNumberId: Long = -1
 
@@ -2133,6 +2280,23 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete probation office email address")
   @Nested
   inner class DeleteProbationOfficeEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/probation-offices/id/SHEFPB/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendProbationOfficeRegisterEmailDeletedEvent(
+        probationOfficeId = eq("SHEFPB"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var probationOffice: ProbationOffice
     var emailAddressId: Long = -1
 

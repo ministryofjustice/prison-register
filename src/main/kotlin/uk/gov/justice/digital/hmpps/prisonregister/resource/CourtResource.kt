@@ -295,7 +295,7 @@ class CourtResource(
   ): AgencyAddressDto {
     val createdAddress = courtService.createCourtAddress(courtId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterAddressInsertedEvent(courtId, createdAddress.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_ADDRESS_INSERT.name,
       mapOf("courtId" to courtId, "address" to createdAddress),
@@ -356,7 +356,7 @@ class CourtResource(
   ): AgencyAddressDto {
     val updatedAddress = courtService.updateCourtAddress(courtId, addressId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterAddressAmendedEvent(courtId, updatedAddress.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_ADDRESS_UPDATE.name,
       mapOf("courtId" to courtId, "address" to updatedAddress),
@@ -403,7 +403,7 @@ class CourtResource(
   ) {
     val deletedAddress = courtService.deleteCourtAddress(courtId, addressId)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterAddressDeletedEvent(courtId, deletedAddress.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_ADDRESS_DELETE.name,
       mapOf("courtId" to courtId, "address" to deletedAddress),
@@ -466,7 +466,7 @@ class CourtResource(
   ): AgencyPhoneDto {
     val createdPhoneNumber = courtService.createCourtPhoneNumber(courtId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterPhoneInsertedEvent(courtId, createdPhoneNumber.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_PHONE_INSERT.name,
       mapOf("courtId" to courtId, "phoneNumber" to createdPhoneNumber),
@@ -527,7 +527,7 @@ class CourtResource(
   ): AgencyPhoneDto {
     val updatedPhoneNumber = courtService.updateCourtPhoneNumber(courtId, phoneNumberId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterPhoneAmendedEvent(courtId, updatedPhoneNumber.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_PHONE_UPDATE.name,
       mapOf("courtId" to courtId, "phoneNumber" to updatedPhoneNumber),
@@ -574,7 +574,7 @@ class CourtResource(
   ) {
     val deletedPhoneNumber = courtService.deleteCourtPhoneNumber(courtId, phoneNumberId)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterPhoneDeletedEvent(courtId, deletedPhoneNumber.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_PHONE_DELETE.name,
       mapOf("courtId" to courtId, "phoneNumber" to deletedPhoneNumber),
@@ -698,7 +698,7 @@ class CourtResource(
   ): AgencyEmailDto {
     val updatedEmailAddress = courtService.updateCourtEmailAddress(courtId, emailAddressId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterEmailAmendedEvent(courtId, updatedEmailAddress.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_EMAIL_UPDATE.name,
       mapOf("courtId" to courtId, "emailAddress" to updatedEmailAddress),
@@ -745,7 +745,7 @@ class CourtResource(
   ) {
     val deletedEmailAddress = courtService.deleteCourtEmailAddress(courtId, emailAddressId)
     val now = Instant.now()
-    snsService.sendCourtRegisterAmendedEvent(courtId, now, "DPS")
+    snsService.sendCourtRegisterEmailDeletedEvent(courtId, deletedEmailAddress.id, now, "DPS")
     auditService.sendAuditEvent(
       COURT_REGISTER_EMAIL_DELETE.name,
       mapOf("courtId" to courtId, "emailAddress" to deletedEmailAddress),

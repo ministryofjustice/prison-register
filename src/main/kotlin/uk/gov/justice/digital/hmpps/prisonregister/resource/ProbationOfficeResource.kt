@@ -291,7 +291,7 @@ class ProbationOfficeResource(
   ): AgencyAddressDto {
     val createdAddress = probationOfficeService.createProbationOfficeAddress(probationOfficeId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterAddressInsertedEvent(probationOfficeId, createdAddress.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_ADDRESS_INSERT.name,
       mapOf("probationOfficeId" to probationOfficeId, "address" to createdAddress),
@@ -352,7 +352,7 @@ class ProbationOfficeResource(
   ): AgencyAddressDto {
     val updatedAddress = probationOfficeService.updateProbationOfficeAddress(probationOfficeId, addressId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterAddressAmendedEvent(probationOfficeId, updatedAddress.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_ADDRESS_UPDATE.name,
       mapOf("probationOfficeId" to probationOfficeId, "address" to updatedAddress),
@@ -399,7 +399,7 @@ class ProbationOfficeResource(
   ) {
     val deletedAddress = probationOfficeService.deleteProbationOfficeAddress(probationOfficeId, addressId)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterAddressDeletedEvent(probationOfficeId, deletedAddress.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_ADDRESS_DELETE.name,
       mapOf("probationOfficeId" to probationOfficeId, "address" to deletedAddress),
@@ -462,7 +462,7 @@ class ProbationOfficeResource(
   ): AgencyPhoneDto {
     val createdPhoneNumber = probationOfficeService.createProbationOfficePhoneNumber(probationOfficeId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterPhoneInsertedEvent(probationOfficeId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_PHONE_INSERT.name,
       mapOf("probationOfficeId" to probationOfficeId, "phoneNumber" to createdPhoneNumber),
@@ -523,7 +523,7 @@ class ProbationOfficeResource(
   ): AgencyPhoneDto {
     val updatedPhoneNumber = probationOfficeService.updateProbationOfficePhoneNumber(probationOfficeId, phoneNumberId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterPhoneAmendedEvent(probationOfficeId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_PHONE_UPDATE.name,
       mapOf("probationOfficeId" to probationOfficeId, "phoneNumber" to updatedPhoneNumber),
@@ -570,7 +570,7 @@ class ProbationOfficeResource(
   ) {
     val deletedPhoneNumber = probationOfficeService.deleteProbationOfficePhoneNumber(probationOfficeId, phoneNumberId)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterPhoneDeletedEvent(probationOfficeId, deletedPhoneNumber.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_PHONE_DELETE.name,
       mapOf("probationOfficeId" to probationOfficeId, "phoneNumber" to deletedPhoneNumber),
@@ -633,7 +633,7 @@ class ProbationOfficeResource(
   ): AgencyEmailDto {
     val createdEmailAddress = probationOfficeService.createProbationOfficeEmailAddress(probationOfficeId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterEmailInsertedEvent(probationOfficeId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_EMAIL_INSERT.name,
       mapOf("probationOfficeId" to probationOfficeId, "emailAddress" to createdEmailAddress),
@@ -694,7 +694,7 @@ class ProbationOfficeResource(
   ): AgencyEmailDto {
     val updatedEmailAddress = probationOfficeService.updateProbationOfficeEmailAddress(probationOfficeId, emailAddressId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterEmailAmendedEvent(probationOfficeId, updatedEmailAddress.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_EMAIL_UPDATE.name,
       mapOf("probationOfficeId" to probationOfficeId, "emailAddress" to updatedEmailAddress),
@@ -741,7 +741,7 @@ class ProbationOfficeResource(
   ) {
     val deletedEmailAddress = probationOfficeService.deleteProbationOfficeEmailAddress(probationOfficeId, emailAddressId)
     val now = Instant.now()
-    snsService.sendProbationOfficeRegisterAmendedEvent(probationOfficeId, now)
+    snsService.sendProbationOfficeRegisterEmailDeletedEvent(probationOfficeId, deletedEmailAddress.id, now)
     auditService.sendAuditEvent(
       PROBATION_OFFICE_REGISTER_EMAIL_DELETE.name,
       mapOf("probationOfficeId" to probationOfficeId, "emailAddress" to deletedEmailAddress),

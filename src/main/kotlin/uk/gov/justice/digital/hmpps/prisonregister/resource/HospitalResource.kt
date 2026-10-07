@@ -244,7 +244,7 @@ class HospitalResource(
   ): AgencyAddressDto {
     val createdAddress = hospitalService.createHospitalAddress(hospitalId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendHospitalRegisterAmendedEvent(hospitalId, now)
+    snsService.sendHospitalRegisterAddressInsertedEvent(hospitalId, createdAddress.id, now)
     auditService.sendAuditEvent(
       HOSPITAL_REGISTER_ADDRESS_INSERT.name,
       mapOf("hospitalId" to hospitalId, "address" to createdAddress),
@@ -305,7 +305,7 @@ class HospitalResource(
   ): AgencyAddressDto {
     val updatedAddress = hospitalService.updateHospitalAddress(hospitalId, addressId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendHospitalRegisterAmendedEvent(hospitalId, now)
+    snsService.sendHospitalRegisterAddressAmendedEvent(hospitalId, updatedAddress.id, now)
     auditService.sendAuditEvent(
       HOSPITAL_REGISTER_ADDRESS_UPDATE.name,
       mapOf("hospitalId" to hospitalId, "address" to updatedAddress),
@@ -369,7 +369,7 @@ class HospitalResource(
   ): AgencyPhoneDto {
     val createdPhoneNumber = hospitalService.createHospitalPhoneNumber(hospitalId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendHospitalRegisterAmendedEvent(hospitalId, now)
+    snsService.sendHospitalRegisterPhoneInsertedEvent(hospitalId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
       HOSPITAL_REGISTER_PHONE_INSERT.name,
       mapOf("hospitalId" to hospitalId, "phoneNumber" to createdPhoneNumber),
@@ -430,7 +430,7 @@ class HospitalResource(
   ): AgencyPhoneDto {
     val updatedPhoneNumber = hospitalService.updateHospitalPhoneNumber(hospitalId, phoneNumberId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendHospitalRegisterAmendedEvent(hospitalId, now)
+    snsService.sendHospitalRegisterPhoneAmendedEvent(hospitalId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
       HOSPITAL_REGISTER_PHONE_UPDATE.name,
       mapOf("hospitalId" to hospitalId, "phoneNumber" to updatedPhoneNumber),
@@ -520,7 +520,7 @@ class HospitalResource(
   ) {
     val deletedAddress = hospitalService.deleteHospitalAddress(hospitalId, addressId)
     val now = Instant.now()
-    snsService.sendHospitalRegisterAmendedEvent(hospitalId, now)
+    snsService.sendHospitalRegisterAddressDeletedEvent(hospitalId, deletedAddress.id, now)
     auditService.sendAuditEvent(
       HOSPITAL_REGISTER_ADDRESS_DELETE.name,
       mapOf("hospitalId" to hospitalId, "address" to deletedAddress),
@@ -566,7 +566,7 @@ class HospitalResource(
   ) {
     val deletedPhoneNumber = hospitalService.deleteHospitalPhoneNumber(hospitalId, phoneNumberId)
     val now = Instant.now()
-    snsService.sendHospitalRegisterAmendedEvent(hospitalId, now)
+    snsService.sendHospitalRegisterPhoneDeletedEvent(hospitalId, deletedPhoneNumber.id, now)
     auditService.sendAuditEvent(
       HOSPITAL_REGISTER_PHONE_DELETE.name,
       mapOf("hospitalId" to hospitalId, "phoneNumber" to deletedPhoneNumber),

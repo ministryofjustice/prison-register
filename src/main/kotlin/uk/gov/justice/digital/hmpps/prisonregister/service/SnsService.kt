@@ -67,6 +67,56 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendCourtRegisterEmailAmendedEvent(courtId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("email", "amended", courtId, emailId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterEmailDeletedEvent(courtId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("email", "deleted", courtId, emailId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterAddressInsertedEvent(courtId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("address", "inserted", courtId, addressId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterAddressAmendedEvent(courtId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("address", "amended", courtId, addressId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterAddressDeletedEvent(courtId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("address", "deleted", courtId, addressId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterPhoneInsertedEvent(courtId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("phone", "inserted", courtId, phoneId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterPhoneAmendedEvent(courtId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("phone", "amended", courtId, phoneId, occurredAt, source)
+  }
+
+  fun sendCourtRegisterPhoneDeletedEvent(courtId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishCourtContactEvent("phone", "deleted", courtId, phoneId, occurredAt, source)
+  }
+
+  private fun publishCourtContactEvent(type: String, action: String, courtId: String, childId: Long, occurredAt: Instant, source: String) {
+    val additionalInformation = when (type) {
+      "email" -> CourtEmailAdditionalInformation(courtId, childId, source)
+      "address" -> CourtAddressAdditionalInformation(courtId, childId, source)
+      "phone" -> CourtPhoneAdditionalInformation(courtId, childId, source)
+      else -> throw IllegalArgumentException("Unknown court contact detail type: $type")
+    }
+    val description = when (type) {
+      "email" -> "A court email has been $action"
+      "address" -> "A court address has been $action"
+      "phone" -> "A court phone number has been $action"
+      else -> throw IllegalArgumentException("Unknown court contact detail type: $type")
+    }
+    publishToDomainEventsTopic(
+      HMPPSCourtDomainEvent("register.court.$type.$action", additionalInformation, occurredAt, description),
+    )
+  }
+
   fun sendCourtRegisterInsertedEvent(courtId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSCourtDomainEvent(
@@ -122,6 +172,60 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendAgencyRegisterEmailInsertedEvent(agencyId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("email", "inserted", agencyId, emailId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterEmailAmendedEvent(agencyId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("email", "amended", agencyId, emailId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterEmailDeletedEvent(agencyId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("email", "deleted", agencyId, emailId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterAddressInsertedEvent(agencyId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("address", "inserted", agencyId, addressId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterAddressAmendedEvent(agencyId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("address", "amended", agencyId, addressId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterAddressDeletedEvent(agencyId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("address", "deleted", agencyId, addressId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterPhoneInsertedEvent(agencyId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("phone", "inserted", agencyId, phoneId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterPhoneAmendedEvent(agencyId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("phone", "amended", agencyId, phoneId, occurredAt, source)
+  }
+
+  fun sendAgencyRegisterPhoneDeletedEvent(agencyId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishAgencyContactEvent("phone", "deleted", agencyId, phoneId, occurredAt, source)
+  }
+
+  private fun publishAgencyContactEvent(type: String, action: String, agencyId: String, childId: Long, occurredAt: Instant, source: String) {
+    val additionalInformation = when (type) {
+      "email" -> AgencyEmailAdditionalInformation(agencyId, childId, source)
+      "address" -> AgencyAddressAdditionalInformation(agencyId, childId, source)
+      "phone" -> AgencyPhoneAdditionalInformation(agencyId, childId, source)
+      else -> throw IllegalArgumentException("Unknown agency contact detail type: $type")
+    }
+    val description = when (type) {
+      "email" -> "An agency email has been $action"
+      "address" -> "An agency address has been $action"
+      "phone" -> "An agency phone number has been $action"
+      else -> throw IllegalArgumentException("Unknown agency contact detail type: $type")
+    }
+    publishToDomainEventsTopic(
+      HMPPSAgencyDomainEvent("register.agency.$type.$action", additionalInformation, occurredAt, description),
+    )
+  }
+
   fun sendHospitalRegisterInsertedEvent(hospitalId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSHospitalDomainEvent(
@@ -152,6 +256,46 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
         occurredAt,
         "A hospital has been deleted",
       ),
+    )
+  }
+
+  fun sendHospitalRegisterAddressInsertedEvent(hospitalId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishHospitalContactEvent("address", "inserted", hospitalId, addressId, occurredAt, source)
+  }
+
+  fun sendHospitalRegisterAddressAmendedEvent(hospitalId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishHospitalContactEvent("address", "amended", hospitalId, addressId, occurredAt, source)
+  }
+
+  fun sendHospitalRegisterAddressDeletedEvent(hospitalId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishHospitalContactEvent("address", "deleted", hospitalId, addressId, occurredAt, source)
+  }
+
+  fun sendHospitalRegisterPhoneInsertedEvent(hospitalId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishHospitalContactEvent("phone", "inserted", hospitalId, phoneId, occurredAt, source)
+  }
+
+  fun sendHospitalRegisterPhoneAmendedEvent(hospitalId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishHospitalContactEvent("phone", "amended", hospitalId, phoneId, occurredAt, source)
+  }
+
+  fun sendHospitalRegisterPhoneDeletedEvent(hospitalId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishHospitalContactEvent("phone", "deleted", hospitalId, phoneId, occurredAt, source)
+  }
+
+  private fun publishHospitalContactEvent(type: String, action: String, hospitalId: String, childId: Long, occurredAt: Instant, source: String) {
+    val additionalInformation = when (type) {
+      "address" -> HospitalAddressAdditionalInformation(hospitalId, childId, source)
+      "phone" -> HospitalPhoneAdditionalInformation(hospitalId, childId, source)
+      else -> throw IllegalArgumentException("Unknown hospital contact detail type: $type")
+    }
+    val description = when (type) {
+      "address" -> "A hospital address has been $action"
+      "phone" -> "A hospital phone number has been $action"
+      else -> throw IllegalArgumentException("Unknown hospital contact detail type: $type")
+    }
+    publishToDomainEventsTopic(
+      HMPPSHospitalDomainEvent("register.hospital.$type.$action", additionalInformation, occurredAt, description),
     )
   }
 
@@ -188,6 +332,60 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendPoliceCustodySuiteRegisterEmailInsertedEvent(policeCustodySuiteId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("email", "inserted", policeCustodySuiteId, emailId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterEmailAmendedEvent(policeCustodySuiteId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("email", "amended", policeCustodySuiteId, emailId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterEmailDeletedEvent(policeCustodySuiteId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("email", "deleted", policeCustodySuiteId, emailId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterAddressInsertedEvent(policeCustodySuiteId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("address", "inserted", policeCustodySuiteId, addressId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterAddressAmendedEvent(policeCustodySuiteId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("address", "amended", policeCustodySuiteId, addressId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterAddressDeletedEvent(policeCustodySuiteId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("address", "deleted", policeCustodySuiteId, addressId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterPhoneInsertedEvent(policeCustodySuiteId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("phone", "inserted", policeCustodySuiteId, phoneId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterPhoneAmendedEvent(policeCustodySuiteId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("phone", "amended", policeCustodySuiteId, phoneId, occurredAt, source)
+  }
+
+  fun sendPoliceCustodySuiteRegisterPhoneDeletedEvent(policeCustodySuiteId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishPoliceCustodySuiteContactEvent("phone", "deleted", policeCustodySuiteId, phoneId, occurredAt, source)
+  }
+
+  private fun publishPoliceCustodySuiteContactEvent(type: String, action: String, policeCustodySuiteId: String, childId: Long, occurredAt: Instant, source: String) {
+    val additionalInformation = when (type) {
+      "email" -> PoliceCustodySuiteEmailAdditionalInformation(policeCustodySuiteId, childId, source)
+      "address" -> PoliceCustodySuiteAddressAdditionalInformation(policeCustodySuiteId, childId, source)
+      "phone" -> PoliceCustodySuitePhoneAdditionalInformation(policeCustodySuiteId, childId, source)
+      else -> throw IllegalArgumentException("Unknown police custody suite contact detail type: $type")
+    }
+    val description = when (type) {
+      "email" -> "A police custody suite email has been $action"
+      "address" -> "A police custody suite address has been $action"
+      "phone" -> "A police custody suite phone number has been $action"
+      else -> throw IllegalArgumentException("Unknown police custody suite contact detail type: $type")
+    }
+    publishToDomainEventsTopic(
+      HMPPSPoliceCustodySuiteDomainEvent("register.policecustodysuite.$type.$action", additionalInformation, occurredAt, description),
+    )
+  }
+
   fun sendProbationOfficeRegisterInsertedEvent(probationOfficeId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSProbationOfficeDomainEvent(
@@ -221,6 +419,60 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
     )
   }
 
+  fun sendProbationOfficeRegisterEmailInsertedEvent(probationOfficeId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("email", "inserted", probationOfficeId, emailId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterEmailAmendedEvent(probationOfficeId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("email", "amended", probationOfficeId, emailId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterEmailDeletedEvent(probationOfficeId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("email", "deleted", probationOfficeId, emailId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterAddressInsertedEvent(probationOfficeId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("address", "inserted", probationOfficeId, addressId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterAddressAmendedEvent(probationOfficeId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("address", "amended", probationOfficeId, addressId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterAddressDeletedEvent(probationOfficeId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("address", "deleted", probationOfficeId, addressId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterPhoneInsertedEvent(probationOfficeId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("phone", "inserted", probationOfficeId, phoneId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterPhoneAmendedEvent(probationOfficeId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("phone", "amended", probationOfficeId, phoneId, occurredAt, source)
+  }
+
+  fun sendProbationOfficeRegisterPhoneDeletedEvent(probationOfficeId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishProbationOfficeContactEvent("phone", "deleted", probationOfficeId, phoneId, occurredAt, source)
+  }
+
+  private fun publishProbationOfficeContactEvent(type: String, action: String, probationOfficeId: String, childId: Long, occurredAt: Instant, source: String) {
+    val additionalInformation = when (type) {
+      "email" -> ProbationOfficeEmailAdditionalInformation(probationOfficeId, childId, source)
+      "address" -> ProbationOfficeAddressAdditionalInformation(probationOfficeId, childId, source)
+      "phone" -> ProbationOfficePhoneAdditionalInformation(probationOfficeId, childId, source)
+      else -> throw IllegalArgumentException("Unknown probation office contact detail type: $type")
+    }
+    val description = when (type) {
+      "email" -> "A probation office email has been $action"
+      "address" -> "A probation office address has been $action"
+      "phone" -> "A probation office phone number has been $action"
+      else -> throw IllegalArgumentException("Unknown probation office contact detail type: $type")
+    }
+    publishToDomainEventsTopic(
+      HMPPSProbationOfficeDomainEvent("register.probationoffice.$type.$action", additionalInformation, occurredAt, description),
+    )
+  }
+
   fun sendApprovedPremisesRegisterInsertedEvent(approvedPremisesId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSApprovedPremisesDomainEvent(
@@ -251,6 +503,60 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
         occurredAt,
         "An approved premises has been deleted",
       ),
+    )
+  }
+
+  fun sendApprovedPremisesRegisterEmailInsertedEvent(approvedPremisesId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("email", "inserted", approvedPremisesId, emailId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterEmailAmendedEvent(approvedPremisesId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("email", "amended", approvedPremisesId, emailId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterEmailDeletedEvent(approvedPremisesId: String, emailId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("email", "deleted", approvedPremisesId, emailId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterAddressInsertedEvent(approvedPremisesId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("address", "inserted", approvedPremisesId, addressId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterAddressAmendedEvent(approvedPremisesId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("address", "amended", approvedPremisesId, addressId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterAddressDeletedEvent(approvedPremisesId: String, addressId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("address", "deleted", approvedPremisesId, addressId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterPhoneInsertedEvent(approvedPremisesId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("phone", "inserted", approvedPremisesId, phoneId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterPhoneAmendedEvent(approvedPremisesId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("phone", "amended", approvedPremisesId, phoneId, occurredAt, source)
+  }
+
+  fun sendApprovedPremisesRegisterPhoneDeletedEvent(approvedPremisesId: String, phoneId: Long, occurredAt: Instant, source: String = "DPS") {
+    publishApprovedPremisesContactEvent("phone", "deleted", approvedPremisesId, phoneId, occurredAt, source)
+  }
+
+  private fun publishApprovedPremisesContactEvent(type: String, action: String, approvedPremisesId: String, childId: Long, occurredAt: Instant, source: String) {
+    val additionalInformation = when (type) {
+      "email" -> ApprovedPremisesEmailAdditionalInformation(approvedPremisesId, childId, source)
+      "address" -> ApprovedPremisesAddressAdditionalInformation(approvedPremisesId, childId, source)
+      "phone" -> ApprovedPremisesPhoneAdditionalInformation(approvedPremisesId, childId, source)
+      else -> throw IllegalArgumentException("Unknown approved premises contact detail type: $type")
+    }
+    val description = when (type) {
+      "email" -> "An approved premises email has been $action"
+      "address" -> "An approved premises address has been $action"
+      "phone" -> "An approved premises phone number has been $action"
+      else -> throw IllegalArgumentException("Unknown approved premises contact detail type: $type")
+    }
+    publishToDomainEventsTopic(
+      HMPPSApprovedPremisesDomainEvent("register.approvedpremises.$type.$action", additionalInformation, occurredAt, description),
     )
   }
 
@@ -310,44 +616,140 @@ data class AdditionalInformation(
 )
 
 open class SourcedAdditionalInformation(
-  val source: String,
+  open val source: String,
 )
 
 open class CourtAdditionalInformation(
-  val courtId: String,
-  source: String = "DPS",
+  open val courtId: String,
+  override val source: String = "DPS",
 ) : SourcedAdditionalInformation(source)
 
 class CourtEmailAdditionalInformation(
-  courtId: String,
+  override val courtId: String,
   val emailId: Long,
-  source: String = "DPS",
+  override val source: String = "DPS",
 ) : CourtAdditionalInformation(courtId = courtId, source = source)
 
-class AgencyAdditionalInformation(
-  val agencyId: String,
-  source: String = "DPS",
+class CourtAddressAdditionalInformation(
+  override val courtId: String,
+  val addressId: Long,
+  override val source: String = "DPS",
+) : CourtAdditionalInformation(courtId, source)
+
+class CourtPhoneAdditionalInformation(
+  override val courtId: String,
+  val phoneId: Long,
+  override val source: String = "DPS",
+) : CourtAdditionalInformation(courtId, source)
+
+open class AgencyAdditionalInformation(
+  open val agencyId: String,
+  override val source: String = "DPS",
 ) : SourcedAdditionalInformation(source)
 
-class HospitalAdditionalInformation(
-  val hospitalId: String,
-  source: String = "DPS",
+class AgencyEmailAdditionalInformation(
+  override val agencyId: String,
+  val emailId: Long,
+  override val source: String = "DPS",
+) : AgencyAdditionalInformation(agencyId, source)
+
+class AgencyAddressAdditionalInformation(
+  override val agencyId: String,
+  val addressId: Long,
+  override val source: String = "DPS",
+) : AgencyAdditionalInformation(agencyId, source)
+
+class AgencyPhoneAdditionalInformation(
+  override val agencyId: String,
+  val phoneId: Long,
+  override val source: String = "DPS",
+) : AgencyAdditionalInformation(agencyId, source)
+
+open class HospitalAdditionalInformation(
+  open val hospitalId: String,
+  override val source: String = "DPS",
 ) : SourcedAdditionalInformation(source)
 
-class PoliceCustodySuiteAdditionalInformation(
-  val policeCustodySuiteId: String,
-  source: String = "DPS",
+class HospitalAddressAdditionalInformation(
+  override val hospitalId: String,
+  val addressId: Long,
+  override val source: String = "DPS",
+) : HospitalAdditionalInformation(hospitalId, source)
+
+class HospitalPhoneAdditionalInformation(
+  override val hospitalId: String,
+  val phoneId: Long,
+  override val source: String = "DPS",
+) : HospitalAdditionalInformation(hospitalId, source)
+
+open class PoliceCustodySuiteAdditionalInformation(
+  open val policeCustodySuiteId: String,
+  override val source: String = "DPS",
 ) : SourcedAdditionalInformation(source)
 
-class ProbationOfficeAdditionalInformation(
-  val probationOfficeId: String,
-  source: String = "DPS",
+class PoliceCustodySuiteEmailAdditionalInformation(
+  override val policeCustodySuiteId: String,
+  val emailId: Long,
+  override val source: String = "DPS",
+) : PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId, source)
+
+class PoliceCustodySuiteAddressAdditionalInformation(
+  override val policeCustodySuiteId: String,
+  val addressId: Long,
+  override val source: String = "DPS",
+) : PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId, source)
+
+class PoliceCustodySuitePhoneAdditionalInformation(
+  override val policeCustodySuiteId: String,
+  val phoneId: Long,
+  override val source: String = "DPS",
+) : PoliceCustodySuiteAdditionalInformation(policeCustodySuiteId, source)
+
+open class ProbationOfficeAdditionalInformation(
+  open val probationOfficeId: String,
+  override val source: String = "DPS",
 ) : SourcedAdditionalInformation(source)
 
-class ApprovedPremisesAdditionalInformation(
-  val approvedPremisesId: String,
-  source: String = "DPS",
+class ProbationOfficeEmailAdditionalInformation(
+  override val probationOfficeId: String,
+  val emailId: Long,
+  override val source: String = "DPS",
+) : ProbationOfficeAdditionalInformation(probationOfficeId, source)
+
+class ProbationOfficeAddressAdditionalInformation(
+  override val probationOfficeId: String,
+  val addressId: Long,
+  override val source: String = "DPS",
+) : ProbationOfficeAdditionalInformation(probationOfficeId, source)
+
+class ProbationOfficePhoneAdditionalInformation(
+  override val probationOfficeId: String,
+  val phoneId: Long,
+  override val source: String = "DPS",
+) : ProbationOfficeAdditionalInformation(probationOfficeId, source)
+
+open class ApprovedPremisesAdditionalInformation(
+  open val approvedPremisesId: String,
+  override val source: String = "DPS",
 ) : SourcedAdditionalInformation(source)
+
+class ApprovedPremisesEmailAdditionalInformation(
+  override val approvedPremisesId: String,
+  val emailId: Long,
+  override val source: String = "DPS",
+) : ApprovedPremisesAdditionalInformation(approvedPremisesId, source)
+
+class ApprovedPremisesAddressAdditionalInformation(
+  override val approvedPremisesId: String,
+  val addressId: Long,
+  override val source: String = "DPS",
+) : ApprovedPremisesAdditionalInformation(approvedPremisesId, source)
+
+class ApprovedPremisesPhoneAdditionalInformation(
+  override val approvedPremisesId: String,
+  val phoneId: Long,
+  override val source: String = "DPS",
+) : ApprovedPremisesAdditionalInformation(approvedPremisesId, source)
 
 data class HMPPSDomainEvent(
   val eventType: String,

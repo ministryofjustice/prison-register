@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
@@ -55,6 +57,9 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
+
+  @MockitoBean
+  private lateinit var snsService: SnsService
 
   @DisplayName("Get agency by id")
   @Nested
@@ -624,6 +629,24 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create agency address")
   @Nested
   inner class CreateOtherAgencyAddress {
+    @Test
+    fun `will send a domain event`() {
+      val addressDto: AgencyAddressDto = webTestClient.post()
+        .uri("/other-agencies/id/SHFCRC/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendAgencyRegisterAddressInsertedEvent(
+        agencyId = eq("SHFCRC"),
+        addressId = eq(addressDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
 
     val createAddressRequest = UpdateAddressDto(
@@ -781,6 +804,24 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create agency phone number")
   @Nested
   inner class CreateOtherAgencyPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      val phoneDto: AgencyPhoneDto = webTestClient.post()
+        .uri("/other-agencies/id/SHFCRC/phone-number")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createPhoneNumberRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendAgencyRegisterPhoneInsertedEvent(
+        agencyId = eq("SHFCRC"),
+        phoneId = eq(phoneDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
@@ -946,6 +987,24 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create agency email address")
   @Nested
   inner class CreateOtherAgencyEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      val emailDto: AgencyEmailDto = webTestClient.post()
+        .uri("/other-agencies/id/SHFCRC/email-address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createEmailAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendAgencyRegisterEmailInsertedEvent(
+        agencyId = eq("SHFCRC"),
+        emailId = eq(emailDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
 
     val createEmailAddressRequest = UpdateEmailAddressDto(address = "newagency@justice.gov.uk")
@@ -1335,6 +1394,24 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update agency address")
   @Nested
   inner class UpdateOtherAgencyAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendAgencyRegisterAddressAmendedEvent(
+        agencyId = eq("SHFCRC"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
     var addressId: Long = -1
 
@@ -1497,6 +1574,24 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update agency phone number")
   @Nested
   inner class UpdateOtherAgencyPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updatePhoneNumberRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendAgencyRegisterPhoneAmendedEvent(
+        agencyId = eq("SHFCRC"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
     var phoneNumberId: Long = -1
 
@@ -1669,6 +1764,24 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update agency email address")
   @Nested
   inner class UpdateOtherAgencyEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateEmailAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendAgencyRegisterEmailAmendedEvent(
+        agencyId = eq("SHFCRC"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
     var emailAddressId: Long = -1
 
@@ -1926,6 +2039,23 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete agency address")
   @Nested
   inner class DeleteOtherAgencyAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/other-agencies/id/SHFCRC/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendAgencyRegisterAddressDeletedEvent(
+        agencyId = eq("SHFCRC"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
     var addressId: Long = -1
 
@@ -2038,6 +2168,23 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete agency phone number")
   @Nested
   inner class DeleteOtherAgencyPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendAgencyRegisterPhoneDeletedEvent(
+        agencyId = eq("SHFCRC"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
     var phoneNumberId: Long = -1
 
@@ -2147,6 +2294,23 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete agency email address")
   @Nested
   inner class DeleteOtherAgencyEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/other-agencies/id/SHFCRC/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendAgencyRegisterEmailDeletedEvent(
+        agencyId = eq("SHFCRC"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var otherAgency: OtherAgency
     var emailAddressId: Long = -1
 
