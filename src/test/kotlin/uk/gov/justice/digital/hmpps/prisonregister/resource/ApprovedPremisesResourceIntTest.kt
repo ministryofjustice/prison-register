@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
@@ -53,6 +55,9 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
+
+  @MockitoBean
+  private lateinit var snsService: SnsService
 
   @DisplayName("Get approved premises by id")
   @Nested
@@ -608,6 +613,24 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update approved premises address")
   @Nested
   inner class UpdateApprovedPremisesAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendApprovedPremisesRegisterAddressAmendedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
     var addressId: Long = -1
 
@@ -769,6 +792,24 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update approved premises phone number")
   @Nested
   inner class UpdateApprovedPremisesPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updatePhoneNumberRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendApprovedPremisesRegisterPhoneAmendedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
     var phoneNumberId: Long = -1
 
@@ -940,6 +981,24 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update approved premises email address")
   @Nested
   inner class UpdateApprovedPremisesEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateEmailAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendApprovedPremisesRegisterEmailAmendedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
     var emailAddressId: Long = -1
 
@@ -1310,6 +1369,24 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create approved premises address")
   @Nested
   inner class CreateApprovedPremisesAddress {
+    @Test
+    fun `will send a domain event`() {
+      val addressDto: AgencyAddressDto = webTestClient.post()
+        .uri("/approved-premises/id/SHEFAP/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendApprovedPremisesRegisterAddressInsertedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        addressId = eq(addressDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
 
     val createAddressRequest = UpdateAddressDto(
@@ -1466,6 +1543,24 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create approved premises phone number")
   @Nested
   inner class CreateApprovedPremisesPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      val phoneDto: AgencyPhoneDto = webTestClient.post()
+        .uri("/approved-premises/id/SHEFAP/phone-number")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createPhoneNumberRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendApprovedPremisesRegisterPhoneInsertedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        phoneId = eq(phoneDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
@@ -1630,6 +1725,24 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create approved premises email address")
   @Nested
   inner class CreateApprovedPremisesEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      val emailDto: AgencyEmailDto = webTestClient.post()
+        .uri("/approved-premises/id/SHEFAP/email-address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createEmailAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendApprovedPremisesRegisterEmailInsertedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        emailId = eq(emailDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
 
     val createEmailAddressRequest = UpdateEmailAddressDto(address = "new@justice.gov.uk")
@@ -1880,6 +1993,23 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete approved premises address")
   @Nested
   inner class DeleteApprovedPremisesAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/approved-premises/id/SHEFAP/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendApprovedPremisesRegisterAddressDeletedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
     var addressId: Long = -1
 
@@ -1991,6 +2121,23 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete approved premises phone number")
   @Nested
   inner class DeleteApprovedPremisesPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/approved-premises/id/SHEFAP/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendApprovedPremisesRegisterPhoneDeletedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
     var phoneNumberId: Long = -1
 
@@ -2099,6 +2246,23 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete approved premises email address")
   @Nested
   inner class DeleteApprovedPremisesEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/approved-premises/id/SHEFAP/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendApprovedPremisesRegisterEmailDeletedEvent(
+        approvedPremisesId = eq("SHEFAP"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var approvedPremises: ApprovedPremises
     var emailAddressId: Long = -1
 

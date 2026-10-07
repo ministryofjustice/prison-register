@@ -297,7 +297,7 @@ class OtherAgencyResource(
   ): AgencyAddressDto {
     val createdAddress = otherAgencyService.createAgencyAddress(agencyId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterAddressInsertedEvent(agencyId, createdAddress.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_ADDRESS_INSERT.name,
       mapOf("agencyId" to agencyId, "address" to createdAddress),
@@ -358,7 +358,7 @@ class OtherAgencyResource(
   ): AgencyAddressDto {
     val updatedAddress = otherAgencyService.updateAgencyAddress(agencyId, addressId, updateAddressDto)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterAddressAmendedEvent(agencyId, updatedAddress.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_ADDRESS_UPDATE.name,
       mapOf("agencyId" to agencyId, "address" to updatedAddress),
@@ -405,7 +405,7 @@ class OtherAgencyResource(
   ) {
     val deletedAddress = otherAgencyService.deleteAgencyAddress(agencyId, addressId)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterAddressDeletedEvent(agencyId, deletedAddress.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_ADDRESS_DELETE.name,
       mapOf("agencyId" to agencyId, "address" to deletedAddress),
@@ -468,7 +468,7 @@ class OtherAgencyResource(
   ): AgencyPhoneDto {
     val createdPhoneNumber = otherAgencyService.createAgencyPhoneNumber(agencyId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterPhoneInsertedEvent(agencyId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_PHONE_INSERT.name,
       mapOf("agencyId" to agencyId, "phoneNumber" to createdPhoneNumber),
@@ -529,7 +529,7 @@ class OtherAgencyResource(
   ): AgencyPhoneDto {
     val updatedPhoneNumber = otherAgencyService.updateAgencyPhoneNumber(agencyId, phoneNumberId, updatePhoneNumberDto)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterPhoneAmendedEvent(agencyId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_PHONE_UPDATE.name,
       mapOf("agencyId" to agencyId, "phoneNumber" to updatedPhoneNumber),
@@ -576,7 +576,7 @@ class OtherAgencyResource(
   ) {
     val deletedPhoneNumber = otherAgencyService.deleteAgencyPhoneNumber(agencyId, phoneNumberId)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterPhoneDeletedEvent(agencyId, deletedPhoneNumber.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_PHONE_DELETE.name,
       mapOf("agencyId" to agencyId, "phoneNumber" to deletedPhoneNumber),
@@ -639,7 +639,7 @@ class OtherAgencyResource(
   ): AgencyEmailDto {
     val createdEmailAddress = otherAgencyService.createAgencyEmailAddress(agencyId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterEmailInsertedEvent(agencyId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_EMAIL_INSERT.name,
       mapOf("agencyId" to agencyId, "emailAddress" to createdEmailAddress),
@@ -700,7 +700,7 @@ class OtherAgencyResource(
   ): AgencyEmailDto {
     val updatedEmailAddress = otherAgencyService.updateAgencyEmailAddress(agencyId, emailAddressId, updateEmailAddressDto)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterEmailAmendedEvent(agencyId, updatedEmailAddress.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_EMAIL_UPDATE.name,
       mapOf("agencyId" to agencyId, "emailAddress" to updatedEmailAddress),
@@ -747,7 +747,7 @@ class OtherAgencyResource(
   ) {
     val deletedEmailAddress = otherAgencyService.deleteAgencyEmailAddress(agencyId, emailAddressId)
     val now = Instant.now()
-    snsService.sendAgencyRegisterAmendedEvent(agencyId, now)
+    snsService.sendAgencyRegisterEmailDeletedEvent(agencyId, deletedEmailAddress.id, now)
     auditService.sendAuditEvent(
       AGENCY_REGISTER_EMAIL_DELETE.name,
       mapOf("agencyId" to agencyId, "emailAddress" to deletedEmailAddress),

@@ -833,6 +833,24 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create court address")
   @Nested
   inner class CreateCourtAddress {
+    @Test
+    fun `will send a domain event`() {
+      val addressDto: AgencyAddressDto = webTestClient.post()
+        .uri("/courts/id/SHEFCC/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendCourtRegisterAddressInsertedEvent(
+        courtId = eq("SHEFCC"),
+        addressId = eq(addressDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
 
     val createAddressRequest = UpdateAddressDto(
@@ -991,6 +1009,24 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update court address")
   @Nested
   inner class UpdateCourtAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendCourtRegisterAddressAmendedEvent(
+        courtId = eq("SHEFCC"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
     var addressId: Long = -1
 
@@ -1154,6 +1190,23 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete court address")
   @Nested
   inner class DeleteCourtAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/courts/id/SHEFCC/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendCourtRegisterAddressDeletedEvent(
+        courtId = eq("SHEFCC"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
     var addressId: Long = -1
 
@@ -1267,6 +1320,24 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create court phone number")
   @Nested
   inner class CreateCourtPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      val phoneDto: AgencyPhoneDto = webTestClient.post()
+        .uri("/courts/id/SHEFCC/phone-number")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createPhoneNumberRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendCourtRegisterPhoneInsertedEvent(
+        courtId = eq("SHEFCC"),
+        phoneId = eq(phoneDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
@@ -1434,6 +1505,24 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update court phone number")
   @Nested
   inner class UpdateCourtPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updatePhoneNumberRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendCourtRegisterPhoneAmendedEvent(
+        courtId = eq("SHEFCC"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
     var phoneNumberId: Long = -1
 
@@ -1607,6 +1696,23 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete court phone number")
   @Nested
   inner class DeleteCourtPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendCourtRegisterPhoneDeletedEvent(
+        courtId = eq("SHEFCC"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
     var phoneNumberId: Long = -1
 
@@ -1878,6 +1984,24 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update court email address")
   @Nested
   inner class UpdateCourtEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateEmailAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendCourtRegisterEmailAmendedEvent(
+        courtId = eq("SHEFCC"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
     var emailAddressId: Long = -1
 
@@ -2026,6 +2150,23 @@ class CourtResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete court email address")
   @Nested
   inner class DeleteCourtEmailAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/courts/id/SHEFCC/email-address/{emailAddressId}", emailAddressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendCourtRegisterEmailDeletedEvent(
+        courtId = eq("SHEFCC"),
+        emailId = eq(emailAddressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var court: Court
     var emailAddressId: Long = -1
 

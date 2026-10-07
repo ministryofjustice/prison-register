@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
@@ -47,6 +49,9 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
+
+  @MockitoBean
+  private lateinit var snsService: SnsService
 
   @DisplayName("Get hospital by id")
   @Nested
@@ -515,6 +520,24 @@ class HospitalResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create hospital address")
   @Nested
   inner class CreateHospitalAddress {
+    @Test
+    fun `will send a domain event`() {
+      val addressDto: AgencyAddressDto = webTestClient.post()
+        .uri("/hospitals/id/SHFHOS/address")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createAddressRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendHospitalRegisterAddressInsertedEvent(
+        hospitalId = eq("SHFHOS"),
+        addressId = eq(addressDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var hospital: Hospital
 
     val createAddressRequest = UpdateAddressDto(
@@ -672,6 +695,24 @@ class HospitalResourceIntTest : IntegrationTestBase() {
   @DisplayName("Create hospital phone number")
   @Nested
   inner class CreateHospitalPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      val phoneDto: AgencyPhoneDto = webTestClient.post()
+        .uri("/hospitals/id/SHFHOS/phone-number")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(createPhoneNumberRequest)
+        .exchange()
+        .expectStatus().isCreated.expectBodyResponse()
+
+      verify(snsService).sendHospitalRegisterPhoneInsertedEvent(
+        hospitalId = eq("SHFHOS"),
+        phoneId = eq(phoneDto.id),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var hospital: Hospital
 
     val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
@@ -943,6 +984,23 @@ class HospitalResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete hospital address")
   @Nested
   inner class DeleteHospitalAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendHospitalRegisterAddressDeletedEvent(
+        hospitalId = eq("SHFHOS"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var hospital: Hospital
     var addressId: Long = -1
 
@@ -1055,6 +1113,23 @@ class HospitalResourceIntTest : IntegrationTestBase() {
   @DisplayName("Delete hospital phone number")
   @Nested
   inner class DeleteHospitalPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.delete()
+        .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isNoContent
+
+      verify(snsService).sendHospitalRegisterPhoneDeletedEvent(
+        hospitalId = eq("SHFHOS"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var hospital: Hospital
     var phoneNumberId: Long = -1
 
@@ -1403,6 +1478,24 @@ class HospitalResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update hospital address")
   @Nested
   inner class UpdateHospitalAddress {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/hospitals/id/SHFHOS/address/{addressId}", addressId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updateAddressRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendHospitalRegisterAddressAmendedEvent(
+        hospitalId = eq("SHFHOS"),
+        addressId = eq(addressId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var hospital: Hospital
     var addressId: Long = -1
 
@@ -1564,6 +1657,24 @@ class HospitalResourceIntTest : IntegrationTestBase() {
   @DisplayName("Update hospital phone number")
   @Nested
   inner class UpdateHospitalPhoneNumber {
+    @Test
+    fun `will send a domain event`() {
+      webTestClient.put()
+        .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .bodyValue(updatePhoneNumberRequest)
+        .exchange()
+        .expectStatus().isOk
+
+      verify(snsService).sendHospitalRegisterPhoneAmendedEvent(
+        hospitalId = eq("SHFHOS"),
+        phoneId = eq(phoneNumberId),
+        occurredAt = any(),
+        source = eq("DPS"),
+      )
+    }
+
     lateinit var hospital: Hospital
     var phoneNumberId: Long = -1
 
