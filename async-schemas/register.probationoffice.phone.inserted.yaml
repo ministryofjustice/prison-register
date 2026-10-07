@@ -1,0 +1,23 @@
+name: register.probationoffice.phone.inserted
+title: register.probationoffice.phone.inserted
+summary: A probation office phone number has been inserted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/probationOfficePhone
+    description:
+      type: string
+      const: A probation office phone number has been inserted
+    eventType:
+      type: string
+      const: register.probationoffice.phone.inserted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

@@ -1,0 +1,23 @@
+name: register.hospital.address.deleted
+title: register.hospital.address.deleted
+summary: A hospital address has been deleted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/hospitalAddress
+    description:
+      type: string
+      const: A hospital address has been deleted
+    eventType:
+      type: string
+      const: register.hospital.address.deleted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

@@ -1,0 +1,23 @@
+name: register.probationoffice.email.amended
+title: register.probationoffice.email.amended
+summary: A probation office email has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/probationOfficeEmail
+    description:
+      type: string
+      const: A probation office email has been amended
+    eventType:
+      type: string
+      const: register.probationoffice.email.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

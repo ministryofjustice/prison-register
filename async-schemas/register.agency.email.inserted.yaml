@@ -1,0 +1,23 @@
+name: register.agency.email.inserted
+title: register.agency.email.inserted
+summary: An agency email has been inserted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/agencyEmail
+    description:
+      type: string
+      const: An agency email has been inserted
+    eventType:
+      type: string
+      const: register.agency.email.inserted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

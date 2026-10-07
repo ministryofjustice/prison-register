@@ -1,0 +1,23 @@
+name: register.hospital.amended
+title: register.hospital.amended
+summary: A hospital has been updated
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/hospital
+    description:
+      type: string
+      const: A hospital has been updated
+    eventType:
+      type: string
+      const: register.hospital.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

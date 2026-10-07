@@ -1,0 +1,23 @@
+name: register.approvedpremises.address.amended
+title: register.approvedpremises.address.amended
+summary: An approved premises address has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/approvedPremisesAddress
+    description:
+      type: string
+      const: An approved premises address has been amended
+    eventType:
+      type: string
+      const: register.approvedpremises.address.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1
