@@ -1,0 +1,35 @@
+name: register.court.amended
+title: register.court.amended
+summary: A court has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      type: object
+      required: [source, courtId]
+      properties:
+        source:
+          type: string
+          description: The source of the information either DPS or NOMIS
+          example: 'DPS'
+        courtId:
+          type: string
+          description: Court ID of the court that has been amended
+          example: 'SHEFCC'
+    description:
+      type: string
+      const: A court has been amended
+    eventType:
+      type: string
+      const: register.court.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+      example: '2026-10-01T09:00:04.8765848Z'
+    version:
+      type: integer
+      description: Version of this event message. Currently 1
+      example: 1
