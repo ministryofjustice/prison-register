@@ -20,8 +20,148 @@ servers:
 
 components:
   messages:
-    register.court.email.inserted:
+    register.prison.inserted:
+      $ref: async-schemas/register.prison.inserted.yaml
+    register.prison.amended:
+      $ref: async-schemas/register.prison.amended.yaml
+    register.court.inserted:
+      $ref: async-schemas/register.court.inserted.yaml
+    register.court.amended:
       $ref: async-schemas/register.court.amended.yaml
+    register.court.deleted:
+      $ref: async-schemas/register.court.deleted.yaml
+    register.court.email.inserted:
+      $ref: async-schemas/register.court.email.inserted.yaml
+    register.court.email.amended:
+      $ref: async-schemas/register.court.email.amended.yaml
+    register.court.email.deleted:
+      $ref: async-schemas/register.court.email.deleted.yaml
+    register.court.address.inserted:
+      $ref: async-schemas/register.court.address.inserted.yaml
+    register.court.address.amended:
+      $ref: async-schemas/register.court.address.amended.yaml
+    register.court.address.deleted:
+      $ref: async-schemas/register.court.address.deleted.yaml
+    register.court.phone.inserted:
+      $ref: async-schemas/register.court.phone.inserted.yaml
+    register.court.phone.amended:
+      $ref: async-schemas/register.court.phone.amended.yaml
+    register.court.phone.deleted:
+      $ref: async-schemas/register.court.phone.deleted.yaml
+    register.agency.inserted:
+      $ref: async-schemas/register.agency.inserted.yaml
+    register.agency.amended:
+      $ref: async-schemas/register.agency.amended.yaml
+    register.agency.deleted:
+      $ref: async-schemas/register.agency.deleted.yaml
+    register.agency.email.inserted:
+      $ref: async-schemas/register.agency.email.inserted.yaml
+    register.agency.email.amended:
+      $ref: async-schemas/register.agency.email.amended.yaml
+    register.agency.email.deleted:
+      $ref: async-schemas/register.agency.email.deleted.yaml
+    register.agency.address.inserted:
+      $ref: async-schemas/register.agency.address.inserted.yaml
+    register.agency.address.amended:
+      $ref: async-schemas/register.agency.address.amended.yaml
+    register.agency.address.deleted:
+      $ref: async-schemas/register.agency.address.deleted.yaml
+    register.agency.phone.inserted:
+      $ref: async-schemas/register.agency.phone.inserted.yaml
+    register.agency.phone.amended:
+      $ref: async-schemas/register.agency.phone.amended.yaml
+    register.agency.phone.deleted:
+      $ref: async-schemas/register.agency.phone.deleted.yaml
+    register.hospital.inserted:
+      $ref: async-schemas/register.hospital.inserted.yaml
+    register.hospital.amended:
+      $ref: async-schemas/register.hospital.amended.yaml
+    register.hospital.deleted:
+      $ref: async-schemas/register.hospital.deleted.yaml
+    register.hospital.address.inserted:
+      $ref: async-schemas/register.hospital.address.inserted.yaml
+    register.hospital.address.amended:
+      $ref: async-schemas/register.hospital.address.amended.yaml
+    register.hospital.address.deleted:
+      $ref: async-schemas/register.hospital.address.deleted.yaml
+    register.hospital.phone.inserted:
+      $ref: async-schemas/register.hospital.phone.inserted.yaml
+    register.hospital.phone.amended:
+      $ref: async-schemas/register.hospital.phone.amended.yaml
+    register.hospital.phone.deleted:
+      $ref: async-schemas/register.hospital.phone.deleted.yaml
+    register.policecustodysuite.inserted:
+      $ref: async-schemas/register.policecustodysuite.inserted.yaml
+    register.policecustodysuite.amended:
+      $ref: async-schemas/register.policecustodysuite.amended.yaml
+    register.policecustodysuite.deleted:
+      $ref: async-schemas/register.policecustodysuite.deleted.yaml
+    register.policecustodysuite.email.inserted:
+      $ref: async-schemas/register.policecustodysuite.email.inserted.yaml
+    register.policecustodysuite.email.amended:
+      $ref: async-schemas/register.policecustodysuite.email.amended.yaml
+    register.policecustodysuite.email.deleted:
+      $ref: async-schemas/register.policecustodysuite.email.deleted.yaml
+    register.policecustodysuite.address.inserted:
+      $ref: async-schemas/register.policecustodysuite.address.inserted.yaml
+    register.policecustodysuite.address.amended:
+      $ref: async-schemas/register.policecustodysuite.address.amended.yaml
+    register.policecustodysuite.address.deleted:
+      $ref: async-schemas/register.policecustodysuite.address.deleted.yaml
+    register.policecustodysuite.phone.inserted:
+      $ref: async-schemas/register.policecustodysuite.phone.inserted.yaml
+    register.policecustodysuite.phone.amended:
+      $ref: async-schemas/register.policecustodysuite.phone.amended.yaml
+    register.policecustodysuite.phone.deleted:
+      $ref: async-schemas/register.policecustodysuite.phone.deleted.yaml
+    register.probationoffice.inserted:
+      $ref: async-schemas/register.probationoffice.inserted.yaml
+    register.probationoffice.amended:
+      $ref: async-schemas/register.probationoffice.amended.yaml
+    register.probationoffice.deleted:
+      $ref: async-schemas/register.probationoffice.deleted.yaml
+    register.probationoffice.email.inserted:
+      $ref: async-schemas/register.probationoffice.email.inserted.yaml
+    register.probationoffice.email.amended:
+      $ref: async-schemas/register.probationoffice.email.amended.yaml
+    register.probationoffice.email.deleted:
+      $ref: async-schemas/register.probationoffice.email.deleted.yaml
+    register.probationoffice.address.inserted:
+      $ref: async-schemas/register.probationoffice.address.inserted.yaml
+    register.probationoffice.address.amended:
+      $ref: async-schemas/register.probationoffice.address.amended.yaml
+    register.probationoffice.address.deleted:
+      $ref: async-schemas/register.probationoffice.address.deleted.yaml
+    register.probationoffice.phone.inserted:
+      $ref: async-schemas/register.probationoffice.phone.inserted.yaml
+    register.probationoffice.phone.amended:
+      $ref: async-schemas/register.probationoffice.phone.amended.yaml
+    register.probationoffice.phone.deleted:
+      $ref: async-schemas/register.probationoffice.phone.deleted.yaml
+    register.approvedpremises.inserted:
+      $ref: async-schemas/register.approvedpremises.inserted.yaml
+    register.approvedpremises.amended:
+      $ref: async-schemas/register.approvedpremises.amended.yaml
+    register.approvedpremises.deleted:
+      $ref: async-schemas/register.approvedpremises.deleted.yaml
+    register.approvedpremises.email.inserted:
+      $ref: async-schemas/register.approvedpremises.email.inserted.yaml
+    register.approvedpremises.email.amended:
+      $ref: async-schemas/register.approvedpremises.email.amended.yaml
+    register.approvedpremises.email.deleted:
+      $ref: async-schemas/register.approvedpremises.email.deleted.yaml
+    register.approvedpremises.address.inserted:
+      $ref: async-schemas/register.approvedpremises.address.inserted.yaml
+    register.approvedpremises.address.amended:
+      $ref: async-schemas/register.approvedpremises.address.amended.yaml
+    register.approvedpremises.address.deleted:
+      $ref: async-schemas/register.approvedpremises.address.deleted.yaml
+    register.approvedpremises.phone.inserted:
+      $ref: async-schemas/register.approvedpremises.phone.inserted.yaml
+    register.approvedpremises.phone.amended:
+      $ref: async-schemas/register.approvedpremises.phone.amended.yaml
+    register.approvedpremises.phone.deleted:
+      $ref: async-schemas/register.approvedpremises.phone.deleted.yaml
 
 channels:
   hmpps-domain-events:
@@ -30,8 +170,148 @@ channels:
       sns:
         name: domainevents
     messages:
+      register.prison.inserted:
+        $ref: '#/components/messages/register.prison.inserted'
+      register.prison.amended:
+        $ref: '#/components/messages/register.prison.amended'
+      register.court.inserted:
+        $ref: '#/components/messages/register.court.inserted'
+      register.court.amended:
+        $ref: '#/components/messages/register.court.amended'
+      register.court.deleted:
+        $ref: '#/components/messages/register.court.deleted'
       register.court.email.inserted:
         $ref: '#/components/messages/register.court.email.inserted'
+      register.court.email.amended:
+        $ref: '#/components/messages/register.court.email.amended'
+      register.court.email.deleted:
+        $ref: '#/components/messages/register.court.email.deleted'
+      register.court.address.inserted:
+        $ref: '#/components/messages/register.court.address.inserted'
+      register.court.address.amended:
+        $ref: '#/components/messages/register.court.address.amended'
+      register.court.address.deleted:
+        $ref: '#/components/messages/register.court.address.deleted'
+      register.court.phone.inserted:
+        $ref: '#/components/messages/register.court.phone.inserted'
+      register.court.phone.amended:
+        $ref: '#/components/messages/register.court.phone.amended'
+      register.court.phone.deleted:
+        $ref: '#/components/messages/register.court.phone.deleted'
+      register.agency.inserted:
+        $ref: '#/components/messages/register.agency.inserted'
+      register.agency.amended:
+        $ref: '#/components/messages/register.agency.amended'
+      register.agency.deleted:
+        $ref: '#/components/messages/register.agency.deleted'
+      register.agency.email.inserted:
+        $ref: '#/components/messages/register.agency.email.inserted'
+      register.agency.email.amended:
+        $ref: '#/components/messages/register.agency.email.amended'
+      register.agency.email.deleted:
+        $ref: '#/components/messages/register.agency.email.deleted'
+      register.agency.address.inserted:
+        $ref: '#/components/messages/register.agency.address.inserted'
+      register.agency.address.amended:
+        $ref: '#/components/messages/register.agency.address.amended'
+      register.agency.address.deleted:
+        $ref: '#/components/messages/register.agency.address.deleted'
+      register.agency.phone.inserted:
+        $ref: '#/components/messages/register.agency.phone.inserted'
+      register.agency.phone.amended:
+        $ref: '#/components/messages/register.agency.phone.amended'
+      register.agency.phone.deleted:
+        $ref: '#/components/messages/register.agency.phone.deleted'
+      register.hospital.inserted:
+        $ref: '#/components/messages/register.hospital.inserted'
+      register.hospital.amended:
+        $ref: '#/components/messages/register.hospital.amended'
+      register.hospital.deleted:
+        $ref: '#/components/messages/register.hospital.deleted'
+      register.hospital.address.inserted:
+        $ref: '#/components/messages/register.hospital.address.inserted'
+      register.hospital.address.amended:
+        $ref: '#/components/messages/register.hospital.address.amended'
+      register.hospital.address.deleted:
+        $ref: '#/components/messages/register.hospital.address.deleted'
+      register.hospital.phone.inserted:
+        $ref: '#/components/messages/register.hospital.phone.inserted'
+      register.hospital.phone.amended:
+        $ref: '#/components/messages/register.hospital.phone.amended'
+      register.hospital.phone.deleted:
+        $ref: '#/components/messages/register.hospital.phone.deleted'
+      register.policecustodysuite.inserted:
+        $ref: '#/components/messages/register.policecustodysuite.inserted'
+      register.policecustodysuite.amended:
+        $ref: '#/components/messages/register.policecustodysuite.amended'
+      register.policecustodysuite.deleted:
+        $ref: '#/components/messages/register.policecustodysuite.deleted'
+      register.policecustodysuite.email.inserted:
+        $ref: '#/components/messages/register.policecustodysuite.email.inserted'
+      register.policecustodysuite.email.amended:
+        $ref: '#/components/messages/register.policecustodysuite.email.amended'
+      register.policecustodysuite.email.deleted:
+        $ref: '#/components/messages/register.policecustodysuite.email.deleted'
+      register.policecustodysuite.address.inserted:
+        $ref: '#/components/messages/register.policecustodysuite.address.inserted'
+      register.policecustodysuite.address.amended:
+        $ref: '#/components/messages/register.policecustodysuite.address.amended'
+      register.policecustodysuite.address.deleted:
+        $ref: '#/components/messages/register.policecustodysuite.address.deleted'
+      register.policecustodysuite.phone.inserted:
+        $ref: '#/components/messages/register.policecustodysuite.phone.inserted'
+      register.policecustodysuite.phone.amended:
+        $ref: '#/components/messages/register.policecustodysuite.phone.amended'
+      register.policecustodysuite.phone.deleted:
+        $ref: '#/components/messages/register.policecustodysuite.phone.deleted'
+      register.probationoffice.inserted:
+        $ref: '#/components/messages/register.probationoffice.inserted'
+      register.probationoffice.amended:
+        $ref: '#/components/messages/register.probationoffice.amended'
+      register.probationoffice.deleted:
+        $ref: '#/components/messages/register.probationoffice.deleted'
+      register.probationoffice.email.inserted:
+        $ref: '#/components/messages/register.probationoffice.email.inserted'
+      register.probationoffice.email.amended:
+        $ref: '#/components/messages/register.probationoffice.email.amended'
+      register.probationoffice.email.deleted:
+        $ref: '#/components/messages/register.probationoffice.email.deleted'
+      register.probationoffice.address.inserted:
+        $ref: '#/components/messages/register.probationoffice.address.inserted'
+      register.probationoffice.address.amended:
+        $ref: '#/components/messages/register.probationoffice.address.amended'
+      register.probationoffice.address.deleted:
+        $ref: '#/components/messages/register.probationoffice.address.deleted'
+      register.probationoffice.phone.inserted:
+        $ref: '#/components/messages/register.probationoffice.phone.inserted'
+      register.probationoffice.phone.amended:
+        $ref: '#/components/messages/register.probationoffice.phone.amended'
+      register.probationoffice.phone.deleted:
+        $ref: '#/components/messages/register.probationoffice.phone.deleted'
+      register.approvedpremises.inserted:
+        $ref: '#/components/messages/register.approvedpremises.inserted'
+      register.approvedpremises.amended:
+        $ref: '#/components/messages/register.approvedpremises.amended'
+      register.approvedpremises.deleted:
+        $ref: '#/components/messages/register.approvedpremises.deleted'
+      register.approvedpremises.email.inserted:
+        $ref: '#/components/messages/register.approvedpremises.email.inserted'
+      register.approvedpremises.email.amended:
+        $ref: '#/components/messages/register.approvedpremises.email.amended'
+      register.approvedpremises.email.deleted:
+        $ref: '#/components/messages/register.approvedpremises.email.deleted'
+      register.approvedpremises.address.inserted:
+        $ref: '#/components/messages/register.approvedpremises.address.inserted'
+      register.approvedpremises.address.amended:
+        $ref: '#/components/messages/register.approvedpremises.address.amended'
+      register.approvedpremises.address.deleted:
+        $ref: '#/components/messages/register.approvedpremises.address.deleted'
+      register.approvedpremises.phone.inserted:
+        $ref: '#/components/messages/register.approvedpremises.phone.inserted'
+      register.approvedpremises.phone.amended:
+        $ref: '#/components/messages/register.approvedpremises.phone.amended'
+      register.approvedpremises.phone.deleted:
+        $ref: '#/components/messages/register.approvedpremises.phone.deleted'
 
 operations:
   publish-event:
@@ -39,4 +319,74 @@ operations:
     channel:
       $ref: '#/channels/hmpps-domain-events'
     messages:
+      - $ref: '#/channels/hmpps-domain-events/messages/register.prison.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.prison.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.deleted'
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.email.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.email.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.email.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.court.phone.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.email.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.email.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.email.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.phone.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.phone.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.email.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.email.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.email.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.policecustodysuite.phone.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.email.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.email.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.email.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.probationoffice.phone.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.email.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.email.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.email.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.approvedpremises.phone.deleted'

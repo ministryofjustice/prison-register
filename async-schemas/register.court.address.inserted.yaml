@@ -1,0 +1,23 @@
+name: register.court.address.inserted
+title: register.court.address.inserted
+summary: A court address has been inserted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/courtAddress
+    description:
+      type: string
+      const: A court address has been inserted
+    eventType:
+      type: string
+      const: register.court.address.inserted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

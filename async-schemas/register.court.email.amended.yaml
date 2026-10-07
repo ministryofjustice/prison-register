@@ -1,0 +1,23 @@
+name: register.court.email.amended
+title: register.court.email.amended
+summary: A court email has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/courtEmail
+    description:
+      type: string
+      const: A court email has been amended
+    eventType:
+      type: string
+      const: register.court.email.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

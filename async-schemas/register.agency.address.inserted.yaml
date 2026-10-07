@@ -1,0 +1,23 @@
+name: register.agency.address.inserted
+title: register.agency.address.inserted
+summary: An agency address has been inserted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/agencyAddress
+    description:
+      type: string
+      const: An agency address has been inserted
+    eventType:
+      type: string
+      const: register.agency.address.inserted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

@@ -1,0 +1,23 @@
+name: register.policecustodysuite.email.amended
+title: register.policecustodysuite.email.amended
+summary: A police custody suite email has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/policeCustodySuiteEmail
+    description:
+      type: string
+      const: A police custody suite email has been amended
+    eventType:
+      type: string
+      const: register.policecustodysuite.email.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

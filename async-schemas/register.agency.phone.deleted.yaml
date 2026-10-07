@@ -1,0 +1,23 @@
+name: register.agency.phone.deleted
+title: register.agency.phone.deleted
+summary: An agency phone number has been deleted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/agencyPhone
+    description:
+      type: string
+      const: An agency phone number has been deleted
+    eventType:
+      type: string
+      const: register.agency.phone.deleted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

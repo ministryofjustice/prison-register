@@ -1,0 +1,305 @@
+prison:
+  type: object
+  required: [prisonId]
+  properties:
+    prisonId:
+      type: string
+      description: Prison ID
+court:
+  type: object
+  required: [source, courtId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    courtId:
+      type: string
+      description: Court ID
+courtEmail:
+  type: object
+  required: [source, courtId, emailId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    courtId:
+      type: string
+      description: Court ID
+    emailId:
+      type: integer
+      format: int64
+      description: Email address ID
+courtAddress:
+  type: object
+  required: [source, courtId, addressId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    courtId:
+      type: string
+      description: Court ID
+    addressId:
+      type: integer
+      format: int64
+      description: Address ID
+courtPhone:
+  type: object
+  required: [source, courtId, phoneId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    courtId:
+      type: string
+      description: Court ID
+    phoneId:
+      type: integer
+      format: int64
+      description: Phone number ID
+agency:
+  type: object
+  required: [source, agencyId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    agencyId:
+      type: string
+      description: Agency ID
+agencyEmail:
+  type: object
+  required: [source, agencyId, emailId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    agencyId:
+      type: string
+      description: Agency ID
+    emailId:
+      type: integer
+      format: int64
+      description: Email address ID
+agencyAddress:
+  type: object
+  required: [source, agencyId, addressId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    agencyId:
+      type: string
+      description: Agency ID
+    addressId:
+      type: integer
+      format: int64
+      description: Address ID
+agencyPhone:
+  type: object
+  required: [source, agencyId, phoneId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    agencyId:
+      type: string
+      description: Agency ID
+    phoneId:
+      type: integer
+      format: int64
+      description: Phone number ID
+hospital:
+  type: object
+  required: [source, hospitalId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    hospitalId:
+      type: string
+      description: Hospital ID
+hospitalAddress:
+  type: object
+  required: [source, hospitalId, addressId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    hospitalId:
+      type: string
+      description: Hospital ID
+    addressId:
+      type: integer
+      format: int64
+      description: Address ID
+hospitalPhone:
+  type: object
+  required: [source, hospitalId, phoneId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    hospitalId:
+      type: string
+      description: Hospital ID
+    phoneId:
+      type: integer
+      format: int64
+      description: Phone number ID
+policeCustodySuite:
+  type: object
+  required: [source, policeCustodySuiteId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    policeCustodySuiteId:
+      type: string
+      description: Police custody suite ID
+policeCustodySuiteEmail:
+  type: object
+  required: [source, policeCustodySuiteId, emailId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    policeCustodySuiteId:
+      type: string
+      description: Police custody suite ID
+    emailId:
+      type: integer
+      format: int64
+      description: Email address ID
+policeCustodySuiteAddress:
+  type: object
+  required: [source, policeCustodySuiteId, addressId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    policeCustodySuiteId:
+      type: string
+      description: Police custody suite ID
+    addressId:
+      type: integer
+      format: int64
+      description: Address ID
+policeCustodySuitePhone:
+  type: object
+  required: [source, policeCustodySuiteId, phoneId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    policeCustodySuiteId:
+      type: string
+      description: Police custody suite ID
+    phoneId:
+      type: integer
+      format: int64
+      description: Phone number ID
+probationOffice:
+  type: object
+  required: [source, probationOfficeId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    probationOfficeId:
+      type: string
+      description: Probation office ID
+probationOfficeEmail:
+  type: object
+  required: [source, probationOfficeId, emailId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    probationOfficeId:
+      type: string
+      description: Probation office ID
+    emailId:
+      type: integer
+      format: int64
+      description: Email address ID
+probationOfficeAddress:
+  type: object
+  required: [source, probationOfficeId, addressId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    probationOfficeId:
+      type: string
+      description: Probation office ID
+    addressId:
+      type: integer
+      format: int64
+      description: Address ID
+probationOfficePhone:
+  type: object
+  required: [source, probationOfficeId, phoneId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    probationOfficeId:
+      type: string
+      description: Probation office ID
+    phoneId:
+      type: integer
+      format: int64
+      description: Phone number ID
+approvedPremises:
+  type: object
+  required: [source, approvedPremisesId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    approvedPremisesId:
+      type: string
+      description: Approved premises ID
+approvedPremisesEmail:
+  type: object
+  required: [source, approvedPremisesId, emailId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    approvedPremisesId:
+      type: string
+      description: Approved premises ID
+    emailId:
+      type: integer
+      format: int64
+      description: Email address ID
+approvedPremisesAddress:
+  type: object
+  required: [source, approvedPremisesId, addressId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    approvedPremisesId:
+      type: string
+      description: Approved premises ID
+    addressId:
+      type: integer
+      format: int64
+      description: Address ID
+approvedPremisesPhone:
+  type: object
+  required: [source, approvedPremisesId, phoneId]
+  properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
+    approvedPremisesId:
+      type: string
+      description: Approved premises ID
+    phoneId:
+      type: integer
+      format: int64
+      description: Phone number ID

@@ -1,6 +1,6 @@
 name: register.court.amended
 title: register.court.amended
-summary: A court has been amended
+summary: A court has been updated
 contentType: application/json
 payload:
   type: object
@@ -13,14 +13,12 @@ payload:
         source:
           type: string
           description: The source of the information either DPS or NOMIS
-          example: 'DPS'
         courtId:
           type: string
           description: Court ID of the court that has been amended
-          example: 'SHEFCC'
     description:
       type: string
-      const: A court has been amended
+      const: A court has been updated
     eventType:
       type: string
       const: register.court.amended
@@ -32,4 +30,3 @@ payload:
     version:
       type: integer
       description: Version of this event message. Currently 1
-      example: 1

@@ -1,0 +1,23 @@
+name: register.agency.deleted
+title: register.agency.deleted
+summary: An agency has been deleted
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/agency
+    description:
+      type: string
+      const: An agency has been deleted
+    eventType:
+      type: string
+      const: register.agency.deleted
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

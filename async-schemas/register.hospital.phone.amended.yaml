@@ -1,0 +1,23 @@
+name: register.hospital.phone.amended
+title: register.hospital.phone.amended
+summary: A hospital phone number has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/hospitalPhone
+    description:
+      type: string
+      const: A hospital phone number has been amended
+    eventType:
+      type: string
+      const: register.hospital.phone.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1

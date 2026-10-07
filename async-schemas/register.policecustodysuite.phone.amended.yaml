@@ -1,0 +1,23 @@
+name: register.policecustodysuite.phone.amended
+title: register.policecustodysuite.phone.amended
+summary: A police custody suite phone number has been amended
+contentType: application/json
+payload:
+  type: object
+  required: [additionalInformation, description, eventType, occurredAt, version]
+  properties:
+    additionalInformation:
+      $ref: ./register.additional-information.yaml#/policeCustodySuitePhone
+    description:
+      type: string
+      const: A police custody suite phone number has been amended
+    eventType:
+      type: string
+      const: register.policecustodysuite.phone.amended
+    occurredAt:
+      type: string
+      description: The date and time the event occurred
+      format: date-time
+    version:
+      type: integer
+      description: Version of this event message. Currently 1
