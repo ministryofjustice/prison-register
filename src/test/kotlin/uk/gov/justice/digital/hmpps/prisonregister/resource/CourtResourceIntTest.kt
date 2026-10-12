@@ -1421,17 +1421,6 @@ class CourtResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `400 if phone number is in an incorrect format`() {
-        webTestClient.post()
-          .uri("/courts/id/SHEFCC/phone-number")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-          .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
-          .exchange()
-          .expectStatus().isBadRequest
-      }
-
-      @Test
       fun `400 if phone number is blank`() {
         webTestClient.post()
           .uri("/courts/id/SHEFCC/phone-number")
@@ -1619,17 +1608,6 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
-      }
-
-      @Test
-      fun `400 if phone number is in an incorrect format`() {
-        webTestClient.put()
-          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-          .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
-          .exchange()
-          .expectStatus().isBadRequest
       }
 
       @Test

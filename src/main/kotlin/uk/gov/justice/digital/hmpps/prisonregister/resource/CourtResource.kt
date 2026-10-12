@@ -33,7 +33,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
-import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_INSERT
@@ -835,7 +834,6 @@ data class UpdatePhoneNumberDto(
   @Schema(description = "Phone number", example = "0114 555 9898", required = true)
   @field:NotBlank(message = "Phone number is required")
   @field:Size(max = 100, message = "Phone number must be no more than 100 characters")
-  @field:ValidPhoneNumber
   val number: String,
 )
 
