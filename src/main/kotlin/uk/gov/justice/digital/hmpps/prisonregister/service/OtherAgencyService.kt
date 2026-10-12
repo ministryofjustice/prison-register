@@ -28,13 +28,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.OtherAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateOtherAgencyDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 
 @Service
 @Transactional
@@ -196,10 +196,10 @@ class OtherAgencyService(
     )
   }
 
-  fun createAgencyPhoneNumber(agencyId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun createAgencyPhoneNumber(agencyId: String, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val agency = otherAgencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
 
-    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    val phoneNumber = PhoneNumber(createOrUpdatePhoneNumberDto.number)
     agency.phoneNumbers += phoneNumber
     otherAgencyRepository.flush()
 
@@ -218,11 +218,11 @@ class OtherAgencyService(
     )
   }
 
-  fun updateAgencyPhoneNumber(agencyId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun updateAgencyPhoneNumber(agencyId: String, phoneNumberId: Long, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val agency = otherAgencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
     val phoneNumber = agency.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for agency $agencyId")
 
-    phoneNumber.value = updatePhoneNumberDto.number
+    phoneNumber.value = createOrUpdatePhoneNumberDto.number
 
     telemetryClient.trackEvent(
       "agency-phone-number-updated",
@@ -260,10 +260,10 @@ class OtherAgencyService(
     )
   }
 
-  fun createAgencyEmailAddress(agencyId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun createAgencyEmailAddress(agencyId: String, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val agency = otherAgencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
 
-    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    val emailAddress = EmailAddress(createOrUpdateEmailAddressDto.address)
     agency.emailAddresses += emailAddress
     otherAgencyRepository.flush()
 
@@ -282,11 +282,11 @@ class OtherAgencyService(
     )
   }
 
-  fun updateAgencyEmailAddress(agencyId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun updateAgencyEmailAddress(agencyId: String, emailAddressId: Long, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val agency = otherAgencyRepository.findByIdOrNull(agencyId) ?: throw EntityNotFoundException("Agency $agencyId not found")
     val emailAddress = agency.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for agency $agencyId")
 
-    emailAddress.value = updateEmailAddressDto.address
+    emailAddress.value = createOrUpdateEmailAddressDto.address
 
     telemetryClient.trackEvent(
       "agency-email-address-updated",

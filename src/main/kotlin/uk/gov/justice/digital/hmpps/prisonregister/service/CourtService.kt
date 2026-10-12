@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtType
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
@@ -31,12 +30,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateCourtDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 
 @Service
 @Transactional
@@ -47,7 +46,6 @@ class CourtService(
   private val courtTypeRepository: CourtTypeRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
-  private val emailAddressRepository: EmailAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
   fun deleteAll() {
@@ -207,10 +205,10 @@ class CourtService(
   }
 
   @Transactional
-  fun createCourtPhoneNumber(courtId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun createCourtPhoneNumber(courtId: String, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
-    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    val phoneNumber = PhoneNumber(createOrUpdatePhoneNumberDto.number)
     court.phoneNumbers += phoneNumber
     courtRepository.flush()
 
@@ -230,11 +228,11 @@ class CourtService(
   }
 
   @Transactional
-  fun updateCourtPhoneNumber(courtId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun updateCourtPhoneNumber(courtId: String, phoneNumberId: Long, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     val phoneNumber = court.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for court $courtId")
 
-    phoneNumber.value = updatePhoneNumberDto.number
+    phoneNumber.value = createOrUpdatePhoneNumberDto.number
 
     telemetryClient.trackEvent(
       "court-phone-number-updated",
@@ -274,10 +272,10 @@ class CourtService(
   }
 
   @Transactional
-  fun createCourtEmailAddress(courtId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun createCourtEmailAddress(courtId: String, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
 
-    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    val emailAddress = EmailAddress(createOrUpdateEmailAddressDto.address)
     court.emailAddresses += emailAddress
     courtRepository.flush()
 
@@ -297,11 +295,11 @@ class CourtService(
   }
 
   @Transactional
-  fun updateCourtEmailAddress(courtId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun updateCourtEmailAddress(courtId: String, emailAddressId: Long, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val court = courtRepository.findByIdOrNull(courtId) ?: throw EntityNotFoundException("Court $courtId not found")
     val emailAddress = court.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for court $courtId")
 
-    emailAddress.value = updateEmailAddressDto.address
+    emailAddress.value = createOrUpdateEmailAddressDto.address
 
     telemetryClient.trackEvent(
       "court-email-address-updated",

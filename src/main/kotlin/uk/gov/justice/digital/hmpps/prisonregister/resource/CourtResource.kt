@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
@@ -33,7 +32,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
-import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhoneNumber
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.COURT_REGISTER_ADDRESS_INSERT
@@ -418,7 +418,7 @@ class CourtResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -462,9 +462,9 @@ class CourtResource(
     @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
     courtId: String,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = courtService.createCourtPhoneNumber(courtId, updatePhoneNumberDto)
+    val createdPhoneNumber = courtService.createCourtPhoneNumber(courtId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendCourtRegisterPhoneInsertedEvent(courtId, createdPhoneNumber.id, now, "DPS")
     auditService.sendAuditEvent(
@@ -482,7 +482,7 @@ class CourtResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -523,9 +523,9 @@ class CourtResource(
     @PathVariable
     phoneNumberId: Long,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = courtService.updateCourtPhoneNumber(courtId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = courtService.updateCourtPhoneNumber(courtId, phoneNumberId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendCourtRegisterPhoneAmendedEvent(courtId, updatedPhoneNumber.id, now, "DPS")
     auditService.sendAuditEvent(
@@ -589,7 +589,7 @@ class CourtResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -633,9 +633,9 @@ class CourtResource(
     @Size(min = 2, max = 6, message = "Court Id must be between 2 and 6 letters")
     courtId: String,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val createdEmailAddress = courtService.createCourtEmailAddress(courtId, updateEmailAddressDto)
+    val createdEmailAddress = courtService.createCourtEmailAddress(courtId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendCourtRegisterEmailInsertedEvent(courtId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -653,7 +653,7 @@ class CourtResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -694,9 +694,9 @@ class CourtResource(
     @PathVariable
     emailAddressId: Long,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val updatedEmailAddress = courtService.updateCourtEmailAddress(courtId, emailAddressId, updateEmailAddressDto)
+    val updatedEmailAddress = courtService.updateCourtEmailAddress(courtId, emailAddressId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendCourtRegisterEmailAmendedEvent(courtId, updatedEmailAddress.id, now, "DPS")
     auditService.sendAuditEvent(
@@ -829,26 +829,6 @@ data class UpdateCourtDto(
   val courtTypeCode: String,
 )
 
-@Schema(description = "Phone Number Update Record")
-@JsonInclude(NON_NULL)
-data class UpdatePhoneNumberDto(
-  @Schema(description = "Phone number", example = "0114 555 9898", required = true)
-  @field:NotBlank(message = "Phone number is required")
-  @field:Size(max = 100, message = "Phone number must be no more than 100 characters")
-  @field:ValidPhoneNumber
-  val number: String,
-)
-
-@Schema(description = "Email Address Update Record")
-@JsonInclude(NON_NULL)
-data class UpdateEmailAddressDto(
-  @Schema(description = "Email address", example = "example@example.com", required = true)
-  @field:NotBlank(message = "Email address is required")
-  @field:Size(max = 100, message = "Email address must be no more than 100 characters")
-  @field:Email(message = "Email address is in an incorrect format")
-  val address: String,
-)
-
 @Schema(description = "Court Create Record")
 @JsonInclude(NON_NULL)
 data class CreateCourtDto(
@@ -894,8 +874,8 @@ data class CreateCourtDto(
   val addresses: List<UpdateAddressDto> = listOf(),
   @Schema(description = "Email addresses")
   @field:Valid
-  val emailAddresses: List<UpdateEmailAddressDto> = listOf(),
+  val emailAddresses: List<CreateOrUpdateEmailAddressDto> = listOf(),
   @Schema(description = "Phone numbers")
   @field:Valid
-  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
+  val phoneNumbers: List<CreateOrUpdatePhoneNumberDto> = listOf(),
 )

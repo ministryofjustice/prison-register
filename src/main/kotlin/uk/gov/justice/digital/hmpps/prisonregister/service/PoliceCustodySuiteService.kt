@@ -25,13 +25,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PoliceCustodySuiteDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePoliceCustodySuiteDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 
 @Service
 @Transactional
@@ -192,10 +192,10 @@ class PoliceCustodySuiteService(
     )
   }
 
-  fun createPoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun createPoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 
-    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    val phoneNumber = PhoneNumber(createOrUpdatePhoneNumberDto.number)
     policeCustodySuite.phoneNumbers += phoneNumber
     policeCustodySuiteRepository.flush()
 
@@ -214,11 +214,11 @@ class PoliceCustodySuiteService(
     )
   }
 
-  fun updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId: String, phoneNumberId: Long, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     val phoneNumber = policeCustodySuite.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for police custody suite $policeCustodySuiteId")
 
-    phoneNumber.value = updatePhoneNumberDto.number
+    phoneNumber.value = createOrUpdatePhoneNumberDto.number
 
     telemetryClient.trackEvent(
       "police-custody-suite-phone-number-updated",
@@ -256,10 +256,10 @@ class PoliceCustodySuiteService(
     )
   }
 
-  fun createPoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun createPoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 
-    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    val emailAddress = EmailAddress(createOrUpdateEmailAddressDto.address)
     policeCustodySuite.emailAddresses += emailAddress
     policeCustodySuiteRepository.flush()
 
@@ -278,11 +278,11 @@ class PoliceCustodySuiteService(
     )
   }
 
-  fun updatePoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun updatePoliceCustodySuiteEmailAddress(policeCustodySuiteId: String, emailAddressId: Long, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val policeCustodySuite = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId) ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
     val emailAddress = policeCustodySuite.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for police custody suite $policeCustodySuiteId")
 
-    emailAddress.value = updateEmailAddressDto.address
+    emailAddress.value = createOrUpdateEmailAddressDto.address
 
     telemetryClient.trackEvent(
       "police-custody-suite-email-address-updated",

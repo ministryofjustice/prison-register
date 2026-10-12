@@ -3,6 +3,9 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 
 @JsonInclude(NON_NULL)
 data class AgencyAddressDto(
@@ -28,3 +31,22 @@ data class AgencyEmailDto(
 )
 
 data class CodeDescription(val code: String, val description: String)
+
+@Schema(description = "Phone Number Update Record")
+@JsonInclude(NON_NULL)
+data class CreateOrUpdatePhoneNumberDto(
+  @Schema(description = "Phone number", example = "0114 555 9898", required = true)
+  @field:NotBlank(message = "Phone number is required")
+  @field:Size(max = 100, message = "Phone number must be no more than 100 characters")
+  val number: String,
+)
+
+@Schema(description = "Email Address Update Record")
+@JsonInclude(NON_NULL)
+data class CreateOrUpdateEmailAddressDto(
+  @Schema(description = "Email address", example = "example@example.com", required = true)
+  @field:NotBlank(message = "Email address is required")
+  @field:Size(max = 100, message = "Email address must be no more than 100 characters")
+  @field:Email(message = "Email address is in an incorrect format")
+  val address: String,
+)

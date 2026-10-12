@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
@@ -380,8 +381,8 @@ class HospitalResourceIntTest : IntegrationTestBase() {
         ),
       ),
       phoneNumbers = listOf(
-        UpdatePhoneNumberDto(number = "0114 555 8989"),
-        UpdatePhoneNumberDto(number = "0114 555 7777"),
+        CreateOrUpdatePhoneNumberDto(number = "0114 555 8989"),
+        CreateOrUpdatePhoneNumberDto(number = "0114 555 7777"),
       ),
     )
 
@@ -715,7 +716,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
     lateinit var hospital: Hospital
 
-    val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
+    val createPhoneNumberRequest = CreateOrUpdatePhoneNumberDto(number = "0114 555 8989")
 
     @BeforeEach
     fun setUp() {
@@ -792,17 +793,6 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
-      }
-
-      @Test
-      fun `400 if phone number is in an incorrect format`() {
-        webTestClient.post()
-          .uri("/hospitals/id/SHFHOS/phone-number")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-          .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
-          .exchange()
-          .expectStatus().isBadRequest
       }
 
       @Test
@@ -1678,7 +1668,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
     lateinit var hospital: Hospital
     var phoneNumberId: Long = -1
 
-    val updatePhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 1234")
+    val updatePhoneNumberRequest = CreateOrUpdatePhoneNumberDto(number = "0114 555 1234")
 
     @BeforeEach
     fun setUp() {
@@ -1769,17 +1759,6 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .bodyValue(updatePhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
-      }
-
-      @Test
-      fun `400 if phone number is in an incorrect format`() {
-        webTestClient.put()
-          .uri("/hospitals/id/SHFHOS/phone-number/{phoneNumberId}", phoneNumberId)
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-          .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
-          .exchange()
-          .expectStatus().isBadRequest
       }
 
       @Test

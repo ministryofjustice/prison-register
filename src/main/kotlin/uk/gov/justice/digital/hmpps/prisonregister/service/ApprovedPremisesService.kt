@@ -28,12 +28,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateApprovedPremisesDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 
 @Service
 @Transactional
@@ -195,10 +195,10 @@ class ApprovedPremisesService(
     )
   }
 
-  fun createApprovedPremisesPhoneNumber(approvedPremisesId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun createApprovedPremisesPhoneNumber(approvedPremisesId: String, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
 
-    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    val phoneNumber = PhoneNumber(createOrUpdatePhoneNumberDto.number)
     approvedPremises.phoneNumbers += phoneNumber
     approvedPremisesRepository.flush()
 
@@ -217,11 +217,11 @@ class ApprovedPremisesService(
     )
   }
 
-  fun updateApprovedPremisesPhoneNumber(approvedPremisesId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun updateApprovedPremisesPhoneNumber(approvedPremisesId: String, phoneNumberId: Long, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
     val phoneNumber = approvedPremises.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for approved premises $approvedPremisesId")
 
-    phoneNumber.value = updatePhoneNumberDto.number
+    phoneNumber.value = createOrUpdatePhoneNumberDto.number
 
     telemetryClient.trackEvent(
       "approved-premises-phone-number-updated",
@@ -259,10 +259,10 @@ class ApprovedPremisesService(
     )
   }
 
-  fun createApprovedPremisesEmailAddress(approvedPremisesId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun createApprovedPremisesEmailAddress(approvedPremisesId: String, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
 
-    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    val emailAddress = EmailAddress(createOrUpdateEmailAddressDto.address)
     approvedPremises.emailAddresses += emailAddress
     approvedPremisesRepository.flush()
 
@@ -281,11 +281,11 @@ class ApprovedPremisesService(
     )
   }
 
-  fun updateApprovedPremisesEmailAddress(approvedPremisesId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun updateApprovedPremisesEmailAddress(approvedPremisesId: String, emailAddressId: Long, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val approvedPremises = approvedPremisesRepository.findByIdOrNull(approvedPremisesId) ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
     val emailAddress = approvedPremises.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for approved premises $approvedPremisesId")
 
-    emailAddress.value = updateEmailAddressDto.address
+    emailAddress.value = createOrUpdateEmailAddressDto.address
 
     telemetryClient.trackEvent(
       "approved-premises-email-address-updated",

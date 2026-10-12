@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.HOSPITAL_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.HOSPITAL_REGISTER_ADDRESS_INSERT
@@ -321,7 +322,7 @@ class HospitalResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -365,9 +366,9 @@ class HospitalResource(
     @Size(min = 2, max = 6, message = "Hospital Id must be between 2 and 6 letters")
     hospitalId: String,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = hospitalService.createHospitalPhoneNumber(hospitalId, updatePhoneNumberDto)
+    val createdPhoneNumber = hospitalService.createHospitalPhoneNumber(hospitalId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendHospitalRegisterPhoneInsertedEvent(hospitalId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -385,7 +386,7 @@ class HospitalResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -426,9 +427,9 @@ class HospitalResource(
     @PathVariable
     phoneNumberId: Long,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = hospitalService.updateHospitalPhoneNumber(hospitalId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = hospitalService.updateHospitalPhoneNumber(hospitalId, phoneNumberId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendHospitalRegisterPhoneAmendedEvent(hospitalId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -669,5 +670,5 @@ data class CreateHospitalDto(
   val addresses: List<UpdateAddressDto> = listOf(),
   @Schema(description = "Phone numbers")
   @field:Valid
-  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
+  val phoneNumbers: List<CreateOrUpdatePhoneNumberDto> = listOf(),
 )

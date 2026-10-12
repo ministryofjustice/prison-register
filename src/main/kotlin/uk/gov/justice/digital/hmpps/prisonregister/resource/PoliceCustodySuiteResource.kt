@@ -30,6 +30,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.POLICE_CUSTODY_SUITE_REGISTER_ADDRESS_INSERT
@@ -413,7 +415,7 @@ class PoliceCustodySuiteResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -457,9 +459,9 @@ class PoliceCustodySuiteResource(
     @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
     policeCustodySuiteId: String,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = policeCustodySuiteService.createPoliceCustodySuitePhoneNumber(policeCustodySuiteId, updatePhoneNumberDto)
+    val createdPhoneNumber = policeCustodySuiteService.createPoliceCustodySuitePhoneNumber(policeCustodySuiteId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendPoliceCustodySuiteRegisterPhoneInsertedEvent(policeCustodySuiteId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -477,7 +479,7 @@ class PoliceCustodySuiteResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -518,9 +520,9 @@ class PoliceCustodySuiteResource(
     @PathVariable
     phoneNumberId: Long,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = policeCustodySuiteService.updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = policeCustodySuiteService.updatePoliceCustodySuitePhoneNumber(policeCustodySuiteId, phoneNumberId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendPoliceCustodySuiteRegisterPhoneAmendedEvent(policeCustodySuiteId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -584,7 +586,7 @@ class PoliceCustodySuiteResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -628,9 +630,9 @@ class PoliceCustodySuiteResource(
     @Size(min = 2, max = 6, message = "Police Custody Suite Id must be between 2 and 6 letters")
     policeCustodySuiteId: String,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val createdEmailAddress = policeCustodySuiteService.createPoliceCustodySuiteEmailAddress(policeCustodySuiteId, updateEmailAddressDto)
+    val createdEmailAddress = policeCustodySuiteService.createPoliceCustodySuiteEmailAddress(policeCustodySuiteId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendPoliceCustodySuiteRegisterEmailInsertedEvent(policeCustodySuiteId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -648,7 +650,7 @@ class PoliceCustodySuiteResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -689,9 +691,9 @@ class PoliceCustodySuiteResource(
     @PathVariable
     emailAddressId: Long,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val updatedEmailAddress = policeCustodySuiteService.updatePoliceCustodySuiteEmailAddress(policeCustodySuiteId, emailAddressId, updateEmailAddressDto)
+    val updatedEmailAddress = policeCustodySuiteService.updatePoliceCustodySuiteEmailAddress(policeCustodySuiteId, emailAddressId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendPoliceCustodySuiteRegisterEmailAmendedEvent(policeCustodySuiteId, updatedEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -839,8 +841,8 @@ data class CreatePoliceCustodySuiteDto(
   val addresses: List<UpdateAddressDto> = listOf(),
   @Schema(description = "Email addresses")
   @field:Valid
-  val emailAddresses: List<UpdateEmailAddressDto> = listOf(),
+  val emailAddresses: List<CreateOrUpdateEmailAddressDto> = listOf(),
   @Schema(description = "Phone numbers")
   @field:Valid
-  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
+  val phoneNumbers: List<CreateOrUpdatePhoneNumberDto> = listOf(),
 )

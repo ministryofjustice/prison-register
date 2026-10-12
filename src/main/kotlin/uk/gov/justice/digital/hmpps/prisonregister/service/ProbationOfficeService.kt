@@ -28,13 +28,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.ProbationOfficeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateEmailAddressDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateProbationOfficeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 
 @Service
 @Transactional
@@ -196,10 +196,10 @@ class ProbationOfficeService(
     )
   }
 
-  fun createProbationOfficePhoneNumber(probationOfficeId: String, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun createProbationOfficePhoneNumber(probationOfficeId: String, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
 
-    val phoneNumber = PhoneNumber(updatePhoneNumberDto.number)
+    val phoneNumber = PhoneNumber(createOrUpdatePhoneNumberDto.number)
     probationOffice.phoneNumbers += phoneNumber
     probationOfficeRepository.flush()
 
@@ -218,11 +218,11 @@ class ProbationOfficeService(
     )
   }
 
-  fun updateProbationOfficePhoneNumber(probationOfficeId: String, phoneNumberId: Long, updatePhoneNumberDto: UpdatePhoneNumberDto): AgencyPhoneDto {
+  fun updateProbationOfficePhoneNumber(probationOfficeId: String, phoneNumberId: Long, createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto): AgencyPhoneDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
     val phoneNumber = probationOffice.phoneNumbers.find { it.id == phoneNumberId } ?: throw EntityNotFoundException("Phone number $phoneNumberId not found for probation office $probationOfficeId")
 
-    phoneNumber.value = updatePhoneNumberDto.number
+    phoneNumber.value = createOrUpdatePhoneNumberDto.number
 
     telemetryClient.trackEvent(
       "probation-office-phone-number-updated",
@@ -260,10 +260,10 @@ class ProbationOfficeService(
     )
   }
 
-  fun createProbationOfficeEmailAddress(probationOfficeId: String, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun createProbationOfficeEmailAddress(probationOfficeId: String, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
 
-    val emailAddress = EmailAddress(updateEmailAddressDto.address)
+    val emailAddress = EmailAddress(createOrUpdateEmailAddressDto.address)
     probationOffice.emailAddresses += emailAddress
     probationOfficeRepository.flush()
 
@@ -282,11 +282,11 @@ class ProbationOfficeService(
     )
   }
 
-  fun updateProbationOfficeEmailAddress(probationOfficeId: String, emailAddressId: Long, updateEmailAddressDto: UpdateEmailAddressDto): AgencyEmailDto {
+  fun updateProbationOfficeEmailAddress(probationOfficeId: String, emailAddressId: Long, createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto): AgencyEmailDto {
     val probationOffice = probationOfficeRepository.findByIdOrNull(probationOfficeId) ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
     val emailAddress = probationOffice.emailAddresses.find { it.id == emailAddressId } ?: throw EntityNotFoundException("Email address $emailAddressId not found for probation office $probationOfficeId")
 
-    emailAddress.value = updateEmailAddressDto.address
+    emailAddress.value = createOrUpdateEmailAddressDto.address
 
     telemetryClient.trackEvent(
       "probation-office-email-address-updated",
