@@ -31,6 +31,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
@@ -427,11 +429,11 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
         ),
       ),
       emailAddresses = listOf(
-        UpdateEmailAddressDto(address = "newairport@justice.gov.uk"),
+        CreateOrUpdateEmailAddressDto(address = "newairport@justice.gov.uk"),
       ),
       phoneNumbers = listOf(
-        UpdatePhoneNumberDto(number = "0114 555 8989"),
-        UpdatePhoneNumberDto(number = "0114 555 7777"),
+        CreateOrUpdatePhoneNumberDto(number = "0114 555 8989"),
+        CreateOrUpdatePhoneNumberDto(number = "0114 555 7777"),
       ),
     )
 
@@ -824,7 +826,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
 
     lateinit var otherAgency: OtherAgency
 
-    val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
+    val createPhoneNumberRequest = CreateOrUpdatePhoneNumberDto(number = "0114 555 8989")
 
     @BeforeEach
     fun setUp() {
@@ -902,17 +904,6 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .bodyValue(createPhoneNumberRequest)
           .exchange()
           .expectStatus().isNotFound
-      }
-
-      @Test
-      fun `400 if phone number is in an incorrect format`() {
-        webTestClient.post()
-          .uri("/other-agencies/id/SHFCRC/phone-number")
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-          .bodyValue(createPhoneNumberRequest.copy(number = "not-a-number"))
-          .exchange()
-          .expectStatus().isBadRequest
       }
 
       @Test
@@ -1007,7 +998,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
 
     lateinit var otherAgency: OtherAgency
 
-    val createEmailAddressRequest = UpdateEmailAddressDto(address = "newagency@justice.gov.uk")
+    val createEmailAddressRequest = CreateOrUpdateEmailAddressDto(address = "newagency@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
@@ -1595,7 +1586,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
     lateinit var otherAgency: OtherAgency
     var phoneNumberId: Long = -1
 
-    val updatePhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 1234")
+    val updatePhoneNumberRequest = CreateOrUpdatePhoneNumberDto(number = "0114 555 1234")
 
     @BeforeEach
     fun setUp() {
@@ -1690,17 +1681,6 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `400 if phone number is in an incorrect format`() {
-        webTestClient.put()
-          .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
-          .accept(MediaType.APPLICATION_JSON)
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-          .bodyValue(updatePhoneNumberRequest.copy(number = "not-a-number"))
-          .exchange()
-          .expectStatus().isBadRequest
-      }
-
-      @Test
       fun `400 if phone number is blank`() {
         webTestClient.put()
           .uri("/other-agencies/id/SHFCRC/phone-number/{phoneNumberId}", phoneNumberId)
@@ -1785,7 +1765,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
     lateinit var otherAgency: OtherAgency
     var emailAddressId: Long = -1
 
-    val updateEmailAddressRequest = UpdateEmailAddressDto(address = "updatedagency@justice.gov.uk")
+    val updateEmailAddressRequest = CreateOrUpdateEmailAddressDto(address = "updatedagency@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {

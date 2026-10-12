@@ -30,6 +30,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
@@ -1340,7 +1342,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
     lateinit var court: Court
 
-    val createPhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 8989")
+    val createPhoneNumberRequest = CreateOrUpdatePhoneNumberDto(number = "0114 555 8989")
 
     @BeforeEach
     fun setUp() {
@@ -1515,7 +1517,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
     lateinit var court: Court
     var phoneNumberId: Long = -1
 
-    val updatePhoneNumberRequest = UpdatePhoneNumberDto(number = "0114 555 1234")
+    val updatePhoneNumberRequest = CreateOrUpdatePhoneNumberDto(number = "0114 555 1234")
 
     @BeforeEach
     fun setUp() {
@@ -1803,7 +1805,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
   inner class CreateCourtEmailAddress {
     lateinit var court: Court
 
-    val createEmailAddressRequest = UpdateEmailAddressDto(address = "new@justice.gov.uk")
+    val createEmailAddressRequest = CreateOrUpdateEmailAddressDto(address = "new@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
@@ -1983,7 +1985,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
     lateinit var court: Court
     var emailAddressId: Long = -1
 
-    val updateEmailAddressRequest = UpdateEmailAddressDto(address = "updated@justice.gov.uk")
+    val updateEmailAddressRequest = CreateOrUpdateEmailAddressDto(address = "updated@justice.gov.uk")
 
     @BeforeEach
     fun setUp() {
@@ -2280,11 +2282,11 @@ class CourtResourceIntTest : IntegrationTestBase() {
         ),
       ),
       emailAddresses = listOf(
-        UpdateEmailAddressDto(address = "test@justice.gov.uk"),
+        CreateOrUpdateEmailAddressDto(address = "test@justice.gov.uk"),
       ),
       phoneNumbers = listOf(
-        UpdatePhoneNumberDto(number = "0114 555 8989"),
-        UpdatePhoneNumberDto(number = "0114 555 7777"),
+        CreateOrUpdatePhoneNumberDto(number = "0114 555 8989"),
+        CreateOrUpdatePhoneNumberDto(number = "0114 555 7777"),
       ),
     )
 

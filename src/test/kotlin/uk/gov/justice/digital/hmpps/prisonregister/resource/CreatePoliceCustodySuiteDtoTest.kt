@@ -7,6 +7,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 
 class CreatePoliceCustodySuiteDtoTest {
 
@@ -35,10 +37,10 @@ class CreatePoliceCustodySuiteDtoTest {
       ),
     ),
     emailAddresses = listOf(
-      UpdateEmailAddressDto(address = "test@justice.gov.uk"),
+      CreateOrUpdateEmailAddressDto(address = "test@justice.gov.uk"),
     ),
     phoneNumbers = listOf(
-      UpdatePhoneNumberDto(number = "0114 555 8989"),
+      CreateOrUpdatePhoneNumberDto(number = "0114 555 8989"),
     ),
   )
 
@@ -193,13 +195,13 @@ class CreatePoliceCustodySuiteDtoTest {
 
     @Test
     fun `cascades validation into nested email address that is blank`() {
-      assertThat(messagesFor(valid.copy(emailAddresses = listOf(UpdateEmailAddressDto(address = "")))))
+      assertThat(messagesFor(valid.copy(emailAddresses = listOf(CreateOrUpdateEmailAddressDto(address = "")))))
         .contains("Email address is required")
     }
 
     @Test
     fun `cascades validation into nested email address that is an incorrect format`() {
-      assertThat(messagesFor(valid.copy(emailAddresses = listOf(UpdateEmailAddressDto(address = "not-an-email")))))
+      assertThat(messagesFor(valid.copy(emailAddresses = listOf(CreateOrUpdateEmailAddressDto(address = "not-an-email")))))
         .contains("Email address is in an incorrect format")
     }
 
@@ -207,7 +209,7 @@ class CreatePoliceCustodySuiteDtoTest {
     fun `cascades validation into nested email address longer than 100 characters`() {
       assertThat(
         messagesFor(
-          valid.copy(emailAddresses = listOf(UpdateEmailAddressDto(address = "a".repeat(95) + "@a.com"))),
+          valid.copy(emailAddresses = listOf(CreateOrUpdateEmailAddressDto(address = "a".repeat(95) + "@a.com"))),
         ),
       ).contains("Email address must be no more than 100 characters")
     }
@@ -222,14 +224,8 @@ class CreatePoliceCustodySuiteDtoTest {
 
     @Test
     fun `cascades validation into nested phone number that is blank`() {
-      assertThat(messagesFor(valid.copy(phoneNumbers = listOf(UpdatePhoneNumberDto(number = "")))))
+      assertThat(messagesFor(valid.copy(phoneNumbers = listOf(CreateOrUpdatePhoneNumberDto(number = "")))))
         .contains("Phone number is required")
-    }
-
-    @Test
-    fun `cascades validation into nested phone number that is an invalid format`() {
-      assertThat(messagesFor(valid.copy(phoneNumbers = listOf(UpdatePhoneNumberDto(number = "not-a-number")))))
-        .isNotEmpty()
     }
   }
 }

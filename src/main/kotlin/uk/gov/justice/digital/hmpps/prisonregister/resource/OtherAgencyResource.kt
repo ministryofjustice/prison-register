@@ -32,6 +32,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.AGENCY_REGISTER_ADDRESS_INSERT
@@ -420,7 +422,7 @@ class OtherAgencyResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -464,9 +466,9 @@ class OtherAgencyResource(
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
     agencyId: String,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = otherAgencyService.createAgencyPhoneNumber(agencyId, updatePhoneNumberDto)
+    val createdPhoneNumber = otherAgencyService.createAgencyPhoneNumber(agencyId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterPhoneInsertedEvent(agencyId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -484,7 +486,7 @@ class OtherAgencyResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -525,9 +527,9 @@ class OtherAgencyResource(
     @PathVariable
     phoneNumberId: Long,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = otherAgencyService.updateAgencyPhoneNumber(agencyId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = otherAgencyService.updateAgencyPhoneNumber(agencyId, phoneNumberId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterPhoneAmendedEvent(agencyId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -591,7 +593,7 @@ class OtherAgencyResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -635,9 +637,9 @@ class OtherAgencyResource(
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 letters")
     agencyId: String,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val createdEmailAddress = otherAgencyService.createAgencyEmailAddress(agencyId, updateEmailAddressDto)
+    val createdEmailAddress = otherAgencyService.createAgencyEmailAddress(agencyId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterEmailInsertedEvent(agencyId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -655,7 +657,7 @@ class OtherAgencyResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -696,9 +698,9 @@ class OtherAgencyResource(
     @PathVariable
     emailAddressId: Long,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val updatedEmailAddress = otherAgencyService.updateAgencyEmailAddress(agencyId, emailAddressId, updateEmailAddressDto)
+    val updatedEmailAddress = otherAgencyService.updateAgencyEmailAddress(agencyId, emailAddressId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendAgencyRegisterEmailAmendedEvent(agencyId, updatedEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -856,8 +858,8 @@ data class CreateOtherAgencyDto(
   val addresses: List<UpdateAddressDto> = listOf(),
   @Schema(description = "Email addresses")
   @field:Valid
-  val emailAddresses: List<UpdateEmailAddressDto> = listOf(),
+  val emailAddresses: List<CreateOrUpdateEmailAddressDto> = listOf(),
   @Schema(description = "Phone numbers")
   @field:Valid
-  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
+  val phoneNumbers: List<CreateOrUpdatePhoneNumberDto> = listOf(),
 )

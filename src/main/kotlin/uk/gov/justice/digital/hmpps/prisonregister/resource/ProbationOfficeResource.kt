@@ -31,6 +31,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PROBATION_OFFICE_REGISTER_ADDRESS_DELETE
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PROBATION_OFFICE_REGISTER_ADDRESS_INSERT
@@ -414,7 +416,7 @@ class ProbationOfficeResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -458,9 +460,9 @@ class ProbationOfficeResource(
     @Size(min = 2, max = 6, message = "Probation Office Id must be between 2 and 6 letters")
     probationOfficeId: String,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val createdPhoneNumber = probationOfficeService.createProbationOfficePhoneNumber(probationOfficeId, updatePhoneNumberDto)
+    val createdPhoneNumber = probationOfficeService.createProbationOfficePhoneNumber(probationOfficeId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendProbationOfficeRegisterPhoneInsertedEvent(probationOfficeId, createdPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -478,7 +480,7 @@ class ProbationOfficeResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdatePhoneNumberDto::class),
+          schema = Schema(implementation = CreateOrUpdatePhoneNumberDto::class),
         ),
       ],
     ),
@@ -519,9 +521,9 @@ class ProbationOfficeResource(
     @PathVariable
     phoneNumberId: Long,
     @RequestBody @Valid
-    updatePhoneNumberDto: UpdatePhoneNumberDto,
+    createOrUpdatePhoneNumberDto: CreateOrUpdatePhoneNumberDto,
   ): AgencyPhoneDto {
-    val updatedPhoneNumber = probationOfficeService.updateProbationOfficePhoneNumber(probationOfficeId, phoneNumberId, updatePhoneNumberDto)
+    val updatedPhoneNumber = probationOfficeService.updateProbationOfficePhoneNumber(probationOfficeId, phoneNumberId, createOrUpdatePhoneNumberDto)
     val now = Instant.now()
     snsService.sendProbationOfficeRegisterPhoneAmendedEvent(probationOfficeId, updatedPhoneNumber.id, now)
     auditService.sendAuditEvent(
@@ -585,7 +587,7 @@ class ProbationOfficeResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -629,9 +631,9 @@ class ProbationOfficeResource(
     @Size(min = 2, max = 6, message = "Probation Office Id must be between 2 and 6 letters")
     probationOfficeId: String,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val createdEmailAddress = probationOfficeService.createProbationOfficeEmailAddress(probationOfficeId, updateEmailAddressDto)
+    val createdEmailAddress = probationOfficeService.createProbationOfficeEmailAddress(probationOfficeId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendProbationOfficeRegisterEmailInsertedEvent(probationOfficeId, createdEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -649,7 +651,7 @@ class ProbationOfficeResource(
       content = [
         Content(
           mediaType = "application/json",
-          schema = Schema(implementation = UpdateEmailAddressDto::class),
+          schema = Schema(implementation = CreateOrUpdateEmailAddressDto::class),
         ),
       ],
     ),
@@ -690,9 +692,9 @@ class ProbationOfficeResource(
     @PathVariable
     emailAddressId: Long,
     @RequestBody @Valid
-    updateEmailAddressDto: UpdateEmailAddressDto,
+    createOrUpdateEmailAddressDto: CreateOrUpdateEmailAddressDto,
   ): AgencyEmailDto {
-    val updatedEmailAddress = probationOfficeService.updateProbationOfficeEmailAddress(probationOfficeId, emailAddressId, updateEmailAddressDto)
+    val updatedEmailAddress = probationOfficeService.updateProbationOfficeEmailAddress(probationOfficeId, emailAddressId, createOrUpdateEmailAddressDto)
     val now = Instant.now()
     snsService.sendProbationOfficeRegisterEmailAmendedEvent(probationOfficeId, updatedEmailAddress.id, now)
     auditService.sendAuditEvent(
@@ -859,8 +861,8 @@ data class CreateProbationOfficeDto(
   val addresses: List<UpdateAddressDto> = listOf(),
   @Schema(description = "Email addresses")
   @field:Valid
-  val emailAddresses: List<UpdateEmailAddressDto> = listOf(),
+  val emailAddresses: List<CreateOrUpdateEmailAddressDto> = listOf(),
   @Schema(description = "Phone numbers")
   @field:Valid
-  val phoneNumbers: List<UpdatePhoneNumberDto> = listOf(),
+  val phoneNumbers: List<CreateOrUpdatePhoneNumberDto> = listOf(),
 )
