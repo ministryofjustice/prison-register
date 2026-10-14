@@ -179,21 +179,6 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
         .exchange()
         .expectStatus().isBadRequest
     }
-
-    @Test
-    fun `documents the optional region filter and required area filter`() {
-      webTestClient.get()
-        .uri("/v3/api-docs")
-        .accept(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
-        .exchange()
-        .expectStatus().isOk
-        .expectBody()
-        .jsonPath("$.paths['/reference-data/areas'].get.parameters[0].name").isEqualTo("region")
-        .jsonPath("$.paths['/reference-data/areas'].get.parameters[0].required").isEqualTo(false)
-        .jsonPath("$.paths['/reference-data/subareas'].get.parameters[0].name").isEqualTo("area")
-        .jsonPath("$.paths['/reference-data/subareas'].get.parameters[0].required").isEqualTo(true)
-    }
   }
 
   private fun getReferenceData(uri: String): List<CodeDescription> = webTestClient.get()

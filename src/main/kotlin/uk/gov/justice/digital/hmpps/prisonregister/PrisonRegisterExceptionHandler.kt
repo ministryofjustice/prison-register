@@ -95,7 +95,7 @@ class PrisonRegisterExceptionHandler {
     log.info("Validation exception: {}", e.message)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message))
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message, userMessage = e.message))
   }
 
   companion object {

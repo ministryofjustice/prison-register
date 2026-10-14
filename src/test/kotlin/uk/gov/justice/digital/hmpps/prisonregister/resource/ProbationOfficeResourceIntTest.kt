@@ -486,7 +486,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for probation office SHEFPB")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for probation office SHEFPB")
       }
 
       @Test
@@ -499,7 +499,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ subarea code not found for probation office SHEFPB")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ subarea code not found for probation office SHEFPB")
       }
 
       @Test
@@ -512,7 +512,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for probation office SHEFPB")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for probation office SHEFPB")
       }
 
       @Test
@@ -525,7 +525,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for probation office SHEFPB")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for probation office SHEFPB")
       }
 
       @Test
@@ -538,7 +538,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for probation office SHEFPB")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for probation office SHEFPB")
       }
 
       @Test
@@ -551,7 +551,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for probation office SHEFPB")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for probation office SHEFPB")
       }
 
       @Test
@@ -1242,7 +1242,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Probation office ${createProbationOfficeRequest.probationOfficeId} already exists")
+        assertThat(errorResponse.userMessage).isEqualTo("Probation office ${createProbationOfficeRequest.probationOfficeId} already exists")
       }
 
       @Test
@@ -1255,7 +1255,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
       }
 
       @Test
@@ -1268,7 +1268,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ subarea code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ subarea code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
       }
 
       @Test
@@ -1281,7 +1281,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
       }
 
       @Test
@@ -1294,7 +1294,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
       }
 
       @Test
@@ -1307,7 +1307,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
       }
 
       @Test
@@ -1320,7 +1320,7 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for probation office ${createProbationOfficeRequest.probationOfficeId}")
       }
 
       @Test

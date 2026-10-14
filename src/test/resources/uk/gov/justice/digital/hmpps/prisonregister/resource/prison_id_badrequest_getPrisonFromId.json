@@ -1,7 +1,7 @@
 {
   "status": 400,
   "errorCode": null,
-  "userMessage": null,
+  "userMessage": "getPrisonFromId.prisonId: Prison Id must be between 3 and 6 letters",
   "developerMessage": "getPrisonFromId.prisonId: Prison Id must be between 3 and 6 letters",
   "moreInfo": null
 }

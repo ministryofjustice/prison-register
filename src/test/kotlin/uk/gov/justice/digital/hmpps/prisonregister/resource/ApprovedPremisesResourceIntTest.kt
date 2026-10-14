@@ -482,7 +482,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for approved premises SHEFAP")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -495,7 +495,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for approved premises SHEFAP")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -508,7 +508,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for approved premises SHEFAP")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -521,7 +521,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for approved premises SHEFAP")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -534,7 +534,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for approved premises SHEFAP")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for approved premises SHEFAP")
       }
 
       @Test
@@ -1223,7 +1223,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Approved premises ${createApprovedPremisesRequest.approvedPremisesId} already exists")
+        assertThat(errorResponse.userMessage).isEqualTo("Approved premises ${createApprovedPremisesRequest.approvedPremisesId} already exists")
       }
 
       @Test
@@ -1236,7 +1236,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1249,7 +1249,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1262,7 +1262,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1275,7 +1275,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test
@@ -1288,7 +1288,7 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for approved premises ${createApprovedPremisesRequest.approvedPremisesId}")
       }
 
       @Test

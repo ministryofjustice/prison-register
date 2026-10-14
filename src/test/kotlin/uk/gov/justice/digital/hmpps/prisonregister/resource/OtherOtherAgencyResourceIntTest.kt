@@ -491,7 +491,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Agency ${createAgencyRequest.agencyId} already exists")
+        assertThat(errorResponse.userMessage).isEqualTo("Agency ${createAgencyRequest.agencyId} already exists")
       }
 
       @Test
@@ -504,7 +504,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency ${createAgencyRequest.agencyId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for agency ${createAgencyRequest.agencyId}")
       }
 
       @Test
@@ -517,7 +517,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for agency ${createAgencyRequest.agencyId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for agency ${createAgencyRequest.agencyId}")
       }
 
       @Test
@@ -530,7 +530,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency ${createAgencyRequest.agencyId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for agency ${createAgencyRequest.agencyId}")
       }
 
       @Test
@@ -543,7 +543,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency ${createAgencyRequest.agencyId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for agency ${createAgencyRequest.agencyId}")
       }
 
       @Test
@@ -556,7 +556,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency ${createAgencyRequest.agencyId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for agency ${createAgencyRequest.agencyId}")
       }
 
       @Test
@@ -1252,7 +1252,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency SHFCRC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for agency SHFCRC")
       }
 
       @Test
@@ -1265,7 +1265,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for agency SHFCRC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for agency SHFCRC")
       }
 
       @Test
@@ -1278,7 +1278,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency SHFCRC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for agency SHFCRC")
       }
 
       @Test
@@ -1291,7 +1291,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency SHFCRC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for agency SHFCRC")
       }
 
       @Test
@@ -1304,7 +1304,7 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency SHFCRC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for agency SHFCRC")
       }
 
       @Test
