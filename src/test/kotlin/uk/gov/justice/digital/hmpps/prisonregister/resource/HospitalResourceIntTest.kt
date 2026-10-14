@@ -440,7 +440,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Hospital ${createHospitalRequest.hospitalId} already exists")
+        assertThat(errorResponse.userMessage).isEqualTo("Hospital ${createHospitalRequest.hospitalId} already exists")
       }
 
       @Test
@@ -453,7 +453,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for hospital ${createHospitalRequest.hospitalId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for hospital ${createHospitalRequest.hospitalId}")
       }
 
       @Test
@@ -1338,7 +1338,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for hospital SHFHOS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for hospital SHFHOS")
       }
 
       @Test
@@ -1351,7 +1351,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for hospital SHFHOS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for hospital SHFHOS")
       }
 
       @Test
@@ -1364,7 +1364,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for hospital SHFHOS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for hospital SHFHOS")
       }
 
       @Test
@@ -1377,7 +1377,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for hospital SHFHOS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for hospital SHFHOS")
       }
 
       @Test
@@ -1390,7 +1390,7 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for hospital SHFHOS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for hospital SHFHOS")
       }
 
       @Test

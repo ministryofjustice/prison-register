@@ -473,7 +473,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for police custody suite SHFPCS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for police custody suite SHFPCS")
       }
 
       @Test
@@ -486,7 +486,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for police custody suite SHFPCS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for police custody suite SHFPCS")
       }
 
       @Test
@@ -499,7 +499,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for police custody suite SHFPCS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for police custody suite SHFPCS")
       }
 
       @Test
@@ -512,7 +512,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for police custody suite SHFPCS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for police custody suite SHFPCS")
       }
 
       @Test
@@ -525,7 +525,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for police custody suite SHFPCS")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for police custody suite SHFPCS")
       }
 
       @Test
@@ -1210,7 +1210,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Police custody suite ${createPoliceCustodySuiteRequest.policeCustodySuiteId} already exists")
+        assertThat(errorResponse.userMessage).isEqualTo("Police custody suite ${createPoliceCustodySuiteRequest.policeCustodySuiteId} already exists")
       }
 
       @Test
@@ -1223,7 +1223,7 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for police custody suite ${createPoliceCustodySuiteRequest.policeCustodySuiteId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for police custody suite ${createPoliceCustodySuiteRequest.policeCustodySuiteId}")
       }
 
       @Test

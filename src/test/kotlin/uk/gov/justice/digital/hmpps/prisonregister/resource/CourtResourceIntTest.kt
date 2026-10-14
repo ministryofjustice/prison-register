@@ -579,7 +579,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for court SHEFCC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for court SHEFCC")
       }
 
       @Test
@@ -592,7 +592,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for court SHEFCC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ region code not found for court SHEFCC")
       }
 
       @Test
@@ -605,7 +605,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for court SHEFCC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ geographical area code not found for court SHEFCC")
       }
 
       @Test
@@ -618,7 +618,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for court SHEFCC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ local authority code not found for court SHEFCC")
       }
 
       @Test
@@ -631,7 +631,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for court SHEFCC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ payroll region code not found for court SHEFCC")
       }
 
       @Test
@@ -644,7 +644,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ court type not found for court SHEFCC")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ court type not found for court SHEFCC")
       }
 
       @Test
@@ -2344,7 +2344,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("Court ${createCourtRequest.courtId} already exists")
+        assertThat(errorResponse.userMessage).isEqualTo("Court ${createCourtRequest.courtId} already exists")
       }
 
       @Test
@@ -2357,7 +2357,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for court ${createCourtRequest.courtId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ area code not found for court ${createCourtRequest.courtId}")
       }
 
       @Test
@@ -2370,7 +2370,7 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest.expectBodyResponse()
 
-        assertThat(errorResponse.developerMessage).isEqualTo("ZZZ court type not found for court ${createCourtRequest.courtId}")
+        assertThat(errorResponse.userMessage).isEqualTo("ZZZ court type not found for court ${createCourtRequest.courtId}")
       }
 
       @Test
