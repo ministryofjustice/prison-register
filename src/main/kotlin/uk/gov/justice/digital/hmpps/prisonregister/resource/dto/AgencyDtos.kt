@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import uk.gov.justice.digital.hmpps.prisonregister.resource.validator.ValidPhoneNumber
 
 @JsonInclude(NON_NULL)
 data class AgencyAddressDto(
@@ -38,6 +39,7 @@ data class CreateOrUpdatePhoneNumberDto(
   @Schema(description = "Phone number", example = "0114 555 9898", required = true)
   @field:NotBlank(message = "Phone number is required")
   @field:Size(max = 100, message = "Phone number must be no more than 100 characters")
+  @field:ValidPhoneNumber(message = "Phone number is in an incorrect format")
   val number: String,
 )
 

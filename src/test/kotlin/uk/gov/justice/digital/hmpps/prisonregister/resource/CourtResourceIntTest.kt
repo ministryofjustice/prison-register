@@ -1622,6 +1622,19 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
+
+      @Test
+      fun `400 if phone number is not valid`() {
+        val errorResponse: ErrorResponse = webTestClient.put()
+          .uri("/courts/id/SHEFCC/phone-number/{phoneNumberId}", phoneNumberId)
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .bodyValue(updatePhoneNumberRequest.copy(number = "9999999999"))
+          .exchange()
+          .expectStatus().isBadRequest.expectBodyResponse()
+
+        assertThat(errorResponse.userMessage).isEqualTo("Phone number is in an incorrect format")
+      }
     }
 
     @Nested
