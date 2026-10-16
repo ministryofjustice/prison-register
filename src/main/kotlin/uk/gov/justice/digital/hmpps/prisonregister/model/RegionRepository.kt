@@ -1,7 +1,10 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface RegionRepository : JpaRepository<Region, String>
+interface RegionRepository : JpaRepository<Region, String> {
+  fun findAllByActiveTrue(sort: Sort): List<Region>
+}
