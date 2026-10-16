@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.http.MediaType
+import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 
@@ -98,7 +99,7 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
       firstDescription: String,
       lastDescription: String,
     ) {
-      val data = getReferenceData("/reference-data/$path")
+      val data = getReferenceData("/reference-data/$path?active-only=false")
 
       assertThat(data).hasSize(size)
       assertThat(data).contains(CodeDescription(code, description))
@@ -130,7 +131,7 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
 
     @Test
     fun `will return only areas belonging to the requested region including inactive areas`() {
-      val areas = getReferenceData("/reference-data/areas?region=SW")
+      val areas = getReferenceData("/reference-data/areas?region=SW&active-only=false")
 
       assertThat(areas).containsExactlyInAnyOrder(
         CodeDescription("11", "Avon & Somerset"),
@@ -178,6 +179,54 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
         .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
         .exchange()
         .expectStatus().isBadRequest
+    }
+  }
+
+  @Nested
+  @Sql(
+    statements = [
+      "INSERT INTO region (code, description, active) VALUES ('TEST_ACTIVE', 'Test active', true), ('TEST_INACT', 'Test inactive', false)",
+      "INSERT INTO area (code, description, parent, prison_area, active) VALUES ('TEST_ACTIVE', 'Test active', 'SW', false, true), ('TEST_INACT', 'Test inactive', 'SW', false, false)",
+      "INSERT INTO payroll_region (code, description, active) VALUES ('TEST_ACTIVE', 'Test active', true), ('TEST_INACT', 'Test inactive', false)",
+      "INSERT INTO local_authority (code, description, active) VALUES ('TEST_ACTIVE', 'Test active', true), ('TEST_INACT', 'Test inactive', false)",
+      "INSERT INTO subarea (code, description, parent, active) VALUES ('TEST_ACTIVE', 'Test active', '32', true), ('TEST_INACT', 'Test inactive', '32', false)",
+    ],
+  )
+  @Sql(
+    statements = [
+      "DELETE FROM subarea WHERE code IN ('TEST_ACTIVE', 'TEST_INACT')",
+      "DELETE FROM local_authority WHERE code IN ('TEST_ACTIVE', 'TEST_INACT')",
+      "DELETE FROM payroll_region WHERE code IN ('TEST_ACTIVE', 'TEST_INACT')",
+      "DELETE FROM area WHERE code IN ('TEST_ACTIVE', 'TEST_INACT')",
+      "DELETE FROM region WHERE code IN ('TEST_ACTIVE', 'TEST_INACT')",
+    ],
+    executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+  )
+  inner class ActiveFilter {
+    @ParameterizedTest
+    @ValueSource(
+      strings = [
+        "/reference-data/areas",
+        "/reference-data/regions",
+        "/reference-data/payroll-regions",
+        "/reference-data/local-authorities",
+        "/reference-data/areas?region=SW",
+        "/reference-data/subareas?area=32",
+      ],
+    )
+    fun `will return only active data by default and include inactive data only when requested`(uri: String) {
+      val separator = if (uri.contains("?")) "&" else "?"
+      val active = CodeDescription("TEST_ACTIVE", "Test active")
+      val inactive = CodeDescription("TEST_INACT", "Test inactive")
+
+      val defaultData = getReferenceData(uri)
+      val activeData = getReferenceData("$uri${separator}active-only=true")
+      val allData = getReferenceData("$uri${separator}active-only=false")
+
+      assertThat(defaultData).isEqualTo(activeData)
+      assertThat(activeData).contains(active).doesNotContain(inactive)
+      assertThat(allData).contains(active, inactive).containsAll(activeData)
+      assertThat(allData.filter { it == active || it == inactive }).containsExactly(active, inactive)
     }
   }
 

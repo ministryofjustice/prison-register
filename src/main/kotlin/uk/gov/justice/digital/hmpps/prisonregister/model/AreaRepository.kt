@@ -6,5 +6,9 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface AreaRepository : JpaRepository<Area, String> {
+  fun findAllByActiveTrue(sort: Sort): List<Area>
+
   fun findAllByRegionCode(region: String, sort: Sort): List<Area>
+
+  fun findAllByRegionCodeAndActiveTrue(region: String, sort: Sort): List<Area>
 }

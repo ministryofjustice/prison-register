@@ -38,27 +38,44 @@ class ReferenceDataController(
 ) {
   @GetMapping("/areas")
   @Operation(summary = "Get areas", description = "Returns areas as a flat list of code and description, optionally filtered by parent region code")
-  fun getAreas(@RequestParam(required = false) region: String?): List<CodeDescription> = if (region == null) {
-    referenceDataService.getAreas()
+  fun getAreas(
+    @RequestParam(required = false) region: String?,
+    @Schema(description = "When true (the default) only active areas are returned", example = "true")
+    @RequestParam(name = "active-only", defaultValue = "true") activeOnly: Boolean,
+  ): List<CodeDescription> = if (region == null) {
+    referenceDataService.getAreas(activeOnly)
   } else {
-    referenceDataService.getAreasByRegion(region)
+    referenceDataService.getAreasByRegion(region, activeOnly)
   }
 
   @GetMapping("/regions")
   @Operation(summary = "Get all regions", description = "Returns all regions as a flat list of code and description")
-  fun getRegions(): List<CodeDescription> = referenceDataService.getRegions()
+  fun getRegions(
+    @Schema(description = "When true (the default) only active regions are returned", example = "true")
+    @RequestParam(name = "active-only", defaultValue = "true") activeOnly: Boolean,
+  ): List<CodeDescription> = referenceDataService.getRegions(activeOnly)
 
   @GetMapping("/payroll-regions")
   @Operation(summary = "Get all payroll regions", description = "Returns all payroll regions as a flat list of code and description")
-  fun getPayrollRegions(): List<CodeDescription> = referenceDataService.getPayrollRegions()
+  fun getPayrollRegions(
+    @Schema(description = "When true (the default) only active payroll regions are returned", example = "true")
+    @RequestParam(name = "active-only", defaultValue = "true") activeOnly: Boolean,
+  ): List<CodeDescription> = referenceDataService.getPayrollRegions(activeOnly)
 
   @GetMapping("/local-authorities")
   @Operation(summary = "Get all local authorities", description = "Returns all local authorities as a flat list of code and description")
-  fun getLocalAuthorities(): List<CodeDescription> = referenceDataService.getLocalAuthorities()
+  fun getLocalAuthorities(
+    @Schema(description = "When true (the default) only active local authorities are returned", example = "true")
+    @RequestParam(name = "active-only", defaultValue = "true") activeOnly: Boolean,
+  ): List<CodeDescription> = referenceDataService.getLocalAuthorities(activeOnly)
 
   @GetMapping("/subareas")
   @Operation(summary = "Get subareas by area", description = "Returns subareas with the given parent area code as a flat list of code and description")
-  fun getSubareasByArea(@RequestParam area: String): List<CodeDescription> = referenceDataService.getSubareasByArea(area)
+  fun getSubareasByArea(
+    @RequestParam area: String,
+    @Schema(description = "When true (the default) only active subareas are returned", example = "true")
+    @RequestParam(name = "active-only", defaultValue = "true") activeOnly: Boolean,
+  ): List<CodeDescription> = referenceDataService.getSubareasByArea(area, activeOnly)
 
   @GetMapping("/suggestions/counties")
   @Operation(summary = "Get all county suggestions", description = "Returns all county suggestions as a flat list of code and description")
