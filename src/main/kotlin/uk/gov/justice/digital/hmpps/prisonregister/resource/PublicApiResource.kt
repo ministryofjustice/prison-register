@@ -67,7 +67,7 @@ class PublicApiResource(
       ),
     ],
   )
-  fun getAgency(
+  fun getPublicAgency(
     @Schema(description = "Agency ID", example = "SHEFCC", required = true)
     @PathVariable
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
