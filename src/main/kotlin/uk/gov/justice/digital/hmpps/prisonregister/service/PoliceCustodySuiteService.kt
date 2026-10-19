@@ -373,9 +373,9 @@ class PoliceCustodySuiteService(
       courtTypeCode = null,
       accessibleAccess = null,
       contact = null,
-      addresses = pcs.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
-      emailAddresses = pcs.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
-      phoneNumbers = pcs.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+      addresses = pcs.addresses.map { LegacyAgencyAddressDto(it.id, it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = pcs.emailAddresses.map { LegacyAgencyEmailDto(it.id, it.value) },
+      phoneNumbers = pcs.phoneNumbers.map { LegacyAgencyPhoneDto(it.id, it.value) },
     )
   }
 

@@ -379,9 +379,9 @@ class OtherAgencyService(
       courtTypeCode = null,
       accessibleAccess = agency.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
       contact = null,
-      addresses = agency.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
-      emailAddresses = agency.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
-      phoneNumbers = agency.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+      addresses = agency.addresses.map { LegacyAgencyAddressDto(it.id, it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = agency.emailAddresses.map { LegacyAgencyEmailDto(it.id, it.value) },
+      phoneNumbers = agency.phoneNumbers.map { LegacyAgencyPhoneDto(it.id, it.value) },
     )
   }
 

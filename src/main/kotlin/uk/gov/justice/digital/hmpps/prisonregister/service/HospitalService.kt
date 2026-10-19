@@ -298,9 +298,9 @@ class HospitalService(
       courtTypeCode = null,
       accessibleAccess = null,
       contact = null,
-      addresses = hospital.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      addresses = hospital.addresses.map { LegacyAgencyAddressDto(it.id, it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
       emailAddresses = emptyList(),
-      phoneNumbers = hospital.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+      phoneNumbers = hospital.phoneNumbers.map { LegacyAgencyPhoneDto(it.id, it.value) },
     )
   }
 

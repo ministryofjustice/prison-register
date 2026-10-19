@@ -187,6 +187,39 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   ): LegacyAgencyDto = legacySyncService.getDetails(agencyId)
 
   @Operation(
+    summary = "Returns details of an agency of any type",
+    description = "Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Agency details returned",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to retrieve agency details",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Agency not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/{agencyId}")
+  fun getAgency(
+    @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+    agencyId: String,
+  ): LegacyAgencyDto = legacySyncService.getDetails(agencyId)
+
+  @Operation(
     summary = "Deletes all non-prison agency data",
     description = "Deletes all synchronized agency data except prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
@@ -238,6 +271,7 @@ data class LegacyAgencyDto(
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyAddressDto(
+  @Schema(description = "Database Id", example = "123") val id: Long? = null,
   @Schema(description = "Address line 1", example = "Bawtry Road") val addressLine1: String?,
   @Schema(description = "Address line 2", example = "Hatfield Woodhouse") val addressLine2: String?,
   @Schema(description = "Village/Town/City", example = "Doncaster") val town: String?,
@@ -248,11 +282,13 @@ data class LegacyAgencyAddressDto(
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyPhoneDto(
+  @Schema(description = "Database Id", example = "123") val id: Long? = null,
   @Schema(description = "Phone number", example = "0114 555 9898") val number: String,
 )
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyEmailDto(
+  @Schema(description = "Database Id", example = "123") val id: Long? = null,
   @Schema(description = "Email address", example = "example@example.com") val address: String,
 )
 
