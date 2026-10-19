@@ -378,9 +378,9 @@ class ApprovedPremisesService(
       courtTypeCode = null,
       accessibleAccess = ap.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
       contact = ap.contact,
-      addresses = ap.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
-      emailAddresses = ap.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
-      phoneNumbers = ap.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+      addresses = ap.addresses.map { LegacyAgencyAddressDto(it.id, it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = ap.emailAddresses.map { LegacyAgencyEmailDto(it.id, it.value) },
+      phoneNumbers = ap.phoneNumbers.map { LegacyAgencyPhoneDto(it.id, it.value) },
     )
   }
 

@@ -381,9 +381,9 @@ class ProbationOfficeService(
       courtTypeCode = null,
       accessibleAccess = po.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
       contact = po.contact,
-      addresses = po.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
-      emailAddresses = po.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
-      phoneNumbers = po.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+      addresses = po.addresses.map { LegacyAgencyAddressDto(it.id, it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = po.emailAddresses.map { LegacyAgencyEmailDto(it.id, it.value) },
+      phoneNumbers = po.phoneNumbers.map { LegacyAgencyPhoneDto(it.id, it.value) },
     )
   }
 

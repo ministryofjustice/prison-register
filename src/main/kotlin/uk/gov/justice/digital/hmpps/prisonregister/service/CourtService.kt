@@ -354,9 +354,9 @@ class CourtService(
       courtTypeCode = court.courtType.code.takeUnless { it == "UNK" },
       accessibleAccess = court.accessibleAccess?.let { runCatching { LegacyAccessibleAccess.valueOf(it.name) }.getOrNull() },
       contact = null,
-      addresses = court.addresses.map { LegacyAgencyAddressDto(it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
-      emailAddresses = court.emailAddresses.map { LegacyAgencyEmailDto(it.value) },
-      phoneNumbers = court.phoneNumbers.map { LegacyAgencyPhoneDto(it.value) },
+      addresses = court.addresses.map { LegacyAgencyAddressDto(it.id, it.addressLine1, it.addressLine2, it.town, it.county, it.postcode, it.country) },
+      emailAddresses = court.emailAddresses.map { LegacyAgencyEmailDto(it.id, it.value) },
+      phoneNumbers = court.phoneNumbers.map { LegacyAgencyPhoneDto(it.id, it.value) },
     )
   }
 
