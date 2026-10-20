@@ -74,6 +74,16 @@ class LegacySyncAgencyIsUsedResourceIntTest : IntegrationTestBase() {
         .exchange()
         .expectStatus().isForbidden
     }
+
+    @Test
+    fun `requires correct role for UI this is not used for sync`() {
+      webTestClient.get()
+        .uri("/legacy/agency/MDI/is-used")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+        .exchange()
+        .expectStatus().isForbidden
+    }
   }
 
   @Nested
@@ -83,7 +93,7 @@ class LegacySyncAgencyIsUsedResourceIntTest : IntegrationTestBase() {
       webTestClient.get()
         .uri("/legacy/agency/TOOLONGID/is-used")
         .accept(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
         .exchange()
         .expectStatus().isBadRequest
     }
@@ -96,7 +106,7 @@ class LegacySyncAgencyIsUsedResourceIntTest : IntegrationTestBase() {
       webTestClient.get()
         .uri("/legacy/agency/NOTUSD/is-used")
         .accept(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
         .exchange()
         .expectStatus().isNoContent
         .expectBody().isEmpty
@@ -108,7 +118,7 @@ class LegacySyncAgencyIsUsedResourceIntTest : IntegrationTestBase() {
     private fun isUsed(agencyId: String): LegacyAgencyUsageDto = webTestClient.get()
       .uri("/legacy/agency/$agencyId/is-used")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
       .exchange()
       .expectStatus().isOk
       .expectBodyResponse()
