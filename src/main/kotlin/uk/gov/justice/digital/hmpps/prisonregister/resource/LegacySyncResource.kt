@@ -11,6 +11,7 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -220,6 +221,42 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   ): LegacyAgencyDto = legacySyncService.getDetails(agencyId)
 
   @Operation(
+    summary = "Checks whether an agency id is already in use by any agency type",
+    description = "Checks prisons, courts, hospitals, probation offices, approved premises, police custody suites and generic agencies for the given id. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Agency id is in use; the matching agency name and type are returned",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = LegacyAgencyUsageDto::class))],
+      ),
+      ApiResponse(
+        responseCode = "204",
+        description = "Agency id is not in use",
+        content = [Content()],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to check agency usage",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/agency/{agencyId}/is-used")
+  fun isAgencyIdUsed(
+    @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+    agencyId: String,
+  ): ResponseEntity<LegacyAgencyUsageDto> = legacySyncService.findAgencyUsage(agencyId)
+    ?.let { ResponseEntity.ok(it) }
+    ?: ResponseEntity.noContent().build()
+
+  @Operation(
     summary = "Deletes all non-prison agency data",
     description = "Deletes all synchronized agency data except prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
@@ -293,6 +330,13 @@ data class LegacyAgencyEmailDto(
 )
 
 data class LegacyAgencyResponse(val updated: Boolean)
+
+@Schema(description = "Agency that is using a given agency id")
+data class LegacyAgencyUsageDto(
+  @Schema(description = "NOMIS Agency Id", example = "SHEFCC") val agencyId: String,
+  @Schema(description = "Name", example = "Sheffield Crown Court") val name: String,
+  @Schema(description = "Agency Type", example = "COURT", enumAsRef = true) val legacyType: LegacyAgencyType,
+)
 
 @Suppress("unused")
 enum class LegacyAgencyType {
