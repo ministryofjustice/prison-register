@@ -265,6 +265,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
     ],
   )
   @GetMapping("/agency/{agencyId}/is-used")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
   fun isAgencyIdUsed(
     @Schema(description = "NOMIS Agency Id", example = "SHEFCC", required = true)
     @PathVariable
