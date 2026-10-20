@@ -24,17 +24,19 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.service.LegacySyncService
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import java.time.Instant
 import java.time.LocalDate
 
 @RestController
 @Validated
 @RequestMapping("/legacy", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
-class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: LegacySyncService) {
+class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: LegacySyncService, private val snsService: SnsService) {
 
   @Operation(
     summary = "Creates or updates an agency of any type",
-    description = "Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists, and publishes the corresponding agency-type domain event with source NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = [
         Content(
@@ -74,10 +76,26 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
     @Suppress("unused")
     agencyDto: LegacyAgencyDto,
   ): LegacyAgencyResponse = legacySyncService.createOrUpdateAgency(agencyId, agencyDto).also {
-    // TODO raise appropriate domain events
+    val now = Instant.now()
     if (it.updated) {
+      when (agencyDto.agencyType) {
+        LegacyAgencyType.COURT -> snsService.sendCourtRegisterAmendedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> snsService.sendHospitalRegisterAmendedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.PROBATION_OFFICE -> snsService.sendProbationOfficeRegisterAmendedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.APPROVED_PREMISES -> snsService.sendApprovedPremisesRegisterAmendedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.POLICE_CUSTODY_SUITE -> snsService.sendPoliceCustodySuiteRegisterAmendedEvent(agencyId, now, "NOMIS")
+        else -> snsService.sendAgencyRegisterAmendedEvent(agencyId, now, "NOMIS")
+      }
       telemetry.trackEvent("legacy-sync-agency-updated", mapOf("agencyId" to agencyId), null)
     } else {
+      when (agencyDto.agencyType) {
+        LegacyAgencyType.COURT -> snsService.sendCourtRegisterInsertedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> snsService.sendHospitalRegisterInsertedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.PROBATION_OFFICE -> snsService.sendProbationOfficeRegisterInsertedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.APPROVED_PREMISES -> snsService.sendApprovedPremisesRegisterInsertedEvent(agencyId, now, "NOMIS")
+        LegacyAgencyType.POLICE_CUSTODY_SUITE -> snsService.sendPoliceCustodySuiteRegisterInsertedEvent(agencyId, now, "NOMIS")
+        else -> snsService.sendAgencyRegisterInsertedEvent(agencyId, now, "NOMIS")
+      }
       telemetry.trackEvent("legacy-sync-agency-created", mapOf("agencyId" to agencyId), null)
     }
   }
