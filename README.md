@@ -114,6 +114,17 @@ Then compare to see what's changed:
 diff old_gp_practice.sql new_gp_practice.sql
 ```
 
+## Contact ownership
+
+Email, phone and web address values may be duplicated. Each prison department or agency owns its
+own contact rows; JPA cascade and orphan removal manage their lifecycle without value-based reuse
+or manual cleanup. Optional prison contacts remain represented by absent join-table rows.
+
+Migration `V1_65` splits existing shared rows, retaining the original ID for one owner and assigning
+new IDs to the remaining owners. Agency contact IDs are prioritised over prison contact IDs;
+if agencies share a row, only one can retain its ID. Unshared IDs and all contact values are preserved.
+Deploy with old application instances stopped before migration so they cannot recreate shared ownership.
+
 ## Testing
 
 ### Integration tests

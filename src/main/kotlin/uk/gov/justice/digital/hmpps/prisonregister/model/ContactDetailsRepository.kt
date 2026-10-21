@@ -13,21 +13,6 @@ interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
   )
   fun getEmailAddressByPrisonIdAndDepartment(prisonId: String, departmentType: DepartmentType): String?
 
-  @Query(
-    "SELECT count(c) = 0 FROM ContactDetails c WHERE c.emailAddress.value=:emailAddress",
-  )
-  fun isEmailOrphaned(emailAddress: String): Boolean
-
-  @Query(
-    "SELECT count(c) = 0 FROM ContactDetails c WHERE c.phoneNumber.value=:phoneNumber",
-  )
-  fun isPhoneNumberOrphaned(phoneNumber: String): Boolean
-
-  @Query(
-    "SELECT count(c) = 0 FROM ContactDetails c WHERE c.webAddress.value=:webAddress",
-  )
-  fun isWebAddressOrphaned(webAddress: String): Boolean
-
   @EntityGraph(value = "contact-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   fun getByPrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
 }

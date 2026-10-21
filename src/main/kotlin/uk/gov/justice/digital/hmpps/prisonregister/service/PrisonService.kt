@@ -15,10 +15,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
-import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -28,7 +26,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.CREATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.UPDATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddress
-import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
@@ -42,9 +39,6 @@ const val CLIENT_CAN_MAINTAIN_PRISON_DETAILS = "hasAnyRole('ROLE_MAINTAIN_REF_DA
 class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val contactDetailsRepository: ContactDetailsRepository,
-  private val emailAddressRepository: EmailAddressRepository,
-  private val phoneNumberRepository: PhoneNumberRepository,
-  private val webAddressRepository: WebAddressRepository,
   private val telemetryClient: TelemetryClient,
 ) {
 
@@ -142,33 +136,14 @@ class PrisonService(
     val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
     if (contactDetails == null) {
       prisonRepository.findById(prisonId).orElseThrow { PrisonNotFoundException(prisonId) }
-      val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
-      contactDetailsRepository.save(ContactDetails(prisonId, departmentType, persistedEmailAddress))
+      contactDetailsRepository.save(ContactDetails(prisonId, departmentType, EmailAddress(newEmailAddress)))
       return CREATED
     }
     val oldEmailAddress = contactDetails.emailAddress?.value
     if (oldEmailAddress != newEmailAddress) {
-      updateEmailAddress(newEmailAddress, contactDetails, oldEmailAddress)
+      contactDetails.emailAddress = EmailAddress(newEmailAddress)
     }
     return UPDATED
-  }
-
-  private fun updateEmailAddress(
-    newEmailAddress: String,
-    contactDetails: ContactDetails,
-    oldEmailAddress: String?,
-  ) {
-    val persistedEmailAddress = createOrGetEmailAddress(newEmailAddress)
-
-    persistedEmailAddress.contactDetails.add(contactDetails)
-    contactDetails.emailAddress = persistedEmailAddress
-    contactDetailsRepository.save(contactDetails)
-
-    oldEmailAddress?.let {
-      if (contactDetailsRepository.isEmailOrphaned(oldEmailAddress)) {
-        emailAddressRepository.delete(oldEmailAddress)
-      }
-    }
   }
 
   @Transactional
@@ -177,12 +152,9 @@ class PrisonService(
     LOG.debug("Enter deleteEmailAddress $prisonId / ${departmentType.toMessage()}")
 
     contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)?.let { contactDetails ->
-      contactDetails.emailAddress?.let { emailAddressToBeDeleted ->
+      contactDetails.emailAddress?.let {
         contactDetails.emailAddress = null
         deleteIfEmpty(contactDetails)
-        if (contactDetailsRepository.isEmailOrphaned(emailAddressToBeDeleted.value)) {
-          emailAddressRepository.delete(emailAddressToBeDeleted.value)
-        }
         return
       }
     }
@@ -201,33 +173,6 @@ class PrisonService(
     webAddress == null && phoneNumber == null && emailAddress == null
   }
 
-  private fun createOrGetEmailAddress(
-    newEmailAddress: String,
-  ): EmailAddress {
-    val emailEntity = emailAddressRepository.getByValue(newEmailAddress)
-    return emailEntity?.let {
-      emailEntity
-    } ?: emailAddressRepository.save(EmailAddress(newEmailAddress))
-  }
-
-  private fun createOrGetPhoneNumber(
-    newPhoneNumber: String,
-  ): PhoneNumber {
-    val phoneNumberEntity = phoneNumberRepository.getByValue(newPhoneNumber)
-    return phoneNumberEntity?.let {
-      phoneNumberEntity
-    } ?: phoneNumberRepository.save(PhoneNumber(newPhoneNumber))
-  }
-
-  private fun createOrGetWebAddress(
-    value: String,
-  ): WebAddress {
-    val entity = webAddressRepository.getByValue(value)
-    return entity?.let {
-      entity
-    } ?: webAddressRepository.save(WebAddress(value))
-  }
-
   @Transactional
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun createContactDetails(prisonId: String, contactDetailsDto: ContactDetailsDto): ContactDetailsDto {
@@ -240,13 +185,13 @@ class PrisonService(
     }
 
     val persistedEmailAddress = contactDetailsDto.emailAddress?.let {
-      createOrGetEmailAddress(it)
+      EmailAddress(it)
     }
     val persistedWebAddress = contactDetailsDto.webAddress?.let {
-      createOrGetWebAddress(it)
+      WebAddress(it)
     }
     val persistedPhoneNumber = contactDetailsDto.phoneNumber?.let {
-      createOrGetPhoneNumber(it)
+      PhoneNumber(it)
     }
 
     val entity = ContactDetails(
@@ -274,29 +219,19 @@ class PrisonService(
       )
 
     if (haveContactDetailsChanged(updateContactDetailsDto, contactDetails)) {
-      val originalDetails = ContactDetailsDto(contactDetails)
-
       updateContactDetailsDto.emailAddress?.let {
-        val emailAddress = createOrGetEmailAddress(it)
-        emailAddress.contactDetails.add(contactDetails)
-        contactDetails.emailAddress = emailAddress
+        if (contactDetails.emailAddress?.value != it) contactDetails.emailAddress = EmailAddress(it)
       } ?: run { if (removeIfNull) contactDetails.emailAddress = null }
 
       updateContactDetailsDto.webAddress?.let {
-        val webAddress = createOrGetWebAddress(it)
-        webAddress.contactDetails.add(contactDetails)
-        contactDetails.webAddress = webAddress
+        if (contactDetails.webAddress?.value != it) contactDetails.webAddress = WebAddress(it)
       } ?: run { if (removeIfNull) contactDetails.webAddress = null }
 
       updateContactDetailsDto.phoneNumber?.let {
-        val phoneNumber = createOrGetPhoneNumber(it)
-        phoneNumber.contactDetails.add(contactDetails)
-        contactDetails.phoneNumber = phoneNumber
+        if (contactDetails.phoneNumber?.value != it) contactDetails.phoneNumber = PhoneNumber(it)
       } ?: run { if (removeIfNull) contactDetails.phoneNumber = null }
 
       val persistedEntity = contactDetailsRepository.save(contactDetails)
-
-      removeOrphanedContactDetails(originalDetails)
 
       return ContactDetailsDto(persistedEntity)
     }
@@ -316,34 +251,12 @@ class PrisonService(
       )
 
     contactDetailsRepository.delete(contactDetails)
-
-    removeOrphanedContactDetails(ContactDetailsDto(contactDetails))
   }
 
   @Transactional(readOnly = true)
   fun getPrisonNames(active: Boolean? = null, prisonId: String? = null): List<PrisonNameDto> = prisonRepository.findByActiveOrderByPrisonName(active = active)
     .filter { prisonId == null || it.prisonId == prisonId }
     .map { PrisonNameDto(it.prisonId, it.name, it.prisonNameInWelsh) }
-
-  private fun removeOrphanedContactDetails(contactDetails: ContactDetailsDto) {
-    contactDetails.emailAddress?.let {
-      if (contactDetailsRepository.isEmailOrphaned(it)) {
-        emailAddressRepository.delete(it)
-      }
-    }
-
-    contactDetails.phoneNumber?.let {
-      if (contactDetailsRepository.isPhoneNumberOrphaned(it)) {
-        phoneNumberRepository.delete(it)
-      }
-    }
-
-    contactDetails.webAddress?.let {
-      if (contactDetailsRepository.isWebAddressOrphaned(it)) {
-        webAddressRepository.delete(it)
-      }
-    }
-  }
 
   private fun haveContactDetailsChanged(updateContactDetailsDto: ContactDetailsDto, contactDetails: ContactDetails): Boolean = updateContactDetailsDto.type != contactDetails.type ||
     updateContactDetailsDto.emailAddress != contactDetails.emailAddress?.value ||
