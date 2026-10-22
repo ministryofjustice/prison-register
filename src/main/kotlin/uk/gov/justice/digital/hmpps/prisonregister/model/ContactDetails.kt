@@ -8,9 +8,9 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.NamedAttributeNode
 import jakarta.persistence.NamedEntityGraph
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import org.hibernate.Hibernate
@@ -36,27 +36,27 @@ class ContactDetails(
   @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEOLINK_CONFERENCING_CENTRE','OFFENDER_MANAGEMENT_UNIT','OFFICIAL_VISIT')", nullable = false)
   var type: DepartmentType,
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
+  @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true, optional = true)
   @JoinTable(
     name = "CONTACT_DETAILS_TO_EMAIL_ADDRESS",
     joinColumns = [JoinColumn(name = "contact_details_id")],
-    inverseJoinColumns = [JoinColumn(name = "email_address_id")],
+    inverseJoinColumns = [JoinColumn(name = "email_address_id", unique = true)],
   )
   var emailAddress: EmailAddress? = null,
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
+  @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true, optional = true)
   @JoinTable(
     name = "CONTACT_DETAILS_TO_PHONE_NUMBER",
     joinColumns = [JoinColumn(name = "contact_details_id")],
-    inverseJoinColumns = [JoinColumn(name = "phone_number_id")],
+    inverseJoinColumns = [JoinColumn(name = "phone_number_id", unique = true)],
   )
   var phoneNumber: PhoneNumber? = null,
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.DETACH], optional = true)
+  @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true, optional = true)
   @JoinTable(
     name = "CONTACT_DETAILS_TO_WEB_ADDRESS",
     joinColumns = [JoinColumn(name = "contact_details_id")],
-    inverseJoinColumns = [JoinColumn(name = "web_address_id")],
+    inverseJoinColumns = [JoinColumn(name = "web_address_id", unique = true)],
   )
   var webAddress: WebAddress? = null,
 
