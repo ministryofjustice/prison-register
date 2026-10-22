@@ -3,7 +3,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
   id("org.jetbrains.kotlinx.kover") version "0.9.9"
@@ -19,7 +19,7 @@ configurations {
 }
 
 dependencies {
-  implementation("com.google.guava:guava:33.7.1-jre")
+  implementation("com.google.guava:guava:33.7.2-jre")
   implementation("commons-validator:commons-validator:1.11.0")
   implementation("com.googlecode.libphonenumber:libphonenumber:9.0.40")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
@@ -30,6 +30,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.31.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
+  // TODO remove once springdoc ships swagger-ui with DOMPurify >= 3.4.16 (CVE-2026-109344, CVE-2026-109345)
+  implementation("org.webjars:swagger-ui:5.34.0")
 
   implementation("com.jayway.jsonpath:json-path:3.0.0")
 
@@ -46,7 +48,7 @@ dependencies {
 
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   implementation("com.zaxxer:HikariCP:7.1.0")
-  runtimeOnly("org.postgresql:postgresql:42.7.13")
+  runtimeOnly("org.postgresql:postgresql:42.7.14")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
