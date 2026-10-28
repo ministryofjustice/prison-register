@@ -88,7 +88,7 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     }
 
     @Test
-    fun `When more than one contact details are created for more than one prison, only one of phone, email, web address is persisted`() {
+    fun `When contacts are created for different owners identical values are persisted independently`() {
       // Given
       val prisonId1 = "BRI"
       val prisonId2 = "CFI"
@@ -126,9 +126,9 @@ class CreateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
       responseSpec3.expectStatus().isCreated
       responseSpec4.expectStatus().isCreated
 
-      Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(dto1.phoneNumber!!)).isEqualTo(1)
-      Assertions.assertThat(testEmailAddressRepository.getEmailCount(dto1.emailAddress!!)).isEqualTo(1)
-      Assertions.assertThat(testWebAddressRepository.getWebAddressCount(dto1.webAddress!!)).isEqualTo(1)
+      Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(dto1.phoneNumber!!)).isEqualTo(2)
+      Assertions.assertThat(testEmailAddressRepository.getEmailCount(dto1.emailAddress!!)).isEqualTo(4)
+      Assertions.assertThat(testWebAddressRepository.getWebAddressCount(dto1.webAddress!!)).isEqualTo(2)
     }
 
     @Test

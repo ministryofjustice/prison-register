@@ -84,7 +84,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     }
 
     @Test
-    fun `When more than one contact details are updated for more than one prison, only one of phone, email, web address is persisted`() {
+    fun `When contacts in different prisons retain identical values their rows remain independent`() {
       // Given
       val prisonId1 = "BRI"
       val prisonId2 = "CFI"
@@ -119,7 +119,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
       responseSpec2.expectStatus().isOk
 
       Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(updateRequest1.phoneNumber!!)).isEqualTo(1)
-      Assertions.assertThat(testEmailAddressRepository.getEmailCount(updateRequest1.emailAddress!!)).isEqualTo(1)
+      Assertions.assertThat(testEmailAddressRepository.getEmailCount(updateRequest1.emailAddress!!)).isEqualTo(2)
       Assertions.assertThat(testWebAddressRepository.getWebAddressCount(updateRequest1.webAddress!!)).isEqualTo(1)
     }
 
@@ -154,7 +154,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
       assertContactDetailsEquals(updateRequest, contactDetailsDto)
 
-      Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(persisted.phoneNumber!!)).isEqualTo(1)
+      Assertions.assertThat(testPhoneNumberRepository.getPhoneNumberCount(persisted.phoneNumber!!)).isEqualTo(2)
       Assertions.assertThat(testEmailAddressRepository.getEmailCount(persisted.emailAddress!!)).isEqualTo(1)
       Assertions.assertThat(testWebAddressRepository.getWebAddressCount(persisted.webAddress!!)).isEqualTo(1)
     }
@@ -545,7 +545,7 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
     }
 
     @Test
-    fun `When more than one contact detail is updated for different departments a single instance of phone, email and web address is persisted`() {
+    fun `When contacts in different departments retain identical values their rows remain independent`() {
       val prisonId2 = "CFI"
       val endPoint2 = getContactDetailsEndPoint(prisonId2)
 
@@ -563,9 +563,9 @@ class UpdateContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
       responseSpec1.expectStatus().isOk
       responseSpec2.expectStatus().isOk
 
-      assertThat(testPhoneNumberRepository.getPhoneNumberCount(updateRequest1.phoneNumber!!)).isEqualTo(1)
-      assertThat(testEmailAddressRepository.getEmailCount(updateRequest1.emailAddress!!)).isEqualTo(1)
-      assertThat(testWebAddressRepository.getWebAddressCount(updateRequest1.webAddress!!)).isEqualTo(1)
+      assertThat(testPhoneNumberRepository.getPhoneNumberCount(updateRequest1.phoneNumber!!)).isEqualTo(2)
+      assertThat(testEmailAddressRepository.getEmailCount(updateRequest1.emailAddress!!)).isEqualTo(2)
+      assertThat(testWebAddressRepository.getWebAddressCount(updateRequest1.webAddress!!)).isEqualTo(2)
     }
 
     @Test

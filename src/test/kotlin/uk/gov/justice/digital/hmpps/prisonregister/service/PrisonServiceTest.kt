@@ -31,14 +31,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
-import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
@@ -50,12 +47,9 @@ import java.util.Optional
 class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
   private val contactDetailsRepository: ContactDetailsRepository = mock()
-  private val emailAddressRepository: EmailAddressRepository = mock()
-  private val phoneNumberRepository: PhoneNumberRepository = mock()
-  private val webAddressRepository: WebAddressRepository = mock()
   private val telemetryClient: TelemetryClient = mock()
 
-  private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, emailAddressRepository, phoneNumberRepository, webAddressRepository, telemetryClient)
+  private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, telemetryClient)
 
   @BeforeEach
   fun resetMocks() {
