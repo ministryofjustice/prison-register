@@ -94,9 +94,15 @@ fun LegacyAgencyEmailDto.toAgencyEmail() = EmailAddress(
 )
 
 fun <E, DTO> MutableList<E>.update(dtoList: List<DTO>, compare: (entity: E, dto: DTO) -> Boolean, transform: (DTO) -> E) {
-  val toAdd = dtoList.filter { dto -> this.none { compare(it, dto) } }
-  val toRemove = this.filter { entity -> dtoList.none { compare(entity, it) } }
-  this.removeAll(toRemove)
+  // match entities to dtos one-to-one so duplicates are respected on both sides
+  val unmatched = this.toMutableList()
+  val toAdd = mutableListOf<DTO>()
+  dtoList.forEach { dto ->
+    val match = unmatched.indexOfFirst { compare(it, dto) }
+    if (match >= 0) unmatched.removeAt(match) else toAdd.add(dto)
+  }
+  // identity-based removal so equal entities that were matched are kept
+  this.removeAll { entity -> unmatched.any { it === entity } }
   this.addAll(toAdd.map { transform(it) })
 }
 
