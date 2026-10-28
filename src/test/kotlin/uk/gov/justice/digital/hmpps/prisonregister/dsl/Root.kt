@@ -74,7 +74,7 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: CourtBuilder.() -> Unit,
+    dsl: CourtBuilder.() -> Unit = {},
   ): Court = courtBuilder.build(
     courtId = courtId,
     name = name,
