@@ -923,6 +923,94 @@ class LegacySyncCourtResourceIntTest : IntegrationTestBase() {
               }
             }
           }
+
+          @Nested
+          inner class WithDuplicatePhoneNumber {
+            lateinit var anotherCourt: Court
+            lateinit var anotherCourtWithOnePhone: Court
+
+            @BeforeEach
+            fun setUp() {
+              anotherCourt = dsl.court(
+                courtId = "SHEFCE",
+                name = "Sheffield CE",
+                description = "Sheffield Magistrates' Court",
+                courtTypeCode = "CC",
+              ) {
+                phoneNumber(phoneNumber = "0114 555 1111")
+                phoneNumber(phoneNumber = "0114 555 1111")
+              }
+              anotherCourtWithOnePhone = dsl.court(
+                courtId = "SHEFCF",
+                name = "Sheffield CF",
+                description = "Sheffield District Court",
+                courtTypeCode = "CC",
+              ) {
+                phoneNumber(phoneNumber = "0114 555 2222")
+              }
+            }
+
+            @Test
+            fun `will remove phone numbers even when both duplicate`() {
+              transactionHelper.runInTransaction {
+                with(courtRepository.findByIdOrNull("SHEFCE")!!) {
+                  assertThat(phoneNumbers).hasSize(2)
+                }
+              }
+
+              webTestClient.post()
+                .uri("/legacy/sync/agency/id/{agencyId}", "SHEFCE")
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+                .bodyValue(
+                  courtRequest.copy(
+                    phoneNumbers = listOf(LegacyAgencyPhoneDto(number = "0114 555 1111")),
+                    addresses = emptyList(),
+                    emailAddresses = emptyList(),
+                  ),
+                )
+                .exchange()
+                .expectStatus().isOk
+
+              transactionHelper.runInTransaction {
+                with(courtRepository.findByIdOrNull("SHEFCE")!!) {
+                  assertThat(phoneNumbers).hasSize(1)
+                }
+              }
+            }
+
+            @Test
+            fun `will add phone numbers even when new one is a duplicate`() {
+              transactionHelper.runInTransaction {
+                with(courtRepository.findByIdOrNull("SHEFCF")!!) {
+                  assertThat(phoneNumbers).hasSize(1)
+                }
+              }
+
+              webTestClient.post()
+                .uri("/legacy/sync/agency/id/{agencyId}", "SHEFCF")
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+                .bodyValue(
+                  courtRequest.copy(
+                    phoneNumbers = listOf(
+                      LegacyAgencyPhoneDto(number = "0114 555 2222"),
+                      LegacyAgencyPhoneDto(number = "0114 555 2222"),
+                    ),
+                    addresses = emptyList(),
+                    emailAddresses = emptyList(),
+                  ),
+                )
+                .exchange()
+                .expectStatus().isOk
+
+              transactionHelper.runInTransaction {
+                with(courtRepository.findByIdOrNull("SHEFCF")!!) {
+                  assertThat(phoneNumbers).hasSize(2)
+                }
+              }
+            }
+          }
         }
       }
     }
