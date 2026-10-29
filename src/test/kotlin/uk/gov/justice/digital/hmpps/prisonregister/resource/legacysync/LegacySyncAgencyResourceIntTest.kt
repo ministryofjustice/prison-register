@@ -11,13 +11,20 @@ import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
+import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 
 class LegacySyncAgencyResourceIntTest : IntegrationTestBase() {
 
@@ -40,6 +47,12 @@ class LegacySyncAgencyResourceIntTest : IntegrationTestBase() {
   lateinit var policeCustodySuiteRepository: PoliceCustodySuiteRepository
 
   @Autowired
+  lateinit var prisonRepository: PrisonRepository
+
+  @Autowired
+  lateinit var contactDetailsRepository: ContactDetailsRepository
+
+  @Autowired
   lateinit var dsl: Root
 
   @AfterEach
@@ -50,6 +63,10 @@ class LegacySyncAgencyResourceIntTest : IntegrationTestBase() {
     approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
     otherAgencyRepository.deleteAll()
+    contactDetailsRepository.findAll()
+      .filter { it.prisonId == "LEGPR" }
+      .forEach(contactDetailsRepository::delete)
+    if (prisonRepository.existsById("LEGPR")) prisonRepository.deleteById("LEGPR")
   }
 
   @Nested
@@ -153,6 +170,69 @@ class LegacySyncAgencyResourceIntTest : IntegrationTestBase() {
         assertThat(response.emailAddresses[0].id).isNotNull
         assertThat(response.phoneNumbers).hasSize(1)
         assertThat(response.phoneNumbers[0].id).isNotNull
+      }
+
+      @Test
+      fun `returns details for a prison with its available contact information`() {
+        val prisonId = "LEGPR"
+        val prison = dsl.prison(
+          prisonId = prisonId,
+          name = "Legacy Prison",
+          description = "Legacy prison description",
+          active = true,
+        ) {}
+        prison.addAddress(
+          UpdateAddressDto(
+            addressLine1 = "1 Prison Road",
+            addressLine2 = null,
+            town = "Leeds",
+            county = "West Yorkshire",
+            postcode = "LS1 1AA",
+            country = "England",
+          ),
+        )
+        prisonRepository.saveAndFlush(prison)
+        contactDetailsRepository.saveAndFlush(
+          ContactDetails(
+            prisonId = prisonId,
+            type = DepartmentType.PRISON,
+            emailAddress = EmailAddress("prison@example.gov.uk"),
+            phoneNumber = PhoneNumber("0113 555 1234"),
+          ),
+        )
+
+        val response: LegacyAgencyDto = webTestClient.get()
+          .uri("/legacy/$prisonId")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyResponse()
+
+        assertThat(response.agencyType).isEqualTo(LegacyAgencyType.PRISON)
+        assertThat(response.name).isEqualTo("Legacy Prison")
+        assertThat(response.description).isEqualTo("Legacy prison description")
+        assertThat(response.cjitCode).isNull()
+        assertThat(response.areaCode).isNull()
+        assertThat(response.addresses).hasSize(1)
+        with(response.addresses.single()) {
+          assertThat(id).isNotNull
+          assertThat(addressLine1).isEqualTo("1 Prison Road")
+          assertThat(town).isEqualTo("Leeds")
+          assertThat(county).isEqualTo("West Yorkshire")
+          assertThat(postcode).isEqualTo("LS1 1AA")
+          assertThat(country).isEqualTo("England")
+        }
+        assertThat(response.emailAddresses).hasSize(1)
+        with(response.emailAddresses.single()) {
+          assertThat(address).isEqualTo("prison@example.gov.uk")
+          assertThat(id).isNotNull
+        }
+        assertThat(response.phoneNumbers).hasSize(1)
+        with(response.phoneNumbers.single()) {
+          assertThat(number).isEqualTo("0113 555 1234")
+          assertThat(id).isNotNull
+        }
       }
     }
 

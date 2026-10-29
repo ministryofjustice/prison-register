@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyUsageDto
 
 @Service
 @Transactional
-class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val otherAgencyService: OtherAgencyService, val allAgencyRepository: AllAgencyRepository) {
+class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val otherAgencyService: OtherAgencyService, val prisonService: PrisonService, val allAgencyRepository: AllAgencyRepository) {
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = false)
@@ -60,6 +60,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     ?: approvedPremisesService.tryFindById(agencyId)
     ?: policeCustodySuiteService.tryFindById(agencyId)
     ?: otherAgencyService.tryFindById(agencyId)
+    ?: prisonService.tryFindById(agencyId)
     ?: throw EntityNotFoundException("Agency $agencyId not found")
 
   fun findAgencyUsage(agencyId: String): LegacyAgencyUsageDto? = allAgencyRepository.findFirstByAgencyId(agencyId)?.let {
