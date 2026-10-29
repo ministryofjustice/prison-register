@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AllAgencyRepository
@@ -16,10 +18,15 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyUsageDto
+import uk.gov.justice.digital.hmpps.prisonregister.service.LegacySyncService.Companion.LOG
 
 @Service
 @Transactional
 class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val otherAgencyService: OtherAgencyService, val allAgencyRepository: AllAgencyRepository) {
+  companion object {
+    val LOG: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = false)
@@ -94,16 +101,24 @@ fun LegacyAgencyEmailDto.toAgencyEmail() = EmailAddress(
 )
 
 fun <E, DTO> MutableList<E>.update(dtoList: List<DTO>, compare: (entity: E, dto: DTO) -> Boolean, transform: (DTO) -> E) {
+  LOG.debug("Updating {} with {}", this, dtoList)
   // match entities to dtos one-to-one so duplicates are respected on both sides
   val unmatched = this.toMutableList()
   val toAdd = mutableListOf<DTO>()
   dtoList.forEach { dto ->
+    LOG.debug("Checking {} against {}", dto, this)
     val match = unmatched.indexOfFirst { compare(it, dto) }
+    LOG.debug("Match index was {} for {}", match, dto)
     if (match >= 0) unmatched.removeAt(match) else toAdd.add(dto)
   }
+  LOG.debug("Unmatched list is {}", unmatched)
+  LOG.debug("Should remove list is {}", this.filter { entity -> unmatched.any { it === entity } })
+  LOG.debug("To add list is {}", toAdd)
+
   // identity-based removal so equal entities that were matched are kept
   this.removeAll { entity -> unmatched.any { it === entity } }
   this.addAll(toAdd.map { transform(it) })
+  LOG.debug("Final list is {}", this)
 }
 
 fun MutableList<EmailAddress>.updateEmailAddressFrom(emailDtoList: List<LegacyAgencyEmailDto>) = update(emailDtoList, { entity, dto -> entity.value == dto.address }) { it.toAgencyEmail() }
