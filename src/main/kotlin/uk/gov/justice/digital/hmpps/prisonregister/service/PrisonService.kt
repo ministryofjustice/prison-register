@@ -5,6 +5,7 @@ import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,6 +28,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.UPDATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddress
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
@@ -50,6 +56,47 @@ class PrisonService(
     val prison =
       prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
     return PrisonDto(prison)
+  }
+
+  fun tryFindById(prisonId: String): LegacyAgencyDto? = prisonRepository.findByIdOrNull(prisonId)?.let { prison ->
+    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, DepartmentType.PRISON)
+    LegacyAgencyDto(
+      agencyType = LegacyAgencyType.PRISON,
+      name = prison.name,
+      description = prison.description,
+      active = prison.active,
+      inactiveDate = prison.inactiveDate,
+      cjitCode = null,
+      areaCode = null,
+      regionCode = null,
+      geographicalAreaCode = null,
+      payrollRegionCode = null,
+      localAuthorityCode = null,
+      courtTypeCode = null,
+      accessibleAccess = null,
+      contact = null,
+      addresses = prison.addresses.map { address ->
+        LegacyAgencyAddressDto(
+          id = address.id,
+          addressLine1 = address.addressLine1,
+          addressLine2 = address.addressLine2,
+          town = address.town,
+          county = address.county,
+          postcode = address.postcode,
+          country = address.country,
+        )
+      },
+      emailAddresses = listOfNotNull(
+        contactDetails?.emailAddress?.let { emailAddress ->
+          LegacyAgencyEmailDto(id = emailAddress.id, address = emailAddress.value)
+        },
+      ),
+      phoneNumbers = listOfNotNull(
+        contactDetails?.phoneNumber?.let { phoneNumber ->
+          LegacyAgencyPhoneDto(id = phoneNumber.id, number = phoneNumber.value)
+        },
+      ),
+    )
   }
 
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
