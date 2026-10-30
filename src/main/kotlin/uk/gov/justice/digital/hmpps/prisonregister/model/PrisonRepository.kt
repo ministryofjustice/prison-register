@@ -16,6 +16,9 @@ interface PrisonRepository :
   @Query("FROM Prison p where (:active is null or p.active = :active) order by p.name")
   fun findByActiveOrderByPrisonName(active: Boolean?): List<Prison>
 
+  @Query("select p.prisonId from Prison p")
+  fun findAllPrisonIds(): List<String>
+
   fun findOneByGpPractice(gpPractice: String): Prison?
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)

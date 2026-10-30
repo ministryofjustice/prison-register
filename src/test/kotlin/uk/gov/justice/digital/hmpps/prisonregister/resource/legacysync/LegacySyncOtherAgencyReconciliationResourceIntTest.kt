@@ -142,6 +142,46 @@ class LegacySyncOtherAgencyReconciliationResourceIntTest : IntegrationTestBase()
   }
 
   @Nested
+  @DisplayName("GET /legacy/reconciliation/prison/ids/all")
+  inner class GetAllPrisonIds {
+
+    @Test
+    fun `requires a valid authentication token`() {
+      webTestClient.get()
+        .uri("/legacy/reconciliation/prison/ids/all")
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `requires correct role`() {
+      webTestClient.get()
+        .uri("/legacy/reconciliation/prison/ids/all")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("BANANAS")))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `returns only prison IDs`() {
+      dsl.court(courtId = "RECCRT", name = "Reconciliation Court") { }
+
+      val response: AgencyIdsResponse = webTestClient.get()
+        .uri("/legacy/reconciliation/prison/ids/all")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyResponse()
+
+      val ids = response.agencyIds.map { it.agencyId }
+      assertThat(ids).isNotEmpty().contains("MDI").doesNotContain("RECCRT")
+    }
+  }
+
+  @Nested
   @DisplayName("GET /legacy/reconciliation/{agencyId}")
   inner class GetOtherAgencyDetails {
 
