@@ -99,6 +99,8 @@ class PrisonService(
     )
   }
 
+  fun getAllIds(): List<String> = prisonRepository.findAllPrisonIds()
+
   fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
 
   fun findByPrisonFilter(
