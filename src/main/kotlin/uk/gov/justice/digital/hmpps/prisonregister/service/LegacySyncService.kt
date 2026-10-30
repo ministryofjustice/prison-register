@@ -54,6 +54,8 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     return AgencyIdsResponse(ids)
   }
 
+  fun getAllPrisonIds(): AgencyIdsResponse = AgencyIdsResponse(prisonService.getAllIds().sorted().map { AgencyId(it) })
+
   fun getDetails(agencyId: String): LegacyAgencyDto = courtService.tryFindById(agencyId)
     ?: hospitalService.tryFindById(agencyId)
     ?: probationOfficeService.tryFindById(agencyId)
