@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM eclipse-temurin:25.0.4_7-jdk-jammy AS builder
+FROM --platform=$BUILDPLATFORM eclipse-temurin:25.0.5_8-jdk-jammy AS builder
 
 ARG BUILD_NUMBER
 ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
