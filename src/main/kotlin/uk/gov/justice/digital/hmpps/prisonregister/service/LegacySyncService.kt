@@ -56,14 +56,16 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
 
   fun getAllPrisonIds(): AgencyIdsResponse = AgencyIdsResponse(prisonService.getAllIds().sorted().map { AgencyId(it) })
 
-  fun getDetails(agencyId: String): LegacyAgencyDto = courtService.tryFindById(agencyId)
-    ?: hospitalService.tryFindById(agencyId)
-    ?: probationOfficeService.tryFindById(agencyId)
-    ?: approvedPremisesService.tryFindById(agencyId)
-    ?: policeCustodySuiteService.tryFindById(agencyId)
-    ?: otherAgencyService.tryFindById(agencyId)
-    ?: prisonService.tryFindById(agencyId)
-    ?: throw EntityNotFoundException("Agency $agencyId not found")
+  fun getDetails(agencyId: String): LegacyAgencyDto = when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
+    LegacyAgencyType.COURT -> courtService.tryFindById(agencyId)
+    LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> hospitalService.tryFindById(agencyId)
+    LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.tryFindById(agencyId)
+    LegacyAgencyType.APPROVED_PREMISES -> approvedPremisesService.tryFindById(agencyId)
+    LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.tryFindById(agencyId)
+    LegacyAgencyType.PRISON -> prisonService.tryFindById(agencyId)
+    null -> null
+    else -> otherAgencyService.tryFindById(agencyId)
+  } ?: throw EntityNotFoundException("Agency $agencyId not found")
 
   fun findAgencyUsage(agencyId: String): LegacyAgencyUsageDto? = allAgencyRepository.findFirstByAgencyId(agencyId)?.let {
     LegacyAgencyUsageDto(agencyId = it.agencyId, name = it.name, legacyType = it.legacyType)
