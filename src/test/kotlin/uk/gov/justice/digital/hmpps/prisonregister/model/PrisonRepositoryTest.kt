@@ -1,21 +1,67 @@
 package uk.gov.justice.digital.hmpps.prisonregister.model
 
+import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
+import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.dsl.EmailAddressBuilder
+import uk.gov.justice.digital.hmpps.prisonregister.dsl.PhoneNumberBuilder
+import uk.gov.justice.digital.hmpps.prisonregister.dsl.PrisonBuilder
 import uk.gov.justice.digital.hmpps.prisonregister.integration.TestBase
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
+@Import(PrisonBuilder::class, PhoneNumberBuilder::class, EmailAddressBuilder::class)
 class PrisonRepositoryTest : TestBase() {
 
   @Autowired
   lateinit var prisonRepository: PrisonRepository
+
+  @Autowired
+  lateinit var prisonBuilder: PrisonBuilder
+
+  @Autowired
+  lateinit var entityManager: EntityManager
+
+  @Test
+  fun `should build prison with agency reference data`() {
+    val prison = prisonBuilder.build(
+      prisonId = "SHFCRT",
+      name = "Sheffield Prison",
+      description = null,
+      active = true,
+      male = false,
+      female = false,
+      contracted = false,
+      lthse = false,
+      prisonNameInWelsh = null,
+      inactiveDate = null,
+      cjitCode = "C00SH00",
+      areaCode = "52",
+      regionCode = "YOHUM",
+      geographicalAreaCode = "WYORKS",
+      payrollRegionCode = "NEY",
+      localAuthorityCode = "00CG",
+    )
+    entityManager.clear()
+
+    val savedPrison = prisonRepository.findById(prison.prisonId).orElseThrow()
+
+    with(savedPrison) {
+      assertThat(cjitCode).isEqualTo("C00SH00")
+      assertThat(area?.code).isEqualTo("52")
+      assertThat(region?.code).isEqualTo("YOHUM")
+      assertThat(geographicalArea?.code).isEqualTo("WYORKS")
+      assertThat(payrollRegion?.code).isEqualTo("NEY")
+      assertThat(localAuthority?.code).isEqualTo("00CG")
+    }
+  }
 
   @Test
   fun `should insert prison`() {

@@ -13,11 +13,14 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBa
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.model.PoliceCustodySuiteRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ProbationOfficeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyIdsResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
@@ -45,6 +48,12 @@ class LegacySyncOtherAgencyReconciliationResourceIntTest : IntegrationTestBase()
   lateinit var policeCustodySuiteRepository: PoliceCustodySuiteRepository
 
   @Autowired
+  lateinit var prisonRepository: PrisonRepository
+
+  @Autowired
+  lateinit var contactDetailsRepository: ContactDetailsRepository
+
+  @Autowired
   lateinit var dsl: Root
 
   @AfterEach
@@ -55,6 +64,10 @@ class LegacySyncOtherAgencyReconciliationResourceIntTest : IntegrationTestBase()
     approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
     otherAgencyRepository.deleteAll()
+    contactDetailsRepository.getByPrisonIdAndType("RECPRI", DepartmentType.PRISON)?.let {
+      contactDetailsRepository.delete(it)
+    }
+    prisonRepository.deleteAllById(listOf("RECPRI"))
   }
 
   @Nested
@@ -503,6 +516,52 @@ class LegacySyncOtherAgencyReconciliationResourceIntTest : IntegrationTestBase()
         }
         assertThat(response.emailAddresses).hasSize(1)
         assertThat(response.emailAddresses[0].address).isEqualTo("sheffield.crc@justice.gov.uk")
+        assertThat(response.phoneNumbers).hasSize(1)
+        assertThat(response.phoneNumbers[0].number).isEqualTo("0114 555 1234")
+      }
+
+      @Test
+      fun `returns details for a prison`() {
+        dsl.prison(
+          prisonId = "RECPRI",
+          name = "Sheffield Prison",
+          description = "Sheffield City Centre Prison",
+          cjitCode = "123456789",
+          areaCode = "52",
+          regionCode = "YOHUM",
+          geographicalAreaCode = "WYORKS",
+          payrollRegionCode = "HS",
+          localAuthorityCode = "00CG",
+        ) {
+          address(addressLine1 = "1 Charter Row", town = "Sheffield", county = "South Yorkshire", postcode = "S1 3FZ", country = "England")
+          email(emailAddress = "sheffield.prison@justice.gov.uk")
+          phoneNumber(phoneNumber = "0114 555 1234")
+        }
+
+        val response: LegacyAgencyDto = webTestClient.get()
+          .uri("/legacy/reconciliation/RECPRI")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyResponse()
+
+        assertThat(response.agencyType).isEqualTo(LegacyAgencyType.PRISON)
+        assertThat(response.name).isEqualTo("Sheffield Prison")
+        assertThat(response.description).isEqualTo("Sheffield City Centre Prison")
+        assertThat(response.cjitCode).isEqualTo("123456789")
+        assertThat(response.areaCode).isEqualTo("52")
+        assertThat(response.regionCode).isEqualTo("YOHUM")
+        assertThat(response.geographicalAreaCode).isEqualTo("WYORKS")
+        assertThat(response.payrollRegionCode).isEqualTo("HS")
+        assertThat(response.localAuthorityCode).isEqualTo("00CG")
+        assertThat(response.addresses).hasSize(1)
+        with(response.addresses[0]) {
+          assertThat(addressLine1).isEqualTo("1 Charter Row")
+          assertThat(postcode).isEqualTo("S1 3FZ")
+        }
+        assertThat(response.emailAddresses).hasSize(1)
+        assertThat(response.emailAddresses[0].address).isEqualTo("sheffield.prison@justice.gov.uk")
         assertThat(response.phoneNumbers).hasSize(1)
         assertThat(response.phoneNumbers[0].number).isEqualTo("0114 555 1234")
       }

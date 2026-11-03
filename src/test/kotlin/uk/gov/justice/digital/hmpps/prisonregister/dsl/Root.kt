@@ -231,6 +231,12 @@ class Root(
     lthse: Boolean = false,
     prisonNameInWelsh: String? = null,
     inactiveDate: LocalDate? = null,
+    cjitCode: String? = null,
+    areaCode: String? = null,
+    regionCode: String? = null,
+    geographicalAreaCode: String? = null,
+    payrollRegionCode: String? = null,
+    localAuthorityCode: String? = null,
     dsl: PrisonBuilder.() -> Unit,
   ): Prison = prisonBuilder.build(
     prisonId = prisonId,
@@ -243,6 +249,12 @@ class Root(
     lthse = lthse,
     prisonNameInWelsh = prisonNameInWelsh,
     inactiveDate = inactiveDate,
+    cjitCode = cjitCode,
+    areaCode = areaCode,
+    regionCode = regionCode,
+    geographicalAreaCode = geographicalAreaCode,
+    payrollRegionCode = payrollRegionCode,
+    localAuthorityCode = localAuthorityCode,
   ).also {
     dsl.invoke(prisonBuilder)
   }
