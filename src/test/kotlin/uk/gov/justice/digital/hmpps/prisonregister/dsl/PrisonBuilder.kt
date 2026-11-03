@@ -1,14 +1,19 @@
 package uk.gov.justice.digital.hmpps.prisonregister.dsl
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import java.time.LocalDate
 
 @DslMarker
@@ -17,6 +22,10 @@ annotation class PrisonDslMarker
 @PrisonDslMarker
 @Component
 class PrisonBuilder(
+  private val areaRepository: AreaRepository,
+  private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
   private val prisonRepository: PrisonRepository,
   private val contactDetailsRepository: ContactDetailsRepository,
   private val phoneBuilder: PhoneNumberBuilder,
@@ -34,6 +43,12 @@ class PrisonBuilder(
     lthse: Boolean,
     prisonNameInWelsh: String?,
     inactiveDate: LocalDate?,
+    cjitCode: String?,
+    areaCode: String?,
+    regionCode: String?,
+    geographicalAreaCode: String?,
+    payrollRegionCode: String?,
+    localAuthorityCode: String?,
   ): Prison = Prison(
     prisonId = prisonId,
     name = name,
@@ -45,6 +60,12 @@ class PrisonBuilder(
     lthse = lthse,
     prisonNameInWelsh = prisonNameInWelsh,
     inactiveDate = inactiveDate,
+    cjitCode = cjitCode,
+    area = areaCode?.let { areaRepository.findByIdOrNull(it) },
+    region = regionCode?.let { regionRepository.findByIdOrNull(it) },
+    geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) },
+    payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) },
+    localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) },
   ).let {
     prisonRepository.saveAndFlush(it)
   }.also {

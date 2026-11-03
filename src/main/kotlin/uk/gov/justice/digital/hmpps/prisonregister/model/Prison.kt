@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.NamedAttributeNode
 import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToMany
@@ -65,6 +66,24 @@ data class Prison(
 
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var addresses: Set<Address> = setOf(),
+
+  var cjitCode: String? = null,
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "area")
+  var area: Area? = null,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "region")
+  var region: Region? = null,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "geographical_area")
+  var geographicalArea: Area? = null,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "payroll_region")
+  var payrollRegion: PayrollRegion? = null,
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "local_authority")
+  var localAuthority: LocalAuthority? = null,
 
 ) {
 
