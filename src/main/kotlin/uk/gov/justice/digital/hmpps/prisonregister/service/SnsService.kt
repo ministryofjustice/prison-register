@@ -23,22 +23,22 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   }
   private val domaineventsTopicClient by lazy { domaineventsTopic.snsClient }
 
-  fun sendPrisonRegisterInsertedEvent(prisonId: String, occurredAt: Instant) {
+  fun sendPrisonRegisterInsertedEvent(prisonId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSDomainEvent(
         "register.prison.inserted",
-        AdditionalInformation(prisonId),
+        AdditionalInformation(prisonId, source),
         occurredAt,
         "A prison has been inserted",
       ),
     )
   }
 
-  fun sendPrisonRegisterAmendedEvent(prisonId: String, occurredAt: Instant) {
+  fun sendPrisonRegisterAmendedEvent(prisonId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSDomainEvent(
         "register.prison.amended",
-        AdditionalInformation(prisonId),
+        AdditionalInformation(prisonId, source),
         occurredAt,
         "A prison has been updated",
       ),
@@ -613,7 +613,8 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
 
 data class AdditionalInformation(
   val prisonId: String,
-)
+  override val source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
 open class SourcedAdditionalInformation(
   open val source: String,

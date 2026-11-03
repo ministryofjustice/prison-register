@@ -29,6 +29,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.createOrUpdatePoliceCustodySuiteFromLegacyData(agencyId, agencyDto)
     else -> otherAgencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
   }
+  fun createOrUpdatePrison(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = prisonService.createOrUpdatePrisonFromLegacyData(agencyId, agencyDto)
 
   fun deleteAll() {
     courtService.deleteAll()

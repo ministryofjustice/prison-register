@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
+import jakarta.validation.ValidationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
@@ -12,16 +13,20 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsAlreadyExistException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
+import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.CREATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.UPDATED
@@ -32,6 +37,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressD
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
@@ -46,6 +52,11 @@ class PrisonService(
   private val prisonRepository: PrisonRepository,
   private val contactDetailsRepository: ContactDetailsRepository,
   private val telemetryClient: TelemetryClient,
+  private val areaRepository: AreaRepository,
+  private val regionRepository: RegionRepository,
+  private val payrollRegionRepository: PayrollRegionRepository,
+  private val localAuthorityRepository: LocalAuthorityRepository,
+
 ) {
 
   companion object {
@@ -313,4 +324,29 @@ class PrisonService(
     updateContactDetailsDto.phoneNumber != contactDetails.phoneNumber?.value
 
   fun findPrisonsByIds(ids: List<String>): List<PrisonDto> = prisonRepository.findAllByPrisonIdIsIn(ids).map { PrisonDto(it) }
+
+  fun createOrUpdatePrisonFromLegacyData(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = prisonRepository.findByIdOrNull(agencyId)?.let { agency ->
+    agency.update(agencyDto)
+    LegacyAgencyResponse(updated = true)
+  } ?: let {
+    // TODO - create a new prison from legacy data
+    throw UnsupportedOperationException("Prison $agencyId does not exist, cannot create from legacy data")
+  }
+
+  private fun Prison.update(agencyDto: LegacyAgencyDto) {
+    /* TODO - this will be enabled in a future PR once we know it is safe
+    this.name = agencyDto.name
+    this.active = agencyDto.active
+     */
+
+    // all these values are currently source from NOMS - never been populated in DPS
+    this.description = agencyDto.description
+    this.inactiveDate = agencyDto.inactiveDate
+    this.cjitCode = agencyDto.cjitCode
+    this.area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $prisonId") }
+    this.region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $prisonId") }
+    this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $prisonId") }
+    this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $prisonId") }
+    this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $prisonId") }
+  }
 }
