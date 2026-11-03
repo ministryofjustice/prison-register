@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
+import org.hibernate.cfg.AvailableSettings
+import org.hibernate.resource.jdbc.spi.StatementInspector
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -13,6 +15,10 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -35,7 +41,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePh
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.collections.set
 
+@Import(CourtResourceIntTest.SqlCaptureConfiguration::class)
 class CourtResourceIntTest : IntegrationTestBase() {
 
   @Autowired
@@ -61,6 +70,9 @@ class CourtResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var snsService: SnsService
+
+  @Autowired
+  lateinit var sqlCapture: SqlCapture
 
   @DisplayName("Get court by id")
   @Nested
@@ -454,6 +466,249 @@ class CourtResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isOk
           .expectBodyList<CourtDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").containsExactly("LEEDCC")
+      }
+    }
+  }
+
+  @DisplayName("Get all court summaries")
+  @Nested
+  inner class GetAllSummaries {
+    lateinit var court: Court
+    lateinit var court2: Court
+    lateinit var court3: Court
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(
+        courtId = "SHEFCC",
+        name = "Sheffield Central Ct",
+        description = "Sheffield Central Court",
+        active = false,
+        inactiveDate = LocalDate.parse("2020-01-02"),
+        courtTypeCode = "CC",
+        cjitCode = "C00SH00",
+        areaCode = "52",
+        regionCode = "YOHUM",
+        geographicalAreaCode = "WYORKS",
+        localAuthorityCode = "00CG",
+        payrollRegionCode = "NEY",
+        accessibleAccess = AccessibleAccess.ACCESSIBLE,
+      ) {}
+
+      court2 = dsl.court(
+        courtId = "LEEDCC",
+        name = "Leeds Central Ct",
+        courtTypeCode = "MC",
+      ) {}
+
+      court3 = dsl.court(
+        courtId = "BIRMCC",
+        name = "Birmingham Central Ct",
+        description = "Birmingham Main Central Ct",
+        courtTypeCode = "MC",
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      courtRepository.deleteById(court.courtId)
+      courtRepository.deleteById(court2.courtId)
+      courtRepository.deleteById(court3.courtId)
+    }
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/courts/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/courts/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/courts/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `does not do a n + 1 query`() {
+        sqlCapture.statements.clear()
+
+        webTestClient.get()
+          .uri("/courts/summary")
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+
+        assertThat(sqlCapture.statements).hasSize(1)
+      }
+
+      @Test
+      fun `will return all courts`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").contains("SHEFCC", "LEEDCC", "BIRMCC")
+
+        val courtDto = courts.first { it.courtId == "SHEFCC" }
+        assertThat(courtDto.courtName).isEqualTo("Sheffield Central Ct")
+        assertThat(courtDto.courtType?.description).isEqualTo("Crown Court")
+        assertThat(courtDto.active).isFalse
+
+        val court2Dto = courts.first { it.courtId == "LEEDCC" }
+        assertThat(court2Dto.courtName).isEqualTo("Leeds Central Ct")
+
+        val court3Dto = courts.first { it.courtId == "BIRMCC" }
+        assertThat(court3Dto.courtName).isEqualTo("Birmingham Central Ct")
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?active=false")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").containsExactly("SHEFCC")
+      }
+
+      @Test
+      fun `will filter by active flag when true`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?active=true")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").contains("LEEDCC", "BIRMCC")
+        assertThat(courts).extracting("courtId").doesNotContain("SHEFCC")
+      }
+
+      @Test
+      fun `will filter by text search on court id`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?textSearch=SHEFCC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").containsExactly("SHEFCC")
+      }
+
+      @Test
+      fun `will filter by text search on court name`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?textSearch=Leeds Central")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").containsExactly("LEEDCC")
+      }
+
+      @Test
+      fun `will filter by text search on court description, ignoring case`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?textSearch=main central")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").containsExactly("BIRMCC")
+      }
+
+      @Test
+      fun `will filter by court type`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?courtTypeCodes=CC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").containsExactly("SHEFCC")
+      }
+
+      @Test
+      fun `will filter by multiple court types`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?courtTypeCodes=CC,MC")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
+          .returnResult()
+          .responseBody!!
+
+        assertThat(courts).extracting("courtId").contains("SHEFCC", "LEEDCC", "BIRMCC")
+      }
+
+      @Test
+      fun `will combine filters together`() {
+        val courts = webTestClient.get()
+          .uri("/courts/summary?active=true&courtTypeCodes=MC&textSearch=Leeds")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList<CourtSummaryDto>()
           .returnResult()
           .responseBody!!
 
@@ -2449,6 +2704,23 @@ class CourtResourceIntTest : IntegrationTestBase() {
           isNull(),
         )
       }
+    }
+  }
+
+  class SqlCapture : StatementInspector {
+    val statements = ConcurrentLinkedQueue<String>()
+
+    override fun inspect(sql: String): String = sql.also { statements.add(it) }
+  }
+
+  @TestConfiguration
+  class SqlCaptureConfiguration {
+    @Bean
+    fun sqlCapture() = SqlCapture()
+
+    @Bean
+    fun hibernatePropertiesCustomizer(sqlCapture: SqlCapture) = HibernatePropertiesCustomizer {
+      it[AvailableSettings.STATEMENT_INSPECTOR] = sqlCapture
     }
   }
 }
