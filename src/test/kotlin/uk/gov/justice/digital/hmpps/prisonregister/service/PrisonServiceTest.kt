@@ -26,15 +26,19 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
+import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
@@ -48,8 +52,20 @@ class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
   private val contactDetailsRepository: ContactDetailsRepository = mock()
   private val telemetryClient: TelemetryClient = mock()
+  private val areaRepository: AreaRepository = mock()
+  private val regionRepository: RegionRepository = mock()
+  private val payrollRegionRepository: PayrollRegionRepository = mock()
+  private val localAuthorityRepository: LocalAuthorityRepository = mock()
 
-  private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, telemetryClient)
+  private val prisonService = PrisonService(
+    prisonRepository,
+    contactDetailsRepository,
+    telemetryClient,
+    areaRepository = areaRepository,
+    regionRepository = regionRepository,
+    payrollRegionRepository = payrollRegionRepository,
+    localAuthorityRepository = localAuthorityRepository,
+  )
 
   @BeforeEach
   fun resetMocks() {
