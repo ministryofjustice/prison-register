@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.CourtSummaryDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateCourtDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
@@ -59,6 +60,20 @@ class CourtService(
   fun getAll(active: Boolean?, textSearch: String?, courtTypeCodes: List<CourtType.Companion.Type>?): List<CourtDto> = courtRepository.findAll(
     CourtFilter(active, textSearch, courtTypeCodes),
   ).map { it.toCourtDto() }
+
+  @Transactional(readOnly = true)
+  fun getAllSummaries(active: Boolean?, textSearch: String?, courtTypeCodes: List<CourtType.Companion.Type>?): List<CourtSummaryDto> = courtRepository.findAllSummaries(
+    active = active,
+    textSearch = textSearch?.takeUnless { it.isBlank() }?.let { "%${it.uppercase()}%" },
+    courtTypeCodes = courtTypeCodes.orEmpty().map { it.code },
+  ).map {
+    CourtSummaryDto(
+      courtId = it.courtId,
+      courtName = it.courtName,
+      active = it.active,
+      courtType = CodeDescription(it.courtTypeCode, it.courtTypeDescription),
+    )
+  }
 
   @Transactional
   fun createCourt(createCourtDto: CreateCourtDto): CourtDto {

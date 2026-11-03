@@ -94,6 +94,22 @@ class CourtResource(
     @Parameter(description = "Court type codes to filter by", example = "CACD, CB", required = false) @RequestParam courtTypeCodes: List<CourtType.Companion.Type>? = listOf(),
   ): List<CourtDto> = courtService.getAll(active, textSearch, courtTypeCodes)
 
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all courts", description = "Court IDs, names, active status and court types ordered by court ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getCourtSummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "Court type codes to filter by", example = "CACD, CB", required = false) @RequestParam courtTypeCodes: List<CourtType.Companion.Type>? = listOf(),
+  ): List<CourtSummaryDto> = courtService.getAllSummaries(active, textSearch, courtTypeCodes)
+
   @Operation(
     summary = "Create a new court",
     description = "Creates a court, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__MAINTAIN__RW",
@@ -789,6 +805,19 @@ data class CourtDto(
   val emailAddresses: List<AgencyEmailDto>,
   @Schema(description = "phoneNumbers")
   val phoneNumbers: List<AgencyPhoneDto>,
+)
+
+@Schema(description = "Court summary information")
+@JsonInclude(NON_NULL)
+data class CourtSummaryDto(
+  @Schema(description = "Court ID", example = "NWCLYC")
+  val courtId: String,
+  @Schema(description = "Name", example = "N Staffs Youth Court - Newcastle")
+  val courtName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+  @Schema(description = "courtType")
+  val courtType: CodeDescription?,
 )
 
 @Schema(description = "Court Update Record")
