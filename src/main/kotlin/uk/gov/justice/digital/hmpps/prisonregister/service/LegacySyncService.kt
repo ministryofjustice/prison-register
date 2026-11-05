@@ -57,16 +57,24 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
 
   fun getAllPrisonIds(): AgencyIdsResponse = AgencyIdsResponse(prisonService.getAllIds().sorted().map { AgencyId(it) })
 
-  fun getDetails(agencyId: String): LegacyAgencyDto = when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
-    LegacyAgencyType.COURT -> courtService.tryFindById(agencyId)
-    LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> hospitalService.tryFindById(agencyId)
-    LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.tryFindById(agencyId)
-    LegacyAgencyType.APPROVED_PREMISES -> approvedPremisesService.tryFindById(agencyId)
-    LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.tryFindById(agencyId)
-    LegacyAgencyType.PRISON -> prisonService.tryFindById(agencyId)
-    null -> null
-    else -> otherAgencyService.tryFindById(agencyId)
-  } ?: throw EntityNotFoundException("Agency $agencyId not found")
+  fun getDetails(agencyId: String): LegacyAgencyDto {
+    // temp hack for STC2 and STC3 as in the all_agencies twice
+    // since DPS incorrectly has this as a prison when they are a secure training centre
+    // cause reconciliation to fail since it gets "prison" record which itself is not correct
+    if (agencyId in ["STC2", "STC3"]) {
+      return otherAgencyService.tryFindById(agencyId)!!
+    }
+    return when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
+      LegacyAgencyType.COURT -> courtService.tryFindById(agencyId)
+      LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> hospitalService.tryFindById(agencyId)
+      LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.tryFindById(agencyId)
+      LegacyAgencyType.APPROVED_PREMISES -> approvedPremisesService.tryFindById(agencyId)
+      LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.tryFindById(agencyId)
+      LegacyAgencyType.PRISON -> prisonService.tryFindById(agencyId)
+      null -> null
+      else -> otherAgencyService.tryFindById(agencyId)
+    } ?: throw EntityNotFoundException("Agency $agencyId not found")
+  }
 
   fun findAgencyUsage(agencyId: String): LegacyAgencyUsageDto? = allAgencyRepository.findFirstByAgencyId(agencyId)?.let {
     LegacyAgencyUsageDto(agencyId = it.agencyId, name = it.name, legacyType = it.legacyType)
