@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
 
+  @Suppress("FunctionName")
   @Query(
     "SELECT e.value FROM ContactDetails c join c.emailAddress e WHERE c.prison.prisonId=:prisonId AND c.type=:departmentType",
   )
