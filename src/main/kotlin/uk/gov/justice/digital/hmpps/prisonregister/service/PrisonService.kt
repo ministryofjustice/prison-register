@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.CREATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.UPDATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddress
+import uk.gov.justice.digital.hmpps.prisonregister.resource.FullPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
@@ -67,6 +68,12 @@ class PrisonService(
     val prison =
       prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
     return PrisonDto(prison)
+  }
+
+  fun findDetailsById(prisonId: String): FullPrisonDto {
+    val prison =
+      prisonRepository.findById(prisonId).orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
+    return FullPrisonDto(prison)
   }
 
   fun tryFindById(prisonId: String): LegacyAgencyDto? = prisonRepository.findByIdOrNull(prisonId)?.let { prison ->
