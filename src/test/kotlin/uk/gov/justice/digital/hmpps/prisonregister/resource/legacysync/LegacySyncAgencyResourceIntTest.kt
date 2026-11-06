@@ -59,9 +59,6 @@ class LegacySyncAgencyResourceIntTest : IntegrationTestBase() {
     approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
     otherAgencyRepository.deleteAll()
-    contactDetailsRepository.findAll()
-      .filter { it.prisonId == "LEGPR" }
-      .forEach(contactDetailsRepository::delete)
     if (prisonRepository.existsById("LEGPR")) prisonRepository.deleteById("LEGPR")
   }
 

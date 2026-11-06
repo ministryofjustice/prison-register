@@ -101,7 +101,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
 
     val contactDetails = contactDetailsRepository.save(
       ContactDetails(
-        prison.prisonId,
+        prison,
         departmentType,
         phoneNumber = persistedPhoneNumber,
         emailAddress = persistedEmailAddress,
@@ -214,7 +214,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
     .exchange()
 
   fun assertContactDetailsHaveBeenDeleted(prisonId: String, phoneNumber: String? = null, emailAddress: String? = null, department: DepartmentType) {
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
+    val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
     phoneNumber?.let {
@@ -229,7 +229,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
   }
 
   fun assertOnlyEmailHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, webAddress: String, department: DepartmentType) {
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
+    val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
     val phoneNumberEntity = phoneNumberRepository.findAllByValue(phoneNumber)
@@ -243,7 +243,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
   }
 
   fun assertOnlyPhoneHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, webAddress: String, department: DepartmentType) {
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
+    val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
     val phoneNumberEntity = phoneNumberRepository.findAllByValue(phoneNumber)
@@ -257,7 +257,7 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
   }
 
   fun assertOnlyWebAddressHasBeenDeleted(prisonId: String, phoneNumber: String, emailAddress: String, webAddress: String, department: DepartmentType) {
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
+    val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNull()
 
     val phoneNumberEntity = phoneNumberRepository.findAllByValue(phoneNumber)
@@ -289,9 +289,9 @@ abstract class ContactDetailsBaseIntegrationTest : IntegrationTestBase() {
       assertThat(webAddressRepository.findAllByValue(webAddress)).isNotEmpty()
     }
 
-    val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, department)
+    val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, department)
     assertThat(contactDetails).isNotNull
-    assertThat(contactDetails!!.prisonId).isEqualTo(prisonId)
+    assertThat(contactDetails!!.prison.prisonId).isEqualTo(prisonId)
     phoneNumber?.let {
       assertThat(contactDetails.phoneNumber).isNotNull
       assertThat(contactDetails.phoneNumber?.value).isEqualTo(it)

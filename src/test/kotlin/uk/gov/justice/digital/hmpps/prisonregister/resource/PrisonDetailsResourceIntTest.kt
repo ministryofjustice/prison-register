@@ -13,10 +13,10 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBa
 import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
@@ -64,35 +64,37 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
           payrollRegionCode = "HS",
           localAuthorityCode = "00CG",
         ) {
-          address(
+          mainAddressId = address(
             addressLine1 = "Bawtry Road",
             addressLine2 = "Hatfield Woodhouse",
             town = "Doncaster",
             county = "South Yorkshire",
             postcode = "DN7 6BW",
             country = "England",
-          )
-          address(town = "Doncaster", postcode = "DN7 6EE", country = "England")
+            addressLine1InWelsh = "Welsh address line 1",
+            addressLine2InWelsh = "Welsh address line 2",
+            townInWelsh = "Welsh town",
+            countyInWelsh = "Welsh county",
+            countryInWelsh = "Welsh country",
+          ).id
+          secondAddressId = address(
+            town = "Doncaster",
+            postcode = "DN7 6EE",
+            country = "England",
+          ).id
+
+          category(Category.B)
+          category(Category.C)
+
+          operator("Test PSP")
+          operator("Test G4S")
+
+          type(Type.HMP)
+          type(Type.YOI)
+
+          department(departmentType = DepartmentType.OFFICIAL_VISIT, emailAddress = "officialvisit@justice.gov.uk", phoneNumber = "0113 200 2000")
+          department(departmentType = DepartmentType.OFFENDER_MANAGEMENT_UNIT, emailAddress = "omu@justice.gov.uk", phoneNumber = "0113 555 2000")
         }
-        prison.prisonTypes.addAll(
-          setOf(
-            PrisonType(type = Type.HMP, prison = prison),
-            PrisonType(type = Type.YOI, prison = prison),
-          ),
-        )
-        prison.categories.addAll(setOf(Category.B, Category.C))
-        operators = setOf(Operator(name = "Test PSP"), Operator(name = "Test G4S"))
-        operators.forEach { entityManager.persist(it) }
-        prison.prisonOperators = operators
-        prison = prisonRepository.saveAndFlush(prison)
-        mainAddressId = requireNotNull(prison.addresses.single { it.postcode == "DN7 6BW" }.id)
-        secondAddressId = requireNotNull(prison.addresses.single { it.postcode == "DN7 6EE" }.id)
-        val mainAddress = entityManager.find(Address::class.java, mainAddressId)
-        mainAddress.addressLine1InWelsh = "Welsh address line 1"
-        mainAddress.addressLine2InWelsh = "Welsh address line 2"
-        mainAddress.townInWelsh = "Welsh town"
-        mainAddress.countyInWelsh = "Welsh county"
-        mainAddress.countryInWelsh = "Welsh country"
       }
     }
 
@@ -184,36 +186,36 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
 
       @Test
       fun `will return all addresses including Welsh fields`() {
-        assertThat(getDetails().addresses).containsExactlyInAnyOrder(
-          AddressDto(
-            id = mainAddressId,
-            addressLine1 = "Bawtry Road",
-            addressLine2 = "Hatfield Woodhouse",
-            town = "Doncaster",
-            county = "South Yorkshire",
-            postcode = "DN7 6BW",
-            country = "England",
-            addressLine1InWelsh = "Welsh address line 1",
-            addressLine2InWelsh = "Welsh address line 2",
-            townInWelsh = "Welsh town",
-            countyInWelsh = "Welsh county",
-            countryInWelsh = "Welsh country",
-          ),
-          AddressDto(
-            id = secondAddressId,
-            addressLine1 = null,
-            addressLine2 = null,
-            town = "Doncaster",
-            county = null,
-            postcode = "DN7 6EE",
-            country = "England",
-            addressLine1InWelsh = null,
-            addressLine2InWelsh = null,
-            townInWelsh = null,
-            countyInWelsh = null,
-            countryInWelsh = null,
-          ),
-        )
+        val details = getDetails()
+        with(details) {
+          assertThat(addresses).hasSize(2)
+          with(addresses.first { it.id == mainAddressId }) {
+            assertThat(addressLine1).isEqualTo("Bawtry Road")
+            assertThat(addressLine2).isEqualTo("Hatfield Woodhouse")
+            assertThat(town).isEqualTo("Doncaster")
+            assertThat(county).isEqualTo("South Yorkshire")
+            assertThat(postcode).isEqualTo("DN7 6BW")
+            assertThat(country).isEqualTo("England")
+            assertThat(addressLine1InWelsh).isEqualTo("Welsh address line 1")
+            assertThat(addressLine2InWelsh).isEqualTo("Welsh address line 2")
+            assertThat(townInWelsh).isEqualTo("Welsh town")
+            assertThat(countyInWelsh).isEqualTo("Welsh county")
+            assertThat(countryInWelsh).isEqualTo("Welsh country")
+          }
+          with(addresses.first { it.id == secondAddressId }) {
+            assertThat(addressLine1).isNull()
+            assertThat(addressLine2).isNull()
+            assertThat(town).isEqualTo("Doncaster")
+            assertThat(county).isNull()
+            assertThat(postcode).isEqualTo("DN7 6EE")
+            assertThat(country).isEqualTo("England")
+            assertThat(addressLine1InWelsh).isNull()
+            assertThat(addressLine2InWelsh).isNull()
+            assertThat(townInWelsh).isNull()
+            assertThat(countyInWelsh).isNull()
+            assertThat(countryInWelsh).isNull()
+          }
+        }
       }
 
       @Test

@@ -69,9 +69,6 @@ class LegacySyncPrisonResourceIntTest : IntegrationTestBase() {
 
   @AfterEach
   fun tearDown() {
-    contactDetailsRepository.findAll()
-      .filter { it.prisonId == "BXI" }
-      .forEach(contactDetailsRepository::delete)
     if (prisonRepository.existsById("BXI")) prisonRepository.deleteById("BXI")
   }
 
@@ -370,7 +367,7 @@ class LegacySyncPrisonResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(contactDetailsRepository.getByPrisonIdAndType("BXI", DepartmentType.PRISON)!!) {
+              with(contactDetailsRepository.getByPrison_PrisonIdAndType("BXI", DepartmentType.PRISON)!!) {
                 assertThat(emailAddress?.value).isEqualTo("brixton.old@justice.gov.uk")
               }
             }
@@ -395,7 +392,7 @@ class LegacySyncPrisonResourceIntTest : IntegrationTestBase() {
               .expectStatus().isOk
 
             transactionHelper.runInTransaction {
-              with(contactDetailsRepository.getByPrisonIdAndType("BXI", DepartmentType.PRISON)!!) {
+              with(contactDetailsRepository.getByPrison_PrisonIdAndType("BXI", DepartmentType.PRISON)!!) {
                 assertThat(phoneNumber?.value).isEqualTo("0114 222 5555")
               }
             }

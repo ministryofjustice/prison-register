@@ -3,17 +3,24 @@ package uk.gov.justice.digital.hmpps.prisonregister.dsl
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.AddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
+import uk.gov.justice.digital.hmpps.prisonregister.model.OperatorRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
+import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonTypeRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import java.time.LocalDate
 
 @DslMarker
@@ -27,7 +34,10 @@ class PrisonBuilder(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val prisonRepository: PrisonRepository,
+  private val addressRepository: AddressRepository,
   private val contactDetailsRepository: ContactDetailsRepository,
+  private val operatorRepository: OperatorRepository,
+  private val prisonTypeRepository: PrisonTypeRepository,
   private val phoneBuilder: PhoneNumberBuilder,
   private val emailBuilder: EmailAddressBuilder,
 ) {
@@ -79,6 +89,11 @@ class PrisonBuilder(
     county: String? = null,
     postcode: String,
     country: String,
+    addressLine1InWelsh: String? = null,
+    addressLine2InWelsh: String? = null,
+    townInWelsh: String? = null,
+    countyInWelsh: String? = null,
+    countryInWelsh: String? = null,
   ): Address = Address(
     addressLine1 = addressLine1,
     addressLine2 = addressLine2,
@@ -87,9 +102,15 @@ class PrisonBuilder(
     postcode = postcode,
     country = country,
     prison = prison,
-  ).also {
-    (prison.addresses as MutableSet<Address>).add(it)
-    prisonRepository.saveAndFlush(prison)
+    addressLine1InWelsh = addressLine1InWelsh,
+    addressLine2InWelsh = addressLine2InWelsh,
+    townInWelsh = townInWelsh,
+    countyInWelsh = countyInWelsh,
+    countryInWelsh = countryInWelsh,
+  ).let {
+    addressRepository.saveAndFlush(it).also { savedAddress ->
+      (prison.addresses as MutableSet<Address>).add(savedAddress)
+    }
   }
 
   fun department(
@@ -103,6 +124,11 @@ class PrisonBuilder(
     return contactDetailsRepository.saveAndFlush(contactDetails)
   }
 
+  private fun getOrCreateContactDetails(departmentType: DepartmentType): ContactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(
+    prison.prisonId,
+    departmentType,
+  ) ?: ContactDetails(prison, departmentType)
+
   fun email(emailAddress: String = "test@justice.gov.uk"): EmailAddress = department(
     departmentType = DepartmentType.PRISON,
     emailAddress = emailAddress,
@@ -113,8 +139,16 @@ class PrisonBuilder(
     phoneNumber = phoneNumber,
   ).phoneNumber!!
 
-  private fun getOrCreateContactDetails(departmentType: DepartmentType): ContactDetails = contactDetailsRepository.getByPrisonIdAndType(
-    prison.prisonId,
-    departmentType,
-  ) ?: ContactDetails(prison.prisonId, departmentType)
+  fun category(category: Category): Prison = prison.apply {
+    categories.add(category)
+    prisonRepository.saveAndFlush(this)
+  }
+
+  fun operator(name: String): Operator = operatorRepository.saveAndFlush(Operator(name = name)).also { operator ->
+    (prison.prisonOperators as MutableSet<Operator>).add(operator)
+  }
+
+  fun type(type: Type): PrisonType = prisonTypeRepository.saveAndFlush(PrisonType(type = type, prison = prison)).also { prisonType ->
+    prison.prisonTypes.add(prisonType)
+  }
 }

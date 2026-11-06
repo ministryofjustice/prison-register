@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.AccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CourtRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.HospitalRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.OtherAgencyType
@@ -64,9 +63,6 @@ class LegacySyncOtherAgencyReconciliationResourceIntTest : IntegrationTestBase()
     approvedPremisesRepository.deleteAll()
     policeCustodySuiteRepository.deleteAll()
     otherAgencyRepository.deleteAll()
-    contactDetailsRepository.getByPrisonIdAndType("RECPRI", DepartmentType.PRISON)?.let {
-      contactDetailsRepository.delete(it)
-    }
     prisonRepository.deleteAllById(listOf("RECPRI"))
   }
 
