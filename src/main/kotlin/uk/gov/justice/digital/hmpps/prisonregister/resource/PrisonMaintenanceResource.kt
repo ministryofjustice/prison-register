@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
@@ -259,6 +261,17 @@ data class UpdatePrisonDto(
 
 @Schema(description = "Prison Information")
 @JsonInclude(NON_NULL)
+data class DepartmentDto(val type: DepartmentType, val emailAddress: String?, val phoneNumber: String?, val webAddress: String?) {
+  constructor(type: ContactDetails) : this(
+    type.type,
+    type.emailAddress?.value,
+    type.phoneNumber?.value,
+    type.webAddress?.value,
+  )
+}
+
+@Schema(description = "Prison Information")
+@JsonInclude(NON_NULL)
 data class FullPrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
@@ -272,6 +285,7 @@ data class FullPrisonDto(
   @Schema(description = "List of the categories for this prison") val categories: Set<Category> = setOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
   @Schema(description = "List of operators for this prison") val operators: List<PrisonOperatorDto> = listOf(),
+  @Schema(description = "List of departments for this prison") val departments: List<DepartmentDto> = listOf(),
   @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
   @Schema(description = "Area") val area: CodeDescription?,
@@ -293,6 +307,7 @@ data class FullPrisonDto(
     categories = prison.categories.also { Hibernate.initialize(it) },
     addresses = prison.addresses.map { AddressDto(it) },
     operators = prison.prisonOperators.map { PrisonOperatorDto(it) },
+    departments = prison.departments.map { DepartmentDto(it) },
     inactiveDate = prison.inactiveDate,
     cjitCode = prison.cjitCode,
     area = prison.area?.let { area -> CodeDescription(area.code, area.description) },

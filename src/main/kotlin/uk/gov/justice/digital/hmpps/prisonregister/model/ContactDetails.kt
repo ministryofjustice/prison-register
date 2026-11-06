@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.NamedAttributeNode
 import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToOne
@@ -29,11 +30,12 @@ import java.time.LocalDateTime
 )
 @Table(name = "CONTACT_DETAILS", uniqueConstraints = [UniqueConstraint(columnNames = ["prison_id", "department_type"])])
 class ContactDetails(
-  @Column(name = "PRISON_ID", nullable = false)
-  val prisonId: String,
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn(name = "PRISON_ID", nullable = false)
+  var prison: Prison,
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEOLINK_CONFERENCING_CENTRE','OFFENDER_MANAGEMENT_UNIT','OFFICIAL_VISIT')", nullable = false)
+  @Column(name = "department_type", columnDefinition = "enum('SOCIAL_VISIT','VIDEOLINK_CONFERENCING_CENTRE','OFFENDER_MANAGEMENT_UNIT','OFFICIAL_VISIT','PRISON')", nullable = false)
   var type: DepartmentType,
 
   @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true, optional = true)
@@ -77,7 +79,7 @@ class ContactDetails(
 
     other as ContactDetails
 
-    if (prisonId != other.prisonId) return false
+    if (prison.prisonId != other.prison.prisonId) return false
     if (type != other.type) return false
 
     return true
@@ -85,7 +87,7 @@ class ContactDetails(
 
   override fun hashCode(): Int {
     var result = super.hashCode()
-    result = 31 * result + prisonId.hashCode()
+    result = 31 * result + prison.prisonId.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }

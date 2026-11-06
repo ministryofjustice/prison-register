@@ -14,7 +14,7 @@ import org.hibernate.Hibernate
 data class Address(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long? = null,
+  val id: Long = 0,
   var addressLine1: String? = null,
   var addressLine2: String? = null,
   var town: String,

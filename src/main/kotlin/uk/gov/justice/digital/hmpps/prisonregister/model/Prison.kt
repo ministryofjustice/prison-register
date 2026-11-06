@@ -67,6 +67,9 @@ data class Prison(
   @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
   var addresses: Set<Address> = setOf(),
 
+  @OneToMany(mappedBy = "prison", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+  var departments: MutableList<ContactDetails> = mutableListOf(),
+
   var cjitCode: String? = null,
 
   @ManyToOne(fetch = FetchType.LAZY)

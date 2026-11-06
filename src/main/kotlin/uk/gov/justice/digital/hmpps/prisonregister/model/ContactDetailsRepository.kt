@@ -9,10 +9,8 @@ import org.springframework.stereotype.Repository
 interface ContactDetailsRepository : JpaRepository<ContactDetails, Long> {
 
   @Query(
-    "SELECT e.value FROM ContactDetails c join c.emailAddress e WHERE c.prisonId=:prisonId AND c.type=:departmentType",
+    "SELECT e.value FROM ContactDetails c join c.emailAddress e WHERE c.prison.prisonId=:prisonId AND c.type=:departmentType",
   )
-  fun getEmailAddressByPrisonIdAndDepartment(prisonId: String, departmentType: DepartmentType): String?
-
   @EntityGraph(value = "contact-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
-  fun getByPrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
+  fun getByPrison_PrisonIdAndType(prisonId: String, departmentType: DepartmentType): ContactDetails?
 }
