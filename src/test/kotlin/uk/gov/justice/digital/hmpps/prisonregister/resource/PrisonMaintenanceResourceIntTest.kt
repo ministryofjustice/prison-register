@@ -15,9 +15,12 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.web.reactive.function.BodyInserters
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
+import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
@@ -25,6 +28,8 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
 import uk.gov.justice.digital.hmpps.prisonregister.service.HMPPSDomainEvent
+import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import java.time.Instant
 import java.util.Optional
 
 class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
@@ -37,6 +42,9 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var telemetryClient: TelemetryClient
+
+  @MockitoSpyBean
+  private lateinit var snsService: SnsService
 
   @Nested
   inner class UpdatePrison {
@@ -124,7 +132,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
@@ -167,7 +175,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
@@ -210,7 +218,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.amended")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
@@ -218,6 +226,111 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       assertThat(additionalInformation.prisonId).isEqualTo("MDI")
       assertThat(message.contains("A prison has been updated"))
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
+    }
+  }
+
+  @Nested
+  inner class UpdatePrisonArea {
+    private val updateRequest = UpdatePrisonAreaDto(
+      cjitCode = "123456789",
+      areaCode = "52",
+      regionCode = "YOHUM",
+      geographicalAreaCode = "WYORKS",
+      localAuthorityCode = "00CG",
+      payrollRegionCode = "NEY",
+    )
+
+    private fun put(prisonId: String, body: UpdatePrisonAreaDto = updateRequest) = webTestClient.put()
+      .uri("/prison-maintenance/id/$prisonId/area")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_MAINTAIN_REF_DATA"), scopes = listOf("write"), user = "bobby.beans"))
+      .bodyValue(body)
+      .exchange()
+
+    private fun expectBadRequest(body: UpdatePrisonAreaDto, message: String) {
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.of(Prison("MDI", "A Prison 1", active = true)))
+
+      val errorResponse: ErrorResponse = put("MDI", body).expectStatus().isBadRequest.expectBodyResponse()
+
+      assertThat(errorResponse.userMessage).isEqualTo(message)
+      verifyNoInteractions(snsService)
+      verifyNoInteractions(auditService)
+    }
+
+    @Test
+    fun `requires a valid authentication token`() {
+      webTestClient.put()
+        .uri("/prison-maintenance/id/MDI/area")
+        .accept(MediaType.APPLICATION_JSON)
+        .bodyValue(updateRequest)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `correct permission is needed to update prison area`() {
+      webTestClient.put()
+        .uri("/prison-maintenance/id/MDI/area")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_DUMMY"), scopes = listOf("write")))
+        .bodyValue(updateRequest)
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `404 if prison not found`() {
+      whenever(prisonRepository.findById("ZZZZ")).thenReturn(Optional.empty())
+
+      put("ZZZZ").expectStatus().isNotFound
+
+      verifyNoInteractions(snsService)
+      verifyNoInteractions(auditService)
+      verifyNoInteractions(telemetryClient)
+    }
+
+    @Test
+    fun `area code is not valid`() = expectBadRequest(updateRequest.copy(areaCode = "ZZZ"), "ZZZ area code not found for prison MDI")
+
+    @Test
+    fun `region code is not valid`() = expectBadRequest(updateRequest.copy(regionCode = "ZZZ"), "ZZZ region code not found for prison MDI")
+
+    @Test
+    fun `geographical area code is not valid`() = expectBadRequest(updateRequest.copy(geographicalAreaCode = "ZZZ"), "ZZZ geographical area code not found for prison MDI")
+
+    @Test
+    fun `local authority code is not valid`() = expectBadRequest(updateRequest.copy(localAuthorityCode = "ZZZ"), "ZZZ local authority code not found for prison MDI")
+
+    @Test
+    fun `payroll region code is not valid`() = expectBadRequest(updateRequest.copy(payrollRegionCode = "ZZZ"), "ZZZ payroll region code not found for prison MDI")
+
+    @Test
+    fun `will update the prison area data`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.of(Prison("MDI", "A Prison 1", active = true)))
+
+      val prisonDto: PrisonDto = put("MDI").expectStatus().isOk.expectBodyResponse()
+
+      assertThat(prisonDto.prisonId).isEqualTo("MDI")
+      verify(auditService).sendAuditEvent(eq("PRISON_REGISTER_AREA_UPDATE"), eq(Pair("MDI", updateRequest)), any())
+      verify(telemetryClient).trackEvent(eq("prison-register-area-update"), any(), isNull())
+    }
+
+    @Test
+    fun `will send the area amended event via the sns service`() {
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.of(Prison("MDI", "A Prison 1", active = true)))
+
+      put("MDI").expectStatus().isOk
+
+      verify(snsService).sendPrisonRegisterAreaAmendedEvent(eq("MDI"), any<Instant>(), any())
+      await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
+
+      val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.area.amended")
+
+      val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
+      assertThat(eventType).isEqualTo("register.prison.area.amended")
+      assertThat(additionalInformation.prisonId).isEqualTo("MDI")
     }
   }
 
@@ -305,7 +418,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
@@ -345,7 +458,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
@@ -417,7 +530,7 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
       await untilCallTo { testQueueEventMessageCount() } matches { it == 1 }
 
       val requestJson = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).get().messages()[0].body()
-      val (message, messageId, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
+      val (message, _, messageAttributes) = objectMapper.readValue(requestJson, HMPPSMessage::class.java)
       assertThat(messageAttributes.eventType.Value).isEqualTo("register.prison.inserted")
 
       val (eventType, additionalInformation) = objectMapper.readValue(message, HMPPSDomainEvent::class.java)
