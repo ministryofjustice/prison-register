@@ -44,6 +44,16 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
       ),
     )
   }
+  fun sendPrisonRegisterAreaAmendedEvent(prisonId: String, occurredAt: Instant, source: String = "DPS") {
+    publishToDomainEventsTopic(
+      HMPPSDomainEvent(
+        "register.prison.area.amended",
+        AdditionalInformation(prisonId, source),
+        occurredAt,
+        "A prison area has been updated",
+      ),
+    )
+  }
 
   fun sendCourtRegisterAmendedEvent(courtId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(

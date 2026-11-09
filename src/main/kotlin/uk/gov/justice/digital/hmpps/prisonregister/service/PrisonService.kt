@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonAreaDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
@@ -181,6 +182,23 @@ class PrisonService(
       prison.categories.addAll(categories)
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
+    return PrisonDto(prison)
+  }
+
+  @Transactional
+  fun updatePrisonArea(prisonId: String, prisonUpdatePrisonAreaDto: UpdatePrisonAreaDto): PrisonDto {
+    val prison = prisonRepository.findById(prisonId)
+      .orElseThrow { EntityNotFoundException("Prison $prisonId not found") }
+
+    with(prisonUpdatePrisonAreaDto) {
+      prison.cjitCode = cjitCode
+      prison.area = areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for prison $prisonId") }
+      prison.region = regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for prison $prisonId") }
+      prison.geographicalArea = geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for prison $prisonId") }
+      prison.payrollRegion = payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for prison $prisonId") }
+      prison.localAuthority = localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for prison $prisonId") }
+    }
+    telemetryClient.trackEvent("prison-register-area-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
   }
 

@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.CLIENT_CAN_MAINTAIN_PRISON_DETAILS
@@ -180,6 +181,66 @@ class PrisonMaintenanceResource(
     )
     return updatedPrison
   }
+
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
+  @Operation(
+    summary = "Updates specified prison area details",
+    description = "Updates prison area information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdatePrisonAreaDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Prison Area Information Updated",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Information request to update prison area",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to make prison update",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Prison ID not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PutMapping("/id/{prisonId}/area")
+  fun updatePrisonArea(
+    @Schema(description = "Prison Id", example = "MDI", required = true)
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
+    prisonId: String,
+    @RequestBody @Valid
+    request: UpdatePrisonAreaDto,
+  ): PrisonDto {
+    val updatedPrison = prisonService.updatePrisonArea(prisonId, request)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAreaAmendedEvent(prisonId, now)
+    auditService.sendAuditEvent(
+      AuditType.PRISON_REGISTER_AREA_UPDATE.name,
+      prisonId to request,
+      now,
+    )
+    return updatedPrison
+  }
 }
 
 @JsonInclude(NON_NULL)
@@ -317,3 +378,14 @@ data class FullPrisonDto(
     localAuthority = prison.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
   )
 }
+
+@Schema(description = "Area prison data to update")
+@JsonInclude(NON_NULL)
+data class UpdatePrisonAreaDto(
+  @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
+  @Schema(description = "Area") val areaCode: String?,
+  @Schema(description = "Region") val regionCode: String?,
+  @Schema(description = "Geographical Area") val geographicalAreaCode: String?,
+  @Schema(description = "Local Authority") val localAuthorityCode: String?,
+  @Schema(description = "Prisoner Payroll Region") val payrollRegionCode: String?,
+)
