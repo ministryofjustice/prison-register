@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyId
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyIdsResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.DepartmentDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyUsageDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyPrisonPhoneDto
 
 @Service
 @Transactional
@@ -30,6 +32,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     else -> otherAgencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
   }
   fun createOrUpdatePrison(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = prisonService.createOrUpdatePrisonFromLegacyData(agencyId, agencyDto)
+  fun updatePrisonNumber(agencyId: String, prisonPhoneDto: LegacyPrisonPhoneDto): DepartmentDto? = prisonService.updatePrisonNumber(agencyId, prisonPhoneDto)
 
   fun deleteAll() {
     courtService.deleteAll()

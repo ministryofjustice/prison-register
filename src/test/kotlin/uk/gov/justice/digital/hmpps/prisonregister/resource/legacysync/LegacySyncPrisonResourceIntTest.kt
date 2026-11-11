@@ -20,12 +20,14 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.DepartmentDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyPrisonPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
@@ -535,6 +537,94 @@ class LegacySyncPrisonResourceIntTest : IntegrationTestBase() {
                 assertThat(phoneNumber?.value).isEqualTo("0114 222 5555")
               }
             }
+          }
+        }
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("PUT /legacy/sync/prison/id/{agencyId}/phone-number")
+  inner class UpdatePrisonPhoneNumber {
+    val request = LegacyPrisonPhoneDto(phoneNumber = LegacyAgencyPhoneDto(number = "0114 999 8888"))
+
+    private fun put(agencyId: String) = webTestClient.put()
+      .uri("/legacy/sync/prison/id/{agencyId}/phone-number", agencyId)
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+      .bodyValue(request)
+      .exchange()
+
+    @Nested
+    inner class Security {
+
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.put()
+          .uri("/legacy/sync/prison/id/{agencyId}/phone-number", "BXI")
+          .accept(MediaType.APPLICATION_JSON)
+          .bodyValue(request)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.put()
+          .uri("/legacy/sync/prison/id/{agencyId}/phone-number", "BXI")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .bodyValue(request)
+          .exchange()
+          .expectStatus().isForbidden
+      }
+    }
+
+    @Nested
+    inner class Validation {
+      @Test
+      fun `will return 404 when prison is not found`() {
+        put("ZZI").expectStatus().isNotFound
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `will set phone number when PRISON contact details already exist`() {
+        dsl.prison(prisonId = "BXI", name = "Brixton (HMP)", active = true) {
+          email(emailAddress = "brixton.old@justice.gov.uk")
+          phoneNumber(phoneNumber = "0114 222 5555")
+        }
+
+        val response: DepartmentDto = put("BXI").expectStatus().isOk.expectBodyResponse()
+
+        assertThat(response.type).isEqualTo(DepartmentType.PRISON)
+        assertThat(response.phoneNumber).isEqualTo("0114 999 8888")
+
+        transactionHelper.runInTransaction {
+          with(contactDetailsRepository.getByPrison_PrisonIdAndType("BXI", DepartmentType.PRISON)!!) {
+            assertThat(phoneNumber?.value).isEqualTo("0114 999 8888")
+            // existing data is retained
+            assertThat(emailAddress?.value).isEqualTo("brixton.old@justice.gov.uk")
+          }
+        }
+      }
+
+      @Test
+      fun `will set phone number when PRISON contact details do not exist`() {
+        dsl.prison(prisonId = "BXI", name = "Brixton (HMP)", active = true) {}
+        assertThat(contactDetailsRepository.getByPrison_PrisonIdAndType("BXI", DepartmentType.PRISON)).isNull()
+
+        val response: DepartmentDto = put("BXI").expectStatus().isOk.expectBodyResponse()
+
+        assertThat(response.phoneNumber).isEqualTo("0114 999 8888")
+
+        transactionHelper.runInTransaction {
+          with(contactDetailsRepository.getByPrison_PrisonIdAndType("BXI", DepartmentType.PRISON)!!) {
+            assertThat(phoneNumber?.value).isEqualTo("0114 999 8888")
+            assertThat(emailAddress).isNull()
           }
         }
       }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -149,6 +150,39 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
       telemetry.trackEvent("legacy-sync-prison-created", mapOf("agencyId" to agencyId), null)
     }
   }
+
+  @Operation(
+    summary = "Updates prison phone number by creating or updating a department record",
+    description = "Used for synchronising data from NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = LegacyPrisonPhoneDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Prison phone number updated",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PutMapping("/sync/prison/id/{agencyId}/phone-number")
+  fun updatePrisonPhoneNumber(
+    @Schema(description = "NOMIS Agency Id", example = "WWI", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+    agencyId: String,
+    @RequestBody @Valid
+    agencyDto: LegacyPrisonPhoneDto,
+  ): DepartmentDto? = legacySyncService.updatePrisonNumber(agencyId, agencyDto)
 
   @Operation(
     summary = "Migrates an agency of any type",
@@ -397,6 +431,10 @@ data class LegacyAgencyDto(
   @Schema(description = "emailAddresses") val emailAddresses: List<LegacyAgencyEmailDto>,
   @Schema(description = "phoneNumbers") val phoneNumbers: List<LegacyAgencyPhoneDto>,
 )
+
+@Schema(description = "Prison phone number")
+@JsonInclude(NON_NULL)
+data class LegacyPrisonPhoneDto(val phoneNumber: LegacyAgencyPhoneDto)
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyAddressDto(

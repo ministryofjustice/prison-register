@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.CREATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.SetOutcome.UPDATED
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddress
+import uk.gov.justice.digital.hmpps.prisonregister.resource.DepartmentDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.FullPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
@@ -41,6 +42,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyPrisonPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonAreaDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
@@ -400,5 +402,12 @@ class PrisonService(
     this.geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $prisonId") }
     this.payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $prisonId") }
     this.localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $prisonId") }
+  }
+
+  fun updatePrisonNumber(agencyId: String, prisonPhoneDto: LegacyPrisonPhoneDto): DepartmentDto? {
+    val prison = prisonRepository.findByIdOrNull(agencyId) ?: throw PrisonNotFoundException(agencyId)
+    val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(agencyId, DepartmentType.PRISON) ?: ContactDetails(prison, DepartmentType.PRISON)
+    contactDetails.phoneNumber = PhoneNumber(prisonPhoneDto.phoneNumber.number)
+    return DepartmentDto(contactDetailsRepository.save(contactDetails))
   }
 }
