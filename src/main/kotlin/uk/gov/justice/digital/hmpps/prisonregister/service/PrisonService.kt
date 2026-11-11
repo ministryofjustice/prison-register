@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsAlreadyExistException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
+import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
@@ -354,16 +355,42 @@ class PrisonService(
     agency.update(agencyDto)
     LegacyAgencyResponse(updated = true)
   } ?: let {
-    // TODO - create a new prison from legacy data
-    throw UnsupportedOperationException("Prison $agencyId does not exist, cannot create from legacy data")
+    // we create a skeleton of a prison from NOMIS data and expect a user to now add the categories and types in the UI
+    val prison = Prison(
+      prisonId = agencyId,
+      name = agencyDto.name,
+      description = agencyDto.description,
+      active = agencyDto.active,
+      male = true,
+      female = false,
+      contracted = false,
+      lthse = false,
+      cjitCode = agencyDto.cjitCode,
+      area = agencyDto.areaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it area code not found for agency $agencyId") },
+      region = agencyDto.regionCode?.let { regionRepository.findByIdOrNull(it) ?: throw ValidationException("$it region code not found for agency $agencyId") },
+      geographicalArea = agencyDto.geographicalAreaCode?.let { areaRepository.findByIdOrNull(it) ?: throw ValidationException("$it geographical area code not found for agency $agencyId") },
+      payrollRegion = agencyDto.payrollRegionCode?.let { payrollRegionRepository.findByIdOrNull(it) ?: throw ValidationException("$it payroll region code not found for agency $agencyId") },
+      localAuthority = agencyDto.localAuthorityCode?.let { localAuthorityRepository.findByIdOrNull(it) ?: throw ValidationException("$it local authority code not found for agency $agencyId") },
+    ).also {
+      it.addresses = agencyDto.addresses.map { addressDto ->
+        Address(
+          addressLine1 = addressDto.addressLine1,
+          addressLine2 = addressDto.addressLine2,
+          town = addressDto.town ?: "Unknown",
+          county = addressDto.county,
+          postcode = addressDto.postcode ?: "Unknown",
+          country = addressDto.country ?: "Unknown",
+          prison = it,
+        )
+      }.toMutableSet()
+    }
+
+    prisonRepository.saveAndFlush(prison)
+
+    LegacyAgencyResponse(updated = false)
   }
 
   private fun Prison.update(agencyDto: LegacyAgencyDto) {
-    /* TODO - this will be enabled in a future PR once we know it is safe
-    this.name = agencyDto.name
-    this.active = agencyDto.active
-     */
-
     // all these values are currently source from NOMS - never been populated in DPS
     this.description = agencyDto.description
     this.inactiveDate = agencyDto.inactiveDate
