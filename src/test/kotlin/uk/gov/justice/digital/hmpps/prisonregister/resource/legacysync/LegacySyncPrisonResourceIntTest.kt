@@ -70,6 +70,7 @@ class LegacySyncPrisonResourceIntTest : IntegrationTestBase() {
   @AfterEach
   fun tearDown() {
     if (prisonRepository.existsById("BXI")) prisonRepository.deleteById("BXI")
+    if (prisonRepository.existsById("ZZI")) prisonRepository.deleteById("ZZI")
   }
 
   @Nested
@@ -134,17 +135,155 @@ class LegacySyncPrisonResourceIntTest : IntegrationTestBase() {
       inner class Create {
 
         @Nested
+        inner class Validation {
+
+          @Test
+          fun `area code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest.copy(areaCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ area code not found for agency ZZI")
+            assertThat(prisonRepository.existsById("ZZI")).isFalse
+          }
+
+          @Test
+          fun `region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest.copy(regionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ region code not found for agency ZZI")
+            assertThat(prisonRepository.existsById("ZZI")).isFalse
+          }
+
+          @Test
+          fun `geographical area code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest.copy(geographicalAreaCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ geographical area code not found for agency ZZI")
+            assertThat(prisonRepository.existsById("ZZI")).isFalse
+          }
+
+          @Test
+          fun `payroll region code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest.copy(payrollRegionCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ payroll region code not found for agency ZZI")
+            assertThat(prisonRepository.existsById("ZZI")).isFalse
+          }
+
+          @Test
+          fun `local authority code is not valid`() {
+            val errorResponse: ErrorResponse = webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest.copy(localAuthorityCode = "ZZZ"))
+              .exchange()
+              .expectStatus().isBadRequest.expectBodyResponse()
+
+            assertThat(errorResponse.developerMessage).isEqualTo("ZZZ local authority code not found for agency ZZI")
+            assertThat(prisonRepository.existsById("ZZI")).isFalse
+          }
+        }
+
+        @Nested
         inner class HappyPath {
 
           @Test
-          fun `not supported yet`() {
+          fun `will track telemetry`() {
             webTestClient.post()
               .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
               .accept(MediaType.APPLICATION_JSON)
               .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
               .bodyValue(agencyRequest)
               .exchange()
-              .expectStatus().is5xxServerError
+              .expectStatus().isOk
+
+            verify(telemetry).trackEvent("legacy-sync-prison-created", mapOf("agencyId" to "ZZI"), null)
+          }
+
+          @Test
+          fun `will create a skeleton prison with all supplied fields`() {
+            val response: LegacyAgencyResponse = webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest)
+              .exchange()
+              .expectStatus().isOk.expectBodyResponse()
+
+            assertThat(response.updated).isFalse
+
+            transactionHelper.runInTransaction {
+              with(prisonRepository.findByIdOrNull("ZZI")!!) {
+                assertThat(name).isEqualTo("Brixton (HMP)")
+                assertThat(description).isEqualTo("HMP Brixton")
+                assertThat(active).isTrue
+                assertThat(cjitCode).isEqualTo("123456789")
+                assertThat(area?.description).isEqualTo("South Yorkshire")
+                assertThat(region?.description).isEqualTo("Yorkshire & Humberside")
+                assertThat(geographicalArea?.description).isEqualTo("West Yorkshire")
+                assertThat(payrollRegion?.description).isEqualTo("High Security")
+                assertThat(localAuthority?.description).isEqualTo("Sheffield City Council")
+
+                assertThat(addresses).hasSize(1)
+                with(addresses.single()) {
+                  assertThat(addressLine1).isEqualTo("1 Charter Row")
+                  assertThat(addressLine2).isNull()
+                  assertThat(town).isEqualTo("Sheffield")
+                  assertThat(county).isEqualTo("South Yorkshire")
+                  assertThat(postcode).isEqualTo("S1 3FZ")
+                  assertThat(country).isEqualTo("England")
+                }
+              }
+            }
+          }
+
+          @Test
+          fun `will leave categories, types and other DPS managed data empty`() {
+            webTestClient.post()
+              .uri("/legacy/sync/prison/id/{agencyId}", "ZZI")
+              .accept(MediaType.APPLICATION_JSON)
+              .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__SYNCHRONISATION__RW")))
+              .bodyValue(agencyRequest)
+              .exchange()
+              .expectStatus().isOk
+
+            transactionHelper.runInTransaction {
+              with(prisonRepository.findByIdOrNull("ZZI")!!) {
+                assertThat(categories).isEmpty()
+                assertThat(prisonTypes).isEmpty()
+                assertThat(prisonOperators).isEmpty()
+                assertThat(departments).isEmpty()
+                assertThat(male).isTrue
+                assertThat(female).isFalse
+                assertThat(contracted).isFalse
+                assertThat(lthse).isFalse
+                assertThat(prisonNameInWelsh).isNull()
+              }
+            }
           }
         }
       }
