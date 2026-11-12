@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
+import uk.gov.justice.digital.hmpps.prisonregister.model.AllAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises
 import uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremisesRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Area
@@ -44,6 +45,7 @@ class PublicApiService(
   private val approvedPremisesRepository: ApprovedPremisesRepository,
   private val prisonRepository: PrisonRepository,
   private val otherAgencyRepository: OtherAgencyRepository,
+  private val allAgencyRepository: AllAgencyRepository,
 ) {
   fun getAll(activeOnly: Boolean = true): List<AgencySummaryDto> {
     val courts = courts(activeOnly).map {
@@ -75,17 +77,19 @@ class PublicApiService(
       .sortedBy { it.agencyId }
   }
 
-  fun getAgency(agencyId: String): AgencyDetailsDto {
-    courtRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-    hospitalRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-    policeCustodySuiteRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-    probationOfficeRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-    approvedPremisesRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-    prisonRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-    otherAgencyRepository.findByIdOrNull(agencyId)?.let { return it.toAgencyDetailsDto() }
-
-    throw ItemNotFoundException("Agency $agencyId not found")
-  }
+  // Find which table the agency is in with one lookup on the all_agencies view, then load it from
+  // that table only, rather than trying each agency table in turn (MAPB-1127)
+  @Transactional(readOnly = true)
+  fun getAgency(agencyId: String): AgencyDetailsDto = when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
+    null -> null
+    LegacyAgencyType.COURT -> courtRepository.findWithDetailsByCourtId(agencyId)?.toAgencyDetailsDto()
+    LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> hospitalRepository.findWithDetailsByHospitalId(agencyId)?.toAgencyDetailsDto()
+    LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteRepository.findWithDetailsByPoliceCustodySuiteId(agencyId)?.toAgencyDetailsDto()
+    LegacyAgencyType.PROBATION_OFFICE -> probationOfficeRepository.findWithDetailsByProbationOfficeId(agencyId)?.toAgencyDetailsDto()
+    LegacyAgencyType.APPROVED_PREMISES -> approvedPremisesRepository.findWithDetailsByApprovedPremisesId(agencyId)?.toAgencyDetailsDto()
+    LegacyAgencyType.PRISON -> prisonRepository.findByIdOrNull(agencyId)?.toAgencyDetailsDto()
+    else -> otherAgencyRepository.findWithDetailsByAgencyId(agencyId)?.toAgencyDetailsDto()
+  } ?: throw ItemNotFoundException("Agency $agencyId not found")
 
   fun getAgenciesByType(type: LegacyAgencyType, activeOnly: Boolean): List<AgencyDetailsDto> {
     val agencies = when (type) {
