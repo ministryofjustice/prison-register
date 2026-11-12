@@ -2,7 +2,8 @@
 # Declare variables to be passed into your templates.
 generic-service:
 
-  replicaCount: 2
+  # 3 so that one pod being killed or rescheduled does not halve capacity at busy times
+  replicaCount: 3
 
   ingress:
     host: prison-register.hmpps.service.justice.gov.uk
