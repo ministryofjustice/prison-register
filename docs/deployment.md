@@ -57,9 +57,15 @@ signs users out (any 401 or 403) or shows them an error page.
 | Chart | `helm_deploy/prison-register/` | `helm_deploy/hmpps-registers/` |
 | Per-environment values | `helm_deploy/values-<env>.yaml` | `helm_deploy/values-<env>.yaml` |
 | Port | 8080 | 3000 |
-| Replicas | 2 | 2 (dev and preprod), chart default in prod |
+| Replicas | 2 (dev and preprod), 3 (prod) | 2 (dev and preprod), chart default in prod |
+| Memory request / limit | 512Mi / 1Gi (dev), 1Gi / 2Gi (preprod and prod) | Namespace default |
 
 The values files sit one level above the chart in both repositories.
+
+**The API's heap is half its memory limit.** The base image sets `JAVA_TOOL_OPTIONS` to
+`-XX:MaxRAMPercentage=50`, so change the memory limit to change the heap. Do not set `JAVA_OPTS`: the
+container starts Java directly, so nothing reads it. Java also needs about 320 MB outside the heap,
+which is why a 1Gi limit got the production pods killed (MAPB-1101).
 
 Secrets come from Kubernetes secrets in the namespace:
 
