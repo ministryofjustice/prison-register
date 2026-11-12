@@ -7,6 +7,8 @@ Prison registry services for hmpps
 [![Event docs](https://img.shields.io/badge/Event_docs-view-85EA2D.svg)](https://studio.asyncapi.com/?url=https://raw.githubusercontent.com/ministryofjustice/prison-register/main/async-api.yml&readOnly)
 
 Self-contained fat-jar micro-service to publish prison information
+
+**Developer documentation for the API and the [hmpps-registers](https://github.com/ministryofjustice/hmpps-registers) front end is in [docs/](docs/README.md)**: architecture, process flows, data model, getting started, deployment and common problems.
  
 ### Building
 
