@@ -2,6 +2,13 @@ generic-service:
 
   replicaCount: 2
 
+  # Dev has little traffic, so keep the smaller pods it has always had (heap is half the limit)
+  resources:
+    requests:
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+
   ingress:
     host: prison-register-dev.hmpps.service.justice.gov.uk
 
@@ -11,7 +18,6 @@ generic-service:
     shutdown: '30 21 * * 1-5' # Stop at 9:30pm UTC Monday-Friday
 
   env:
-    JAVA_OPTS: "-Xmx256m"
     HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api-dev.hmpps.service.justice.gov.uk"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json

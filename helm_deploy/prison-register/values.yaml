@@ -8,6 +8,17 @@ generic-service:
     tag: app_version    # override at deployment time
     port: 8080
 
+  # Without these the namespace default limit of 1Gi applies, which left no room outside the heap
+  # and got the pods OOM killed (MAPB-1101). The heap is not set here: the base image's
+  # JAVA_TOOL_OPTIONS sets -XX:MaxRAMPercentage=50, so it is half of the memory limit.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
   ingress:
     enabled: true
     annotations:
@@ -39,7 +50,8 @@ generic-service:
 
   env:
     SERVER_PORT: 8080
-    JAVA_OPTS: "-Xmx512m"
+    # Stops glibc reserving a memory arena per thread on large nodes
+    MALLOC_ARENA_MAX: "2"
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_SQS_USE_WEB_TOKEN: true
