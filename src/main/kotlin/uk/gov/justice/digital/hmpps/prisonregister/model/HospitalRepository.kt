@@ -10,4 +10,10 @@ interface HospitalRepository :
   JpaRepository<Hospital, String>,
   JpaSpecificationExecutor<Hospital> {
   override fun findAll(spec: Specification<Hospital>): List<Hospital>
+
+  fun findAllByActiveTrue(): List<Hospital>
+
+  fun findAllByHighSecurity(highSecurity: Boolean): List<Hospital>
+
+  fun findAllByHighSecurityAndActiveTrue(highSecurity: Boolean): List<Hospital>
 }

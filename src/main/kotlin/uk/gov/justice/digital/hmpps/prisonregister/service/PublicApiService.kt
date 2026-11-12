@@ -35,7 +35,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class PublicApiService(
   private val courtRepository: CourtRepository,
   private val hospitalRepository: HospitalRepository,
@@ -46,30 +46,28 @@ class PublicApiService(
   private val otherAgencyRepository: OtherAgencyRepository,
 ) {
   fun getAll(activeOnly: Boolean = true): List<AgencySummaryDto> {
-    fun Boolean.matchesActiveFilter() = if (activeOnly) this else true
-
-    val courts = courtRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
+    val courts = courts(activeOnly).map {
       AgencySummaryDto(agencyId = it.courtId, description = it.description, agencyType = LegacyAgencyType.COURT, active = it.active)
     }
 
-    val hospitals = hospitalRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
+    val hospitals = (if (activeOnly) hospitalRepository.findAllByActiveTrue() else hospitalRepository.findAll()).map {
       val agencyType = if (it.highSecurity) LegacyAgencyType.SECURE_HOSPITAL else LegacyAgencyType.HOSPITAL
       AgencySummaryDto(agencyId = it.hospitalId, description = it.description, agencyType = agencyType, active = it.active)
     }
 
-    val policeCustodySuites = policeCustodySuiteRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
+    val policeCustodySuites = policeCustodySuites(activeOnly).map {
       AgencySummaryDto(agencyId = it.policeCustodySuiteId, description = it.description, agencyType = LegacyAgencyType.POLICE_CUSTODY_SUITE, active = it.active)
     }
 
-    val probationOffices = probationOfficeRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
+    val probationOffices = probationOffices(activeOnly).map {
       AgencySummaryDto(agencyId = it.probationOfficeId, description = it.description, agencyType = LegacyAgencyType.PROBATION_OFFICE, active = it.active)
     }
 
-    val prisons = prisonRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
+    val prisons = prisons(activeOnly).map {
       AgencySummaryDto(agencyId = it.prisonId, description = it.description, agencyType = LegacyAgencyType.PRISON, active = it.active)
     }
 
-    val agencies = otherAgencyRepository.findAll().filter { it.active.matchesActiveFilter() }.map {
+    val agencies = (if (activeOnly) otherAgencyRepository.findAllByActiveTrue() else otherAgencyRepository.findAll()).map {
       AgencySummaryDto(agencyId = it.agencyId, description = it.description, agencyType = LegacyAgencyType.valueOf(it.otherAgencyType.name), active = it.active)
     }
 
@@ -90,40 +88,51 @@ class PublicApiService(
   }
 
   fun getAgenciesByType(type: LegacyAgencyType, activeOnly: Boolean): List<AgencyDetailsDto> {
-    fun Boolean.matchesActiveFilter() = if (activeOnly) this else true
-
     val agencies = when (type) {
-      LegacyAgencyType.COURT ->
-        courtRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+      LegacyAgencyType.COURT -> courts(activeOnly).map { it.toAgencyDetailsDto() }
 
-      LegacyAgencyType.HOSPITAL ->
-        hospitalRepository.findAll().filter { !it.highSecurity && it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+      LegacyAgencyType.HOSPITAL -> hospitals(highSecurity = false, activeOnly).map { it.toAgencyDetailsDto() }
 
-      LegacyAgencyType.SECURE_HOSPITAL ->
-        hospitalRepository.findAll().filter { it.highSecurity && it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+      LegacyAgencyType.SECURE_HOSPITAL -> hospitals(highSecurity = true, activeOnly).map { it.toAgencyDetailsDto() }
 
-      LegacyAgencyType.POLICE_CUSTODY_SUITE ->
-        policeCustodySuiteRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+      LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuites(activeOnly).map { it.toAgencyDetailsDto() }
 
-      LegacyAgencyType.PROBATION_OFFICE ->
-        probationOfficeRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+      LegacyAgencyType.PROBATION_OFFICE -> probationOffices(activeOnly).map { it.toAgencyDetailsDto() }
 
       LegacyAgencyType.APPROVED_PREMISES ->
-        approvedPremisesRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+        (if (activeOnly) approvedPremisesRepository.findAllByActiveTrue() else approvedPremisesRepository.findAll()).map { it.toAgencyDetailsDto() }
 
-      LegacyAgencyType.PRISON ->
-        prisonRepository.findAll().filter { it.active.matchesActiveFilter() }.map { it.toAgencyDetailsDto() }
+      LegacyAgencyType.PRISON -> prisons(activeOnly).map { it.toAgencyDetailsDto() }
 
       else -> {
         val otherAgencyType = OtherAgencyType.valueOf(type.name)
-        otherAgencyRepository.findAll()
-          .filter { it.otherAgencyType == otherAgencyType && it.active.matchesActiveFilter() }
-          .map { it.toAgencyDetailsDto() }
+        (
+          if (activeOnly) {
+            otherAgencyRepository.findAllByOtherAgencyTypeAndActiveTrue(otherAgencyType)
+          } else {
+            otherAgencyRepository.findAllByOtherAgencyType(otherAgencyType)
+          }
+          ).map { it.toAgencyDetailsDto() }
       }
     }
 
     return agencies.sortedBy { it.agencyId }
   }
+
+  // Filter on active (and type) in the database rather than loading every row and filtering in memory
+  private fun courts(activeOnly: Boolean) = if (activeOnly) courtRepository.findAllByActiveTrue() else courtRepository.findAll()
+
+  private fun hospitals(highSecurity: Boolean, activeOnly: Boolean) = if (activeOnly) {
+    hospitalRepository.findAllByHighSecurityAndActiveTrue(highSecurity)
+  } else {
+    hospitalRepository.findAllByHighSecurity(highSecurity)
+  }
+
+  private fun policeCustodySuites(activeOnly: Boolean) = if (activeOnly) policeCustodySuiteRepository.findAllByActiveTrue() else policeCustodySuiteRepository.findAll()
+
+  private fun probationOffices(activeOnly: Boolean) = if (activeOnly) probationOfficeRepository.findAllByActiveTrue() else probationOfficeRepository.findAll()
+
+  private fun prisons(activeOnly: Boolean) = if (activeOnly) prisonRepository.findAllByActiveTrue() else prisonRepository.findAll()
 
   fun getAgenciesByLegacyType(legacyType: String, activeOnly: Boolean): List<AgencyDetailsDto> = getAgenciesByType(legacyType.toLegacyAgencyType(), activeOnly)
 }

@@ -51,10 +51,13 @@ class ProbationOfficeService(
     probationOfficeRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = probationOfficeRepository.findAll().map { it.probationOfficeId }
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?): List<ProbationOfficeDto> = probationOfficeRepository.findAll(ProbationOfficeFilter(active, textSearch)).map { it.toProbationOfficeDto() }
 
+  @Transactional(readOnly = true)
   fun findById(probationOfficeId: String): ProbationOfficeDto = probationOfficeRepository.findByIdOrNull(probationOfficeId)?.toProbationOfficeDto()
     ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
 

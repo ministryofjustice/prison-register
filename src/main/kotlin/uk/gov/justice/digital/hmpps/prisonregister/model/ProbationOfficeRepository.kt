@@ -10,4 +10,6 @@ interface ProbationOfficeRepository :
   JpaRepository<ProbationOffice, String>,
   JpaSpecificationExecutor<ProbationOffice> {
   override fun findAll(spec: Specification<ProbationOffice>): List<ProbationOffice>
+
+  fun findAllByActiveTrue(): List<ProbationOffice>
 }
