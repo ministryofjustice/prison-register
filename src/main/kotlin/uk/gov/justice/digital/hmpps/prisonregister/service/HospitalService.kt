@@ -43,10 +43,13 @@ class HospitalService(
     hospitalRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = hospitalRepository.findAll().map { it.hospitalId }
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?, highSecurity: Boolean?): List<HospitalDto> = hospitalRepository.findAll(HospitalFilter(active, textSearch, highSecurity)).map { it.toHospitalDto() }
 
+  @Transactional(readOnly = true)
   fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.toHospitalDto() ?: throw EntityNotFoundException("Hospital $hospitalId not found")
 
   fun createHospital(createHospitalDto: CreateHospitalDto): HospitalDto {

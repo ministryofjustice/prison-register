@@ -16,4 +16,6 @@ interface ProbationOfficeRepository :
   fun findWithDetailsByProbationOfficeId(probationOfficeId: String): ProbationOffice?
 
   override fun findAll(spec: Specification<ProbationOffice>): List<ProbationOffice>
+
+  fun findAllByActiveTrue(): List<ProbationOffice>
 }

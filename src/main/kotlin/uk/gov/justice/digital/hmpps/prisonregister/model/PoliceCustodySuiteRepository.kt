@@ -16,4 +16,6 @@ interface PoliceCustodySuiteRepository :
   fun findWithDetailsByPoliceCustodySuiteId(policeCustodySuiteId: String): PoliceCustodySuite?
 
   override fun findAll(spec: Specification<PoliceCustodySuite>): List<PoliceCustodySuite>
+
+  fun findAllByActiveTrue(): List<PoliceCustodySuite>
 }

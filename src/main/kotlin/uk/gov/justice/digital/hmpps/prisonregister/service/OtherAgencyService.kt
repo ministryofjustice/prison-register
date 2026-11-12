@@ -50,10 +50,13 @@ class OtherAgencyService(
     otherAgencyRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = otherAgencyRepository.findAll().map { it.agencyId }
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?, otherAgencyTypeCodes: List<OtherAgencyType>?): List<OtherAgencyDto> = otherAgencyRepository.findAll(OtherAgencyFilter(active, textSearch, otherAgencyTypeCodes)).map { it.toOtherAgencyDto() }
 
+  @Transactional(readOnly = true)
   fun findById(agencyId: String): OtherAgencyDto = otherAgencyRepository.findByIdOrNull(agencyId)?.toOtherAgencyDto()
     ?: throw EntityNotFoundException("Agency $agencyId not found")
 

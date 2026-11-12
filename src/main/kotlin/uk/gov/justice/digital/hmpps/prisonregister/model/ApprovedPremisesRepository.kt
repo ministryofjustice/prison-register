@@ -16,4 +16,6 @@ interface ApprovedPremisesRepository :
   fun findWithDetailsByApprovedPremisesId(approvedPremisesId: String): ApprovedPremises?
 
   override fun findAll(spec: Specification<ApprovedPremises>): List<ApprovedPremises>
+
+  fun findAllByActiveTrue(): List<ApprovedPremises>
 }

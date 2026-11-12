@@ -32,4 +32,7 @@ interface PrisonRepository :
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   override fun findAll(): List<Prison>
+
+  @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
+  fun findAllByActiveTrue(): List<Prison>
 }

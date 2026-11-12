@@ -53,10 +53,13 @@ class CourtService(
     courtRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = courtRepository.findAll().map { it.courtId }
 
+  @Transactional(readOnly = true)
   fun findById(courtId: String): CourtDto = courtRepository.findByIdOrNull(courtId)?.toCourtDto() ?: throw EntityNotFoundException("Court $courtId not found")
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?, courtTypeCodes: List<CourtType.Companion.Type>?): List<CourtDto> = courtRepository.findAll(
     CourtFilter(active, textSearch, courtTypeCodes),
   ).map { it.toCourtDto() }

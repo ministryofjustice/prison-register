@@ -18,6 +18,8 @@ interface CourtRepository :
 
   override fun findAll(spec: Specification<Court>): List<Court>
 
+  fun findAllByActiveTrue(): List<Court>
+
   @Query(
     """
     select c.courtId as courtId, c.name as courtName, c.active as active,

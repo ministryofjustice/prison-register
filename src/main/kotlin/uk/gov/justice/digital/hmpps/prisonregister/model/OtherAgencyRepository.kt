@@ -16,4 +16,10 @@ interface OtherAgencyRepository :
   fun findWithDetailsByAgencyId(agencyId: String): OtherAgency?
 
   override fun findAll(spec: Specification<OtherAgency>): List<OtherAgency>
+
+  fun findAllByActiveTrue(): List<OtherAgency>
+
+  fun findAllByOtherAgencyType(otherAgencyType: OtherAgencyType): List<OtherAgency>
+
+  fun findAllByOtherAgencyTypeAndActiveTrue(otherAgencyType: OtherAgencyType): List<OtherAgency>
 }
