@@ -47,10 +47,13 @@ class PoliceCustodySuiteService(
     policeCustodySuiteRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = policeCustodySuiteRepository.findAll().map { it.policeCustodySuiteId }
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?): List<PoliceCustodySuiteDto> = policeCustodySuiteRepository.findAll(PoliceCustodySuiteFilter(active, textSearch)).map { it.toPoliceCustodySuiteDto() }
 
+  @Transactional(readOnly = true)
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.toPoliceCustodySuiteDto()
     ?: throw EntityNotFoundException("Police custody suite $policeCustodySuiteId not found")
 

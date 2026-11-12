@@ -10,4 +10,10 @@ interface OtherAgencyRepository :
   JpaRepository<OtherAgency, String>,
   JpaSpecificationExecutor<OtherAgency> {
   override fun findAll(spec: Specification<OtherAgency>): List<OtherAgency>
+
+  fun findAllByActiveTrue(): List<OtherAgency>
+
+  fun findAllByOtherAgencyType(otherAgencyType: OtherAgencyType): List<OtherAgency>
+
+  fun findAllByOtherAgencyTypeAndActiveTrue(otherAgencyType: OtherAgencyType): List<OtherAgency>
 }

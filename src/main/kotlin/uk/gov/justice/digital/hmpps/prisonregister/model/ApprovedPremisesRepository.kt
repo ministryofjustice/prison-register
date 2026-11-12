@@ -10,4 +10,6 @@ interface ApprovedPremisesRepository :
   JpaRepository<ApprovedPremises, String>,
   JpaSpecificationExecutor<ApprovedPremises> {
   override fun findAll(spec: Specification<ApprovedPremises>): List<ApprovedPremises>
+
+  fun findAllByActiveTrue(): List<ApprovedPremises>
 }

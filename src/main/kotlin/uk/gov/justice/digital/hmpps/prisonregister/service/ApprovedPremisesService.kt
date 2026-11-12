@@ -49,10 +49,13 @@ class ApprovedPremisesService(
     approvedPremisesRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = approvedPremisesRepository.findAll().map { it.approvedPremisesId }
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?): List<ApprovedPremisesDto> = approvedPremisesRepository.findAll(ApprovedPremisesFilter(active, textSearch)).map { it.toApprovedPremisesDto() }
 
+  @Transactional(readOnly = true)
   fun findById(approvedPremisesId: String): ApprovedPremisesDto = approvedPremisesRepository.findByIdOrNull(approvedPremisesId)?.toApprovedPremisesDto()
     ?: throw EntityNotFoundException("Approved premises $approvedPremisesId not found")
 

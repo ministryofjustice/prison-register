@@ -10,4 +10,6 @@ interface PoliceCustodySuiteRepository :
   JpaRepository<PoliceCustodySuite, String>,
   JpaSpecificationExecutor<PoliceCustodySuite> {
   override fun findAll(spec: Specification<PoliceCustodySuite>): List<PoliceCustodySuite>
+
+  fun findAllByActiveTrue(): List<PoliceCustodySuite>
 }
