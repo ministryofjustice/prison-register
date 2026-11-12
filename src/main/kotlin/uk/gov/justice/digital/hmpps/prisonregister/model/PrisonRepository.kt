@@ -22,9 +22,6 @@ interface PrisonRepository :
   fun findOneByGpPractice(gpPractice: String): Prison?
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
-  fun findAllByPrisonIdIsIn(ids: List<String>): List<Prison>
-
-  @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   override fun findById(id: String): Optional<Prison>
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)

@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
-import org.hibernate.Hibernate
 import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,12 +30,17 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
+import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonLookupService
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
 @RestController
 @Validated
 @RequestMapping("/prisons", produces = [MediaType.APPLICATION_JSON_VALUE])
-class PrisonResource(private val prisonService: PrisonService, private val addressService: PrisonAddressService) {
+class PrisonResource(
+  private val prisonService: PrisonService,
+  private val prisonLookupService: PrisonLookupService,
+  private val addressService: PrisonAddressService,
+) {
   @GetMapping("/id/{prisonId}")
   @Operation(summary = "Get specified prison", description = "Information on a specific prison")
   @ApiResponses(
@@ -53,7 +57,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     @PathVariable
     @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
     prisonId: String,
-  ): PrisonDto = prisonService.findById(prisonId)
+  ): PrisonDto = prisonLookupService.findById(prisonId)
 
   @GetMapping
   @Operation(summary = "Get all prisons", description = "All prisons")
@@ -71,7 +75,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       ),
     ],
   )
-  fun getPrisons(): List<PrisonDto> = prisonService.findAll()
+  fun getPrisons(): List<PrisonDto> = prisonLookupService.findAll()
 
   @GetMapping("/id/{prisonId}/address/{addressId}")
   @Operation(summary = "Get specified prison", description = "Information on a specific prison address")
@@ -139,7 +143,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   fun getPrisonNames(
     @Parameter(description = "If active is not set, return all prisons, otherwise return only the active or inactive ones based on the value", example = "true", required = false) @RequestParam active: Boolean?,
     @Parameter(description = "If parameter prisonId is not set, return the names of all prisons, otherwise return only the one corresponding to the prisonId code.  Filtering on active still applies", example = "WDI", required = false) @RequestParam prison_id: String?,
-  ): List<PrisonNameDto> = prisonService.getPrisonNames(active, prison_id)
+  ): List<PrisonNameDto> = prisonLookupService.getPrisonNames(active, prison_id)
 
   @PostMapping("/prisonsByIds", consumes = ["application/json"])
   @Operation(summary = "Get prisons by IDs", description = "Get prisons based on their IDs")
@@ -159,7 +163,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonsByIds(
     @RequestBody @Valid prisonRequest: PrisonRequest,
-  ) = prisonService.findPrisonsByIds(prisonRequest.prisonIds?.filterNotNull() ?: emptyList())
+  ) = prisonLookupService.findByIds(prisonRequest.prisonIds?.filterNotNull() ?: emptyList())
 }
 
 @Schema(description = "Prison Information")
@@ -188,7 +192,7 @@ data class PrisonDto(
     prison.contracted,
     prison.lthse,
     prison.prisonTypes.map { PrisonTypeDto(it) },
-    prison.categories.also { Hibernate.initialize(it) },
+    prison.categories.toSet(),
     prison.addresses.map { AddressDto(it) },
     prison.prisonOperators.map { PrisonOperatorDto(it) },
   )

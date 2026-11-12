@@ -16,6 +16,14 @@ spring:
   codec:
     max-in-memory-size: 10MB
 
+  # In-memory caches for the busy read endpoints, see CacheConfiguration (MAPB-1128).
+  # expireAfterWrite is the longest another pod can go on serving a prison or agency after it changes.
+  cache:
+    type: caffeine
+    cache-names: prisons, prison-names, agency, agencies, agencies-by-type
+    caffeine:
+      spec: maximumSize=20000,expireAfterWrite=10m,recordStats
+
   security:
     oauth2:
       resourceserver:
