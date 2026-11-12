@@ -48,11 +48,6 @@ Problems people actually hit, and what to do. If you hit a new one and work it o
 
 These are open problems in the code, recorded here so nobody loses a day finding them again.
 
-- **Marking a prison active or inactive in the front end clears its Welsh name.**
-  `updateActivePrisonMarker` in `server/services/hmppsAgencyRegisterApi.ts` sends the prison
-  without `prisonNameInWelsh`, and `PUT /prison-maintenance/id/{id}` sets every field it is given,
-  so the Welsh name becomes null. Re-enter it on the prison's details page afterwards. Raised as
-  [MAPB-1125](https://dsdmoj.atlassian.net/browse/MAPB-1125).
 - **The prison add journey does not check the code against other agency types.** The six other
   add journeys call `GET /legacy/agency/{id}/is-used`; the prison one only checks other prisons.
 - **Adding a prison without answering the long-term high-security question** is not stopped by

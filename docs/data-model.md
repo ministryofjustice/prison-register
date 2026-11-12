@@ -100,6 +100,10 @@ does not. Anything that needs "the business phone number" cannot get it from her
 - **Secure training centres used to be in two places.** `V1_20` added STC2 and STC3 as prisons
   while NOMIS holds them as agencies of type `STC`. `V1_68` removed the prison rows, so they are now
   only in `agency`.
+- **Updating a prison replaces every field.** `PUT /prison-maintenance/id/{id}` sets each field
+  of `UpdatePrisonDto` to what it is sent, and anything left out falls back to its default (null,
+  false or empty). Always read the prison first and send every field back. Leaving out the Welsh
+  name once cleared it whenever a prison was marked active or inactive (MAPB-1125).
 - **The `prison_type` id sequence drifted** behind `max(id)` once and broke inserts. `V1_66` reset
   it. If you insert rows with explicit ids in a migration, reset the sequence in the same
   migration.
