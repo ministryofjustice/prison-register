@@ -3,7 +3,7 @@ import uk.gov.justice.digital.hmpps.gradle.PortForwardRedisTask
 import uk.gov.justice.digital.hmpps.gradle.RevealSecretsTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.14"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.15"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
   id("org.jetbrains.kotlinx.kover") version "0.9.11"
@@ -21,8 +21,8 @@ configurations {
 dependencies {
   implementation("com.google.guava:guava:33.7.2-jre")
   implementation("commons-validator:commons-validator:1.11.0")
-  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.42")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
+  implementation("com.googlecode.libphonenumber:libphonenumber:9.0.43")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.1.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.1")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
@@ -30,7 +30,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.31.1")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.33.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
 
   implementation("com.jayway.jsonpath:json-path:3.0.0")
@@ -40,8 +40,8 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.4")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.10.1")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.10.1")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.11.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.11.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("org.apache.commons:commons-compress:1.28.0")
   implementation("org.freemarker:freemarker:2.3.35")
@@ -52,7 +52,7 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.1.0")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
