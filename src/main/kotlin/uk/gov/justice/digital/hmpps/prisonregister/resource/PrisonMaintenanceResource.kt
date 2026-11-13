@@ -298,6 +298,9 @@ data class UpdatePrisonDto(
   @field:Size(min = 3, max = 80, message = "Welsh prison name must be between 3 and 80 letters")
   val prisonNameInWelsh: String? = null,
 
+  @Schema(description = "Description of the prison", example = "HMP BRIXTON", required = false)
+  val prisonDescription: String? = null,
+
   @Schema(description = "Whether the prison is still active", required = true)
   val active: Boolean,
 
@@ -337,6 +340,7 @@ data class FullPrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
   @Schema(description = "Name of the prison in Welsh", example = "Carchar Brynbuga", required = false) val prisonNameInWelsh: String? = null,
+  @Schema(description = "Description of the prison", example = "HMP BRIXTON", required = false) val prisonDescription: String? = null,
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
   @Schema(description = "Whether the prison has male prisoners") val male: Boolean,
   @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
@@ -359,6 +363,7 @@ data class FullPrisonDto(
     prisonId = prison.prisonId,
     prisonName = prison.name,
     prisonNameInWelsh = prison.prisonNameInWelsh,
+    prisonDescription = prison.description,
     active = prison.active,
     male = prison.male,
     female = prison.female,
