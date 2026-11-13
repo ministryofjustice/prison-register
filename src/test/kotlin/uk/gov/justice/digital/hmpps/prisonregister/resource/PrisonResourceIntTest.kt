@@ -76,6 +76,30 @@ class PrisonResourceIntTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `find all prisons returns description`() {
+      whenever(prisonRepository.findAll()).thenReturn(
+        listOf(Prison("MDI", "Moorland HMP", description = "Moorland description", active = true)),
+      )
+      webTestClient.get().uri("/prisons")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$[0].prisonDescription").isEqualTo("Moorland description")
+    }
+
+    @Test
+    fun `find prison by id returns description`() {
+      whenever(prisonRepository.findAll()).thenReturn(
+        listOf(Prison("MDI", "Moorland HMP", description = "Moorland description", active = true)),
+      )
+      webTestClient.get().uri("/prisons/id/MDI")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$.prisonDescription").isEqualTo("Moorland description")
+    }
+
+    @Test
     fun `find prison by id`() {
       val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true, categories = mutableSetOf(Category.D))
       val mdiAddress = Address(
@@ -349,5 +373,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  private fun String.loadJson(): String = PrisonResourceIntTest::class.java.getResource("$this.json").readText()
+  private fun String.loadJson(): String =
+    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    PrisonResourceIntTest::class.java.getResource("$this.json").readText()
 }

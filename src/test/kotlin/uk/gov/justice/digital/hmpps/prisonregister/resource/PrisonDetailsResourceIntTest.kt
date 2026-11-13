@@ -50,6 +50,7 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
         prison = dsl.prison(
           prisonId = "TSTPRI",
           name = "Test Prison",
+          description = "Test Prison description",
           prisonNameInWelsh = "Test Prison Welsh name",
           active = false,
           male = true,
@@ -170,6 +171,7 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
         assertThat(prisonDto.prisonId).isEqualTo("TSTPRI")
         assertThat(prisonDto.prisonName).isEqualTo("Test Prison")
         assertThat(prisonDto.prisonNameInWelsh).isEqualTo("Test Prison Welsh name")
+        assertThat(prisonDto.prisonDescription).isEqualTo("Test Prison description")
         assertThat(prisonDto.active).isFalse
         assertThat(prisonDto.male).isTrue
         assertThat(prisonDto.female).isTrue

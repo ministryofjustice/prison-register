@@ -84,4 +84,10 @@ class ReferenceDataController(
   @GetMapping("/suggestions/towns")
   @Operation(summary = "Get all town suggestions", description = "Returns all town suggestions as a flat list of code and description")
   fun getTownSuggestions(): List<CodeDescription> = referenceDataService.getTownSuggestions()
+
+  @GetMapping("/prison-operators")
+  @Operation(summary = "Get all prison operators", description = "Returns all prison operators as a flat list of code and description")
+  fun getPrisonOperators(): List<PrisonOperator> = referenceDataService.getPrisonOperators()
 }
+
+data class PrisonOperator(val id: Long, val name: String)
