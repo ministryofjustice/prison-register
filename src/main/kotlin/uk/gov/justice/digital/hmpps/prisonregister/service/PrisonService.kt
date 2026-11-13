@@ -47,7 +47,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonAreaDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 
 const val CLIENT_CAN_MAINTAIN_PRISON_DETAILS = "hasAnyRole('ROLE_MAINTAIN_REF_DATA','ROLE_MAINTAIN_PRISON_DATA') and hasAuthority('SCOPE_write')"
 
@@ -122,8 +121,6 @@ class PrisonService(
   }
 
   fun getAllIds(): List<String> = prisonRepository.findAllPrisonIds()
-
-  fun findAll(): List<PrisonDto> = prisonRepository.findAll().map { PrisonDto(it) }
 
   fun findByPrisonFilter(
     active: Boolean? = null,
@@ -341,17 +338,10 @@ class PrisonService(
     contactDetailsRepository.delete(contactDetails)
   }
 
-  @Transactional(readOnly = true)
-  fun getPrisonNames(active: Boolean? = null, prisonId: String? = null): List<PrisonNameDto> = prisonRepository.findByActiveOrderByPrisonName(active = active)
-    .filter { prisonId == null || it.prisonId == prisonId }
-    .map { PrisonNameDto(it.prisonId, it.name, it.prisonNameInWelsh) }
-
   private fun haveContactDetailsChanged(updateContactDetailsDto: ContactDetailsDto, contactDetails: ContactDetails): Boolean = updateContactDetailsDto.type != contactDetails.type ||
     updateContactDetailsDto.emailAddress != contactDetails.emailAddress?.value ||
     updateContactDetailsDto.webAddress != contactDetails.webAddress?.value ||
     updateContactDetailsDto.phoneNumber != contactDetails.phoneNumber?.value
-
-  fun findPrisonsByIds(ids: List<String>): List<PrisonDto> = prisonRepository.findAllByPrisonIdIsIn(ids).map { PrisonDto(it) }
 
   fun createOrUpdatePrisonFromLegacyData(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = prisonRepository.findByIdOrNull(agencyId)?.let { agency ->
     agency.update(agencyDto)

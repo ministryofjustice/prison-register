@@ -135,6 +135,16 @@ flowchart LR
 | `GET /secure/prisons/id/{prisonId}/department/contact-details?departmentType=...` | A prison department's phone, email and web address. | Any valid HMPPS Auth token. Changing them needs `ROLE_MAINTAIN_REF_DATA` or `ROLE_MAINTAIN_PRISON_DATA` with write scope. |
 
 `/api/agencies/{id}` returns an agency whether it is active or not. The list endpoints return
-active agencies only, unless called with `activeOnly=false`. The `/api/agencies` list endpoint reads
-every agency table in full on each call, so callers should cache the answer rather than call it per
-request.
+active agencies only, unless called with `activeOnly=false`.
+
+**Please cache what you read.** Prisons and agencies change a few times a week, so there is rarely
+a reason to call the register for every request or every row of a list. The register caches these
+reads itself (see [architecture.md](architecture.md#caching)), but every call still costs a network
+round trip. For a service that reads a lot, the best pattern is:
+
+1. Load what you need once, for example every prison with `GET /prisons`.
+2. Refresh on the `register.prison.*` (or `register.<agency type>.*`) domain events, which are
+   published for every change. See `async-api.yml` for the events and what they carry.
+3. Reload on a timer, for example hourly, in case an event is missed.
+
+After a change, other pods of the register can return the old version for up to 10 minutes.

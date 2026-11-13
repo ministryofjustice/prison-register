@@ -54,8 +54,11 @@ These are open problems in the code, recorded here so nobody loses a day finding
   validation (`addNewPrisonDetailsValidator.ts`), and the summary step then calls
   `form.lthse.includes(...)` on the missing answer (`addNewPrisonSummaryValidator.ts`). This looks
   likely to give an error page; it has not been confirmed by running it.
-- **`GET /api/agencies` reads every agency table in full on each call.** Fine for occasional use;
-  callers should cache it.
+- **`GET /api/agencies` reads every agency table in full when it is not in the cache.** The API
+  caches it, but it is still large; callers should cache it too.
+- **A change can take up to 10 minutes to show on every pod.** The cached reads are cleared at once
+  on the pod that made the change, and expire on the others. See
+  [architecture.md](architecture.md#caching).
 - **`DELETE /legacy/admin/sync/agency/all` is not limited to dev.** It deletes every non-prison
   agency. Only the sync role can call it.
 - **The front end's README and `docker-compose.yml` are out of date** (CircleCI, `npm install`, a
