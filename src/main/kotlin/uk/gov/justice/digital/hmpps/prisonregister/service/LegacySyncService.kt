@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import jakarta.persistence.EntityNotFoundException
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AllAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
@@ -43,6 +43,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     otherAgencyService.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): AgencyIdsResponse {
     val ids = (
       courtService.getAllIds() +
@@ -58,8 +59,10 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     return AgencyIdsResponse(ids)
   }
 
+  @Transactional(readOnly = true)
   fun getAllPrisonIds(): AgencyIdsResponse = AgencyIdsResponse(prisonService.getAllIds().sorted().map { AgencyId(it) })
 
+  @Transactional(readOnly = true)
   fun getDetails(agencyId: String): LegacyAgencyDto = when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
     LegacyAgencyType.COURT -> courtService.tryFindById(agencyId)
     LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> hospitalService.tryFindById(agencyId)
@@ -71,6 +74,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     else -> otherAgencyService.tryFindById(agencyId)
   } ?: throw EntityNotFoundException("Agency $agencyId not found")
 
+  @Transactional(readOnly = true)
   fun findAgencyUsage(agencyId: String): LegacyAgencyUsageDto? = allAgencyRepository.findFirstByAgencyId(agencyId)?.let {
     LegacyAgencyUsageDto(agencyId = it.agencyId, name = it.name, legacyType = it.legacyType)
   }

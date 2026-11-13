@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -98,9 +97,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
       prison.addresses = setOf(mdiAddress)
       prison.prisonOperators = setOf(Operator(1, "PSP"))
 
-      whenever(prisonRepository.findById(anyString())).thenReturn(
-        Optional.of(prison),
-      )
+      whenever(prisonRepository.findAll()).thenReturn(listOf(prison))
       webTestClient.get().uri("/prisons/id/MDI")
         .exchange()
         .expectStatus().isOk
@@ -146,8 +143,8 @@ class PrisonResourceIntTest : IntegrationTestBase() {
       )
 
       val prisonsList = listOf("MDI", "LEI")
-      whenever(prisonRepository.findAllByPrisonIdIsIn(prisonsList)).thenReturn(
-        prisons,
+      whenever(prisonRepository.findAll()).thenReturn(
+        prisons + Prison("BXI", "Brixton HMP", active = true, male = true),
       )
       webTestClient.post().uri("/prisons/prisonsByIds")
         .header("Content-Type", "application/json")
@@ -159,7 +156,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
 
     @Test
     fun `find prisons by ids allows null list`() {
-      whenever(prisonRepository.findAllByPrisonIdIsIn(emptyList())).thenReturn(emptyList())
+      whenever(prisonRepository.findAll()).thenReturn(listOf(Prison("LEI", "Leeds HMP", active = true, female = true)))
 
       webTestClient.post().uri("/prisons/prisonsByIds")
         .header("Content-Type", "application/json")
@@ -171,7 +168,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
 
     @Test
     fun `find prisons by ids ignores null values in list`() {
-      whenever(prisonRepository.findAllByPrisonIdIsIn(emptyList())).thenReturn(emptyList())
+      whenever(prisonRepository.findAll()).thenReturn(listOf(Prison("LEI", "Leeds HMP", active = true, female = true)))
 
       webTestClient.post().uri("/prisons/prisonsByIds")
         .header("Content-Type", "application/json")

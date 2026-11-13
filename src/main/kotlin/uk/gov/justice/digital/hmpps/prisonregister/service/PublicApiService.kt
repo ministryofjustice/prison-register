@@ -1,9 +1,13 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import jakarta.validation.ValidationException
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.prisonregister.config.AGENCIES_BY_TYPE_CACHE
+import uk.gov.justice.digital.hmpps.prisonregister.config.AGENCIES_CACHE
+import uk.gov.justice.digital.hmpps.prisonregister.config.AGENCY_CACHE
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ItemNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
@@ -35,6 +39,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyEmailDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 
+// Every public read is cached; see CacheConfiguration for how the caches are cleared (MAPB-1128)
 @Service
 @Transactional(readOnly = true)
 class PublicApiService(
@@ -47,6 +52,7 @@ class PublicApiService(
   private val otherAgencyRepository: OtherAgencyRepository,
   private val allAgencyRepository: AllAgencyRepository,
 ) {
+  @Cacheable(AGENCIES_CACHE, sync = true)
   fun getAll(activeOnly: Boolean = true): List<AgencySummaryDto> {
     val courts = courts(activeOnly).map {
       AgencySummaryDto(agencyId = it.courtId, description = it.description, agencyType = LegacyAgencyType.COURT, active = it.active)
@@ -79,7 +85,7 @@ class PublicApiService(
 
   // Find which table the agency is in with one lookup on the all_agencies view, then load it from
   // that table only, rather than trying each agency table in turn (MAPB-1127)
-  @Transactional(readOnly = true)
+  @Cacheable(AGENCY_CACHE, sync = true)
   fun getAgency(agencyId: String): AgencyDetailsDto = when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
     null -> null
     LegacyAgencyType.COURT -> courtRepository.findWithDetailsByCourtId(agencyId)?.toAgencyDetailsDto()
@@ -91,6 +97,7 @@ class PublicApiService(
     else -> otherAgencyRepository.findWithDetailsByAgencyId(agencyId)?.toAgencyDetailsDto()
   } ?: throw ItemNotFoundException("Agency $agencyId not found")
 
+  @Cacheable(AGENCIES_BY_TYPE_CACHE, sync = true)
   fun getAgenciesByType(type: LegacyAgencyType, activeOnly: Boolean): List<AgencyDetailsDto> {
     val agencies = when (type) {
       LegacyAgencyType.COURT -> courts(activeOnly).map { it.toAgencyDetailsDto() }
@@ -138,6 +145,8 @@ class PublicApiService(
 
   private fun prisons(activeOnly: Boolean) = if (activeOnly) prisonRepository.findAllByActiveTrue() else prisonRepository.findAll()
 
+  // Calls getAgenciesByType directly, which skips its cache, so this has its own entries
+  @Cacheable(AGENCIES_BY_TYPE_CACHE, sync = true)
   fun getAgenciesByLegacyType(legacyType: String, activeOnly: Boolean): List<AgencyDetailsDto> = getAgenciesByType(legacyType.toLegacyAgencyType(), activeOnly)
 }
 

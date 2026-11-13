@@ -28,6 +28,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
+  implementation("org.springframework.boot:spring-boot-starter-cache")
+  implementation("com.github.ben-manes.caffeine:caffeine")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.31.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
 

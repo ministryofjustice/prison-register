@@ -134,6 +134,36 @@ database:
    the username taken from the token. Changes from the NOMIS sync, and changes to prison contact
    details, are not audited.
 
+### Caching
+
+The busy public reads are served from an in-memory cache in each pod (MAPB-1128). The data changes
+a few times a week but is read millions of times a month.
+
+| What is cached | Where |
+| --- | --- |
+| `GET /prisons`, `/prisons/id/{id}`, `POST /prisons/prisonsByIds` | `PrisonLookupService`. Every prison is held as one entry, so any mix of ids is a cache hit. |
+| `GET /prisons/names` | `PrisonLookupService`, one entry per value of `active`. |
+| `GET /api/agencies`, `/api/agencies/{id}`, `/api/agencies/type/...`, `/api/agencies/legacy-type/...` | `@Cacheable` on `PublicApiService`. |
+
+How it stays correct:
+
+- **A pod clears all its caches whenever it commits a change** (`ClearCachesAfterChange` in
+  `config/CacheConfiguration.kt`). This covers every write: the maintenance endpoints, the front
+  end and the NOMIS sync. The next read on that pod goes to the database.
+- **Other pods catch up when their entries expire**, after 10 minutes
+  (`spring.cache.caffeine.spec` in `application.yml`). So for up to 10 minutes after a change,
+  some callers can still get the old version.
+- **Read methods must be `@Transactional(readOnly = true)`.** Any read-write transaction clears the
+  caches when it commits, even if it changed nothing.
+- **Nothing else is cached.** `/prisons/search`, `/prison-maintenance/**`, the agency maintenance
+  endpoints and `/legacy/**` always read the database. The front end reads a prison from
+  `/prison-maintenance/id/{id}/details` before updating it, because the update sends back every
+  field and a cached copy could undo a recent change.
+- A cache hit does not open a transaction or take a database connection. The cache check runs
+  before the transaction starts (`@EnableCaching(order = HIGHEST_PRECEDENCE)`).
+- Cache hits and misses are counted in the Micrometer meter `cache.gets` (tagged by `cache` and
+  `result`). The service has no Prometheus endpoint, so they are not yet exported anywhere.
+
 ## The front end (hmpps-registers)
 
 A standard HMPPS Express template app: TypeScript, Nunjucks views, GOV.UK Frontend, built with
