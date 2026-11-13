@@ -24,6 +24,8 @@ components:
       $ref: async-schemas/register.prison.inserted.yaml
     register.prison.amended:
       $ref: async-schemas/register.prison.amended.yaml
+    register.prison.area.amended:
+      $ref: async-schemas/register.prison.area.amended.yaml
     register.court.inserted:
       $ref: async-schemas/register.court.inserted.yaml
     register.court.amended:
@@ -174,6 +176,8 @@ channels:
         $ref: '#/components/messages/register.prison.inserted'
       register.prison.amended:
         $ref: '#/components/messages/register.prison.amended'
+      register.prison.area.amended:
+        $ref: '#/components/messages/register.prison.area.amended'
       register.court.inserted:
         $ref: '#/components/messages/register.court.inserted'
       register.court.amended:
@@ -321,6 +325,7 @@ operations:
     messages:
       - $ref: '#/channels/hmpps-domain-events/messages/register.prison.inserted'
       - $ref: '#/channels/hmpps-domain-events/messages/register.prison.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.prison.area.amended'
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.inserted'
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.amended'
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.deleted'
