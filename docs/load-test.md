@@ -82,7 +82,7 @@ PROFILE=stress ./gradlew gatlingRun --simulation uk.gov.justice.digital.hmpps.pr
 | `PROFILE` | `smoke` | `smoke`, `steady` or `stress`. |
 | `BASE_URL` | preprod | The API to test. |
 | `AUTH_URL` | preprod HMPPS Auth token URL | Where to get a token. |
-| `CLIENT_ID`, `CLIENT_SECRET` | none | A client credentials token is fetched with these and renewed every 10 minutes. |
+| `CLIENT_ID`, `CLIENT_SECRET` | none | A client credentials token is fetched with these and renewed a minute before it expires. |
 | `AUTH_TOKEN` | none | Use this token instead. It must last the whole run. |
 | `PEAK_PER_MINUTE` | `10500` | The peak the multipliers apply to. |
 | `MULTIPLIER` | `2` | Steady: how many times the peak to hold. |
