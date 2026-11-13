@@ -169,6 +169,7 @@ class PrisonService(
       prison.name = prisonName
       prison.active = active
       prison.prisonNameInWelsh = prisonNameInWelsh
+      prison.description = prisonDescription
       prison.male = male
       prison.female = female
       prison.contracted = contracted

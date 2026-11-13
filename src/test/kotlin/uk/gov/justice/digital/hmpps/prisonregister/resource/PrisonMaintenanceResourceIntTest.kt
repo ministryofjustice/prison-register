@@ -143,6 +143,29 @@ class PrisonMaintenanceResourceIntTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `update prison description`() {
+      val prison = Prison("MDI", "A Prison 1", description = "Old description", active = true)
+      whenever(prisonRepository.findById("MDI")).thenReturn(Optional.of(prison))
+      webTestClient.put()
+        .uri("/prison-maintenance/id/MDI")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(
+          setAuthorisation(
+            roles = listOf("ROLE_MAINTAIN_REF_DATA"),
+            scopes = listOf("write"),
+            user = "bobby.beans",
+          ),
+        )
+        .body(BodyInserters.fromValue(UpdatePrisonDto("A Prison 1", prisonDescription = "New description", active = true)))
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$.prisonDescription").isEqualTo("New description")
+
+      assertThat(prison.description).isEqualTo("New description")
+    }
+
+    @Test
     fun `update prison welsh name`() {
       whenever(prisonRepository.findById("CFI")).thenReturn(
         Optional.of(Prison("CFI", "HMP Cardiff", prisonNameInWelsh = null, active = true)),
