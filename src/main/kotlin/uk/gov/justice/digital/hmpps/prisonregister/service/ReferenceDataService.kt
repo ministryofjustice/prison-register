@@ -6,10 +6,12 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.CountySuggestionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OperatorRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.SubareaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.TownSuggestionRepository
+import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonOperator
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 
 @Service
@@ -22,6 +24,7 @@ class ReferenceDataService(
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
   private val subareaRepository: SubareaRepository,
+  private val prisonOperatorRepository: OperatorRepository,
 ) {
   fun getAreas(activeOnly: Boolean): List<CodeDescription> = (
     if (activeOnly) areaRepository.findAllByActiveTrue(Sort.by("description")) else areaRepository.findAll(Sort.by("description"))
@@ -58,4 +61,7 @@ class ReferenceDataService(
 
   fun getTownSuggestions(): List<CodeDescription> = townSuggestionRepository.findAll(Sort.by("description"))
     .map { CodeDescription(code = it.code, description = it.description) }
+
+  fun getPrisonOperators(): List<PrisonOperator> = prisonOperatorRepository.findAll(Sort.by("name"))
+    .map { PrisonOperator(id = it.id, name = it.name) }
 }
