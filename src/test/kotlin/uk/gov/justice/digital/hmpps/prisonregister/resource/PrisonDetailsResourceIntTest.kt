@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.integration.expectBodyRespons
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
-import uk.gov.justice.digital.hmpps.prisonregister.model.Operator
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
@@ -40,7 +39,6 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
   @Nested
   inner class GetById {
     lateinit var prison: Prison
-    private var operators: Set<Operator> = emptySet()
     private var mainAddressId: Long = 0
     private var secondAddressId: Long = 0
 
@@ -87,8 +85,7 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
           category(Category.B)
           category(Category.C)
 
-          operator("Test PSP")
-          operator("Test G4S")
+          operator("PSP")
 
           type(Type.HMP)
           type(Type.YOI)
@@ -106,7 +103,6 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
           prisonRepository.deleteById(prison.prisonId)
           prisonRepository.flush()
         }
-        operators.forEach { entityManager.remove(entityManager.find(Operator::class.java, it.id)) }
       }
     }
 
@@ -229,7 +225,9 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
           PrisonTypeDto(Type.YOI, Type.YOI.description),
         )
         assertThat(prisonDto.categories).containsExactlyInAnyOrder(Category.B, Category.C)
-        assertThat(prisonDto.operators).containsExactlyInAnyOrder(PrisonOperatorDto("Test PSP"), PrisonOperatorDto("Test G4S"))
+        @Suppress("DEPRECATION")
+        assertThat(prisonDto.operators).containsExactlyInAnyOrder(PrisonOperatorDto("PSP"))
+        assertThat(prisonDto.currentOperator!!.name).isEqualTo("PSP")
       }
 
       @Test
@@ -273,7 +271,10 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
         assertThat(prisonDto.addresses).isEmpty()
         assertThat(prisonDto.types).isEmpty()
         assertThat(prisonDto.categories).isEmpty()
+        @Suppress("DEPRECATION")
         assertThat(prisonDto.operators).isEmpty()
+        // should never be null though data model allows it to be empty
+        assertThat(prisonDto.currentOperator).isNull()
       }
 
       private fun getDetails(): FullPrisonDto = webTestClient.get()

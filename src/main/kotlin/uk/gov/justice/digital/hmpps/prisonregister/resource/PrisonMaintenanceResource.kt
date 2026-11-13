@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.Hibernate
 import org.springframework.http.HttpStatus
@@ -270,7 +269,6 @@ data class InsertPrisonDto(
   val female: Boolean = false,
 
   @Schema(description = "If this is a contracted prison", required = true)
-  @field:NotNull(message = "Prison contracted status is required")
   val contracted: Boolean,
 
   @Schema(description = "If this prison is part of the long term high security estate", required = false)
@@ -321,6 +319,9 @@ data class UpdatePrisonDto(
 
   @Schema(description = "Set of categories for this prison", example = "[\"A\"]", required = false)
   val categories: Set<Category> = setOf(),
+
+  @Schema(description = "Operator of the prison. When not provided, the operator will not be updated", required = false)
+  val operator: PrisonOperator? = null,
 )
 
 @Schema(description = "Prison Information")
@@ -349,7 +350,8 @@ data class FullPrisonDto(
   @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
   @Schema(description = "List of the categories for this prison") val categories: Set<Category> = setOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
-  @Schema(description = "List of operators for this prison") val operators: List<PrisonOperatorDto> = listOf(),
+  @Schema(description = "List of operators for this prison") @Deprecated("Use currentOperator instead") val operators: List<PrisonOperatorDto> = listOf(),
+  @Schema(description = "The current operator for this prison") val currentOperator: PrisonOperator?,
   @Schema(description = "List of departments for this prison") val departments: List<DepartmentDto> = listOf(),
   @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
   @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
@@ -373,6 +375,7 @@ data class FullPrisonDto(
     categories = prison.categories.also { Hibernate.initialize(it) },
     addresses = prison.addresses.map { AddressDto(it) },
     operators = prison.prisonOperators.map { PrisonOperatorDto(it) },
+    currentOperator = prison.prisonOperators.firstOrNull()?.let { PrisonOperator(id = it.id, name = it.name) },
     departments = prison.departments.map { DepartmentDto(it) },
     inactiveDate = prison.inactiveDate,
     cjitCode = prison.cjitCode,

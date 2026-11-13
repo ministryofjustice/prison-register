@@ -144,8 +144,10 @@ class PrisonBuilder(
     prisonRepository.saveAndFlush(this)
   }
 
-  fun operator(name: String): Operator = operatorRepository.saveAndFlush(Operator(name = name)).also { operator ->
+  fun operator(name: String): Operator {
+    val operator = operatorRepository.findByName(name) ?: operatorRepository.saveAndFlush(Operator(name = name))
     (prison.prisonOperators as MutableSet<Operator>).add(operator)
+    return operator
   }
 
   fun type(type: Type): PrisonType = prisonTypeRepository.saveAndFlush(PrisonType(type = type, prison = prison)).also { prisonType ->
