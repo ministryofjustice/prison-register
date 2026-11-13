@@ -43,7 +43,6 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
-import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonOperator
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
@@ -307,7 +306,7 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI), operator = PrisonOperator(1, "PSP")))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI), operator = null))
       assertThat(updatedPrison).isEqualTo(
         PrisonDto(
           prisonId = "MDI",
@@ -317,10 +316,7 @@ class PrisonServiceTest {
           male = true,
           female = false,
           contracted = true,
-          currentOperator = PrisonOperator(
-            1,
-            "PSP",
-          ),
+          currentOperator = null,
           types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description)),
         ),
       )
