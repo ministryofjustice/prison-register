@@ -35,6 +35,7 @@ reference.
 | [data-model.md](data-model.md) | You are writing a query or a migration. |
 | [deployment.md](deployment.md) | You are shipping, or looking for a namespace, secret or alert. |
 | [common-problems.md](common-problems.md) | Something is not working, or you want the known issues. |
+| [load-test.md](load-test.md) | You are changing capacity settings or onboarding a large caller. |
 
 ## Repository layout (API)
 
@@ -47,6 +48,7 @@ reference.
 | `async-api.yml`, `async-schemas/` | The domain events the API publishes. |
 | `helm_deploy/` | Helm chart and per-environment values. |
 | `buildSrc/` | Gradle tasks for port-forwarding to RDS and reading secrets. |
+| `src/gatling/` | The load test. See [load-test.md](load-test.md). |
 | `docs/` | You are here. |
 
 ## Useful links
