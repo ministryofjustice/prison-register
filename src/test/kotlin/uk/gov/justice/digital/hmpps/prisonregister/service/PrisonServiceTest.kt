@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OperatorRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
@@ -56,6 +57,7 @@ class PrisonServiceTest {
   private val regionRepository: RegionRepository = mock()
   private val payrollRegionRepository: PayrollRegionRepository = mock()
   private val localAuthorityRepository: LocalAuthorityRepository = mock()
+  private val operatorRepository: OperatorRepository = mock()
 
   private val prisonService = PrisonService(
     prisonRepository,
@@ -65,6 +67,7 @@ class PrisonServiceTest {
     regionRepository = regionRepository,
     payrollRegionRepository = payrollRegionRepository,
     localAuthorityRepository = localAuthorityRepository,
+    operatorRepository = operatorRepository,
   )
 
   @BeforeEach
@@ -303,8 +306,20 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI), operator = null))
+      assertThat(updatedPrison).isEqualTo(
+        PrisonDto(
+          prisonId = "MDI",
+          prisonName = "A prison 1",
+          active = true,
+          lthse = false,
+          male = true,
+          female = false,
+          contracted = true,
+          currentOperator = null,
+          types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description)),
+        ),
+      )
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
@@ -336,6 +351,7 @@ class PrisonServiceTest {
           female = false,
           contracted = true,
           categories = setOf(Category.D),
+          currentOperator = null,
         ),
       )
 
@@ -368,6 +384,7 @@ class PrisonServiceTest {
             PrisonTypeDto(Type.HMP, Type.HMP.description),
             PrisonTypeDto(Type.YOI, Type.YOI.description),
           ),
+          currentOperator = null,
         ),
       )
 
@@ -382,8 +399,32 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("CFI", UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+        prisonService.updatePrison(
+          "CFI",
+          UpdatePrisonDto(
+            "HMP Cardiff",
+            prisonNameInWelsh = "Carchar Caerdydd",
+            active = true,
+            female = false,
+            male = true,
+            contracted = true,
+            prisonTypes = setOf(Type.YOI),
+          ),
+        )
+      assertThat(updatedPrison).isEqualTo(
+        PrisonDto(
+          "CFI",
+          "HMP Cardiff",
+          prisonNameInWelsh = "Carchar Caerdydd",
+          active = true,
+          lthse = false,
+          male = true,
+          female = false,
+          contracted = true,
+          currentOperator = null,
+          types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description)),
+        ),
+      )
       verify(prisonRepository).findById("CFI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }

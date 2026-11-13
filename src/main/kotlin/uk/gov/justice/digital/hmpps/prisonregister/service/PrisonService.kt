@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.Gender
 import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OperatorRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
@@ -60,6 +61,7 @@ class PrisonService(
   private val regionRepository: RegionRepository,
   private val payrollRegionRepository: PayrollRegionRepository,
   private val localAuthorityRepository: LocalAuthorityRepository,
+  private val operatorRepository: OperatorRepository,
 
 ) {
 
@@ -181,6 +183,11 @@ class PrisonService(
 
       prison.categories.retainAll(categories)
       prison.categories.addAll(categories)
+
+      // to allow this to be backward compatible, we will only update the operator if it is provided in the request
+      if (operator != null) {
+        prison.prisonOperators = setOf(operatorRepository.findByIdOrNull(operator.id) ?: throw ValidationException("${operator.id} operator id not found for prison $prisonId"))
+      }
     }
     telemetryClient.trackEvent("prison-register-update", mapOf("prison" to prison.name), null)
     return PrisonDto(prison)
