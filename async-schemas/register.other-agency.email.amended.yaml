@@ -1,19 +1,19 @@
-name: register.agency.address.amended
-title: register.agency.address.amended
-summary: An agency address has been amended
+name: register.other-agency.email.amended
+title: register.other-agency.email.amended
+summary: An agency email has been amended
 contentType: application/json
 payload:
   type: object
   required: [additionalInformation, description, eventType, occurredAt, version]
   properties:
     additionalInformation:
-      $ref: ./register.additional-information.yaml#/agencyAddress
+      $ref: ./register.additional-information.yaml#/agencyEmail
     description:
       type: string
-      const: An agency address has been amended
+      const: An agency email has been amended
     eventType:
       type: string
-      const: register.agency.address.amended
+      const: register.other-agency.email.amended
     occurredAt:
       type: string
       description: The date and time the event occurred

@@ -50,30 +50,30 @@ components:
       $ref: async-schemas/register.court.phone.amended.yaml
     register.court.phone.deleted:
       $ref: async-schemas/register.court.phone.deleted.yaml
-    register.agency.inserted:
-      $ref: async-schemas/register.agency.inserted.yaml
-    register.agency.amended:
-      $ref: async-schemas/register.agency.amended.yaml
-    register.agency.deleted:
-      $ref: async-schemas/register.agency.deleted.yaml
-    register.agency.email.inserted:
-      $ref: async-schemas/register.agency.email.inserted.yaml
-    register.agency.email.amended:
-      $ref: async-schemas/register.agency.email.amended.yaml
-    register.agency.email.deleted:
-      $ref: async-schemas/register.agency.email.deleted.yaml
-    register.agency.address.inserted:
-      $ref: async-schemas/register.agency.address.inserted.yaml
-    register.agency.address.amended:
-      $ref: async-schemas/register.agency.address.amended.yaml
-    register.agency.address.deleted:
-      $ref: async-schemas/register.agency.address.deleted.yaml
-    register.agency.phone.inserted:
-      $ref: async-schemas/register.agency.phone.inserted.yaml
-    register.agency.phone.amended:
-      $ref: async-schemas/register.agency.phone.amended.yaml
-    register.agency.phone.deleted:
-      $ref: async-schemas/register.agency.phone.deleted.yaml
+    register.other-agency.inserted:
+      $ref: async-schemas/register.other-agency.inserted.yaml
+    register.other-agency.amended:
+      $ref: async-schemas/register.other-agency.amended.yaml
+    register.other-agency.deleted:
+      $ref: async-schemas/register.other-agency.deleted.yaml
+    register.other-agency.email.inserted:
+      $ref: async-schemas/register.other-agency.email.inserted.yaml
+    register.other-agency.email.amended:
+      $ref: async-schemas/register.other-agency.email.amended.yaml
+    register.other-agency.email.deleted:
+      $ref: async-schemas/register.other-agency.email.deleted.yaml
+    register.other-agency.address.inserted:
+      $ref: async-schemas/register.other-agency.address.inserted.yaml
+    register.other-agency.address.amended:
+      $ref: async-schemas/register.other-agency.address.amended.yaml
+    register.other-agency.address.deleted:
+      $ref: async-schemas/register.other-agency.address.deleted.yaml
+    register.other-agency.phone.inserted:
+      $ref: async-schemas/register.other-agency.phone.inserted.yaml
+    register.other-agency.phone.amended:
+      $ref: async-schemas/register.other-agency.phone.amended.yaml
+    register.other-agency.phone.deleted:
+      $ref: async-schemas/register.other-agency.phone.deleted.yaml
     register.hospital.inserted:
       $ref: async-schemas/register.hospital.inserted.yaml
     register.hospital.amended:
@@ -202,30 +202,30 @@ channels:
         $ref: '#/components/messages/register.court.phone.amended'
       register.court.phone.deleted:
         $ref: '#/components/messages/register.court.phone.deleted'
-      register.agency.inserted:
-        $ref: '#/components/messages/register.agency.inserted'
-      register.agency.amended:
-        $ref: '#/components/messages/register.agency.amended'
-      register.agency.deleted:
-        $ref: '#/components/messages/register.agency.deleted'
-      register.agency.email.inserted:
-        $ref: '#/components/messages/register.agency.email.inserted'
-      register.agency.email.amended:
-        $ref: '#/components/messages/register.agency.email.amended'
-      register.agency.email.deleted:
-        $ref: '#/components/messages/register.agency.email.deleted'
-      register.agency.address.inserted:
-        $ref: '#/components/messages/register.agency.address.inserted'
-      register.agency.address.amended:
-        $ref: '#/components/messages/register.agency.address.amended'
-      register.agency.address.deleted:
-        $ref: '#/components/messages/register.agency.address.deleted'
-      register.agency.phone.inserted:
-        $ref: '#/components/messages/register.agency.phone.inserted'
-      register.agency.phone.amended:
-        $ref: '#/components/messages/register.agency.phone.amended'
-      register.agency.phone.deleted:
-        $ref: '#/components/messages/register.agency.phone.deleted'
+      register.other-agency.inserted:
+        $ref: '#/components/messages/register.other-agency.inserted'
+      register.other-agency.amended:
+        $ref: '#/components/messages/register.other-agency.amended'
+      register.other-agency.deleted:
+        $ref: '#/components/messages/register.other-agency.deleted'
+      register.other-agency.email.inserted:
+        $ref: '#/components/messages/register.other-agency.email.inserted'
+      register.other-agency.email.amended:
+        $ref: '#/components/messages/register.other-agency.email.amended'
+      register.other-agency.email.deleted:
+        $ref: '#/components/messages/register.other-agency.email.deleted'
+      register.other-agency.address.inserted:
+        $ref: '#/components/messages/register.other-agency.address.inserted'
+      register.other-agency.address.amended:
+        $ref: '#/components/messages/register.other-agency.address.amended'
+      register.other-agency.address.deleted:
+        $ref: '#/components/messages/register.other-agency.address.deleted'
+      register.other-agency.phone.inserted:
+        $ref: '#/components/messages/register.other-agency.phone.inserted'
+      register.other-agency.phone.amended:
+        $ref: '#/components/messages/register.other-agency.phone.amended'
+      register.other-agency.phone.deleted:
+        $ref: '#/components/messages/register.other-agency.phone.deleted'
       register.hospital.inserted:
         $ref: '#/components/messages/register.hospital.inserted'
       register.hospital.amended:
@@ -338,18 +338,18 @@ operations:
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.phone.inserted'
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.phone.amended'
       - $ref: '#/channels/hmpps-domain-events/messages/register.court.phone.deleted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.inserted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.amended'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.deleted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.email.inserted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.email.amended'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.email.deleted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.address.inserted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.address.amended'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.address.deleted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.phone.inserted'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.phone.amended'
-      - $ref: '#/channels/hmpps-domain-events/messages/register.agency.phone.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.email.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.email.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.email.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.address.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.address.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.address.deleted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.phone.inserted'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.phone.amended'
+      - $ref: '#/channels/hmpps-domain-events/messages/register.other-agency.phone.deleted'
       - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.inserted'
       - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.amended'
       - $ref: '#/channels/hmpps-domain-events/messages/register.hospital.deleted'

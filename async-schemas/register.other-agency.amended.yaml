@@ -1,6 +1,6 @@
-name: register.agency.inserted
-title: register.agency.inserted
-summary: An agency has been inserted
+name: register.other-agency.amended
+title: register.other-agency.amended
+summary: An agency has been updated
 contentType: application/json
 payload:
   type: object
@@ -10,10 +10,10 @@ payload:
       $ref: ./register.additional-information.yaml#/agency
     description:
       type: string
-      const: An agency has been inserted
+      const: An agency has been updated
     eventType:
       type: string
-      const: register.agency.inserted
+      const: register.other-agency.amended
     occurredAt:
       type: string
       description: The date and time the event occurred

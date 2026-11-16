@@ -1,19 +1,19 @@
-name: register.agency.address.deleted
-title: register.agency.address.deleted
-summary: An agency address has been deleted
+name: register.other-agency.email.inserted
+title: register.other-agency.email.inserted
+summary: An agency email has been inserted
 contentType: application/json
 payload:
   type: object
   required: [additionalInformation, description, eventType, occurredAt, version]
   properties:
     additionalInformation:
-      $ref: ./register.additional-information.yaml#/agencyAddress
+      $ref: ./register.additional-information.yaml#/agencyEmail
     description:
       type: string
-      const: An agency address has been deleted
+      const: An agency email has been inserted
     eventType:
       type: string
-      const: register.agency.address.deleted
+      const: register.other-agency.email.inserted
     occurredAt:
       type: string
       description: The date and time the event occurred

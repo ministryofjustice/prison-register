@@ -33,7 +33,7 @@ sequenceDiagram
 ```
 
 Every agency type works this way, with events named `register.<type>.<change>` (for example
-`register.hospital.address.inserted`, `register.agency.deleted`). The full list is in
+`register.hospital.address.inserted`, `register.other-agency.deleted`). The full list is in
 `async-api.yml` and `service/SnsService.kt`.
 
 **Prisons are the exception.** For a prison, only a change of **area** is sent to NOMIS

@@ -152,7 +152,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   fun sendAgencyRegisterInsertedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
-        "register.agency.inserted",
+        "register.other-agency.inserted",
         AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been inserted",
@@ -163,7 +163,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   fun sendAgencyRegisterAmendedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
-        "register.agency.amended",
+        "register.other-agency.amended",
         AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been updated",
@@ -174,7 +174,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   fun sendAgencyRegisterDeletedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
-        "register.agency.deleted",
+        "register.other-agency.deleted",
         AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been deleted",
@@ -232,7 +232,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
       else -> throw IllegalArgumentException("Unknown agency contact detail type: $type")
     }
     publishToDomainEventsTopic(
-      HMPPSAgencyDomainEvent("register.agency.$type.$action", additionalInformation, occurredAt, description),
+      HMPPSAgencyDomainEvent("register.other-agency.$type.$action", additionalInformation, occurredAt, description),
     )
   }
 
