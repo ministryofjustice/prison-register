@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import org.springframework.http.MediaType
@@ -36,6 +37,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 @RestController
 @Validated
 @RequestMapping("/prisons", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(
+  name = "HMPPS Prison Register API",
+  description = """
+  <h2>API for HMPPS and Public Clients</h2>
+  <p>No role required</p> 
+  <p>Provides read-only access to HMPPS Prison data</p>""",
+)
 class PrisonResource(
   private val prisonService: PrisonService,
   private val prisonLookupService: PrisonLookupService,

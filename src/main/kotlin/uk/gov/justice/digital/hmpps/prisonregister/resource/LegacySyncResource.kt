@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
@@ -33,6 +34,13 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/legacy", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
+@Tag(
+  name = "NOMIS Synchronisation API",
+  description = """
+  <h2>API for synchronising data from and to NOMIS</h2>
+  <p>Requires ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW</p> 
+  <p>Used only for the Dps to NOMIS synchronisation service</p>""",
+)
 class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: LegacySyncService, private val snsService: SnsService) {
 
   @Operation(

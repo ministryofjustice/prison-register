@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -56,11 +57,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/courts", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Court Maintenance API",
+  description = """
+  <h2>API for updating Court data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Court data</p>""",
+)
 class CourtResource(
   private val courtService: CourtService,
   private val snsService: SnsService,
   private val auditService: AuditService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{courtId}")
   @Operation(summary = "Get specified court", description = "Information on a specific court")
   @ApiResponses(
@@ -78,6 +88,8 @@ class CourtResource(
     courtId: String,
   ): CourtDto = courtService.findById(courtId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all courts", description = "Information on all courts")
   @ApiResponses(
@@ -94,6 +106,8 @@ class CourtResource(
     @Parameter(description = "Court type codes to filter by", example = "CACD, CB", required = false) @RequestParam courtTypeCodes: List<CourtType.Companion.Type>? = listOf(),
   ): List<CourtDto> = courtService.getAll(active, textSearch, courtTypeCodes)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/summary")
   @Operation(summary = "Get summary of all courts", description = "Court IDs, names, active status and court types ordered by court ID ascending")
   @ApiResponses(

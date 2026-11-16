@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -55,11 +56,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/approved-premises", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Approved Premises Maintenance API",
+  description = """
+  <h2>API for updating Approved Premises data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Approved Premises data</p>""",
+)
 class ApprovedPremisesResource(
   private val approvedPremisesService: ApprovedPremisesService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{approvedPremisesId}")
   @Operation(summary = "Get specified approved premises", description = "Information on a specific approved premises")
   @ApiResponses(
@@ -77,6 +87,8 @@ class ApprovedPremisesResource(
     approvedPremisesId: String,
   ): ApprovedPremisesDto = approvedPremisesService.findById(approvedPremisesId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all approved premises", description = "Information on all approved premises")
   @ApiResponses(

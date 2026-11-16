@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -44,6 +45,13 @@ import java.time.LocalDate
 @RestController
 @Validated
 @RequestMapping(name = "Prison Maintenance", path = ["/prison-maintenance"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(
+  name = "Prison Maintenance API",
+  description = """
+  <h2>API for updating HMPPS Prison data</h2>
+  <p>Requires ROLE_MAINTAIN_REF_DATA or ROLE_MAINTAIN_PRISON_DATA or HMPPS_REGISTERS_API__MAINTAIN__RW with write scope</p> 
+  <p>Provides ability to update HMPPS Prison data</p>""",
+)
 class PrisonMaintenanceResource(
   private val prisonService: PrisonService,
   private val snsService: SnsService,
@@ -59,7 +67,7 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   fun getPrisonDetailsById(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable

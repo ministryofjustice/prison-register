@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -54,11 +55,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/police-custody-suites", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Police Custody Suite Maintenance API",
+  description = """
+  <h2>API for updating Police Custody Suite data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Police Custody Suite data</p>""",
+)
 class PoliceCustodySuiteResource(
   private val policeCustodySuiteService: PoliceCustodySuiteService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{policeCustodySuiteId}")
   @Operation(summary = "Get specified police custody suite", description = "Information on a specific police custody suite")
   @ApiResponses(
@@ -76,6 +86,8 @@ class PoliceCustodySuiteResource(
     policeCustodySuiteId: String,
   ): PoliceCustodySuiteDto = policeCustodySuiteService.findById(policeCustodySuiteId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all police custody suites", description = "Information on all police custody suites")
   @ApiResponses(

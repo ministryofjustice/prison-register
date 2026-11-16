@@ -126,10 +126,19 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `allowed with correct role`() {
+      fun `requires the correct scope`() {
         webTestClient.get()
           .uri("/prison-maintenance/id/TSTPRI/details")
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/prison-maintenance/id/TSTPRI/details")
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW"), scopes = listOf("write")))
           .exchange()
           .expectStatus().isOk
       }
@@ -141,7 +150,7 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
       fun `404 if not found`() {
         webTestClient.get()
           .uri("/prison-maintenance/id/ZZZZ/details")
-          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW"), scopes = listOf("write")))
           .exchange()
           .expectStatus().isNotFound
       }
@@ -151,7 +160,7 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
         listOf("AB", "ABCDEFG").forEach { prisonId ->
           webTestClient.get()
             .uri("/prison-maintenance/id/$prisonId/details")
-            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+            .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW"), scopes = listOf("write")))
             .exchange()
             .expectStatus().isBadRequest
         }
@@ -279,7 +288,7 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
 
       private fun getDetails(): FullPrisonDto = webTestClient.get()
         .uri("/prison-maintenance/id/TSTPRI/details")
-        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW"), scopes = listOf("write")))
         .exchange()
         .expectStatus().isOk
         .expectBodyResponse()

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -31,6 +32,7 @@ private const val END_POINT = "/$SECURE_PRISON_BY_ID/department/contact-details"
 
 @RestController
 @Validated
+@Tag(name = "Prison Maintenance API")
 class PrisonContactDetailsResource(private val prisonService: PrisonService) {
 
   @GetMapping(
