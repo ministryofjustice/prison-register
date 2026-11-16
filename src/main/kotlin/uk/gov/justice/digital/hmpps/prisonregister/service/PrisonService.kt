@@ -49,7 +49,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonAreaDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.ContactDetailsDto
 
-const val CLIENT_CAN_MAINTAIN_PRISON_DETAILS = "hasAnyRole('ROLE_MAINTAIN_REF_DATA','ROLE_MAINTAIN_PRISON_DATA') and hasAuthority('SCOPE_write')"
+const val CLIENT_CAN_MAINTAIN_PRISON_DETAILS = "hasAnyRole('ROLE_MAINTAIN_REF_DATA','ROLE_MAINTAIN_PRISON_DATA','HMPPS_REGISTERS_API__MAINTAIN__RW') and hasAuthority('SCOPE_write')"
 
 @Service
 @Transactional(readOnly = true)

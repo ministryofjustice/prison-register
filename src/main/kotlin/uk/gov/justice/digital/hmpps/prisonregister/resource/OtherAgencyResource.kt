@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -56,11 +57,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/other-agencies", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Other Agency Maintenance API",
+  description = """
+  <h2>API for updating Other Agency data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Other Agency data, for instance PECS, Airports</p>""",
+)
 class OtherAgencyResource(
   private val otherAgencyService: OtherAgencyService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{agencyId}")
   @Operation(summary = "Get specified agency", description = "Information on a specific agency")
   @ApiResponses(
@@ -78,6 +88,8 @@ class OtherAgencyResource(
     agencyId: String,
   ): OtherAgencyDto = otherAgencyService.findById(agencyId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all agencies", description = "Information on all agencies")
   @ApiResponses(

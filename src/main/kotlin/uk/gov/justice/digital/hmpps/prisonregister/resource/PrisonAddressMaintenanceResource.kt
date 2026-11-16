@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import org.springframework.http.MediaType
@@ -31,6 +32,7 @@ import java.time.Instant
 @RestController
 @Validated
 @RequestMapping(name = "Prison Maintenance", path = ["/prison-maintenance"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "Prison Maintenance API")
 class PrisonAddressMaintenanceResource(
   private val addressService: PrisonAddressService,
   private val snsService: SnsService,
