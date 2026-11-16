@@ -1,6 +1,6 @@
-name: register.agency.amended
-title: register.agency.amended
-summary: An agency has been updated
+name: register.other-agency.deleted
+title: register.other-agency.deleted
+summary: An agency has been deleted
 contentType: application/json
 payload:
   type: object
@@ -10,10 +10,10 @@ payload:
       $ref: ./register.additional-information.yaml#/agency
     description:
       type: string
-      const: An agency has been updated
+      const: An agency has been deleted
     eventType:
       type: string
-      const: register.agency.amended
+      const: register.other-agency.deleted
     occurredAt:
       type: string
       description: The date and time the event occurred
