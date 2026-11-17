@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PoliceCustodySuiteDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.PoliceCustodySuiteSummaryDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdatePoliceCustodySuiteDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -52,6 +53,18 @@ class PoliceCustodySuiteService(
 
   @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?): List<PoliceCustodySuiteDto> = policeCustodySuiteRepository.findAll(PoliceCustodySuiteFilter(active, textSearch)).map { it.toPoliceCustodySuiteDto() }
+
+  @Transactional(readOnly = true)
+  fun getAllSummaries(active: Boolean?, textSearch: String?): List<PoliceCustodySuiteSummaryDto> = policeCustodySuiteRepository.findAllSummaries(
+    active = active,
+    textSearch = textSearch?.takeUnless { it.isBlank() }?.let { "%${it.uppercase()}%" },
+  ).map {
+    PoliceCustodySuiteSummaryDto(
+      policeCustodySuiteId = it.policeCustodySuiteId,
+      policeCustodySuiteName = it.policeCustodySuiteName,
+      active = it.active,
+    )
+  }
 
   @Transactional(readOnly = true)
   fun findById(policeCustodySuiteId: String): PoliceCustodySuiteDto = policeCustodySuiteRepository.findByIdOrNull(policeCustodySuiteId)?.toPoliceCustodySuiteDto()

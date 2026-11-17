@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.OtherAgencyDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.OtherAgencySummaryDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateOtherAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -55,6 +56,20 @@ class OtherAgencyService(
 
   @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?, otherAgencyTypeCodes: List<OtherAgencyType>?): List<OtherAgencyDto> = otherAgencyRepository.findAll(OtherAgencyFilter(active, textSearch, otherAgencyTypeCodes)).map { it.toOtherAgencyDto() }
+
+  @Transactional(readOnly = true)
+  fun getAllSummaries(active: Boolean?, textSearch: String?, otherAgencyTypeCodes: List<OtherAgencyType>?): List<OtherAgencySummaryDto> = otherAgencyRepository.findAllSummaries(
+    active = active,
+    textSearch = textSearch?.takeUnless { it.isBlank() }?.let { "%${it.uppercase()}%" },
+    otherAgencyTypes = otherAgencyTypeCodes.orEmpty(),
+  ).map {
+    OtherAgencySummaryDto(
+      agencyId = it.agencyId,
+      agencyName = it.agencyName,
+      active = it.active,
+      agencyType = it.agencyType.name,
+    )
+  }
 
   @Transactional(readOnly = true)
   fun findById(agencyId: String): OtherAgencyDto = otherAgencyRepository.findByIdOrNull(agencyId)?.toOtherAgencyDto()

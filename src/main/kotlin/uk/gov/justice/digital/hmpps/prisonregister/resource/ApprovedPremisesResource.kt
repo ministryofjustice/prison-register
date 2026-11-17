@@ -104,6 +104,23 @@ class ApprovedPremisesResource(
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
   ): List<ApprovedPremisesDto> = approvedPremisesService.getAll(active, textSearch)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all approved premises", description = "Approved premises IDs, names and active status ordered by approved premises ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getApprovedPremisesSummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+  ): List<ApprovedPremisesSummaryDto> = approvedPremisesService.getAllSummaries(active, textSearch)
+
   @Operation(
     summary = "Create a new approved premises",
     description = "Creates a approved premises, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
@@ -763,6 +780,17 @@ class ApprovedPremisesResource(
     )
   }
 }
+
+@Schema(description = "Approved Premises summary information")
+@JsonInclude(NON_NULL)
+data class ApprovedPremisesSummaryDto(
+  @Schema(description = "Approved Premises ID", example = "SHEFAP")
+  val approvedPremisesId: String,
+  @Schema(description = "Name", example = "Sheffield Approved Premises")
+  val approvedPremisesName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+)
 
 @Schema(description = "Approved Premises Information")
 @JsonInclude(NON_NULL)

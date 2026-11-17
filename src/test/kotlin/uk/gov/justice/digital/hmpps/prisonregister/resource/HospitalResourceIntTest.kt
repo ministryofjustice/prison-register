@@ -13,9 +13,11 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Import
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -28,9 +30,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCapture
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCaptureConfiguration
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
+@Import(SqlCaptureConfiguration::class)
 class HospitalResourceIntTest : IntegrationTestBase() {
 
   @Autowired
@@ -53,6 +58,9 @@ class HospitalResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var snsService: SnsService
+
+  @Autowired
+  lateinit var sqlCapture: SqlCapture
 
   @DisplayName("Get hospital by id")
   @Nested
@@ -350,6 +358,163 @@ class HospitalResourceIntTest : IntegrationTestBase() {
           .responseBody!!
 
         assertThat(hospitals).extracting("hospitalId").containsExactly("LEEDHO")
+      }
+    }
+  }
+
+  @DisplayName("Get all hospital summaries")
+  @Nested
+  inner class GetAllSummaries {
+    lateinit var hospital: Hospital
+    lateinit var hospital2: Hospital
+    lateinit var hospital3: Hospital
+
+    @BeforeEach
+    fun setUp() {
+      hospital = dsl.hospital(
+        hospitalId = "SHEFHO",
+        name = "Sheffield Hospital",
+        description = "Sheffield Central Hospital",
+        active = false,
+        highSecurity = true,
+        areaCode = "52",
+        regionCode = "YOHUM",
+      ) {
+        address(addressLine1 = "1 High Street", town = "Sheffield", postcode = "S1 1AA")
+        phoneNumber(phoneNumber = "0114 555 0000")
+      }
+
+      hospital2 = dsl.hospital(
+        hospitalId = "LEEDHO",
+        name = "Leeds Hospital",
+        highSecurity = false,
+      ) {
+        address(addressLine1 = "2 High Street", town = "Leeds", postcode = "LS1 1AA")
+        phoneNumber(phoneNumber = "0113 555 0000")
+      }
+
+      hospital3 = dsl.hospital(
+        hospitalId = "BIRMHO",
+        name = "Birmingham Hospital",
+        description = "Birmingham Main Hospital",
+        highSecurity = false,
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      hospitalRepository.deleteById(hospital.hospitalId)
+      hospitalRepository.deleteById(hospital2.hospitalId)
+      hospitalRepository.deleteById(hospital3.hospitalId)
+    }
+
+    private fun getSummaries(query: String = ""): List<HospitalSummaryDto> = webTestClient.get()
+      .uri("/hospitals/summary$query")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBodyList<HospitalSummaryDto>()
+      .returnResult()
+      .responseBody!!
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/hospitals/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/hospitals/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/hospitals/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `does not do a n + 1 query`() {
+        sqlCapture.statements.clear()
+
+        getSummaries()
+
+        assertThat(sqlCapture.statements).hasSize(1)
+      }
+
+      @Test
+      fun `will return all hospitals`() {
+        val hospitals = getSummaries()
+
+        assertThat(hospitals).extracting("hospitalId").contains("SHEFHO", "LEEDHO", "BIRMHO")
+
+        val hospitalDto = hospitals.first { it.hospitalId == "SHEFHO" }
+        assertThat(hospitalDto.hospitalName).isEqualTo("Sheffield Hospital")
+        assertThat(hospitalDto.active).isFalse
+        assertThat(hospitalDto.highSecurity).isTrue
+
+        val hospital2Dto = hospitals.first { it.hospitalId == "LEEDHO" }
+        assertThat(hospital2Dto.hospitalName).isEqualTo("Leeds Hospital")
+        assertThat(hospital2Dto.active).isTrue
+        assertThat(hospital2Dto.highSecurity).isFalse
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        assertThat(getSummaries("?active=false")).extracting("hospitalId").containsExactly("SHEFHO")
+      }
+
+      @Test
+      fun `will filter by active flag when true`() {
+        val hospitals = getSummaries("?active=true")
+
+        assertThat(hospitals).extracting("hospitalId").contains("LEEDHO", "BIRMHO")
+        assertThat(hospitals).extracting("hospitalId").doesNotContain("SHEFHO")
+      }
+
+      @Test
+      fun `will filter by high security flag`() {
+        assertThat(getSummaries("?highSecurity=true")).extracting("hospitalId").containsExactly("SHEFHO")
+      }
+
+      @Test
+      fun `will filter by text search on hospital id`() {
+        assertThat(getSummaries("?textSearch=SHEFHO")).extracting("hospitalId").containsExactly("SHEFHO")
+      }
+
+      @Test
+      fun `will filter by text search on hospital name`() {
+        assertThat(getSummaries("?textSearch=Leeds Hospital")).extracting("hospitalId").containsExactly("LEEDHO")
+      }
+
+      @Test
+      fun `will filter by text search on hospital description, ignoring case`() {
+        assertThat(getSummaries("?textSearch=main hospital")).extracting("hospitalId").containsExactly("BIRMHO")
+      }
+
+      @Test
+      fun `will combine filters together`() {
+        assertThat(getSummaries("?active=true&highSecurity=false&textSearch=Leeds")).extracting("hospitalId").containsExactly("LEEDHO")
       }
     }
   }

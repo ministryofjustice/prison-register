@@ -99,6 +99,24 @@ class HospitalResource(
     @Parameter(description = "High security", example = "true", required = false) @RequestParam highSecurity: Boolean? = null,
   ): List<HospitalDto> = hospitalService.getAll(active, textSearch, highSecurity)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all hospitals", description = "Hospital IDs, names, active status and high security flag ordered by hospital ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getHospitalSummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "High security", example = "true", required = false) @RequestParam highSecurity: Boolean? = null,
+  ): List<HospitalSummaryDto> = hospitalService.getAllSummaries(active, textSearch, highSecurity)
+
   @Operation(
     summary = "Create a new hospital",
     description = "Creates a hospital, along with any addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
@@ -587,6 +605,19 @@ class HospitalResource(
     )
   }
 }
+
+@Schema(description = "Hospital summary information")
+@JsonInclude(NON_NULL)
+data class HospitalSummaryDto(
+  @Schema(description = "Hospital ID", example = "NWCLYC")
+  val hospitalId: String,
+  @Schema(description = "Name", example = "N Staffs Youth Hospital - Newcastle")
+  val hospitalName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+  @Schema(description = "Whether high security")
+  val highSecurity: Boolean,
+)
 
 @Schema(description = "Hospital Information")
 @JsonInclude(NON_NULL)
