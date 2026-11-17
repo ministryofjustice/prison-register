@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateHospitalDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.HospitalDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.HospitalSummaryDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
@@ -48,6 +49,20 @@ class HospitalService(
 
   @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?, highSecurity: Boolean?): List<HospitalDto> = hospitalRepository.findAll(HospitalFilter(active, textSearch, highSecurity)).map { it.toHospitalDto() }
+
+  @Transactional(readOnly = true)
+  fun getAllSummaries(active: Boolean?, textSearch: String?, highSecurity: Boolean?): List<HospitalSummaryDto> = hospitalRepository.findAllSummaries(
+    active = active,
+    textSearch = textSearch?.takeUnless { it.isBlank() }?.let { "%${it.uppercase()}%" },
+    highSecurity = highSecurity,
+  ).map {
+    HospitalSummaryDto(
+      hospitalId = it.hospitalId,
+      hospitalName = it.hospitalName,
+      active = it.active,
+      highSecurity = it.highSecurity,
+    )
+  }
 
   @Transactional(readOnly = true)
   fun findById(hospitalId: String): HospitalDto = hospitalRepository.findByIdOrNull(hospitalId)?.toHospitalDto() ?: throw EntityNotFoundException("Hospital $hospitalId not found")

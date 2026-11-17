@@ -110,6 +110,24 @@ class OtherAgencyResource(
     otherAgencyTypeCodes = otherAgencyTypeCodes,
   )
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all other agencies", description = "Other agency IDs, names, active status and agency types ordered by agency ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getOtherAgencySummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "Agency type codes to filter by", example = "AIRPORT, PECS", required = false) @RequestParam otherAgencyTypeCodes: List<OtherAgencyType>? = listOf(),
+  ): List<OtherAgencySummaryDto> = otherAgencyService.getAllSummaries(active, textSearch, otherAgencyTypeCodes)
+
   @Operation(
     summary = "Create a new agency",
     description = "Creates a agency, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
@@ -769,6 +787,19 @@ class OtherAgencyResource(
     )
   }
 }
+
+@Schema(description = "Other Agency summary information")
+@JsonInclude(NON_NULL)
+data class OtherAgencySummaryDto(
+  @Schema(description = "Agency ID", example = "SHEFCC")
+  val agencyId: String,
+  @Schema(description = "Name", example = "Sheffield Agency")
+  val agencyName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+  @Schema(description = "Agency type", example = "PROBATION_CRC")
+  val agencyType: String,
+)
 
 @Schema(description = "Other Agency Information")
 @JsonInclude(NON_NULL)

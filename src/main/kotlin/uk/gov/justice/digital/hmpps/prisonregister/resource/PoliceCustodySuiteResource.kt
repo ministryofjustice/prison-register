@@ -103,6 +103,23 @@ class PoliceCustodySuiteResource(
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
   ): List<PoliceCustodySuiteDto> = policeCustodySuiteService.getAll(active, textSearch)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all police custody suites", description = "Police custody suite IDs, names and active status ordered by police custody suite ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getPoliceCustodySuiteSummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+  ): List<PoliceCustodySuiteSummaryDto> = policeCustodySuiteService.getAllSummaries(active, textSearch)
+
   @Operation(
     summary = "Create a new police custody suite",
     description = "Creates a police custody suite, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
@@ -762,6 +779,17 @@ class PoliceCustodySuiteResource(
     )
   }
 }
+
+@Schema(description = "Police Custody Suite summary information")
+@JsonInclude(NON_NULL)
+data class PoliceCustodySuiteSummaryDto(
+  @Schema(description = "Police Custody Suite ID", example = "SHFPCS")
+  val policeCustodySuiteId: String,
+  @Schema(description = "Name", example = "Sheffield Police Custody Suite")
+  val policeCustodySuiteName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+)
 
 @Schema(description = "Police Custody Suite Information")
 @JsonInclude(NON_NULL)

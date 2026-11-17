@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.ApprovedPremisesDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.ApprovedPremisesSummaryDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.CreateApprovedPremisesDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAccessibleAccess
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
@@ -54,6 +55,18 @@ class ApprovedPremisesService(
 
   @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?): List<ApprovedPremisesDto> = approvedPremisesRepository.findAll(ApprovedPremisesFilter(active, textSearch)).map { it.toApprovedPremisesDto() }
+
+  @Transactional(readOnly = true)
+  fun getAllSummaries(active: Boolean?, textSearch: String?): List<ApprovedPremisesSummaryDto> = approvedPremisesRepository.findAllSummaries(
+    active = active,
+    textSearch = textSearch?.takeUnless { it.isBlank() }?.let { "%${it.uppercase()}%" },
+  ).map {
+    ApprovedPremisesSummaryDto(
+      approvedPremisesId = it.approvedPremisesId,
+      approvedPremisesName = it.approvedPremisesName,
+      active = it.active,
+    )
+  }
 
   @Transactional(readOnly = true)
   fun findById(approvedPremisesId: String): ApprovedPremisesDto = approvedPremisesRepository.findByIdOrNull(approvedPremisesId)?.toApprovedPremisesDto()
