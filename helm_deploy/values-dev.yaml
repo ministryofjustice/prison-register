@@ -10,7 +10,9 @@ generic-service:
       memory: 1Gi
 
   ingress:
-    host: prison-register-dev.hmpps.service.justice.gov.uk
+    hosts:
+      - prison-register-dev.hmpps.service.justice.gov.uk
+      - agency-register-dev.hmpps.service.justice.gov.uk
 
   scheduledDowntime:
     enabled: true
