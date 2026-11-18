@@ -6,7 +6,9 @@ generic-service:
   replicaCount: 3
 
   ingress:
-    host: prison-register.hmpps.service.justice.gov.uk
+    hosts:
+      - prison-register.hmpps.service.justice.gov.uk
+      - agency-register.hmpps.service.justice.gov.uk
   env:
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api.hmpps.service.justice.gov.uk"

@@ -53,7 +53,7 @@ reference.
 
 ## Useful links
 
-- API documentation (dev, needs VPN): <https://prison-register-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html>
+- API documentation (dev, needs VPN): <https://agency-register-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html>
 - Domain events: [`async-api.yml`](../async-api.yml)
 - Front end (dev): <https://registers-dev.hmpps.service.justice.gov.uk>
 - Service overview for non-developers (Confluence): <https://dsdmoj.atlassian.net/wiki/spaces/4410474729/pages/6366888063>
