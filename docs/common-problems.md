@@ -27,7 +27,7 @@ Problems people actually hit, and what to do. If you hit a new one and work it o
 | --- | --- |
 | The front end loads but every page with data fails, in the evening or at a weekend | The API in dev and preprod is switched off from 21:30 to 06:30 UTC and at weekends. See [deployment.md](deployment.md#environments). |
 | Something you set up in preprod has gone | Preprod's database is refreshed from production. |
-| Swagger UI is not available in preprod or prod | It is only switched on in dev: <https://prison-register-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html>. |
+| Swagger UI is not available in preprod or prod | It is only switched on in dev: <https://agency-register-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html>. |
 | A change to areas, regions or the town list does not show in the front end | The front end keeps reference data in memory until its pods restart. |
 | The home page does not show a register | `AGENCY_REGISTER_ENABLED` is off for that environment. |
 | There is no delete button | `AGENCY_REGISTER_DELETE_ENABLED` is off. It is off in production on purpose. |

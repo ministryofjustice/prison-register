@@ -65,9 +65,9 @@ flowchart TB
 | | API | Front end |
 | --- | --- | --- |
 | Repository | [prison-register](https://github.com/ministryofjustice/prison-register) | [hmpps-registers](https://github.com/ministryofjustice/hmpps-registers) |
-| Dev | `prison-register-dev.hmpps.service.justice.gov.uk` | `registers-dev.hmpps.service.justice.gov.uk` |
-| Preprod | `prison-register-preprod.hmpps.service.justice.gov.uk` | `registers-preprod.hmpps.service.justice.gov.uk` |
-| Prod | `prison-register.hmpps.service.justice.gov.uk` | `registers.hmpps.service.justice.gov.uk` |
+| Dev | `agency-register-dev.hmpps.service.justice.gov.uk` | `registers-dev.hmpps.service.justice.gov.uk` |
+| Preprod | `agency-register-preprod.hmpps.service.justice.gov.uk` | `registers-preprod.hmpps.service.justice.gov.uk` |
+| Prod | `agency-register.hmpps.service.justice.gov.uk` | `registers.hmpps.service.justice.gov.uk` |
 | Namespace | `hmpps-registers-<env>` (both apps share it) | |
 | Product id | `DPS098` | `DPS098` |
 

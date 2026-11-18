@@ -7,9 +7,9 @@ same Cloud Platform namespaces.
 
 | Environment | Namespace | API host | Front end host |
 | --- | --- | --- | --- |
-| dev | `hmpps-registers-dev` | `prison-register-dev.hmpps.service.justice.gov.uk` | `registers-dev.hmpps.service.justice.gov.uk` |
-| preprod | `hmpps-registers-preprod` | `prison-register-preprod.hmpps.service.justice.gov.uk` | `registers-preprod.hmpps.service.justice.gov.uk` |
-| prod | `hmpps-registers-prod` | `prison-register.hmpps.service.justice.gov.uk` | `registers.hmpps.service.justice.gov.uk` |
+| dev | `hmpps-registers-dev` | `agency-register-dev.hmpps.service.justice.gov.uk` | `registers-dev.hmpps.service.justice.gov.uk` |
+| preprod | `hmpps-registers-preprod` | `agency-register-preprod.hmpps.service.justice.gov.uk` | `registers-preprod.hmpps.service.justice.gov.uk` |
+| prod | `hmpps-registers-prod` | `agency-register.hmpps.service.justice.gov.uk` | `registers.hmpps.service.justice.gov.uk` |
 
 The namespaces' infrastructure (RDS, ElastiCache, SNS subscriptions, SQS, service accounts) is in
 [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments)
