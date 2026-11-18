@@ -126,12 +126,12 @@ class PrisonDetailsResourceIntTest : IntegrationTestBase() {
       }
 
       @Test
-      fun `requires the correct scope`() {
+      fun `is allowed with just read scope`() {
         webTestClient.get()
           .uri("/prison-maintenance/id/TSTPRI/details")
           .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
           .exchange()
-          .expectStatus().isForbidden
+          .expectStatus().isOk
       }
 
       @Test

@@ -994,19 +994,24 @@ class HmppsApiResourceIntTest : IntegrationTestBase() {
     lateinit var probationOffice: ProbationOffice
     lateinit var approvedPremises: ApprovedPremises
     lateinit var otherAgency: OtherAgency
+    lateinit var prison: Prison
 
     @BeforeEach
     fun setUp() {
-      court = dsl.court(courtId = "RCOURT", name = "Read Court") {}
-      hospital = dsl.hospital(hospitalId = "RHOSP", name = "Read Hospital") {}
-      policeCustodySuite = dsl.policeCustodySuite(policeCustodySuiteId = "RPCS", name = "Read Police Custody Suite") {}
-      probationOffice = dsl.probationOffice(probationOfficeId = "RPROB", name = "Read Probation Office") {}
-      approvedPremises = dsl.approvedPremises(approvedPremisesId = "RAPPR", name = "Read Approved Premises") {}
+      court = dsl.court(courtId = "RCOURT", name = "Read Court")
+      hospital = dsl.hospital(hospitalId = "RHOSP", name = "Read Hospital")
+      policeCustodySuite = dsl.policeCustodySuite(policeCustodySuiteId = "RPCS", name = "Read Police Custody Suite")
+      probationOffice = dsl.probationOffice(probationOfficeId = "RPROB", name = "Read Probation Office")
+      approvedPremises = dsl.approvedPremises(approvedPremisesId = "RAPPR", name = "Read Approved Premises")
       otherAgency = dsl.agency(
         agencyId = "RAGEN",
         name = "Read Agency",
         otherAgencyType = OtherAgencyType.AIRPORT,
-      ) {}
+      )
+      prison = dsl.prison(
+        prisonId = "ZZI",
+        name = "Read Prison",
+      )
     }
 
     @AfterEach
@@ -1017,6 +1022,7 @@ class HmppsApiResourceIntTest : IntegrationTestBase() {
       probationOfficeRepository.deleteById(probationOffice.probationOfficeId)
       approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
       otherAgencyRepository.deleteById(otherAgency.agencyId)
+      prisonRepository.deleteById(prison.prisonId)
     }
 
     @ParameterizedTest(name = "GET {0} returns 200")
@@ -1035,6 +1041,7 @@ class HmppsApiResourceIntTest : IntegrationTestBase() {
         "/approved-premises",
         "/other-agencies/id/RAGEN",
         "/other-agencies",
+        "/prisons/id/ZZI/details",
       ],
     )
     fun `can be accessed with the read role and maintain role`(uri: String) {

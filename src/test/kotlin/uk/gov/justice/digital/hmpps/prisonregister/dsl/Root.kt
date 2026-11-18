@@ -41,7 +41,7 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: AgencyBuilder.() -> Unit,
+    dsl: AgencyBuilder.() -> Unit = {},
   ): OtherAgency = agencyBuilder.build(
     agencyId = agencyId,
     name = name,
@@ -107,7 +107,7 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: ProbationOfficeBuilder.() -> Unit,
+    dsl: ProbationOfficeBuilder.() -> Unit = {},
   ): ProbationOffice = probationOfficeBuilder.build(
     probationOfficeId = probationOfficeId,
     name = name,
@@ -141,7 +141,7 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: ApprovedPremisesBuilder.() -> Unit,
+    dsl: ApprovedPremisesBuilder.() -> Unit = {},
   ): uk.gov.justice.digital.hmpps.prisonregister.model.ApprovedPremises = approvedPremisesBuilder.build(
     approvedPremisesId = approvedPremisesId,
     name = name,
@@ -172,7 +172,7 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: PoliceCustodySuiteBuilder.() -> Unit,
+    dsl: PoliceCustodySuiteBuilder.() -> Unit = {},
   ): PoliceCustodySuite = policeCustodySuiteBuilder.build(
     policeCustodySuiteId = policeCustodySuiteId,
     name = name,
@@ -202,7 +202,7 @@ class Root(
     payrollRegionCode: String? = null,
     geographicalAreaCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: HospitalBuilder.() -> Unit,
+    dsl: HospitalBuilder.() -> Unit = {},
   ): Hospital = hospitalBuilder.build(
     hospitalId = hospitalId,
     name = name,
@@ -237,7 +237,7 @@ class Root(
     geographicalAreaCode: String? = null,
     payrollRegionCode: String? = null,
     localAuthorityCode: String? = null,
-    dsl: PrisonBuilder.() -> Unit,
+    dsl: PrisonBuilder.() -> Unit = {},
   ): Prison = prisonBuilder.build(
     prisonId = prisonId,
     name = name,
