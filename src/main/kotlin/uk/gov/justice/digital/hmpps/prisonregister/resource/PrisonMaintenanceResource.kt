@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -44,7 +45,7 @@ import java.time.LocalDate
 
 @RestController
 @Validated
-@RequestMapping(name = "Prison Maintenance", path = ["/prison-maintenance"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(name = "Prison Maintenance", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(
   name = "Prison Maintenance API",
   description = """
@@ -57,7 +58,6 @@ class PrisonMaintenanceResource(
   private val snsService: SnsService,
   private val auditService: AuditService,
 ) {
-  @GetMapping("/id/{prisonId}/details")
   @Operation(summary = "Get details of specified prison", description = "Information on a specific prison")
   @ApiResponses(
     value = [
@@ -67,7 +67,12 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
+  @PreAuthorize("$CLIENT_CAN_MAINTAIN_PRISON_DETAILS or hasAnyRole('HMPPS_REGISTERS_API__R') or hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @Tags(
+    Tag(name = "Prison Maintenance API"),
+    Tag(name = "HMPPS Agency Register API"),
+  )
+  @GetMapping(value = ["/prison-maintenance/id/{prisonId}/details", "/prisons/id/{prisonId}/details"])
   fun getPrisonDetailsById(
     @Schema(description = "Prison ID", example = "MDI", required = true)
     @PathVariable
@@ -111,7 +116,7 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PostMapping("")
+  @PostMapping("/prison-maintenance")
   fun insertPrison(
     @RequestBody @Valid
     prisonInsertRecord: InsertPrisonDto,
@@ -169,7 +174,7 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PutMapping("/id/{prisonId}")
+  @PutMapping("/prison-maintenance/id/{prisonId}")
   fun updatePrison(
     @Schema(description = "Prison Id", example = "MDI", required = true)
     @PathVariable
@@ -229,7 +234,7 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PutMapping("/id/{prisonId}/area")
+  @PutMapping("/prison-maintenance/id/{prisonId}/area")
   fun updatePrisonArea(
     @Schema(description = "Prison Id", example = "MDI", required = true)
     @PathVariable
