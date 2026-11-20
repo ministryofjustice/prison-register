@@ -31,7 +31,7 @@ services:
       - NOMIS_ENABLED=false
 
   prison-register-db:
-    image: postgres:18
+    image: postgres:19
     networks:
       - hmpps
     container_name: prison-register-db
