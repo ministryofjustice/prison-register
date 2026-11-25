@@ -295,6 +295,9 @@ data class InsertPrisonDto(
 
   @Schema(description = "Set of categories for this prison", example = "[\"A\"]", required = false)
   val categories: Set<Category> = setOf(),
+
+  @Schema(description = "Operator of the prison: PSP for a public sector prison, or the provider of a contracted prison", required = false)
+  val operator: PrisonOperator? = null,
 )
 
 @JsonInclude(NON_NULL)

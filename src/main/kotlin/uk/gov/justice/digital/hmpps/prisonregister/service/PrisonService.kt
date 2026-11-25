@@ -157,6 +157,9 @@ class PrisonService(
       addresses.forEach {
         prison.addAddress(it)
       }
+      if (operator != null) {
+        prison.prisonOperators = setOf(operatorRepository.findByIdOrNull(operator.id) ?: throw ValidationException("${operator.id} operator id not found for prison $prisonId"))
+      }
       telemetryClient.trackEvent("prison-register-insert", mapOf("prison" to prison.name), null)
       return prisonRepository.save(prison).prisonId
     }
