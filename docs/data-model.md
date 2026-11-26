@@ -5,8 +5,9 @@ The API owns one PostgreSQL database. The schema is managed by Flyway; migration
 
 For every table and column, see the [SchemaSpy report](https://ministryofjustice.github.io/prison-register/schema-spy-report/)
 and the [CSV data dictionary](https://ministryofjustice.github.io/prison-register/schema-spy-report/data-dictionary.csv).
-Both are rebuilt from the migrations on every merge to `main`. This page explains the parts that need
-more than a column list.
+Both are rebuilt from the migrations on every merge to `main`, and every column carries a sensitivity
+tag. A migration that adds a table or column must add a `COMMENT ON` for it, or `SchemaCommentsTest`
+fails. This page explains the parts that need more than a column list.
 
 ## Two families of tables
 

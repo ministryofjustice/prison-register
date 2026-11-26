@@ -130,5 +130,16 @@ class SecureTrainingCentrePrisonRemovalIntTest : IntegrationTestBase() {
     .expectStatus().isOk
     .expectBodyResponse()
 
-  private fun removeSecureTrainingCentresFromPrisons() = ResourceDatabasePopulator(ClassPathResource("db/migration/V1_68__remove_secure_training_centres_from_prisons.sql")).execute(dataSource)
+  // V1_68 also deletes from the two archive tables, which V1_70 has since dropped. Give the script empty
+  // copies so that it still runs as it did when it was written, and remove them again afterwards.
+  private fun removeSecureTrainingCentresFromPrisons() {
+    archiveTables.forEach { jdbcTemplate.execute("create table if not exists $it (prison_id varchar(6), email_address varchar(256))") }
+    try {
+      ResourceDatabasePopulator(ClassPathResource("db/migration/V1_68__remove_secure_training_centres_from_prisons.sql")).execute(dataSource)
+    } finally {
+      archiveTables.forEach { jdbcTemplate.execute("drop table if exists $it") }
+    }
+  }
+
+  private val archiveTables = listOf("offender_management_unit_archive", "videolink_conferencing_centre_archive")
 }
