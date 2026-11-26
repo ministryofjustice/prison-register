@@ -86,9 +86,28 @@ flowchart LR
     admin --> events["register.prison.* events<br/>(only area goes back to NOMIS)"]
 ```
 
-The front end still has an "Add a new prison" journey. Use it only if you know the prison already
-exists in NOMIS or is about to; the later sync updates the same row rather than creating a second
-one. Do not add new prisons by Flyway migration.
+Do not add new prisons by Flyway migration.
+
+### The "Add a new prison" journey
+
+The front end has an "Add a new prison" journey, kept for when NOMIS is switched off. It is behind
+the `PRISON_REGISTER_ADD_ENABLED` switch in the hmpps-registers Helm values: on in dev and preprod,
+off in production.
+
+**While NOMIS is in use, do not use it.** A prison added in the register is not created in NOMIS.
+The sync to NOMIS then sends each change of area, and NOMIS refuses it because it has no such
+prison (`prison-area-updated-error`, "Agency ... does not exist"). The messages end on the sync's
+dead-letter queue and are not sent again if NOMIS creates the prison later. This was confirmed in
+dev with a test prison, ZZT, in November 2026. Both pages say so: the prison list tells users that
+new prisons are created in NOMIS, and the first page of the journey warns against using it.
+
+**When NOMIS is switched off:**
+
+1. Set `PRISON_REGISTER_ADD_ENABLED` to `'true'` in `helm_deploy/values-prod.yaml` in
+   hmpps-registers.
+2. Change the guidance in `allPrisons.njk` and `addNewPrisonDetails.njk`
+   (`server/views/pages/prison-register/`), which still tells users to create prisons in NOMIS.
+3. Update this section.
 
 ## Migration and reconciliation
 
