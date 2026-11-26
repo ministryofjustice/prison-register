@@ -340,15 +340,13 @@
 <polygon fill="none" stroke="#000000" points="556,-391.7 556,-414.7 904,-414.7 904,-391.7 556,-391.7"/>
 <text text-anchor="start" x="561" y="-400.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00" fill="#000000">police_custody_suite_to_agency_address</text>
 <text text-anchor="start" x="869.0437" y="-399.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">[table]</text>
-<polygon fill="#ffffff" stroke="transparent" points="556,-369.7 556,-391.7 850,-391.7 850,-369.7 556,-369.7"/>
 <polygon fill="none" stroke="#000000" points="556,-369.7 556,-391.7 850,-391.7 850,-369.7 556,-369.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="561" y="-386.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="561" y="-386.7"/>
 <text text-anchor="start" x="576" y="-376.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">police_custody_suite_id</text>
 <polygon fill="none" stroke="#000000" points="850,-369.7 850,-391.7 904,-391.7 904,-369.7 850,-369.7"/>
 <text text-anchor="start" x="852.5514" y="-377.4" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">varchar[6]</text>
-<polygon fill="#ffffff" stroke="transparent" points="556,-347.7 556,-369.7 850,-369.7 850,-347.7 556,-347.7"/>
 <polygon fill="none" stroke="#000000" points="556,-347.7 556,-369.7 850,-369.7 850,-347.7 556,-347.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="561" y="-364.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="561" y="-364.7"/>
 <text text-anchor="start" x="576" y="-354.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">agency_address_id</text>
 <polygon fill="none" stroke="#000000" points="850,-347.7 850,-369.7 904,-369.7 904,-347.7 850,-347.7"/>
 <text text-anchor="start" x="853" y="-355.4" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">int4[10]</text>

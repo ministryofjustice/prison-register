@@ -371,15 +371,13 @@
 <polygon fill="none" stroke="#000000" points="565.5,-371.7 565.5,-394.7 743.5,-394.7 743.5,-371.7 565.5,-371.7"/>
 <text text-anchor="start" x="570.5" y="-380.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00" fill="#000000">court_to_phone</text>
 <text text-anchor="start" x="708.5437" y="-379.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">[table]</text>
-<polygon fill="#ffffff" stroke="transparent" points="565.5,-349.7 565.5,-371.7 689.5,-371.7 689.5,-349.7 565.5,-349.7"/>
 <polygon fill="none" stroke="#000000" points="565.5,-349.7 565.5,-371.7 689.5,-371.7 689.5,-349.7 565.5,-349.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="570.5" y="-366.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="570.5" y="-366.7"/>
 <text text-anchor="start" x="585.5" y="-356.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">court_id</text>
 <polygon fill="none" stroke="#000000" points="689.5,-349.7 689.5,-371.7 743.5,-371.7 743.5,-349.7 689.5,-349.7"/>
 <text text-anchor="start" x="692.0514" y="-357.4" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">varchar[6]</text>
-<polygon fill="#ffffff" stroke="transparent" points="565.5,-327.7 565.5,-349.7 689.5,-349.7 689.5,-327.7 565.5,-327.7"/>
 <polygon fill="none" stroke="#000000" points="565.5,-327.7 565.5,-349.7 689.5,-349.7 689.5,-327.7 565.5,-327.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="570.5" y="-344.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="570.5" y="-344.7"/>
 <text text-anchor="start" x="585.5" y="-334.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">phone_id</text>
 <polygon fill="none" stroke="#000000" points="689.5,-327.7 689.5,-349.7 743.5,-349.7 743.5,-327.7 689.5,-327.7"/>
 <text text-anchor="start" x="692.5" y="-335.4" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">int4[10]</text>

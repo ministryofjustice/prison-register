@@ -95,7 +95,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="agency_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
-         <index name="agency_to_agency_address_idx" unique="false">
+         <primaryKey column="agency_id" sequenceNumberInPK="1"/>
+         <primaryKey column="agency_address_id" sequenceNumberInPK="2"/>
+         <index name="agency_to_agency_address_pkey" unique="true">
             <column ascending="true" name="agency_id"/>
             <column ascending="true" name="agency_address_id"/>
          </index>
@@ -107,7 +109,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="agency_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
-         <index name="agency_to_email_address_idx" unique="false">
+         <primaryKey column="agency_id" sequenceNumberInPK="1"/>
+         <primaryKey column="email_address_id" sequenceNumberInPK="2"/>
+         <index name="agency_to_email_address_pkey" unique="true">
             <column ascending="true" name="agency_id"/>
             <column ascending="true" name="email_address_id"/>
          </index>
@@ -119,7 +123,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="agency_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
-         <index name="agency_to_phone_idx" unique="false">
+         <primaryKey column="agency_id" sequenceNumberInPK="1"/>
+         <primaryKey column="phone_id" sequenceNumberInPK="2"/>
+         <index name="agency_to_phone_pkey" unique="true">
             <column ascending="true" name="agency_id"/>
             <column ascending="true" name="phone_id"/>
          </index>
@@ -178,7 +184,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="approved_premises_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
-         <index name="approved_premises_to_agency_address_idx" unique="false">
+         <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
+         <primaryKey column="agency_address_id" sequenceNumberInPK="2"/>
+         <index name="approved_premises_to_agency_address_pkey" unique="true">
             <column ascending="true" name="approved_premises_id"/>
             <column ascending="true" name="agency_address_id"/>
          </index>
@@ -190,7 +198,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="approved_premises_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
-         <index name="approved_premises_to_email_address_idx" unique="false">
+         <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
+         <primaryKey column="email_address_id" sequenceNumberInPK="2"/>
+         <index name="approved_premises_to_email_address_pkey" unique="true">
             <column ascending="true" name="approved_premises_id"/>
             <column ascending="true" name="email_address_id"/>
          </index>
@@ -202,7 +212,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="approved_premises_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
-         <index name="approved_premises_to_phone_idx" unique="false">
+         <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
+         <primaryKey column="phone_id" sequenceNumberInPK="2"/>
+         <index name="approved_premises_to_phone_pkey" unique="true">
             <column ascending="true" name="approved_premises_id"/>
             <column ascending="true" name="phone_id"/>
          </index>
@@ -362,7 +374,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="court_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
-         <index name="court_to_agency_address_idx" unique="false">
+         <primaryKey column="court_id" sequenceNumberInPK="1"/>
+         <primaryKey column="agency_address_id" sequenceNumberInPK="2"/>
+         <index name="court_to_agency_address_pkey" unique="true">
             <column ascending="true" name="court_id"/>
             <column ascending="true" name="agency_address_id"/>
          </index>
@@ -374,7 +388,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="court_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
-         <index name="court_to_email_address_idx" unique="false">
+         <primaryKey column="court_id" sequenceNumberInPK="1"/>
+         <primaryKey column="email_address_id" sequenceNumberInPK="2"/>
+         <index name="court_to_email_address_pkey" unique="true">
             <column ascending="true" name="court_id"/>
             <column ascending="true" name="email_address_id"/>
          </index>
@@ -386,7 +402,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="court_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
-         <index name="court_to_phone_idx" unique="false">
+         <primaryKey column="court_id" sequenceNumberInPK="1"/>
+         <primaryKey column="phone_id" sequenceNumberInPK="2"/>
+         <index name="court_to_phone_pkey" unique="true">
             <column ascending="true" name="court_id"/>
             <column ascending="true" name="phone_id"/>
          </index>
@@ -472,7 +490,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="hospital_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
-         <index name="hospital_to_agency_address_idx" unique="false">
+         <primaryKey column="hospital_id" sequenceNumberInPK="1"/>
+         <primaryKey column="agency_address_id" sequenceNumberInPK="2"/>
+         <index name="hospital_to_agency_address_pkey" unique="true">
             <column ascending="true" name="hospital_id"/>
             <column ascending="true" name="agency_address_id"/>
          </index>
@@ -484,7 +504,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="hospital_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
-         <index name="hospital_to_phone_idx" unique="false">
+         <primaryKey column="hospital_id" sequenceNumberInPK="1"/>
+         <primaryKey column="phone_id" sequenceNumberInPK="2"/>
+         <index name="hospital_to_phone_pkey" unique="true">
             <column ascending="true" name="hospital_id"/>
             <column ascending="true" name="phone_id"/>
          </index>
@@ -595,7 +617,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="police_custody_suite_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
-         <index name="police_custody_suite_to_agency_address_idx" unique="false">
+         <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
+         <primaryKey column="agency_address_id" sequenceNumberInPK="2"/>
+         <index name="police_custody_suite_to_agency_address_pkey" unique="true">
             <column ascending="true" name="police_custody_suite_id"/>
             <column ascending="true" name="agency_address_id"/>
          </index>
@@ -607,7 +631,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="police_custody_suite_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
-         <index name="police_custody_suite_to_email_address_idx" unique="false">
+         <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
+         <primaryKey column="email_address_id" sequenceNumberInPK="2"/>
+         <index name="police_custody_suite_to_email_address_pkey" unique="true">
             <column ascending="true" name="police_custody_suite_id"/>
             <column ascending="true" name="email_address_id"/>
          </index>
@@ -619,7 +645,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="police_custody_suite_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
-         <index name="police_custody_suite_to_phone_idx" unique="false">
+         <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
+         <primaryKey column="phone_id" sequenceNumberInPK="2"/>
+         <index name="police_custody_suite_to_phone_pkey" unique="true">
             <column ascending="true" name="police_custody_suite_id"/>
             <column ascending="true" name="phone_id"/>
          </index>
@@ -754,7 +782,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="probation_office_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
-         <index name="probation_office_to_agency_address_idx" unique="false">
+         <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
+         <primaryKey column="agency_address_id" sequenceNumberInPK="2"/>
+         <index name="probation_office_to_agency_address_pkey" unique="true">
             <column ascending="true" name="probation_office_id"/>
             <column ascending="true" name="agency_address_id"/>
          </index>
@@ -766,7 +796,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="probation_office_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
-         <index name="probation_office_to_email_address_idx" unique="false">
+         <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
+         <primaryKey column="email_address_id" sequenceNumberInPK="2"/>
+         <index name="probation_office_to_email_address_pkey" unique="true">
             <column ascending="true" name="probation_office_id"/>
             <column ascending="true" name="email_address_id"/>
          </index>
@@ -778,7 +810,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="probation_office_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
-         <index name="probation_office_to_phone_idx" unique="false">
+         <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
+         <primaryKey column="phone_id" sequenceNumberInPK="2"/>
+         <index name="probation_office_to_phone_pkey" unique="true">
             <column ascending="true" name="probation_office_id"/>
             <column ascending="true" name="phone_id"/>
          </index>

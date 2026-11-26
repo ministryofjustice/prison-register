@@ -248,13 +248,11 @@
 <polygon fill="none" stroke="#000000" points="613,-566.7 613,-589.7 821,-589.7 821,-566.7 613,-566.7"/>
 <text text-anchor="start" x="618" y="-575.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00" fill="#000000">court_to_agency_address</text>
 <text text-anchor="start" x="786.5219" y="-574.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">[table]</text>
-<polygon fill="#ffffff" stroke="transparent" points="613,-544.7 613,-566.7 821,-566.7 821,-544.7 613,-544.7"/>
 <polygon fill="none" stroke="#000000" points="613,-544.7 613,-566.7 821,-566.7 821,-544.7 613,-544.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="618" y="-561.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="618" y="-561.7"/>
 <text text-anchor="start" x="642" y="-551.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">court_id</text>
-<polygon fill="#ffffff" stroke="transparent" points="613,-522.7 613,-544.7 821,-544.7 821,-522.7 613,-522.7"/>
 <polygon fill="none" stroke="#000000" points="613,-522.7 613,-544.7 821,-544.7 821,-522.7 613,-522.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="618" y="-539.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="618" y="-539.7"/>
 <text text-anchor="start" x="642" y="-529.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">agency_address_id</text>
 <polygon fill="#ffffff" stroke="transparent" points="613,-503.7 613,-522.7 715,-522.7 715,-503.7 613,-503.7"/>
 <polygon fill="none" stroke="#000000" points="613,-503.7 613,-522.7 715,-522.7 715,-503.7 613,-503.7"/>
@@ -284,13 +282,11 @@
 <polygon fill="none" stroke="#000000" points="619,-459.7 619,-482.7 816,-482.7 816,-459.7 619,-459.7"/>
 <text text-anchor="start" x="624" y="-468.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00" fill="#000000">court_to_email_address</text>
 <text text-anchor="start" x="781.5219" y="-467.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">[table]</text>
-<polygon fill="#ffffff" stroke="transparent" points="619,-437.7 619,-459.7 816,-459.7 816,-437.7 619,-437.7"/>
 <polygon fill="none" stroke="#000000" points="619,-437.7 619,-459.7 816,-459.7 816,-437.7 619,-437.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="624" y="-454.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="624" y="-454.7"/>
 <text text-anchor="start" x="648" y="-444.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">court_id</text>
-<polygon fill="#ffffff" stroke="transparent" points="619,-415.7 619,-437.7 816,-437.7 816,-415.7 619,-415.7"/>
 <polygon fill="none" stroke="#000000" points="619,-415.7 619,-437.7 816,-437.7 816,-415.7 619,-415.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="624" y="-432.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="624" y="-432.7"/>
 <text text-anchor="start" x="648" y="-422.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">email_address_id</text>
 <polygon fill="#ffffff" stroke="transparent" points="619,-396.7 619,-415.7 716,-415.7 716,-396.7 619,-396.7"/>
 <polygon fill="none" stroke="#000000" points="619,-396.7 619,-415.7 716,-415.7 716,-396.7 619,-396.7"/>
@@ -320,13 +316,11 @@
 <polygon fill="none" stroke="#000000" points="646,-352.7 646,-375.7 788,-375.7 788,-352.7 646,-352.7"/>
 <text text-anchor="start" x="651" y="-361.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00" fill="#000000">court_to_phone</text>
 <text text-anchor="start" x="753.5219" y="-360.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">[table]</text>
-<polygon fill="#ffffff" stroke="transparent" points="646,-330.7 646,-352.7 788,-352.7 788,-330.7 646,-330.7"/>
 <polygon fill="none" stroke="#000000" points="646,-330.7 646,-352.7 788,-352.7 788,-330.7 646,-330.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="651" y="-347.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="651" y="-347.7"/>
 <text text-anchor="start" x="675" y="-337.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">court_id</text>
-<polygon fill="#ffffff" stroke="transparent" points="646,-308.7 646,-330.7 788,-330.7 788,-308.7 646,-308.7"/>
 <polygon fill="none" stroke="#000000" points="646,-308.7 646,-330.7 788,-330.7 788,-308.7 646,-308.7"/>
-<image xlink:href="../../images/foreignKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="651" y="-325.7"/>
+<image xlink:href="../../images/primaryKeys.png" width="11px" height="12px" preserveAspectRatio="xMinYMin meet" x="651" y="-325.7"/>
 <text text-anchor="start" x="675" y="-315.8" font-family="Helvetica,sans-Serif" font-size="11.00" fill="#000000">phone_id</text>
 <polygon fill="#ffffff" stroke="transparent" points="646,-289.7 646,-308.7 715,-308.7 715,-289.7 646,-289.7"/>
 <polygon fill="none" stroke="#000000" points="646,-289.7 646,-308.7 715,-308.7 715,-289.7 646,-289.7"/>

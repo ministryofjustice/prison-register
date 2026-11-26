@@ -33,12 +33,12 @@ agency_address,TABLE,,town,4,character varying(80),t,,,,N,
 agency_address,TABLE,,county,5,character varying(80),t,,,,N,
 agency_address,TABLE,,postcode,6,character varying(8),t,,,,N,
 agency_address,TABLE,,country,7,character varying(16),t,,,,N,
-agency_to_agency_address,TABLE,,agency_id,1,character varying(6),f,,,,N,agency
-agency_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
-agency_to_email_address,TABLE,,agency_id,1,character varying(6),f,,,,N,agency
-agency_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
-agency_to_phone,TABLE,,agency_id,1,character varying(6),f,,,,N,agency
-agency_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+agency_to_agency_address,TABLE,,agency_id,1,character varying(6),f,,,,Y,agency
+agency_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
+agency_to_email_address,TABLE,,agency_id,1,character varying(6),f,,,,Y,agency
+agency_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
+agency_to_phone,TABLE,,agency_id,1,character varying(6),f,,,,Y,agency
+agency_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
 agency_type,TABLE,,code,1,character varying(12),f,,,,Y,
 agency_type,TABLE,,description,2,character varying(40),f,,,,N,
 agency_type,TABLE,,active,3,boolean,f,,,,N,
@@ -58,12 +58,12 @@ approved_premises,TABLE,,region,10,character varying(12),t,,,,N,region
 approved_premises,TABLE,,cjit_code,11,character varying(12),t,,,,N,
 approved_premises,TABLE,,local_authority,12,character varying(12),t,,,,N,local_authority
 approved_premises,TABLE,,payroll_region,13,character varying(12),t,,,,N,payroll_region
-approved_premises_to_agency_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,N,approved_premises
-approved_premises_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
-approved_premises_to_email_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,N,approved_premises
-approved_premises_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
-approved_premises_to_phone,TABLE,,approved_premises_id,1,character varying(6),f,,,,N,approved_premises
-approved_premises_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+approved_premises_to_agency_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,approved_premises
+approved_premises_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
+approved_premises_to_email_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,approved_premises
+approved_premises_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
+approved_premises_to_phone,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,approved_premises
+approved_premises_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
 area,TABLE,,code,1,character varying(12),f,,,,Y,
 area,TABLE,,parent,2,character varying(12),t,,,,N,region
 area,TABLE,,description,3,character varying(40),f,,,,N,
@@ -95,12 +95,12 @@ court,TABLE,,geographical_area,10,character varying(12),t,,,,N,area
 court,TABLE,,local_authority,11,character varying(12),t,,,,N,local_authority
 court,TABLE,,payroll_region,12,character varying(12),t,,,,N,payroll_region
 court,TABLE,,accessible_access,13,character varying(20),t,,,,N,
-court_to_agency_address,TABLE,,court_id,1,character varying(6),f,,,,N,court
-court_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
-court_to_email_address,TABLE,,court_id,1,character varying(6),f,,,,N,court
-court_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
-court_to_phone,TABLE,,court_id,1,character varying(6),f,,,,N,court
-court_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+court_to_agency_address,TABLE,,court_id,1,character varying(6),f,,,,Y,court
+court_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
+court_to_email_address,TABLE,,court_id,1,character varying(6),f,,,,Y,court
+court_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
+court_to_phone,TABLE,,court_id,1,character varying(6),f,,,,Y,court
+court_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
 court_type,TABLE,,code,1,character varying(12),f,,,,Y,
 court_type,TABLE,,description,2,character varying(40),f,,,,N,
 court_type,TABLE,,active,3,boolean,f,,,,N,
@@ -118,10 +118,10 @@ hospital,TABLE,,region,9,character varying(12),t,,,,N,region
 hospital,TABLE,,payroll_region,10,character varying(12),t,,,,N,payroll_region
 hospital,TABLE,,cjit_code,11,character varying(12),t,,,,N,
 hospital,TABLE,,local_authority,12,character varying(12),t,,,,N,local_authority
-hospital_to_agency_address,TABLE,,hospital_id,1,character varying(6),f,,,,N,hospital
-hospital_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
-hospital_to_phone,TABLE,,hospital_id,1,character varying(6),f,,,,N,hospital
-hospital_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+hospital_to_agency_address,TABLE,,hospital_id,1,character varying(6),f,,,,Y,hospital
+hospital_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
+hospital_to_phone,TABLE,,hospital_id,1,character varying(6),f,,,,Y,hospital
+hospital_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
 local_authority,TABLE,,code,1,character varying(12),f,,,,Y,
 local_authority,TABLE,,description,2,character varying(40),f,,,,N,
 local_authority,TABLE,,active,3,boolean,f,,,,N,
@@ -145,12 +145,12 @@ police_custody_suite,TABLE,,region,8,character varying(12),t,,,,N,region
 police_custody_suite,TABLE,,cjit_code,9,character varying(12),t,,,,N,
 police_custody_suite,TABLE,,local_authority,10,character varying(12),t,,,,N,local_authority
 police_custody_suite,TABLE,,payroll_region,11,character varying(12),t,,,,N,payroll_region
-police_custody_suite_to_agency_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,N,police_custody_suite
-police_custody_suite_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
-police_custody_suite_to_email_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,N,police_custody_suite
-police_custody_suite_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
-police_custody_suite_to_phone,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,N,police_custody_suite
-police_custody_suite_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+police_custody_suite_to_agency_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,police_custody_suite
+police_custody_suite_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
+police_custody_suite_to_email_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,police_custody_suite
+police_custody_suite_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
+police_custody_suite_to_phone,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,police_custody_suite
+police_custody_suite_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
 prison,TABLE,,prison_id,1,character varying(6),f,,,,Y,
 prison,TABLE,,name,2,character varying(40),f,,,,N,
 prison,TABLE,,active,3,boolean,f,,,,N,
@@ -189,12 +189,12 @@ probation_office,TABLE,,local_authority,11,character varying(12),t,,,,N,local_au
 probation_office,TABLE,,subarea,12,character varying(12),t,,,,N,subarea
 probation_office,TABLE,,contact,13,character varying(40),t,,,,N,
 probation_office,TABLE,,payroll_region,14,character varying(12),t,,,,N,payroll_region
-probation_office_to_agency_address,TABLE,,probation_office_id,1,character varying(6),f,,,,N,probation_office
-probation_office_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
-probation_office_to_email_address,TABLE,,probation_office_id,1,character varying(6),f,,,,N,probation_office
-probation_office_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
-probation_office_to_phone,TABLE,,probation_office_id,1,character varying(6),f,,,,N,probation_office
-probation_office_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+probation_office_to_agency_address,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,probation_office
+probation_office_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
+probation_office_to_email_address,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,probation_office
+probation_office_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
+probation_office_to_phone,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,probation_office
+probation_office_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
 region,TABLE,,code,1,character varying(12),f,,,,Y,
 region,TABLE,,description,2,character varying(40),f,,,,N,
 region,TABLE,,active,3,boolean,f,,,,N,

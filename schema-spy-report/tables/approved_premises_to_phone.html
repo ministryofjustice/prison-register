@@ -109,7 +109,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="approved_premises_id">approved_premises_id</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="approved_premises_id">approved_premises_id</span></td>
                                     <td>varchar</td>
                                     <td>6</td>
                                     <td title=''></td>
@@ -131,7 +131,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="phone_id">phone_id</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="phone_id">phone_id</span></td>
                                     <td>int4</td>
                                     <td>10</td>
                                     <td title=''></td>
@@ -183,8 +183,8 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td title='Indexed'>approved_premises_to_phone_idx</td>
-                                    <td>Performance</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> approved_premises_to_phone_pkey</td>
+                                    <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
                                     <td>approved_premises_id + phone_id</td>
                                 </tr>
