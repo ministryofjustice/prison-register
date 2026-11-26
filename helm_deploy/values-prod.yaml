@@ -34,8 +34,6 @@ generic-service:
         DB_PASS_PREPROD: "database_password"
         DB_HOST_PREPROD: "rds_instance_address"
 
-# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
-  alertSeverity: move-a-prisoner-alerts-prod
   rdsAlertsDatabases:
     cloud-platform-41be406051604521: 'prison register'
