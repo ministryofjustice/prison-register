@@ -1,0 +1,212 @@
+table_name,object_type,table_description,column_name,ordinal_position,data_type,is_nullable,column_default,column_description,sensitivity,is_primary_key,foreign_key_references
+address,TABLE,,id,1,integer,f,nextval('address_id_seq'::regclass),,,Y,
+address,TABLE,,prison_id,2,character varying(6),f,,,,N,prison
+address,TABLE,,address_line1,3,character varying(80),t,,,,N,
+address,TABLE,,address_line2,4,character varying(80),t,,,,N,
+address,TABLE,,town,5,character varying(80),f,,,,N,
+address,TABLE,,county,6,character varying(80),t,,,,N,
+address,TABLE,,postcode,7,character varying(8),f,,,,N,
+address,TABLE,,country,8,character varying(16),f,,,,N,
+address,TABLE,,address_line1_in_welsh,9,character varying(80),t,,,,N,
+address,TABLE,,address_line2_in_welsh,10,character varying(80),t,,,,N,
+address,TABLE,,town_in_welsh,11,character varying(80),t,,,,N,
+address,TABLE,,county_in_welsh,12,character varying(80),t,,,,N,
+address,TABLE,,country_in_welsh,13,character varying(16),t,,,,N,
+agency,TABLE,,agency_id,1,character varying(6),f,,,,Y,
+agency,TABLE,,name,2,character varying(40),f,,,,N,
+agency,TABLE,,description,3,character varying(3000),t,,,,N,
+agency,TABLE,,contact,4,character varying(40),t,,,,N,
+agency,TABLE,,active,5,boolean,f,,,,N,
+agency,TABLE,,accessible_access,6,character varying(20),t,,,,N,
+agency,TABLE,,agency_type,7,character varying(30),f,,,,N,
+agency,TABLE,,inactive_date,8,date,t,,,,N,
+agency,TABLE,,area,9,character varying(12),t,,,,N,area
+agency,TABLE,,geographical_area,10,character varying(12),t,,,,N,area
+agency,TABLE,,region,11,character varying(12),t,,,,N,region
+agency,TABLE,,cjit_code,12,character varying(12),t,,,,N,
+agency,TABLE,,payroll_region,13,character varying(12),t,,,,N,payroll_region
+agency,TABLE,,local_authority,14,character varying(12),t,,,,N,local_authority
+agency_address,TABLE,,id,1,integer,f,nextval('agency_address_id_seq'::regclass),,,Y,
+agency_address,TABLE,,address_line1,2,character varying(350),t,,,,N,
+agency_address,TABLE,,address_line2,3,character varying(80),t,,,,N,
+agency_address,TABLE,,town,4,character varying(80),t,,,,N,
+agency_address,TABLE,,county,5,character varying(80),t,,,,N,
+agency_address,TABLE,,postcode,6,character varying(8),t,,,,N,
+agency_address,TABLE,,country,7,character varying(16),t,,,,N,
+agency_to_agency_address,TABLE,,agency_id,1,character varying(6),f,,,,N,agency
+agency_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
+agency_to_email_address,TABLE,,agency_id,1,character varying(6),f,,,,N,agency
+agency_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
+agency_to_phone,TABLE,,agency_id,1,character varying(6),f,,,,N,agency
+agency_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+agency_type,TABLE,,code,1,character varying(12),f,,,,Y,
+agency_type,TABLE,,description,2,character varying(40),f,,,,N,
+agency_type,TABLE,,active,3,boolean,f,,,,N,
+all_agencies,VIEW,,agency_id,1,character varying(6),t,,,,N,
+all_agencies,VIEW,,name,2,character varying(40),t,,,,N,
+all_agencies,VIEW,,legacy_type,3,text,t,,,,N,
+approved_premises,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,
+approved_premises,TABLE,,name,2,character varying(40),f,,,,N,
+approved_premises,TABLE,,description,3,character varying(3000),t,,,,N,
+approved_premises,TABLE,,contact,4,character varying(40),t,,,,N,
+approved_premises,TABLE,,active,5,boolean,f,,,,N,
+approved_premises,TABLE,,accessible_access,6,character varying(20),t,,,,N,
+approved_premises,TABLE,,inactive_date,7,date,t,,,,N,
+approved_premises,TABLE,,area,8,character varying(12),t,,,,N,area
+approved_premises,TABLE,,geographical_area,9,character varying(12),t,,,,N,area
+approved_premises,TABLE,,region,10,character varying(12),t,,,,N,region
+approved_premises,TABLE,,cjit_code,11,character varying(12),t,,,,N,
+approved_premises,TABLE,,local_authority,12,character varying(12),t,,,,N,local_authority
+approved_premises,TABLE,,payroll_region,13,character varying(12),t,,,,N,payroll_region
+approved_premises_to_agency_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,N,approved_premises
+approved_premises_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
+approved_premises_to_email_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,N,approved_premises
+approved_premises_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
+approved_premises_to_phone,TABLE,,approved_premises_id,1,character varying(6),f,,,,N,approved_premises
+approved_premises_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+area,TABLE,,code,1,character varying(12),f,,,,Y,
+area,TABLE,,parent,2,character varying(12),t,,,,N,region
+area,TABLE,,description,3,character varying(40),f,,,,N,
+area,TABLE,,prison_area,4,boolean,f,,,,N,
+area,TABLE,,active,5,boolean,f,,,,N,
+contact_details,TABLE,,id,1,integer,f,nextval('contact_details_id_seq'::regclass),,,Y,
+contact_details,TABLE,,prison_id,2,character varying(6),f,,,,N,prison
+contact_details,TABLE,,department_type,3,character varying(40),f,,,,N,
+contact_details,TABLE,,create_timestamp,4,timestamp without time zone,t,CURRENT_TIMESTAMP,,,N,
+contact_details,TABLE,,modify_timestamp,5,timestamp without time zone,t,CURRENT_TIMESTAMP,,,N,
+contact_details_to_email_address,TABLE,,contact_details_id,1,integer,f,,,,Y,contact_details
+contact_details_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
+contact_details_to_phone_number,TABLE,,contact_details_id,1,integer,f,,,,Y,contact_details
+contact_details_to_phone_number,TABLE,,phone_number_id,2,integer,f,,,,N,phone_number
+contact_details_to_web_address,TABLE,,contact_details_id,1,integer,f,,,,Y,contact_details
+contact_details_to_web_address,TABLE,,web_address_id,2,integer,f,,,,N,web_address
+county_suggestions,TABLE,,code,1,character varying(12),f,,,,Y,
+county_suggestions,TABLE,,description,2,character varying(40),f,,,,N,
+court,TABLE,,court_id,1,character varying(6),f,,,,Y,
+court,TABLE,,name,2,character varying(40),f,,,,N,
+court,TABLE,,description,3,character varying(3000),t,,,,N,
+court,TABLE,,active,4,boolean,f,,,,N,
+court,TABLE,,inactive_date,5,date,t,,,,N,
+court,TABLE,,court_type,6,character varying(12),f,,,,N,
+court,TABLE,,area,7,character varying(12),t,,,,N,area
+court,TABLE,,region,8,character varying(12),t,,,,N,region
+court,TABLE,,cjit_code,9,character varying(12),t,,,,N,
+court,TABLE,,geographical_area,10,character varying(12),t,,,,N,area
+court,TABLE,,local_authority,11,character varying(12),t,,,,N,local_authority
+court,TABLE,,payroll_region,12,character varying(12),t,,,,N,payroll_region
+court,TABLE,,accessible_access,13,character varying(20),t,,,,N,
+court_to_agency_address,TABLE,,court_id,1,character varying(6),f,,,,N,court
+court_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
+court_to_email_address,TABLE,,court_id,1,character varying(6),f,,,,N,court
+court_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
+court_to_phone,TABLE,,court_id,1,character varying(6),f,,,,N,court
+court_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+court_type,TABLE,,code,1,character varying(12),f,,,,Y,
+court_type,TABLE,,description,2,character varying(40),f,,,,N,
+court_type,TABLE,,active,3,boolean,f,,,,N,
+email_address,TABLE,,id,1,integer,f,nextval('email_address_id_seq'::regclass),,,Y,
+email_address,TABLE,,value,2,character varying(100),f,,,,N,
+hospital,TABLE,,hospital_id,1,character varying(6),f,,,,Y,
+hospital,TABLE,,name,2,character varying(40),f,,,,N,
+hospital,TABLE,,description,3,character varying(3000),t,,,,N,
+hospital,TABLE,,active,4,boolean,f,,,,N,
+hospital,TABLE,,high_security,5,boolean,f,,,,N,
+hospital,TABLE,,inactive_date,6,date,t,,,,N,
+hospital,TABLE,,area,7,character varying(12),t,,,,N,area
+hospital,TABLE,,geographical_area,8,character varying(12),t,,,,N,area
+hospital,TABLE,,region,9,character varying(12),t,,,,N,region
+hospital,TABLE,,payroll_region,10,character varying(12),t,,,,N,payroll_region
+hospital,TABLE,,cjit_code,11,character varying(12),t,,,,N,
+hospital,TABLE,,local_authority,12,character varying(12),t,,,,N,local_authority
+hospital_to_agency_address,TABLE,,hospital_id,1,character varying(6),f,,,,N,hospital
+hospital_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
+hospital_to_phone,TABLE,,hospital_id,1,character varying(6),f,,,,N,hospital
+hospital_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+local_authority,TABLE,,code,1,character varying(12),f,,,,Y,
+local_authority,TABLE,,description,2,character varying(40),f,,,,N,
+local_authority,TABLE,,active,3,boolean,f,,,,N,
+offender_management_unit_archive,TABLE,,prison_id,1,character varying(6),f,,,,Y,prison
+offender_management_unit_archive,TABLE,,email_address,2,character varying(256),f,,,,N,
+operator,TABLE,,id,1,integer,f,nextval('operator_id_seq'::regclass),,,Y,
+operator,TABLE,,name,2,character varying(80),f,,,,N,
+payroll_region,TABLE,,code,1,character varying(12),f,,,,Y,
+payroll_region,TABLE,,description,2,character varying(40),f,,,,N,
+payroll_region,TABLE,,active,3,boolean,f,,,,N,
+phone_number,TABLE,,id,1,integer,f,nextval('phone_number_id_seq'::regclass),,,Y,
+phone_number,TABLE,,value,2,character varying(100),f,,,,N,
+police_custody_suite,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,
+police_custody_suite,TABLE,,name,2,character varying(40),f,,,,N,
+police_custody_suite,TABLE,,description,3,character varying(3000),t,,,,N,
+police_custody_suite,TABLE,,active,4,boolean,f,,,,N,
+police_custody_suite,TABLE,,inactive_date,5,date,t,,,,N,
+police_custody_suite,TABLE,,area,6,character varying(12),t,,,,N,area
+police_custody_suite,TABLE,,geographical_area,7,character varying(12),t,,,,N,area
+police_custody_suite,TABLE,,region,8,character varying(12),t,,,,N,region
+police_custody_suite,TABLE,,cjit_code,9,character varying(12),t,,,,N,
+police_custody_suite,TABLE,,local_authority,10,character varying(12),t,,,,N,local_authority
+police_custody_suite,TABLE,,payroll_region,11,character varying(12),t,,,,N,payroll_region
+police_custody_suite_to_agency_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,N,police_custody_suite
+police_custody_suite_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
+police_custody_suite_to_email_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,N,police_custody_suite
+police_custody_suite_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
+police_custody_suite_to_phone,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,N,police_custody_suite
+police_custody_suite_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+prison,TABLE,,prison_id,1,character varying(6),f,,,,Y,
+prison,TABLE,,name,2,character varying(40),f,,,,N,
+prison,TABLE,,active,3,boolean,f,,,,N,
+prison,TABLE,,description,4,character varying(256),t,,,,N,
+prison,TABLE,,male,5,boolean,f,false,,,N,
+prison,TABLE,,female,6,boolean,f,false,,,N,
+prison,TABLE,,inactive_date,7,date,t,,,,N,
+prison,TABLE,,contracted,8,boolean,f,false,,,N,
+prison,TABLE,,lthse,9,boolean,f,false,,,N,
+prison,TABLE,,gp_practice_code,10,character varying(6),t,,,,N,
+prison,TABLE,,prison_name_in_welsh,11,character varying(80),t,,,,N,
+prison,TABLE,,area,12,character varying(12),t,,,,N,area
+prison,TABLE,,geographical_area,13,character varying(12),t,,,,N,area
+prison,TABLE,,region,14,character varying(12),t,,,,N,region
+prison,TABLE,,cjit_code,15,character varying(12),t,,,,N,
+prison,TABLE,,payroll_region,16,character varying(12),t,,,,N,payroll_region
+prison,TABLE,,local_authority,17,character varying(12),t,,,,N,local_authority
+prison_category,TABLE,,category,1,text,f,,,,Y,
+prison_category,TABLE,,prison_id,2,character varying,f,,,,Y,prison
+prison_operator,TABLE,,prison_id,1,character varying(6),f,,,,Y,prison
+prison_operator,TABLE,,operator_id,2,integer,f,,,,Y,
+prison_type,TABLE,,id,1,integer,f,nextval('prison_type_id_seq'::regclass),,,Y,
+prison_type,TABLE,,prison_id,2,character varying(6),f,,,,N,prison
+prison_type,TABLE,,type,3,character varying(6),f,,,,N,type
+probation_office,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,
+probation_office,TABLE,,name,2,character varying(40),f,,,,N,
+probation_office,TABLE,,description,3,character varying(3000),t,,,,N,
+probation_office,TABLE,,active,4,boolean,f,,,,N,
+probation_office,TABLE,,accessible_access,5,character varying(20),t,,,,N,
+probation_office,TABLE,,inactive_date,6,date,t,,,,N,
+probation_office,TABLE,,area,7,character varying(12),t,,,,N,area
+probation_office,TABLE,,geographical_area,8,character varying(12),t,,,,N,area
+probation_office,TABLE,,region,9,character varying(12),t,,,,N,region
+probation_office,TABLE,,cjit_code,10,character varying(12),t,,,,N,
+probation_office,TABLE,,local_authority,11,character varying(12),t,,,,N,local_authority
+probation_office,TABLE,,subarea,12,character varying(12),t,,,,N,subarea
+probation_office,TABLE,,contact,13,character varying(40),t,,,,N,
+probation_office,TABLE,,payroll_region,14,character varying(12),t,,,,N,payroll_region
+probation_office_to_agency_address,TABLE,,probation_office_id,1,character varying(6),f,,,,N,probation_office
+probation_office_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,N,agency_address
+probation_office_to_email_address,TABLE,,probation_office_id,1,character varying(6),f,,,,N,probation_office
+probation_office_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
+probation_office_to_phone,TABLE,,probation_office_id,1,character varying(6),f,,,,N,probation_office
+probation_office_to_phone,TABLE,,phone_id,2,integer,f,,,,N,phone_number
+region,TABLE,,code,1,character varying(12),f,,,,Y,
+region,TABLE,,description,2,character varying(40),f,,,,N,
+region,TABLE,,active,3,boolean,f,,,,N,
+subarea,TABLE,,code,1,character varying(12),f,,,,Y,
+subarea,TABLE,,parent,2,character varying(12),t,,,,N,area
+subarea,TABLE,,description,3,character varying(40),f,,,,N,
+subarea,TABLE,,active,4,boolean,f,,,,N,
+town_suggestions,TABLE,,code,1,character varying(12),f,,,,Y,
+town_suggestions,TABLE,,description,2,character varying(40),f,,,,N,
+type,TABLE,,id,1,character varying(6),f,,,,Y,
+type,TABLE,,description,2,character varying(80),f,,,,N,
+videolink_conferencing_centre_archive,TABLE,,prison_id,1,character varying(6),f,,,,Y,prison
+videolink_conferencing_centre_archive,TABLE,,email_address,2,character varying(256),f,,,,N,
+web_address,TABLE,,id,1,integer,f,nextval('web_address_id_seq'::regclass),,,Y,
+web_address,TABLE,,value,2,character varying(100),f,,,,N,

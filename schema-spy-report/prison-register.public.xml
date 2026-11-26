@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="prison-register" schema="public" type="PostgreSQL - 18.7 (Debian 18.7-1.pgdg13+5)">
+   <sequences>
+      <sequence increment="1" name="address_id_seq" startValue="1"/>
+      <sequence increment="1" name="agency_address_id_seq" startValue="1"/>
+      <sequence increment="1" name="contact_details_id_seq" startValue="1"/>
+      <sequence increment="1" name="email_address_id_seq" startValue="1"/>
+      <sequence increment="1" name="operator_id_seq" startValue="1"/>
+      <sequence increment="1" name="phone_number_id_seq" startValue="1"/>
+      <sequence increment="1" name="prison_type_id_seq" startValue="1"/>
+      <sequence increment="1" name="web_address_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="address_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_line1" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="address_line2" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="town" nullable="false" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="county" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="postcode" nullable="false" remarks="" size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="country" nullable="false" remarks="" size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="address_line1_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="address_line2_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="town_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="county_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="country_in_welsh" nullable="true" remarks="" size="16" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="address_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="address_prison_idx" unique="false">
+            <column ascending="true" name="prison_id"/>
+         </index>
+      </table>
+      <table name="agency" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="agency_id" foreignKey="agency_to_agency_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_agency_address"/>
+            <child column="agency_id" foreignKey="agency_to_email_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_email_address"/>
+            <child column="agency_id" foreignKey="agency_to_phone_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="agency_type" nullable="false" remarks="" size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="agency_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="agency_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="agency_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="agency_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="agency_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <primaryKey column="agency_id" sequenceNumberInPK="1"/>
+         <index name="agency_pkey" unique="true">
+            <column ascending="true" name="agency_id"/>
+         </index>
+      </table>
+      <table name="agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('agency_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="agency_address_id" foreignKey="agency_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_agency_address"/>
+            <child column="agency_address_id" foreignKey="approved_premises_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_agency_address"/>
+            <child column="agency_address_id" foreignKey="court_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_agency_address"/>
+            <child column="agency_address_id" foreignKey="hospital_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital_to_agency_address"/>
+            <child column="agency_address_id" foreignKey="police_custody_suite_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_agency_address"/>
+            <child column="agency_address_id" foreignKey="probation_office_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_agency_address"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="address_line1" nullable="true" remarks="" size="350" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_line2" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="town" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="county" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="postcode" nullable="true" remarks="" size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="country" nullable="true" remarks="" size="16" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="agency_address_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="agency_to_agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="agency_id" foreignKey="agency_to_agency_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="agency_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
+         </column>
+         <index name="agency_to_agency_address_idx" unique="false">
+            <column ascending="true" name="agency_id"/>
+            <column ascending="true" name="agency_address_id"/>
+         </index>
+      </table>
+      <table name="agency_to_email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="agency_id" foreignKey="agency_to_email_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="agency_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
+         </column>
+         <index name="agency_to_email_address_idx" unique="false">
+            <column ascending="true" name="agency_id"/>
+            <column ascending="true" name="email_address_id"/>
+         </index>
+      </table>
+      <table name="agency_to_phone" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="agency_id" foreignKey="agency_to_phone_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="agency_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <index name="agency_to_phone_idx" unique="false">
+            <column ascending="true" name="agency_id"/>
+            <column ascending="true" name="phone_id"/>
+         </index>
+      </table>
+      <table name="agency_type" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="agency_type_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="all_agencies" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT prison.prison_id AS agency_id,&#10;    prison.name,&#10;    'PRISON'::text AS legacy_type&#10;   FROM prison&#10;UNION ALL&#10; SELECT court.court_id AS agency_id,&#10;    court.name,&#10;    'COURT'::text AS legacy_type&#10;   FROM court&#10;UNION ALL&#10; SELECT hospital.hospital_id AS agency_id,&#10;    hospital.name,&#10;        CASE&#10;            WHEN hospital.high_security THEN 'SECURE_HOSPITAL'::text&#10;            ELSE 'HOSPITAL'::text&#10;        END AS legacy_type&#10;   FROM hospital&#10;UNION ALL&#10; SELECT probation_office.probation_office_id AS agency_id,&#10;    probation_office.name,&#10;    'PROBATION_OFFICE'::text AS legacy_type&#10;   FROM probation_office&#10;UNION ALL&#10; SELECT police_custody_suite.police_custody_suite_id AS agency_id,&#10;    police_custody_suite.name,&#10;    'POLICE_CUSTODY_SUITE'::text AS legacy_type&#10;   FROM police_custody_suite&#10;UNION ALL&#10; SELECT approved_premises.approved_premises_id AS agency_id,&#10;    approved_premises.name,&#10;    'APPROVED_PREMISES'::text AS legacy_type&#10;   FROM approved_premises&#10;UNION ALL&#10; SELECT agency.agency_id,&#10;    agency.name,&#10;    agency.agency_type AS legacy_type&#10;   FROM agency;">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="legacy_type" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+      </table>
+      <table name="approved_premises" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="approved_premises_id" foreignKey="approved_premises_to_agency_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_agency_address"/>
+            <child column="approved_premises_id" foreignKey="approved_premises_to_email_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_email_address"/>
+            <child column="approved_premises_id" foreignKey="approved_premises_to_phone_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="approved_premises_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="approved_premises_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="approved_premises_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="approved_premises_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="approved_premises_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
+         <index name="approved_premise_pkey" unique="true">
+            <column ascending="true" name="approved_premises_id"/>
+         </index>
+      </table>
+      <table name="approved_premises_to_agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="approved_premises_id" foreignKey="approved_premises_to_agency_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="approved_premises_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
+         </column>
+         <index name="approved_premises_to_agency_address_idx" unique="false">
+            <column ascending="true" name="approved_premises_id"/>
+            <column ascending="true" name="agency_address_id"/>
+         </index>
+      </table>
+      <table name="approved_premises_to_email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="approved_premises_id" foreignKey="approved_premises_to_email_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="approved_premises_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
+         </column>
+         <index name="approved_premises_to_email_address_idx" unique="false">
+            <column ascending="true" name="approved_premises_id"/>
+            <column ascending="true" name="email_address_id"/>
+         </index>
+      </table>
+      <table name="approved_premises_to_phone" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="approved_premises_id" foreignKey="approved_premises_to_phone_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="approved_premises_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <index name="approved_premises_to_phone_idx" unique="false">
+            <column ascending="true" name="approved_premises_id"/>
+            <column ascending="true" name="phone_id"/>
+         </index>
+      </table>
+      <table name="area" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+            <child column="area" foreignKey="agency_area_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+            <child column="geographical_area" foreignKey="agency_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+            <child column="area" foreignKey="approved_premises_area_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+            <child column="geographical_area" foreignKey="approved_premises_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+            <child column="area" foreignKey="court_area_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+            <child column="geographical_area" foreignKey="court_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+            <child column="area" foreignKey="hospital_area_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+            <child column="geographical_area" foreignKey="hospital_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+            <child column="area" foreignKey="police_custody_suite_area_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+            <child column="geographical_area" foreignKey="police_custody_suite_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+            <child column="area" foreignKey="prison_area_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+            <child column="geographical_area" foreignKey="prison_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+            <child column="area" foreignKey="probation_office_area_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+            <child column="geographical_area" foreignKey="probation_office_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+            <child column="parent" foreignKey="area_fk" implied="false" onDeleteCascade="false" schema="public" table="subarea"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="prison_area" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="area_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="contact_details" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('contact_details_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="contact_details_id" foreignKey="fk_contact_details_email_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_email_address"/>
+            <child column="contact_details_id" foreignKey="fk_contact_details_phone_number_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_phone_number"/>
+            <child column="contact_details_id" foreignKey="fk_contact_details_web_address_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_web_address"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="fk_contact_details_to_prison" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="department_type" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="modify_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="contact_details_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="contact_details_unique_constraint" unique="true">
+            <column ascending="true" name="prison_id"/>
+            <column ascending="true" name="department_type"/>
+         </index>
+      </table>
+      <table name="contact_details_to_email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="fk_contact_details_email_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="fk_join_to_email_address" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
+         </column>
+         <primaryKey column="contact_details_id" sequenceNumberInPK="1"/>
+         <index name="contact_details_to_email_address_pkey" unique="true">
+            <column ascending="true" name="contact_details_id"/>
+         </index>
+         <index name="contact_details_email_owner_unique" unique="true">
+            <column ascending="true" name="email_address_id"/>
+         </index>
+         <index name="contact_details_to_email_address_idx" unique="false">
+            <column ascending="true" name="email_address_id"/>
+            <column ascending="true" name="contact_details_id"/>
+         </index>
+      </table>
+      <table name="contact_details_to_phone_number" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="fk_contact_details_phone_number_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_number_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="fk_join_to_phone_number" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <primaryKey column="contact_details_id" sequenceNumberInPK="1"/>
+         <index name="contact_details_to_phone_number_pkey" unique="true">
+            <column ascending="true" name="contact_details_id"/>
+         </index>
+         <index name="contact_details_phone_owner_unique" unique="true">
+            <column ascending="true" name="phone_number_id"/>
+         </index>
+         <index name="contact_details_to_phone_number_idx" unique="false">
+            <column ascending="true" name="phone_number_id"/>
+            <column ascending="true" name="contact_details_id"/>
+         </index>
+      </table>
+      <table name="contact_details_to_web_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="fk_contact_details_web_address_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="web_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="fk_join_to_web_address" implied="false" onDeleteCascade="false" schema="public" table="web_address"/>
+         </column>
+         <primaryKey column="contact_details_id" sequenceNumberInPK="1"/>
+         <index name="contact_details_to_web_address_pkey" unique="true">
+            <column ascending="true" name="contact_details_id"/>
+         </index>
+         <index name="contact_details_to_web_address_idx" unique="false">
+            <column ascending="true" name="web_address_id"/>
+            <column ascending="true" name="contact_details_id"/>
+         </index>
+         <index name="contact_details_web_owner_unique" unique="true">
+            <column ascending="true" name="web_address_id"/>
+         </index>
+      </table>
+      <table name="county_suggestions" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="county_suggestions_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="court" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="court_id" foreignKey="court_to_agency_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_agency_address"/>
+            <child column="court_id" foreignKey="court_to_email_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_email_address"/>
+            <child column="court_id" foreignKey="court_to_phone_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="court_type" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="court_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="court_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="court_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="court_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="court_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
+         <primaryKey column="court_id" sequenceNumberInPK="1"/>
+         <index name="court_pkey" unique="true">
+            <column ascending="true" name="court_id"/>
+         </index>
+      </table>
+      <table name="court_to_agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="court_id" foreignKey="court_to_agency_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="court_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
+         </column>
+         <index name="court_to_agency_address_idx" unique="false">
+            <column ascending="true" name="court_id"/>
+            <column ascending="true" name="agency_address_id"/>
+         </index>
+      </table>
+      <table name="court_to_email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="court_id" foreignKey="court_to_email_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="court_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
+         </column>
+         <index name="court_to_email_address_idx" unique="false">
+            <column ascending="true" name="court_id"/>
+            <column ascending="true" name="email_address_id"/>
+         </index>
+      </table>
+      <table name="court_to_phone" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="court_id" foreignKey="court_to_phone_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="court_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <index name="court_to_phone_idx" unique="false">
+            <column ascending="true" name="court_id"/>
+            <column ascending="true" name="phone_id"/>
+         </index>
+      </table>
+      <table name="court_type" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="court_type_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('email_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="email_address_id" foreignKey="agency_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_email_address"/>
+            <child column="email_address_id" foreignKey="approved_premises_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_email_address"/>
+            <child column="email_address_id" foreignKey="fk_join_to_email_address" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_email_address"/>
+            <child column="email_address_id" foreignKey="court_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_email_address"/>
+            <child column="email_address_id" foreignKey="police_custody_suite_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_email_address"/>
+            <child column="email_address_id" foreignKey="probation_office_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_email_address"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="email_address_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="flyway_schema_history" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="script" nullable="false" remarks="" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="checksum" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="installed_by" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="installed_on" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="execution_time" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="success" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="installed_rank" sequenceNumberInPK="1"/>
+         <index name="flyway_schema_history_pk" unique="true">
+            <column ascending="true" name="installed_rank"/>
+         </index>
+         <index name="flyway_schema_history_s_idx" unique="false">
+            <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="hospital" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="hospital_id" foreignKey="hospital_to_agency_address_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital_to_agency_address"/>
+            <child column="hospital_id" foreignKey="hospital_to_phone_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="high_security" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="hospital_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="hospital_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="hospital_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="hospital_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="hospital_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <primaryKey column="hospital_id" sequenceNumberInPK="1"/>
+         <index name="hospital_pkey" unique="true">
+            <column ascending="true" name="hospital_id"/>
+         </index>
+      </table>
+      <table name="hospital_to_agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="hospital_id" foreignKey="hospital_to_agency_address_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="hospital_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
+         </column>
+         <index name="hospital_to_agency_address_idx" unique="false">
+            <column ascending="true" name="hospital_id"/>
+            <column ascending="true" name="agency_address_id"/>
+         </index>
+      </table>
+      <table name="hospital_to_phone" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="hospital_id" foreignKey="hospital_to_phone_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="hospital_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <index name="hospital_to_phone_idx" unique="false">
+            <column ascending="true" name="hospital_id"/>
+            <column ascending="true" name="phone_id"/>
+         </index>
+      </table>
+      <table name="local_authority" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+            <child column="local_authority" foreignKey="agency_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+            <child column="local_authority" foreignKey="approved_premises_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+            <child column="local_authority" foreignKey="court_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+            <child column="local_authority" foreignKey="hospital_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+            <child column="local_authority" foreignKey="police_custody_suite_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+            <child column="local_authority" foreignKey="prison_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+            <child column="local_authority" foreignKey="probation_office_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="local_authority_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="offender_management_unit_archive" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="offender_management_unit_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="" size="256" type="varchar" typeCode="12"/>
+         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
+         <index name="offender_management_unit_pkey" unique="true">
+            <column ascending="true" name="prison_id"/>
+         </index>
+      </table>
+      <table name="operator" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('operator_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="80" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="operator_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="payroll_region" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+            <child column="payroll_region" foreignKey="agency_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+            <child column="payroll_region" foreignKey="approved_premises_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+            <child column="payroll_region" foreignKey="court_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+            <child column="payroll_region" foreignKey="hospital_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+            <child column="payroll_region" foreignKey="police_custody_suite_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+            <child column="payroll_region" foreignKey="prison_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+            <child column="payroll_region" foreignKey="probation_office_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="payroll_region_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="phone_number" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('phone_number_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="phone_id" foreignKey="agency_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_phone"/>
+            <child column="phone_id" foreignKey="approved_premises_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_phone"/>
+            <child column="phone_number_id" foreignKey="fk_join_to_phone_number" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_phone_number"/>
+            <child column="phone_id" foreignKey="court_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_phone"/>
+            <child column="phone_id" foreignKey="hospital_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital_to_phone"/>
+            <child column="phone_id" foreignKey="police_custody_suite_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_phone"/>
+            <child column="phone_id" foreignKey="probation_office_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="phone_number_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="police_custody_suite" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="police_custody_suite_id" foreignKey="police_custody_suite_to_agency_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_agency_address"/>
+            <child column="police_custody_suite_id" foreignKey="police_custody_suite_to_email_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_email_address"/>
+            <child column="police_custody_suite_id" foreignKey="police_custody_suite_to_phone_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="police_custody_suite_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="police_custody_suite_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="police_custody_suite_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="police_custody_suite_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="police_custody_suite_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
+         <index name="police_custody_suite_pkey" unique="true">
+            <column ascending="true" name="police_custody_suite_id"/>
+         </index>
+      </table>
+      <table name="police_custody_suite_to_agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="police_custody_suite_id" foreignKey="police_custody_suite_to_agency_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="police_custody_suite_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
+         </column>
+         <index name="police_custody_suite_to_agency_address_idx" unique="false">
+            <column ascending="true" name="police_custody_suite_id"/>
+            <column ascending="true" name="agency_address_id"/>
+         </index>
+      </table>
+      <table name="police_custody_suite_to_email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="police_custody_suite_id" foreignKey="police_custody_suite_to_email_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="police_custody_suite_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
+         </column>
+         <index name="police_custody_suite_to_email_address_idx" unique="false">
+            <column ascending="true" name="police_custody_suite_id"/>
+            <column ascending="true" name="email_address_id"/>
+         </index>
+      </table>
+      <table name="police_custody_suite_to_phone" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="police_custody_suite_id" foreignKey="police_custody_suite_to_phone_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="police_custody_suite_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <index name="police_custody_suite_to_phone_idx" unique="false">
+            <column ascending="true" name="police_custody_suite_id"/>
+            <column ascending="true" name="phone_id"/>
+         </index>
+      </table>
+      <table name="prison" numRows="173" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="prison_id" foreignKey="address_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="address"/>
+            <child column="prison_id" foreignKey="fk_contact_details_to_prison" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
+            <child column="prison_id" foreignKey="offender_management_unit_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="offender_management_unit_archive"/>
+            <child column="prison_id" foreignKey="prison_category_prison_type_fk" implied="false" onDeleteCascade="false" schema="public" table="prison_category"/>
+            <child column="prison_id" foreignKey="prison_operator_prison_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="prison_operator"/>
+            <child column="prison_id" foreignKey="prison_type_prison_fk" implied="false" onDeleteCascade="true" schema="public" table="prison_type"/>
+            <child column="prison_id" foreignKey="videolink_conferencing_centre_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="videolink_conferencing_centre_archive"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="" size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="4" name="male" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="female" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="contracted" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="8" name="lthse" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="gp_practice_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="prison_name_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="prison_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="prison_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="prison_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="prison_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="prison_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
+         <index name="prison_pkey" unique="true">
+            <column ascending="true" name="prison_id"/>
+         </index>
+         <index name="prison_gp_practice_code_idx" unique="false">
+            <column ascending="true" name="gp_practice_code"/>
+         </index>
+      </table>
+      <table name="prison_category" numRows="81" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="category" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="2147483647" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="prison_category_prison_type_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+         </column>
+         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
+         <primaryKey column="category" sequenceNumberInPK="2"/>
+         <index name="prison_category_pkey" unique="true">
+            <column ascending="true" name="prison_id"/>
+            <column ascending="true" name="category"/>
+         </index>
+         <index name="prison_category_prison_id" unique="false">
+            <column ascending="true" name="prison_id"/>
+         </index>
+      </table>
+      <table name="prison_operator" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="prison_operator_prison_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operator_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
+         <primaryKey column="operator_id" sequenceNumberInPK="2"/>
+         <index name="prison_operator_pkey" unique="true">
+            <column ascending="true" name="prison_id"/>
+            <column ascending="true" name="operator_id"/>
+         </index>
+      </table>
+      <table name="prison_type" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('prison_type_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="prison_type_prison_fk" implied="false" onDeleteCascade="true" schema="public" table="prison"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="type" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="id" foreignKey="prison_type_type_fk" implied="false" onDeleteCascade="false" schema="public" table="type"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="prison_type_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="prison_type_prison_idx" unique="false">
+            <column ascending="true" name="prison_id"/>
+         </index>
+      </table>
+      <table name="probation_office" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="probation_office_id" foreignKey="probation_office_to_agency_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_agency_address"/>
+            <child column="probation_office_id" foreignKey="probation_office_to_email_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_email_address"/>
+            <child column="probation_office_id" foreignKey="probation_office_to_phone_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_phone"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="probation_office_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="probation_office_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="probation_office_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="probation_office_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="subarea" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="probation_office_subarea_fk" implied="false" onDeleteCascade="false" schema="public" table="subarea"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="contact" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="probation_office_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
+         </column>
+         <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
+         <index name="probation_office_pkey" unique="true">
+            <column ascending="true" name="probation_office_id"/>
+         </index>
+      </table>
+      <table name="probation_office_to_agency_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="probation_office_id" foreignKey="probation_office_to_agency_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="probation_office_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
+         </column>
+         <index name="probation_office_to_agency_address_idx" unique="false">
+            <column ascending="true" name="probation_office_id"/>
+            <column ascending="true" name="agency_address_id"/>
+         </index>
+      </table>
+      <table name="probation_office_to_email_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="probation_office_id" foreignKey="probation_office_to_email_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="probation_office_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
+         </column>
+         <index name="probation_office_to_email_address_idx" unique="false">
+            <column ascending="true" name="probation_office_id"/>
+            <column ascending="true" name="email_address_id"/>
+         </index>
+      </table>
+      <table name="probation_office_to_phone" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="probation_office_id" foreignKey="probation_office_to_phone_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="probation_office_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
+         </column>
+         <index name="probation_office_to_phone_idx" unique="false">
+            <column ascending="true" name="probation_office_id"/>
+            <column ascending="true" name="phone_id"/>
+         </index>
+      </table>
+      <table name="region" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+            <child column="region" foreignKey="agency_region_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
+            <child column="region" foreignKey="approved_premises_region_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
+            <child column="parent" foreignKey="region_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+            <child column="region" foreignKey="court_region_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
+            <child column="region" foreignKey="hospital_region_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
+            <child column="region" foreignKey="police_custody_suite_region_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
+            <child column="region" foreignKey="prison_region_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+            <child column="region" foreignKey="probation_office_region_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="region_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="subarea" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+            <child column="subarea" foreignKey="probation_office_subarea_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+            <parent column="code" foreignKey="area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="subarea_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="town_suggestions" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+         <primaryKey column="code" sequenceNumberInPK="1"/>
+         <index name="town_suggestions_pkey" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+      </table>
+      <table name="type" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="type" foreignKey="prison_type_type_fk" implied="false" onDeleteCascade="false" schema="public" table="prison_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="80" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="type_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="videolink_conferencing_centre_archive" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="prison_id" foreignKey="videolink_conferencing_centre_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="" size="256" type="varchar" typeCode="12"/>
+         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
+         <index name="videolink_conferencing_centre_pkey" unique="true">
+            <column ascending="true" name="prison_id"/>
+         </index>
+      </table>
+      <table name="web_address" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('web_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="web_address_id" foreignKey="fk_join_to_web_address" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_web_address"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="web_address_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+   </tables>
+</database>
