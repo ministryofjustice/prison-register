@@ -55,13 +55,14 @@ jobs:
       build-artifact-name: 'build-results'
   schema-spy:
     name: Publish the data dictionary
-    if: github.ref == 'refs/heads/main'
     needs:
       - kotlin_validate
     # top-level permissions grant contents: read; the reusable workflow needs write to publish to gh-pages
     permissions:
       contents: write
     uses: ./.github/workflows/schema-spy.yml
+    with:
+      publish: false
     secrets: inherit
   test-build:
     name: Build docker image from hmpps-github-actions without publishing
