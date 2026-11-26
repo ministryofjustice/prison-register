@@ -94,5 +94,13 @@ tasks {
 
   test {
     maxHeapSize = "2048m"
+
+    // Builds the database for the data dictionary (see .github/workflows/schema-spy.yml). Not part of
+    // the normal test run.
+    if (project.hasProperty("init-db")) {
+      include("**/InitialiseDatabase.class")
+    } else {
+      exclude("**/InitialiseDatabase.class")
+    }
   }
 }
