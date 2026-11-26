@@ -78,7 +78,7 @@
                         <div class="col-md-12">
                             <div class="callout callout-info">
                                 <h4>SchemaSpy Analysis of prison-register.public</h4>
-                                <p>Generated on Thu Nov 26 12:34 UTC 2026</p>
+                                <p>Generated on Thu Nov 26 13:59 UTC 2026</p>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                                 <span class="info-box-icon bg-aqua"><i class="fa fa-table"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">TABLES</span>
-                                    <span class="info-box-number">50</span>
+                                    <span class="info-box-number">48</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -118,7 +118,7 @@
                                 <span class="info-box-icon bg-green"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">COLUMNS</span>
-                                    <span class="info-box-number">221</span>
+                                    <span class="info-box-number">217</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -130,7 +130,7 @@
                                 <span class="info-box-icon bg-yellow"><i class="ion ion-key"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Constraints</span>
-                                    <span class="info-box-number">87</span>
+                                    <span class="info-box-number">85</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -212,7 +212,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each agency to its phone numbers: one row per agency and phone number. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/local_authority.html">local_authority</a></td>
@@ -221,7 +221,25 @@
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Local authorities from NOMIS.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/agency_to_agency_address.html">agency_to_agency_address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each agency to its addresses: one row per agency and address. The primary key stops the same link being stored twice.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/approved_premises_to_phone.html">approved_premises_to_phone</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each approved premises to its phone numbers: one row per approved premises and phone number. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/flyway_schema_history.html">flyway_schema_history</a></td>
@@ -233,247 +251,13 @@
                                         <td class="comment detail" style="display: table-cell;"></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/town_suggestions.html">town_suggestions</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/area.html">area</a></td>
-                                        <td class="detail" align="right">15</td>
-                                        <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">5</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/court_to_phone.html">court_to_phone</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/email_address.html">email_address</a></td>
-                                        <td class="detail" align="right">6</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/probation_office_to_email_address.html">probation_office_to_email_address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/contact_details_to_web_address.html">contact_details_to_web_address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/offender_management_unit_archive.html">offender_management_unit_archive</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/probation_office.html">probation_office</a></td>
-                                        <td class="detail" align="right">3</td>
-                                        <td class="detail" align="right">6</td>
-                                        <td class="detail" align="right">14</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/court_type.html">court_type</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">3</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/hospital_to_agency_address.html">hospital_to_agency_address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/type.html">type</a></td>
-                                        <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/prison_category.html">prison_category</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">81</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/prison.html">prison</a></td>
-                                        <td class="detail" align="right">8</td>
-                                        <td class="detail" align="right">5</td>
-                                        <td class="detail" align="right">17</td>
-                                        <td class="detail" align="right">173</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/police_custody_suite_to_phone.html">police_custody_suite_to_phone</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/region.html">region</a></td>
-                                        <td class="detail" align="right">8</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">3</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/agency_to_email_address.html">agency_to_email_address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/agency_type.html">agency_type</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">3</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/hospital.html">hospital</a></td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">5</td>
-                                        <td class="detail" align="right">12</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/address.html">address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">13</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/agency_address.html">agency_address</a></td>
-                                        <td class="detail" align="right">6</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">7</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/police_custody_suite_to_email_address.html">police_custody_suite_to_email_address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/phone_number.html">phone_number</a></td>
-                                        <td class="detail" align="right">7</td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/court.html">court</a></td>
-                                        <td class="detail" align="right">3</td>
-                                        <td class="detail" align="right">5</td>
-                                        <td class="detail" align="right">13</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/approved_premises.html">approved_premises</a></td>
-                                        <td class="detail" align="right">3</td>
-                                        <td class="detail" align="right">5</td>
-                                        <td class="detail" align="right">13</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/agency_to_agency_address.html">agency_to_agency_address</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/approved_premises_to_phone.html">approved_premises_to_phone</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/probation_office_to_phone.html">probation_office_to_phone</a></td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each probation office to its phone numbers: one row per probation office and phone number. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/police_custody_suite_to_agency_address.html">police_custody_suite_to_agency_address</a></td>
@@ -482,7 +266,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each police custody suite to its addresses: one row per police custody suite and address. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/court_to_agency_address.html">court_to_agency_address</a></td>
@@ -491,7 +275,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each court to its addresses: one row per court and address. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/approved_premises_to_email_address.html">approved_premises_to_email_address</a></td>
@@ -500,7 +284,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each approved premises to its email addresses: one row per approved premises and email address. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/county_suggestions.html">county_suggestions</a></td>
@@ -509,7 +293,16 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>County names offered as suggestions when an address is typed in the registers front end.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/town_suggestions.html">town_suggestions</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Town names offered as suggestions when an address is typed in the registers front end.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/web_address.html">web_address</a></td>
@@ -518,7 +311,16 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Website addresses of prison departments.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/area.html">area</a></td>
+                                        <td class="detail" align="right">15</td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/hospital_to_phone.html">hospital_to_phone</a></td>
@@ -527,16 +329,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/videolink_conferencing_centre_archive.html">videolink_conferencing_centre_archive</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each hospital to its phone numbers: one row per hospital and phone number. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/contact_details_to_phone_number.html">contact_details_to_phone_number</a></td>
@@ -545,7 +338,34 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links a prison department to its phone number. A department has at most one.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/court_to_phone.html">court_to_phone</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each court to its phone numbers: one row per court and phone number. The primary key stops the same link being stored twice.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/email_address.html">email_address</a></td>
+                                        <td class="detail" align="right">6</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Email addresses of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same address can appear more than once.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/probation_office_to_email_address.html">probation_office_to_email_address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each probation office to its email addresses: one row per probation office and email address. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/payroll_region.html">payroll_region</a></td>
@@ -554,7 +374,25 @@
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Prisoner payroll regions from NOMIS.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/contact_details_to_web_address.html">contact_details_to_web_address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links a prison department to its website. A department has at most one.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/probation_office.html">probation_office</a></td>
+                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">6</td>
+                                        <td class="detail" align="right">14</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/subarea.html">subarea</a></td>
@@ -563,7 +401,52 @@
                                         <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Probation sub-areas from NOMIS, each within an area. Used by probation offices.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/court_type.html">court_type</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Types of court.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/hospital_to_agency_address.html">hospital_to_agency_address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each hospital to its addresses: one row per hospital and address. The primary key stops the same link being stored twice.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/type.html">type</a></td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Prison types and their descriptions: HMP, YOI, IRC, STC and YCS.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/prison_category.html">prison_category</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">81</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Security categories each prison holds: one row per prison and category.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/prison.html">prison</a></td>
+                                        <td class="detail" align="right">6</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">17</td>
+                                        <td class="detail" align="right">173</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/prison_operator.html">prison_operator</a></td>
@@ -572,7 +455,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each prison to its operator. A prison normally has one row, and the API treats the first one as the current operator.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/probation_office_to_agency_address.html">probation_office_to_agency_address</a></td>
@@ -581,7 +464,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each probation office to its addresses: one row per probation office and address. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/contact_details.html">contact_details</a></td>
@@ -590,7 +473,7 @@
                                         <td class="detail" align="right">5</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/prison_type.html">prison_type</a></td>
@@ -599,7 +482,16 @@
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Types of each prison: one row per prison and type. A prison can have more than one, for example HMP and YOI.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/police_custody_suite_to_phone.html">police_custody_suite_to_phone</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each police custody suite to its phone numbers: one row per police custody suite and phone number. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/contact_details_to_email_address.html">contact_details_to_email_address</a></td>
@@ -608,7 +500,25 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links a prison department to its email address. A department has at most one.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/region.html">region</a></td>
+                                        <td class="detail" align="right">8</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Regions from NOMIS, used to group prisons and other agencies.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/agency_to_email_address.html">agency_to_email_address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each agency to its email addresses: one row per agency and email address. The primary key stops the same link being stored twice.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/police_custody_suite.html">police_custody_suite</a></td>
@@ -617,7 +527,7 @@
                                         <td class="detail" align="right">11</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/agency.html">agency</a></td>
@@ -626,7 +536,7 @@
                                         <td class="detail" align="right">14</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children&rsquo;s homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/court_to_email_address.html">court_to_email_address</a></td>
@@ -635,7 +545,16 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each court to its email addresses: one row per court and email address. The primary key stops the same link being stored twice.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/agency_type.html">agency_type</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>NOMIS agency type codes and their descriptions, for example APPR Approved Premises. Reference only: the API does not read this table, and agency.agency_type holds the register&rsquo;s type names rather than these codes.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/operator.html">operator</a></td>
@@ -644,7 +563,7 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Who runs prisons: PSP for the public sector, or the name of a private provider.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/approved_premises_to_agency_address.html">approved_premises_to_agency_address</a></td>
@@ -653,7 +572,70 @@
                                         <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each approved premises to its addresses: one row per approved premises and address. The primary key stops the same link being stored twice.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/hospital.html">hospital</a></td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">12</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/address.html">address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">13</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/agency_address.html">agency_address</a></td>
+                                        <td class="detail" align="right">6</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">7</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/police_custody_suite_to_email_address.html">police_custody_suite_to_email_address</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Links each police custody suite to its email addresses: one row per police custody suite and email address. The primary key stops the same link being stored twice.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/phone_number.html">phone_number</a></td>
+                                        <td class="detail" align="right">7</td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Phone numbers of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same number can appear more than once.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/court.html">court</a></td>
+                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">13</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/approved_premises.html">approved_premises</a></td>
+                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">13</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/all_agencies.html">all_agencies</a></td>
@@ -662,7 +644,7 @@
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">View</td>
-                                        <td class="comment detail" style="display: table-cell;"></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>View of every agency id in the register, of any type, with its name and type. The API uses it to check that a new agency id is not already taken.</p></td>
                                     </tr>
                             </table>
                         </div>

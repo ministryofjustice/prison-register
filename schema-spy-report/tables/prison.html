@@ -74,6 +74,19 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>prison</h1><p><span id="recordNumber">173</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.</p>
+                        </div><!-- /.box-body -->
+                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -128,11 +141,6 @@
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
-                                                <td title="offender_management_unit_archive.prison_id references prison.prison_id via offender_management_unit_prison_fk"><a href='offender_management_unit_archive.html'>offender_management_unit_archive</a><span class='relatedKey'>.prison_id</span></td>
-                                                <td class="constraint detail">offender_management_unit_prison_fk</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
                                                 <td title="prison_category.prison_id references prison.prison_id via prison_category_prison_type_fk"><a href='prison_category.html'>prison_category</a><span class='relatedKey'>.prison_id</span></td>
                                                 <td class="constraint detail">prison_category_prison_type_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -147,18 +155,13 @@
                                                 <td class="constraint detail">prison_type_prison_fk</td>
                                                 <td class="constraint detail"><span title='Cascade on delete:&#10;Deletion of parent deletes child'>C</span></td>
                                             </tr>
-                                            <tr>
-                                                <td title="videolink_conferencing_centre_archive.prison_id references prison.prison_id via videolink_conferencing_centre_prison_fk"><a href='videolink_conferencing_centre_archive.html'>videolink_conferencing_centre_archive</a><span class='relatedKey'>.prison_id</span></td>
-                                                <td class="constraint detail">videolink_conferencing_centre_prison_fk</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Id of the prison: the NOMIS agency location id, for example MDI. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="name">name</span></td>
@@ -175,7 +178,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Name of the prison as DPS shows it, for example Moorland (HMP &amp; YOI). Standardised in V1_22 and deliberately different from the NOMIS description. Printed on Send Legal Mail envelopes. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="active">active</span></td>
@@ -192,7 +195,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Whether the prison is open. Closed prisons are kept so that historical records still resolve. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="description">description</span></td>
@@ -209,7 +212,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The NOMIS description of the prison (AGENCY_LOCATIONS.DESCRIPTION), for example HMP &amp; YOI MOORLAND. Kept up to date by the sync from NOMIS. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="male">male</span></td>
@@ -226,7 +229,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Whether the prison holds men. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="female">female</span></td>
@@ -243,7 +246,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Whether the prison holds women. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="inactive_date">inactive_date</span></td>
@@ -260,7 +263,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Date the prison was closed, if it has been. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="contracted">contracted</span></td>
@@ -277,7 +280,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Whether a private provider runs the prison under contract, rather than the public sector (PSP). <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="lthse">lthse</span></td>
@@ -294,7 +297,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Whether the prison is part of the long-term high security estate. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="gp_practice_code">gp_practice_code</span></td>
@@ -311,7 +314,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>NHS GP practice code for the prison&rsquo;s healthcare. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="prison_name_in_welsh">prison_name_in_welsh</span></td>
@@ -328,7 +331,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Name of the prison in Welsh, for prisons in Wales, for example Carchar Brynbuga. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="area">area</span></td>
@@ -350,7 +353,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>NOMIS area of the prison (AGENCY_LOCATIONS.AREA_CODE). References area.code. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="geographical_area">geographical_area</span></td>
@@ -372,7 +375,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Geographical area of the prison (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="region">region</span></td>
@@ -394,7 +397,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Region of the prison (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE), for example YOHUM. References region.code. Use this for regional reporting in place of the NOMIS AREAS table. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="cjit_code">cjit_code</span></td>
@@ -411,7 +414,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Criminal Justice Integrated Team (CJIT) code from NOMIS. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="payroll_region">payroll_region</span></td>
@@ -433,7 +436,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Prisoner payroll region from NOMIS. References payroll_region.code. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="local_authority">local_authority</span></td>
@@ -455,7 +458,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Local authority the prison is in, from NOMIS. References local_authority.code. <a href="./../null">Sensitivity: NONE</a></p></td>
                                 </tr>
                                 </tbody>
                             </table>

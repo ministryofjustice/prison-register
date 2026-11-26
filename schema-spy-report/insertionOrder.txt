@@ -17,9 +17,7 @@ police_custody_suite
 probation_office
 hospital
 address
-offender_management_unit_archive
 prison_category
-videolink_conferencing_centre_archive
 agency_to_agency_address
 agency_to_email_address
 agency_to_phone

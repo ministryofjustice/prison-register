@@ -26,9 +26,7 @@ approved_premises_to_agency_address
 agency_to_phone
 agency_to_email_address
 agency_to_agency_address
-videolink_conferencing_centre_archive
 prison_category
-offender_management_unit_archive
 address
 hospital
 probation_office

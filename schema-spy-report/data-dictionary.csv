@@ -1,212 +1,208 @@
 table_name,object_type,table_description,column_name,ordinal_position,data_type,is_nullable,column_default,column_description,sensitivity,is_primary_key,foreign_key_references
-address,TABLE,,id,1,integer,f,nextval('address_id_seq'::regclass),,,Y,
-address,TABLE,,prison_id,2,character varying(6),f,,,,N,prison
-address,TABLE,,address_line1,3,character varying(80),t,,,,N,
-address,TABLE,,address_line2,4,character varying(80),t,,,,N,
-address,TABLE,,town,5,character varying(80),f,,,,N,
-address,TABLE,,county,6,character varying(80),t,,,,N,
-address,TABLE,,postcode,7,character varying(8),f,,,,N,
-address,TABLE,,country,8,character varying(16),f,,,,N,
-address,TABLE,,address_line1_in_welsh,9,character varying(80),t,,,,N,
-address,TABLE,,address_line2_in_welsh,10,character varying(80),t,,,,N,
-address,TABLE,,town_in_welsh,11,character varying(80),t,,,,N,
-address,TABLE,,county_in_welsh,12,character varying(80),t,,,,N,
-address,TABLE,,country_in_welsh,13,character varying(16),t,,,,N,
-agency,TABLE,,agency_id,1,character varying(6),f,,,,Y,
-agency,TABLE,,name,2,character varying(40),f,,,,N,
-agency,TABLE,,description,3,character varying(3000),t,,,,N,
-agency,TABLE,,contact,4,character varying(40),t,,,,N,
-agency,TABLE,,active,5,boolean,f,,,,N,
-agency,TABLE,,accessible_access,6,character varying(20),t,,,,N,
-agency,TABLE,,agency_type,7,character varying(30),f,,,,N,
-agency,TABLE,,inactive_date,8,date,t,,,,N,
-agency,TABLE,,area,9,character varying(12),t,,,,N,area
-agency,TABLE,,geographical_area,10,character varying(12),t,,,,N,area
-agency,TABLE,,region,11,character varying(12),t,,,,N,region
-agency,TABLE,,cjit_code,12,character varying(12),t,,,,N,
-agency,TABLE,,payroll_region,13,character varying(12),t,,,,N,payroll_region
-agency,TABLE,,local_authority,14,character varying(12),t,,,,N,local_authority
-agency_address,TABLE,,id,1,integer,f,nextval('agency_address_id_seq'::regclass),,,Y,
-agency_address,TABLE,,address_line1,2,character varying(350),t,,,,N,
-agency_address,TABLE,,address_line2,3,character varying(80),t,,,,N,
-agency_address,TABLE,,town,4,character varying(80),t,,,,N,
-agency_address,TABLE,,county,5,character varying(80),t,,,,N,
-agency_address,TABLE,,postcode,6,character varying(8),t,,,,N,
-agency_address,TABLE,,country,7,character varying(16),t,,,,N,
-agency_to_agency_address,TABLE,,agency_id,1,character varying(6),f,,,,Y,agency
-agency_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
-agency_to_email_address,TABLE,,agency_id,1,character varying(6),f,,,,Y,agency
-agency_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
-agency_to_phone,TABLE,,agency_id,1,character varying(6),f,,,,Y,agency
-agency_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
-agency_type,TABLE,,code,1,character varying(12),f,,,,Y,
-agency_type,TABLE,,description,2,character varying(40),f,,,,N,
-agency_type,TABLE,,active,3,boolean,f,,,,N,
-all_agencies,VIEW,,agency_id,1,character varying(6),t,,,,N,
-all_agencies,VIEW,,name,2,character varying(40),t,,,,N,
-all_agencies,VIEW,,legacy_type,3,text,t,,,,N,
-approved_premises,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,
-approved_premises,TABLE,,name,2,character varying(40),f,,,,N,
-approved_premises,TABLE,,description,3,character varying(3000),t,,,,N,
-approved_premises,TABLE,,contact,4,character varying(40),t,,,,N,
-approved_premises,TABLE,,active,5,boolean,f,,,,N,
-approved_premises,TABLE,,accessible_access,6,character varying(20),t,,,,N,
-approved_premises,TABLE,,inactive_date,7,date,t,,,,N,
-approved_premises,TABLE,,area,8,character varying(12),t,,,,N,area
-approved_premises,TABLE,,geographical_area,9,character varying(12),t,,,,N,area
-approved_premises,TABLE,,region,10,character varying(12),t,,,,N,region
-approved_premises,TABLE,,cjit_code,11,character varying(12),t,,,,N,
-approved_premises,TABLE,,local_authority,12,character varying(12),t,,,,N,local_authority
-approved_premises,TABLE,,payroll_region,13,character varying(12),t,,,,N,payroll_region
-approved_premises_to_agency_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,approved_premises
-approved_premises_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
-approved_premises_to_email_address,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,approved_premises
-approved_premises_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
-approved_premises_to_phone,TABLE,,approved_premises_id,1,character varying(6),f,,,,Y,approved_premises
-approved_premises_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
-area,TABLE,,code,1,character varying(12),f,,,,Y,
-area,TABLE,,parent,2,character varying(12),t,,,,N,region
-area,TABLE,,description,3,character varying(40),f,,,,N,
-area,TABLE,,prison_area,4,boolean,f,,,,N,
-area,TABLE,,active,5,boolean,f,,,,N,
-contact_details,TABLE,,id,1,integer,f,nextval('contact_details_id_seq'::regclass),,,Y,
-contact_details,TABLE,,prison_id,2,character varying(6),f,,,,N,prison
-contact_details,TABLE,,department_type,3,character varying(40),f,,,,N,
-contact_details,TABLE,,create_timestamp,4,timestamp without time zone,t,CURRENT_TIMESTAMP,,,N,
-contact_details,TABLE,,modify_timestamp,5,timestamp without time zone,t,CURRENT_TIMESTAMP,,,N,
-contact_details_to_email_address,TABLE,,contact_details_id,1,integer,f,,,,Y,contact_details
-contact_details_to_email_address,TABLE,,email_address_id,2,integer,f,,,,N,email_address
-contact_details_to_phone_number,TABLE,,contact_details_id,1,integer,f,,,,Y,contact_details
-contact_details_to_phone_number,TABLE,,phone_number_id,2,integer,f,,,,N,phone_number
-contact_details_to_web_address,TABLE,,contact_details_id,1,integer,f,,,,Y,contact_details
-contact_details_to_web_address,TABLE,,web_address_id,2,integer,f,,,,N,web_address
-county_suggestions,TABLE,,code,1,character varying(12),f,,,,Y,
-county_suggestions,TABLE,,description,2,character varying(40),f,,,,N,
-court,TABLE,,court_id,1,character varying(6),f,,,,Y,
-court,TABLE,,name,2,character varying(40),f,,,,N,
-court,TABLE,,description,3,character varying(3000),t,,,,N,
-court,TABLE,,active,4,boolean,f,,,,N,
-court,TABLE,,inactive_date,5,date,t,,,,N,
-court,TABLE,,court_type,6,character varying(12),f,,,,N,
-court,TABLE,,area,7,character varying(12),t,,,,N,area
-court,TABLE,,region,8,character varying(12),t,,,,N,region
-court,TABLE,,cjit_code,9,character varying(12),t,,,,N,
-court,TABLE,,geographical_area,10,character varying(12),t,,,,N,area
-court,TABLE,,local_authority,11,character varying(12),t,,,,N,local_authority
-court,TABLE,,payroll_region,12,character varying(12),t,,,,N,payroll_region
-court,TABLE,,accessible_access,13,character varying(20),t,,,,N,
-court_to_agency_address,TABLE,,court_id,1,character varying(6),f,,,,Y,court
-court_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
-court_to_email_address,TABLE,,court_id,1,character varying(6),f,,,,Y,court
-court_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
-court_to_phone,TABLE,,court_id,1,character varying(6),f,,,,Y,court
-court_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
-court_type,TABLE,,code,1,character varying(12),f,,,,Y,
-court_type,TABLE,,description,2,character varying(40),f,,,,N,
-court_type,TABLE,,active,3,boolean,f,,,,N,
-email_address,TABLE,,id,1,integer,f,nextval('email_address_id_seq'::regclass),,,Y,
-email_address,TABLE,,value,2,character varying(100),f,,,,N,
-hospital,TABLE,,hospital_id,1,character varying(6),f,,,,Y,
-hospital,TABLE,,name,2,character varying(40),f,,,,N,
-hospital,TABLE,,description,3,character varying(3000),t,,,,N,
-hospital,TABLE,,active,4,boolean,f,,,,N,
-hospital,TABLE,,high_security,5,boolean,f,,,,N,
-hospital,TABLE,,inactive_date,6,date,t,,,,N,
-hospital,TABLE,,area,7,character varying(12),t,,,,N,area
-hospital,TABLE,,geographical_area,8,character varying(12),t,,,,N,area
-hospital,TABLE,,region,9,character varying(12),t,,,,N,region
-hospital,TABLE,,payroll_region,10,character varying(12),t,,,,N,payroll_region
-hospital,TABLE,,cjit_code,11,character varying(12),t,,,,N,
-hospital,TABLE,,local_authority,12,character varying(12),t,,,,N,local_authority
-hospital_to_agency_address,TABLE,,hospital_id,1,character varying(6),f,,,,Y,hospital
-hospital_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
-hospital_to_phone,TABLE,,hospital_id,1,character varying(6),f,,,,Y,hospital
-hospital_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
-local_authority,TABLE,,code,1,character varying(12),f,,,,Y,
-local_authority,TABLE,,description,2,character varying(40),f,,,,N,
-local_authority,TABLE,,active,3,boolean,f,,,,N,
-offender_management_unit_archive,TABLE,,prison_id,1,character varying(6),f,,,,Y,prison
-offender_management_unit_archive,TABLE,,email_address,2,character varying(256),f,,,,N,
-operator,TABLE,,id,1,integer,f,nextval('operator_id_seq'::regclass),,,Y,
-operator,TABLE,,name,2,character varying(80),f,,,,N,
-payroll_region,TABLE,,code,1,character varying(12),f,,,,Y,
-payroll_region,TABLE,,description,2,character varying(40),f,,,,N,
-payroll_region,TABLE,,active,3,boolean,f,,,,N,
-phone_number,TABLE,,id,1,integer,f,nextval('phone_number_id_seq'::regclass),,,Y,
-phone_number,TABLE,,value,2,character varying(100),f,,,,N,
-police_custody_suite,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,
-police_custody_suite,TABLE,,name,2,character varying(40),f,,,,N,
-police_custody_suite,TABLE,,description,3,character varying(3000),t,,,,N,
-police_custody_suite,TABLE,,active,4,boolean,f,,,,N,
-police_custody_suite,TABLE,,inactive_date,5,date,t,,,,N,
-police_custody_suite,TABLE,,area,6,character varying(12),t,,,,N,area
-police_custody_suite,TABLE,,geographical_area,7,character varying(12),t,,,,N,area
-police_custody_suite,TABLE,,region,8,character varying(12),t,,,,N,region
-police_custody_suite,TABLE,,cjit_code,9,character varying(12),t,,,,N,
-police_custody_suite,TABLE,,local_authority,10,character varying(12),t,,,,N,local_authority
-police_custody_suite,TABLE,,payroll_region,11,character varying(12),t,,,,N,payroll_region
-police_custody_suite_to_agency_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,police_custody_suite
-police_custody_suite_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
-police_custody_suite_to_email_address,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,police_custody_suite
-police_custody_suite_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
-police_custody_suite_to_phone,TABLE,,police_custody_suite_id,1,character varying(6),f,,,,Y,police_custody_suite
-police_custody_suite_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
-prison,TABLE,,prison_id,1,character varying(6),f,,,,Y,
-prison,TABLE,,name,2,character varying(40),f,,,,N,
-prison,TABLE,,active,3,boolean,f,,,,N,
-prison,TABLE,,description,4,character varying(256),t,,,,N,
-prison,TABLE,,male,5,boolean,f,false,,,N,
-prison,TABLE,,female,6,boolean,f,false,,,N,
-prison,TABLE,,inactive_date,7,date,t,,,,N,
-prison,TABLE,,contracted,8,boolean,f,false,,,N,
-prison,TABLE,,lthse,9,boolean,f,false,,,N,
-prison,TABLE,,gp_practice_code,10,character varying(6),t,,,,N,
-prison,TABLE,,prison_name_in_welsh,11,character varying(80),t,,,,N,
-prison,TABLE,,area,12,character varying(12),t,,,,N,area
-prison,TABLE,,geographical_area,13,character varying(12),t,,,,N,area
-prison,TABLE,,region,14,character varying(12),t,,,,N,region
-prison,TABLE,,cjit_code,15,character varying(12),t,,,,N,
-prison,TABLE,,payroll_region,16,character varying(12),t,,,,N,payroll_region
-prison,TABLE,,local_authority,17,character varying(12),t,,,,N,local_authority
-prison_category,TABLE,,category,1,text,f,,,,Y,
-prison_category,TABLE,,prison_id,2,character varying,f,,,,Y,prison
-prison_operator,TABLE,,prison_id,1,character varying(6),f,,,,Y,prison
-prison_operator,TABLE,,operator_id,2,integer,f,,,,Y,
-prison_type,TABLE,,id,1,integer,f,nextval('prison_type_id_seq'::regclass),,,Y,
-prison_type,TABLE,,prison_id,2,character varying(6),f,,,,N,prison
-prison_type,TABLE,,type,3,character varying(6),f,,,,N,type
-probation_office,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,
-probation_office,TABLE,,name,2,character varying(40),f,,,,N,
-probation_office,TABLE,,description,3,character varying(3000),t,,,,N,
-probation_office,TABLE,,active,4,boolean,f,,,,N,
-probation_office,TABLE,,accessible_access,5,character varying(20),t,,,,N,
-probation_office,TABLE,,inactive_date,6,date,t,,,,N,
-probation_office,TABLE,,area,7,character varying(12),t,,,,N,area
-probation_office,TABLE,,geographical_area,8,character varying(12),t,,,,N,area
-probation_office,TABLE,,region,9,character varying(12),t,,,,N,region
-probation_office,TABLE,,cjit_code,10,character varying(12),t,,,,N,
-probation_office,TABLE,,local_authority,11,character varying(12),t,,,,N,local_authority
-probation_office,TABLE,,subarea,12,character varying(12),t,,,,N,subarea
-probation_office,TABLE,,contact,13,character varying(40),t,,,,N,
-probation_office,TABLE,,payroll_region,14,character varying(12),t,,,,N,payroll_region
-probation_office_to_agency_address,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,probation_office
-probation_office_to_agency_address,TABLE,,agency_address_id,2,integer,f,,,,Y,agency_address
-probation_office_to_email_address,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,probation_office
-probation_office_to_email_address,TABLE,,email_address_id,2,integer,f,,,,Y,email_address
-probation_office_to_phone,TABLE,,probation_office_id,1,character varying(6),f,,,,Y,probation_office
-probation_office_to_phone,TABLE,,phone_id,2,integer,f,,,,Y,phone_number
-region,TABLE,,code,1,character varying(12),f,,,,Y,
-region,TABLE,,description,2,character varying(40),f,,,,N,
-region,TABLE,,active,3,boolean,f,,,,N,
-subarea,TABLE,,code,1,character varying(12),f,,,,Y,
-subarea,TABLE,,parent,2,character varying(12),t,,,,N,area
-subarea,TABLE,,description,3,character varying(40),f,,,,N,
-subarea,TABLE,,active,4,boolean,f,,,,N,
-town_suggestions,TABLE,,code,1,character varying(12),f,,,,Y,
-town_suggestions,TABLE,,description,2,character varying(40),f,,,,N,
-type,TABLE,,id,1,character varying(6),f,,,,Y,
-type,TABLE,,description,2,character varying(80),f,,,,N,
-videolink_conferencing_centre_archive,TABLE,,prison_id,1,character varying(6),f,,,,Y,prison
-videolink_conferencing_centre_archive,TABLE,,email_address,2,character varying(256),f,,,,N,
-web_address,TABLE,,id,1,integer,f,nextval('web_address_id_seq'::regclass),,,Y,
-web_address,TABLE,,value,2,character varying(100),f,,,,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",id,1,integer,f,nextval('address_id_seq'::regclass),Surrogate key.,NONE,Y,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",prison_id,2,character varying(6),f,,The prison at this address. References prison.prison_id.,NONE,N,prison
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",address_line1,3,character varying(80),t,,First line of the address.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",address_line2,4,character varying(80),t,,Second line of the address.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",town,5,character varying(80),f,,Town or city.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",county,6,character varying(80),t,,County.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",postcode,7,character varying(8),f,,Postcode.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",country,8,character varying(16),f,,"Country, for example England or Wales.",NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",address_line1_in_welsh,9,character varying(80),t,,First line of the address in Welsh.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",address_line2_in_welsh,10,character varying(80),t,,Second line of the address in Welsh.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",town_in_welsh,11,character varying(80),t,,Town or city in Welsh.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",county_in_welsh,12,character varying(80),t,,County in Welsh.,NONE,N,
+address,TABLE,"Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address.",country_in_welsh,13,character varying(16),t,,Country in Welsh.,NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",agency_id,1,character varying(6),f,,"Id of the agency: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register.",NONE,Y,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",name,2,character varying(40),f,,"Short name of the agency, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies.",NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",description,3,character varying(3000),t,,"Full name of the agency, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies.",NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",contact,4,character varying(40),t,,"Name of a contact person at the agency, from NOMIS. Usually a named member of staff.",STAFF,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",active,5,boolean,f,,Whether the agency is in use. Inactive ones are kept so that historical records still resolve.,NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",accessible_access,6,character varying(20),t,,"Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code.",NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",agency_type,7,character varying(30),f,,"Type of agency, as the register's type name: AIRPORT, PROBATION_CRC, FOREIGN_NATIONAL_PRISON, VOLUNTARY_HOSTEL, IMMIGRATION_DETENTION_CENTRE, OUTSIDE, PECS, PSYCHIATRIC_CARE, CHILDREN_SECURE_HOME, SECURE_TRAINING_CENTRE or YOT.",NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",inactive_date,8,date,t,,"Date the agency was made inactive, if it has been.",NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",area,9,character varying(12),t,,NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",geographical_area,10,character varying(12),t,,"Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",region,11,character varying(12),t,,Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code.,NONE,N,region
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",cjit_code,12,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",payroll_region,13,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+agency,TABLE,"Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS.",local_authority,14,character varying(12),t,,Local authority from NOMIS. References local_authority.code.,NONE,N,local_authority
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,id,1,integer,f,nextval('agency_address_id_seq'::regclass),Surrogate key.,NONE,Y,
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,address_line1,2,character varying(350),t,,First line of the address.,NONE,N,
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,address_line2,3,character varying(80),t,,Second line of the address.,NONE,N,
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,town,4,character varying(80),t,,Town or city.,NONE,N,
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,county,5,character varying(80),t,,County.,NONE,N,
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,postcode,6,character varying(8),t,,Postcode.,NONE,N,
+agency_address,TABLE,Postal addresses of agencies other than prisons. Linked to their agency through the <agency type>_to_agency_address tables.,country,7,character varying(16),t,,Country.,NONE,N,
+agency_to_agency_address,TABLE,Links each agency to its addresses: one row per agency and address. The primary key stops the same link being stored twice.,agency_id,1,character varying(6),f,,The agency. References agency.agency_id.,NONE,Y,agency
+agency_to_agency_address,TABLE,Links each agency to its addresses: one row per agency and address. The primary key stops the same link being stored twice.,agency_address_id,2,integer,f,,The address. References agency_address.id.,NONE,Y,agency_address
+agency_to_email_address,TABLE,Links each agency to its email addresses: one row per agency and email address. The primary key stops the same link being stored twice.,agency_id,1,character varying(6),f,,The agency. References agency.agency_id.,NONE,Y,agency
+agency_to_email_address,TABLE,Links each agency to its email addresses: one row per agency and email address. The primary key stops the same link being stored twice.,email_address_id,2,integer,f,,The email address. References email_address.id.,NONE,Y,email_address
+agency_to_phone,TABLE,Links each agency to its phone numbers: one row per agency and phone number. The primary key stops the same link being stored twice.,agency_id,1,character varying(6),f,,The agency. References agency.agency_id.,NONE,Y,agency
+agency_to_phone,TABLE,Links each agency to its phone numbers: one row per agency and phone number. The primary key stops the same link being stored twice.,phone_id,2,integer,f,,The phone number. References phone_number.id.,NONE,Y,phone_number
+agency_type,TABLE,"NOMIS agency type codes and their descriptions, for example APPR Approved Premises. Reference only: the API does not read this table, and agency.agency_type holds the register's type names rather than these codes.",code,1,character varying(12),f,,"Code, for example APPR.",NONE,Y,
+agency_type,TABLE,"NOMIS agency type codes and their descriptions, for example APPR Approved Premises. Reference only: the API does not read this table, and agency.agency_type holds the register's type names rather than these codes.",description,2,character varying(40),f,,"Description, for example Approved Premises.",NONE,N,
+agency_type,TABLE,"NOMIS agency type codes and their descriptions, for example APPR Approved Premises. Reference only: the API does not read this table, and agency.agency_type holds the register's type names rather than these codes.",active,3,boolean,f,,Whether the code can still be used.,NONE,N,
+all_agencies,VIEW,"View of every agency id in the register, of any type, with its name and type. The API uses it to check that a new agency id is not already taken.",agency_id,1,character varying(6),t,,Id of the agency.,NONE,N,
+all_agencies,VIEW,"View of every agency id in the register, of any type, with its name and type. The API uses it to check that a new agency id is not already taken.",name,2,character varying(40),t,,Short name of the agency.,NONE,N,
+all_agencies,VIEW,"View of every agency id in the register, of any type, with its name and type. The API uses it to check that a new agency id is not already taken.",legacy_type,3,text,t,,"Type of agency, as the register's type name: PRISON, COURT, HOSPITAL, SECURE_HOSPITAL, PROBATION_OFFICE, POLICE_CUSTODY_SUITE, APPROVED_PREMISES or one of the agency.agency_type values. Despite the column name, these are not NOMIS codes.",NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,approved_premises_id,1,character varying(6),f,,"Id of the approved premises: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register.",NONE,Y,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,name,2,character varying(40),f,,"Short name of the approved premises, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies.",NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,description,3,character varying(3000),t,,"Full name of the approved premises, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies.",NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,contact,4,character varying(40),t,,"Name of a contact person at the approved premises, from NOMIS. Usually a named member of staff.",STAFF,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,active,5,boolean,f,,Whether the approved premises is in use. Inactive ones are kept so that historical records still resolve.,NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,accessible_access,6,character varying(20),t,,"Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code.",NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,inactive_date,7,date,t,,"Date the approved premises was made inactive, if it has been.",NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,area,8,character varying(12),t,,NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,geographical_area,9,character varying(12),t,,"Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,region,10,character varying(12),t,,Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code.,NONE,N,region
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,cjit_code,11,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,local_authority,12,character varying(12),t,,Local authority from NOMIS. References local_authority.code.,NONE,N,local_authority
+approved_premises,TABLE,Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR).,payroll_region,13,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+approved_premises_to_agency_address,TABLE,Links each approved premises to its addresses: one row per approved premises and address. The primary key stops the same link being stored twice.,approved_premises_id,1,character varying(6),f,,The approved premises. References approved_premises.approved_premises_id.,NONE,Y,approved_premises
+approved_premises_to_agency_address,TABLE,Links each approved premises to its addresses: one row per approved premises and address. The primary key stops the same link being stored twice.,agency_address_id,2,integer,f,,The address. References agency_address.id.,NONE,Y,agency_address
+approved_premises_to_email_address,TABLE,Links each approved premises to its email addresses: one row per approved premises and email address. The primary key stops the same link being stored twice.,approved_premises_id,1,character varying(6),f,,The approved premises. References approved_premises.approved_premises_id.,NONE,Y,approved_premises
+approved_premises_to_email_address,TABLE,Links each approved premises to its email addresses: one row per approved premises and email address. The primary key stops the same link being stored twice.,email_address_id,2,integer,f,,The email address. References email_address.id.,NONE,Y,email_address
+approved_premises_to_phone,TABLE,Links each approved premises to its phone numbers: one row per approved premises and phone number. The primary key stops the same link being stored twice.,approved_premises_id,1,character varying(6),f,,The approved premises. References approved_premises.approved_premises_id.,NONE,Y,approved_premises
+approved_premises_to_phone,TABLE,Links each approved premises to its phone numbers: one row per approved premises and phone number. The primary key stops the same link being stored twice.,phone_id,2,integer,f,,The phone number. References phone_number.id.,NONE,Y,phone_number
+area,TABLE,"Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region.",code,1,character varying(12),f,,"Code, for example YORK.",NONE,Y,
+area,TABLE,"Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region.",parent,2,character varying(12),t,,The region the area belongs to. References region.code.,NONE,N,region
+area,TABLE,"Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region.",description,3,character varying(40),f,,"Description, for example Yorkshire & Humberside.",NONE,N,
+area,TABLE,"Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region.",prison_area,4,boolean,f,,Whether this is a prison area (true) or a geographical area such as a county (false).,NONE,N,
+area,TABLE,"Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region.",active,5,boolean,f,,Whether the code can still be used.,NONE,N,
+contact_details,TABLE,"Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables.",id,1,integer,f,nextval('contact_details_id_seq'::regclass),Surrogate key.,NONE,Y,
+contact_details,TABLE,"Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables.",prison_id,2,character varying(6),f,,The prison. References prison.prison_id.,NONE,N,prison
+contact_details,TABLE,"Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables.",department_type,3,character varying(40),f,,"The department: PRISON, SOCIAL_VISIT, VIDEOLINK_CONFERENCING_CENTRE, OFFENDER_MANAGEMENT_UNIT or OFFICIAL_VISIT.",NONE,N,
+contact_details,TABLE,"Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables.",create_timestamp,4,timestamp without time zone,t,CURRENT_TIMESTAMP,When the row was created. Set by the application.,NONE,N,
+contact_details,TABLE,"Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables.",modify_timestamp,5,timestamp without time zone,t,CURRENT_TIMESTAMP,"When the row itself was last changed. Set by the application. A change to the linked phone number, email address or website alone may not move it.",NONE,N,
+contact_details_to_email_address,TABLE,Links a prison department to its email address. A department has at most one.,contact_details_id,1,integer,f,,The prison department. References contact_details.id.,NONE,Y,contact_details
+contact_details_to_email_address,TABLE,Links a prison department to its email address. A department has at most one.,email_address_id,2,integer,f,,The email address. References email_address.id.,NONE,N,email_address
+contact_details_to_phone_number,TABLE,Links a prison department to its phone number. A department has at most one.,contact_details_id,1,integer,f,,The prison department. References contact_details.id.,NONE,Y,contact_details
+contact_details_to_phone_number,TABLE,Links a prison department to its phone number. A department has at most one.,phone_number_id,2,integer,f,,The phone number. References phone_number.id.,NONE,N,phone_number
+contact_details_to_web_address,TABLE,Links a prison department to its website. A department has at most one.,contact_details_id,1,integer,f,,The prison department. References contact_details.id.,NONE,Y,contact_details
+contact_details_to_web_address,TABLE,Links a prison department to its website. A department has at most one.,web_address_id,2,integer,f,,The website. References web_address.id.,NONE,N,web_address
+county_suggestions,TABLE,County names offered as suggestions when an address is typed in the registers front end.,code,1,character varying(12),f,,"Code, for example ANGUS.",NONE,Y,
+county_suggestions,TABLE,County names offered as suggestions when an address is typed in the registers front end.,description,2,character varying(40),f,,"Description, for example Angus.",NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,court_id,1,character varying(6),f,,"Id of the court: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register.",NONE,Y,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,name,2,character varying(40),f,,"Short name of the court, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies.",NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,description,3,character varying(3000),t,,"Full name of the court, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies.",NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,active,4,boolean,f,,Whether the court is in use. Inactive ones are kept so that historical records still resolve.,NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,inactive_date,5,date,t,,"Date the court was made inactive, if it has been.",NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,court_type,6,character varying(12),f,,"Type of court. References court_type.code (enforced by the application, not by a database foreign key).",NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,area,7,character varying(12),t,,NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,region,8,character varying(12),t,,Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code.,NONE,N,region
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,cjit_code,9,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,geographical_area,10,character varying(12),t,,"Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,local_authority,11,character varying(12),t,,Local authority from NOMIS. References local_authority.code.,NONE,N,local_authority
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,payroll_region,12,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+court,TABLE,Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT).,accessible_access,13,character varying(20),t,,"Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code.",NONE,N,
+court_to_agency_address,TABLE,Links each court to its addresses: one row per court and address. The primary key stops the same link being stored twice.,court_id,1,character varying(6),f,,The court. References court.court_id.,NONE,Y,court
+court_to_agency_address,TABLE,Links each court to its addresses: one row per court and address. The primary key stops the same link being stored twice.,agency_address_id,2,integer,f,,The address. References agency_address.id.,NONE,Y,agency_address
+court_to_email_address,TABLE,Links each court to its email addresses: one row per court and email address. The primary key stops the same link being stored twice.,court_id,1,character varying(6),f,,The court. References court.court_id.,NONE,Y,court
+court_to_email_address,TABLE,Links each court to its email addresses: one row per court and email address. The primary key stops the same link being stored twice.,email_address_id,2,integer,f,,The email address. References email_address.id.,NONE,Y,email_address
+court_to_phone,TABLE,Links each court to its phone numbers: one row per court and phone number. The primary key stops the same link being stored twice.,court_id,1,character varying(6),f,,The court. References court.court_id.,NONE,Y,court
+court_to_phone,TABLE,Links each court to its phone numbers: one row per court and phone number. The primary key stops the same link being stored twice.,phone_id,2,integer,f,,The phone number. References phone_number.id.,NONE,Y,phone_number
+court_type,TABLE,Types of court.,code,1,character varying(12),f,,"Code, for example CC.",NONE,Y,
+court_type,TABLE,Types of court.,description,2,character varying(40),f,,"Description, for example Crown Court.",NONE,N,
+court_type,TABLE,Types of court.,active,3,boolean,f,,Whether the code can still be used.,NONE,N,
+email_address,TABLE,"Email addresses of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same address can appear more than once.",id,1,integer,f,nextval('email_address_id_seq'::regclass),Surrogate key.,NONE,Y,
+email_address,TABLE,"Email addresses of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same address can appear more than once.",value,2,character varying(100),f,,"The email address. Mostly team mailboxes, but a few are a named member of staff's work address.",STAFF,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,hospital_id,1,character varying(6),f,,"Id of the hospital: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register.",NONE,Y,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,name,2,character varying(40),f,,"Short name of the hospital, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies.",NONE,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,description,3,character varying(3000),t,,"Full name of the hospital, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies.",NONE,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,active,4,boolean,f,,Whether the hospital is in use. Inactive ones are kept so that historical records still resolve.,NONE,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,high_security,5,boolean,f,,Whether this is a secure hospital (NOMIS type HSHOSP) rather than an ordinary one (HOSPITAL).,NONE,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,inactive_date,6,date,t,,"Date the hospital was made inactive, if it has been.",NONE,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,area,7,character varying(12),t,,NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,geographical_area,8,character varying(12),t,,"Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,region,9,character varying(12),t,,Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code.,NONE,N,region
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,payroll_region,10,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,cjit_code,11,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+hospital,TABLE,Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP).,local_authority,12,character varying(12),t,,Local authority from NOMIS. References local_authority.code.,NONE,N,local_authority
+hospital_to_agency_address,TABLE,Links each hospital to its addresses: one row per hospital and address. The primary key stops the same link being stored twice.,hospital_id,1,character varying(6),f,,The hospital. References hospital.hospital_id.,NONE,Y,hospital
+hospital_to_agency_address,TABLE,Links each hospital to its addresses: one row per hospital and address. The primary key stops the same link being stored twice.,agency_address_id,2,integer,f,,The address. References agency_address.id.,NONE,Y,agency_address
+hospital_to_phone,TABLE,Links each hospital to its phone numbers: one row per hospital and phone number. The primary key stops the same link being stored twice.,hospital_id,1,character varying(6),f,,The hospital. References hospital.hospital_id.,NONE,Y,hospital
+hospital_to_phone,TABLE,Links each hospital to its phone numbers: one row per hospital and phone number. The primary key stops the same link being stored twice.,phone_id,2,integer,f,,The phone number. References phone_number.id.,NONE,Y,phone_number
+local_authority,TABLE,Local authorities from NOMIS.,code,1,character varying(12),f,,"Code, for example 00AA.",NONE,Y,
+local_authority,TABLE,Local authorities from NOMIS.,description,2,character varying(40),f,,"Description, for example City of London.",NONE,N,
+local_authority,TABLE,Local authorities from NOMIS.,active,3,boolean,f,,Whether the code can still be used.,NONE,N,
+operator,TABLE,"Who runs prisons: PSP for the public sector, or the name of a private provider.",id,1,integer,f,nextval('operator_id_seq'::regclass),Surrogate key.,NONE,Y,
+operator,TABLE,"Who runs prisons: PSP for the public sector, or the name of a private provider.",name,2,character varying(80),f,,"Name of the operator, for example PSP or the provider's name.",NONE,N,
+payroll_region,TABLE,Prisoner payroll regions from NOMIS.,code,1,character varying(12),f,,"Code, for example HS.",NONE,Y,
+payroll_region,TABLE,Prisoner payroll regions from NOMIS.,description,2,character varying(40),f,,"Description, for example High Security.",NONE,N,
+payroll_region,TABLE,Prisoner payroll regions from NOMIS.,active,3,boolean,f,,Whether the code can still be used.,NONE,N,
+phone_number,TABLE,"Phone numbers of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same number can appear more than once.",id,1,integer,f,nextval('phone_number_id_seq'::regclass),Surrogate key.,NONE,Y,
+phone_number,TABLE,"Phone numbers of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same number can appear more than once.",value,2,character varying(100),f,,"The phone number as entered. Phone numbers have no type, so business and fax numbers cannot be told apart.",NONE,N,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,police_custody_suite_id,1,character varying(6),f,,"Id of the police custody suite: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register.",NONE,Y,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,name,2,character varying(40),f,,"Short name of the police custody suite, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies.",NONE,N,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,description,3,character varying(3000),t,,"Full name of the police custody suite, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies.",NONE,N,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,active,4,boolean,f,,Whether the police custody suite is in use. Inactive ones are kept so that historical records still resolve.,NONE,N,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,inactive_date,5,date,t,,"Date the police custody suite was made inactive, if it has been.",NONE,N,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,area,6,character varying(12),t,,NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,geographical_area,7,character varying(12),t,,"Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,region,8,character varying(12),t,,Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code.,NONE,N,region
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,cjit_code,9,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,local_authority,10,character varying(12),t,,Local authority from NOMIS. References local_authority.code.,NONE,N,local_authority
+police_custody_suite,TABLE,Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN).,payroll_region,11,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+police_custody_suite_to_agency_address,TABLE,Links each police custody suite to its addresses: one row per police custody suite and address. The primary key stops the same link being stored twice.,police_custody_suite_id,1,character varying(6),f,,The police custody suite. References police_custody_suite.police_custody_suite_id.,NONE,Y,police_custody_suite
+police_custody_suite_to_agency_address,TABLE,Links each police custody suite to its addresses: one row per police custody suite and address. The primary key stops the same link being stored twice.,agency_address_id,2,integer,f,,The address. References agency_address.id.,NONE,Y,agency_address
+police_custody_suite_to_email_address,TABLE,Links each police custody suite to its email addresses: one row per police custody suite and email address. The primary key stops the same link being stored twice.,police_custody_suite_id,1,character varying(6),f,,The police custody suite. References police_custody_suite.police_custody_suite_id.,NONE,Y,police_custody_suite
+police_custody_suite_to_email_address,TABLE,Links each police custody suite to its email addresses: one row per police custody suite and email address. The primary key stops the same link being stored twice.,email_address_id,2,integer,f,,The email address. References email_address.id.,NONE,Y,email_address
+police_custody_suite_to_phone,TABLE,Links each police custody suite to its phone numbers: one row per police custody suite and phone number. The primary key stops the same link being stored twice.,police_custody_suite_id,1,character varying(6),f,,The police custody suite. References police_custody_suite.police_custody_suite_id.,NONE,Y,police_custody_suite
+police_custody_suite_to_phone,TABLE,Links each police custody suite to its phone numbers: one row per police custody suite and phone number. The primary key stops the same link being stored twice.,phone_id,2,integer,f,,The phone number. References phone_number.id.,NONE,Y,phone_number
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",prison_id,1,character varying(6),f,,"Id of the prison: the NOMIS agency location id, for example MDI.",NONE,Y,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",name,2,character varying(40),f,,"Name of the prison as DPS shows it, for example Moorland (HMP & YOI). Standardised in V1_22 and deliberately different from the NOMIS description. Printed on Send Legal Mail envelopes.",NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",active,3,boolean,f,,Whether the prison is open. Closed prisons are kept so that historical records still resolve.,NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",description,4,character varying(256),t,,"The NOMIS description of the prison (AGENCY_LOCATIONS.DESCRIPTION), for example HMP & YOI MOORLAND. Kept up to date by the sync from NOMIS.",NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",male,5,boolean,f,false,Whether the prison holds men.,NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",female,6,boolean,f,false,Whether the prison holds women.,NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",inactive_date,7,date,t,,"Date the prison was closed, if it has been.",NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",contracted,8,boolean,f,false,"Whether a private provider runs the prison under contract, rather than the public sector (PSP).",NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",lthse,9,boolean,f,false,Whether the prison is part of the long-term high security estate.,NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",gp_practice_code,10,character varying(6),t,,NHS GP practice code for the prison's healthcare.,NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",prison_name_in_welsh,11,character varying(80),t,,"Name of the prison in Welsh, for prisons in Wales, for example Carchar Brynbuga.",NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",area,12,character varying(12),t,,NOMIS area of the prison (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",geographical_area,13,character varying(12),t,,"Geographical area of the prison (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",region,14,character varying(12),t,,"Region of the prison (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE), for example YOHUM. References region.code. Use this for regional reporting in place of the NOMIS AREAS table.",NONE,N,region
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",cjit_code,15,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",payroll_region,16,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+prison,TABLE,"Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS.",local_authority,17,character varying(12),t,,"Local authority the prison is in, from NOMIS. References local_authority.code.",NONE,N,local_authority
+prison_category,TABLE,Security categories each prison holds: one row per prison and category.,category,1,text,f,,"The category: A, B, C, D, OPEN or CLOSED.",NONE,Y,
+prison_category,TABLE,Security categories each prison holds: one row per prison and category.,prison_id,2,character varying,f,,The prison. References prison.prison_id.,NONE,Y,prison
+prison_operator,TABLE,"Links each prison to its operator. A prison normally has one row, and the API treats the first one as the current operator.",prison_id,1,character varying(6),f,,The prison. References prison.prison_id.,NONE,Y,prison
+prison_operator,TABLE,"Links each prison to its operator. A prison normally has one row, and the API treats the first one as the current operator.",operator_id,2,integer,f,,The operator. References operator.id.,NONE,Y,
+prison_type,TABLE,"Types of each prison: one row per prison and type. A prison can have more than one, for example HMP and YOI.",id,1,integer,f,nextval('prison_type_id_seq'::regclass),Surrogate key.,NONE,Y,
+prison_type,TABLE,"Types of each prison: one row per prison and type. A prison can have more than one, for example HMP and YOI.",prison_id,2,character varying(6),f,,The prison. References prison.prison_id.,NONE,N,prison
+prison_type,TABLE,"Types of each prison: one row per prison and type. A prison can have more than one, for example HMP and YOI.",type,3,character varying(6),f,,The type. References type.id.,NONE,N,type
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,probation_office_id,1,character varying(6),f,,"Id of the probation office: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register.",NONE,Y,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,name,2,character varying(40),f,,"Short name of the probation office, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies.",NONE,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,description,3,character varying(3000),t,,"Full name of the probation office, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies.",NONE,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,active,4,boolean,f,,Whether the probation office is in use. Inactive ones are kept so that historical records still resolve.,NONE,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,accessible_access,5,character varying(20),t,,"Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code.",NONE,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,inactive_date,6,date,t,,"Date the probation office was made inactive, if it has been.",NONE,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,area,7,character varying(12),t,,NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code.,NONE,N,area
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,geographical_area,8,character varying(12),t,,"Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code.",NONE,N,area
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,region,9,character varying(12),t,,Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code.,NONE,N,region
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,cjit_code,10,character varying(12),t,,Criminal Justice Integrated Team (CJIT) code from NOMIS.,NONE,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,local_authority,11,character varying(12),t,,Local authority from NOMIS. References local_authority.code.,NONE,N,local_authority
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,subarea,12,character varying(12),t,,Probation sub-area from NOMIS. References subarea.code.,NONE,N,subarea
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,contact,13,character varying(40),t,,"Name of a contact person at the probation office, from NOMIS. Usually a named member of staff.",STAFF,N,
+probation_office,TABLE,Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM).,payroll_region,14,character varying(12),t,,Prisoner payroll region from NOMIS. References payroll_region.code.,NONE,N,payroll_region
+probation_office_to_agency_address,TABLE,Links each probation office to its addresses: one row per probation office and address. The primary key stops the same link being stored twice.,probation_office_id,1,character varying(6),f,,The probation office. References probation_office.probation_office_id.,NONE,Y,probation_office
+probation_office_to_agency_address,TABLE,Links each probation office to its addresses: one row per probation office and address. The primary key stops the same link being stored twice.,agency_address_id,2,integer,f,,The address. References agency_address.id.,NONE,Y,agency_address
+probation_office_to_email_address,TABLE,Links each probation office to its email addresses: one row per probation office and email address. The primary key stops the same link being stored twice.,probation_office_id,1,character varying(6),f,,The probation office. References probation_office.probation_office_id.,NONE,Y,probation_office
+probation_office_to_email_address,TABLE,Links each probation office to its email addresses: one row per probation office and email address. The primary key stops the same link being stored twice.,email_address_id,2,integer,f,,The email address. References email_address.id.,NONE,Y,email_address
+probation_office_to_phone,TABLE,Links each probation office to its phone numbers: one row per probation office and phone number. The primary key stops the same link being stored twice.,probation_office_id,1,character varying(6),f,,The probation office. References probation_office.probation_office_id.,NONE,Y,probation_office
+probation_office_to_phone,TABLE,Links each probation office to its phone numbers: one row per probation office and phone number. The primary key stops the same link being stored twice.,phone_id,2,integer,f,,The phone number. References phone_number.id.,NONE,Y,phone_number
+region,TABLE,"Regions from NOMIS, used to group prisons and other agencies.",code,1,character varying(12),f,,"Code, for example YOHUM.",NONE,Y,
+region,TABLE,"Regions from NOMIS, used to group prisons and other agencies.",description,2,character varying(40),f,,"Description, for example Yorkshire & Humberside.",NONE,N,
+region,TABLE,"Regions from NOMIS, used to group prisons and other agencies.",active,3,boolean,f,,Whether the code can still be used.,NONE,N,
+subarea,TABLE,"Probation sub-areas from NOMIS, each within an area. Used by probation offices.",code,1,character varying(12),f,,"Code, for example CITY.",NONE,Y,
+subarea,TABLE,"Probation sub-areas from NOMIS, each within an area. Used by probation offices.",parent,2,character varying(12),t,,The area the sub-area belongs to. References area.code.,NONE,N,area
+subarea,TABLE,"Probation sub-areas from NOMIS, each within an area. Used by probation offices.",description,3,character varying(40),f,,"Description, for example City.",NONE,N,
+subarea,TABLE,"Probation sub-areas from NOMIS, each within an area. Used by probation offices.",active,4,boolean,f,,Whether the code can still be used.,NONE,N,
+town_suggestions,TABLE,Town names offered as suggestions when an address is typed in the registers front end.,code,1,character varying(12),f,,"Code, for example 10001.",NONE,Y,
+town_suggestions,TABLE,Town names offered as suggestions when an address is typed in the registers front end.,description,2,character varying(40),f,,"Description, for example Wadhurst.",NONE,N,
+type,TABLE,"Prison types and their descriptions: HMP, YOI, IRC, STC and YCS.",id,1,character varying(6),f,,"Type code, for example HMP.",NONE,Y,
+type,TABLE,"Prison types and their descriptions: HMP, YOI, IRC, STC and YCS.",description,2,character varying(80),f,,"Description, for example His Majesty's Prison.",NONE,N,
+web_address,TABLE,Website addresses of prison departments.,id,1,integer,f,nextval('web_address_id_seq'::regclass),Surrogate key.,NONE,Y,
+web_address,TABLE,Website addresses of prison departments.,value,2,character varying(100),f,,The website address.,NONE,N,

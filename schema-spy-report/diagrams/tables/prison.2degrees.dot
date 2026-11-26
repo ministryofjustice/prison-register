@@ -26,7 +26,6 @@ digraph "twoDegreesRelationshipsDiagram" {
   "hospital":"elipses":w -> "local_authority":"code":e [arrowhead=none dir=back arrowtail=crowodot];
   "hospital":"elipses":w -> "payroll_region":"code":e [arrowhead=none dir=back arrowtail=crowodot];
   "hospital":"elipses":w -> "region":"code":e [arrowhead=none dir=back arrowtail=crowodot];
-  "offender_management_unit_archive":"prison_id":w -> "prison":"prison_id.type":e [arrowhead=none dir=back arrowtail=teeodot];
   "police_custody_suite":"elipses":w -> "area":"code":e [arrowhead=none dir=back arrowtail=crowodot];
   "police_custody_suite":"elipses":w -> "area":"code":e [arrowhead=none dir=back arrowtail=crowodot];
   "police_custody_suite":"elipses":w -> "local_authority":"code":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -48,7 +47,6 @@ digraph "twoDegreesRelationshipsDiagram" {
   "probation_office":"elipses":w -> "region":"code":e [arrowhead=none dir=back arrowtail=crowodot];
   "probation_office":"elipses":w -> "subarea":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "subarea":"elipses":w -> "area":"code":e [arrowhead=none dir=back arrowtail=crowodot];
-  "videolink_conferencing_centre_archive":"prison_id":w -> "prison":"prison_id.type":e [arrowhead=none dir=back arrowtail=teeodot];
   "address" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -176,18 +174,6 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="local_authority"
   ];
-  "offender_management_unit_archive" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16"><B>offender_management_unit_archive</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="prison_id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">prison_id</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="../../tables/offender_management_unit_archive.html"
-    target="_top"
-    tooltip="offender_management_unit_archive"
-  ];
   "payroll_region" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -232,7 +218,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="cjit_code" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">cjit_code</TD></TR></TABLE></TD><TD PORT="cjit_code.type" ALIGN="LEFT">varchar[12]</TD></TR>
       <TR><TD PORT="payroll_region" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">payroll_region</TD></TR></TABLE></TD><TD PORT="payroll_region.type" ALIGN="LEFT">varchar[12]</TD></TR>
       <TR><TD PORT="local_authority" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">local_authority</TD></TR></TABLE></TD><TD PORT="local_authority.type" ALIGN="LEFT">varchar[12]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">173 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">7 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">173 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
     </TABLE>>
     URL="../../tables/prison.html"
     target="_top"
@@ -318,17 +304,5 @@ digraph "twoDegreesRelationshipsDiagram" {
     URL="../../tables/type.html"
     target="_top"
     tooltip="type"
-  ];
-  "videolink_conferencing_centre_archive" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="261" HEIGHT="16"><B>videolink_conferencing_centre_archive</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="prison_id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="261" HEIGHT="16">prison_id</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="../../tables/videolink_conferencing_centre_archive.html"
-    target="_top"
-    tooltip="videolink_conferencing_centre_archive"
   ];
 }

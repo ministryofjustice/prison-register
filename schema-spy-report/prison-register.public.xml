@@ -10,22 +10,22 @@
       <sequence increment="1" name="web_address_id_seq" startValue="1"/>
    </sequences>
    <tables>
-      <table name="address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="address" remarks="Postal addresses of prisons, with Welsh versions for prisons in Wales. Addresses of other agencies are in agency_address." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="The prison at this address. References prison.prison_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="prison_id" foreignKey="address_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_line1" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="address_line2" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="town" nullable="false" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="county" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="postcode" nullable="false" remarks="" size="8" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="country" nullable="false" remarks="" size="16" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="address_line1_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="address_line2_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="town_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="county_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="country_in_welsh" nullable="true" remarks="" size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_line1" nullable="true" remarks="First line of the address. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="address_line2" nullable="true" remarks="Second line of the address. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="town" nullable="false" remarks="Town or city. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="county" nullable="true" remarks="County. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="postcode" nullable="false" remarks="Postcode. [Sensitivity: NONE]" size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="country" nullable="false" remarks="Country, for example England or Wales. [Sensitivity: NONE]" size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="address_line1_in_welsh" nullable="true" remarks="First line of the address in Welsh. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="address_line2_in_welsh" nullable="true" remarks="Second line of the address in Welsh. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="town_in_welsh" nullable="true" remarks="Town or city in Welsh. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="county_in_welsh" nullable="true" remarks="County in Welsh. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="country_in_welsh" nullable="true" remarks="Country in Welsh. [Sensitivity: NONE]" size="16" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="address_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -34,33 +34,33 @@
             <column ascending="true" name="prison_id"/>
          </index>
       </table>
-      <table name="agency" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="agency" remarks="Agencies of every type that does not have its own table, told apart by agency_type: airports, voluntary hostels, youth offending teams, secure children's homes, immigration detention centres and so on. Migrated from NOMIS AGENCY_LOCATIONS." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="Id of the agency: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="agency_id" foreignKey="agency_to_agency_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_agency_address"/>
             <child column="agency_id" foreignKey="agency_to_email_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_email_address"/>
             <child column="agency_id" foreignKey="agency_to_phone_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="agency_type" nullable="false" remarks="" size="30" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name of the agency, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="Full name of the agency, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies. [Sensitivity: NONE]" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact" nullable="true" remarks="Name of a contact person at the agency, from NOMIS. Usually a named member of staff. [Sensitivity: STAFF]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="Whether the agency is in use. Inactive ones are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accessible_access" nullable="true" remarks="Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code. [Sensitivity: NONE]" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="agency_type" nullable="false" remarks="Type of agency, as the register's type name: AIRPORT, PROBATION_CRC, FOREIGN_NATIONAL_PRISON, VOLUNTARY_HOSTEL, IMMIGRATION_DETENTION_CENTRE, OUTSIDE, PECS, PSYCHIATRIC_CARE, CHILDREN_SECURE_HOME, SECURE_TRAINING_CENTRE or YOT. [Sensitivity: NONE]" size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="inactive_date" nullable="true" remarks="Date the agency was made inactive, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="area" nullable="true" remarks="NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="agency_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geographical_area" nullable="true" remarks="Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="agency_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="region" nullable="true" remarks="Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="agency_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="agency_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="local_authority" nullable="true" remarks="Local authority from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="agency_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
          <primaryKey column="agency_id" sequenceNumberInPK="1"/>
@@ -68,8 +68,8 @@
             <column ascending="true" name="agency_id"/>
          </index>
       </table>
-      <table name="agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('agency_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+      <table name="agency_address" remarks="Postal addresses of agencies other than prisons. Linked to their agency through the &lt;agency type&gt;_to_agency_address tables." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('agency_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
             <child column="agency_address_id" foreignKey="agency_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_agency_address"/>
             <child column="agency_address_id" foreignKey="approved_premises_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_agency_address"/>
             <child column="agency_address_id" foreignKey="court_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_agency_address"/>
@@ -77,22 +77,22 @@
             <child column="agency_address_id" foreignKey="police_custody_suite_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_agency_address"/>
             <child column="agency_address_id" foreignKey="probation_office_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_agency_address"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="address_line1" nullable="true" remarks="" size="350" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_line2" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="town" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="county" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="postcode" nullable="true" remarks="" size="8" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="country" nullable="true" remarks="" size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="address_line1" nullable="true" remarks="First line of the address. [Sensitivity: NONE]" size="350" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_line2" nullable="true" remarks="Second line of the address. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="town" nullable="true" remarks="Town or city. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="county" nullable="true" remarks="County. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="postcode" nullable="true" remarks="Postcode. [Sensitivity: NONE]" size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="country" nullable="true" remarks="Country. [Sensitivity: NONE]" size="16" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="agency_address_pkey" unique="true">
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="agency_to_agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="agency_to_agency_address" remarks="Links each agency to its addresses: one row per agency and address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="The agency. References agency.agency_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="agency_id" foreignKey="agency_to_agency_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="The address. References agency_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="agency_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
          <primaryKey column="agency_id" sequenceNumberInPK="1"/>
@@ -102,11 +102,11 @@
             <column ascending="true" name="agency_address_id"/>
          </index>
       </table>
-      <table name="agency_to_email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="agency_to_email_address" remarks="Links each agency to its email addresses: one row per agency and email address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="The agency. References agency.agency_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="agency_id" foreignKey="agency_to_email_address_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="The email address. References email_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="agency_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
          <primaryKey column="agency_id" sequenceNumberInPK="1"/>
@@ -116,11 +116,11 @@
             <column ascending="true" name="email_address_id"/>
          </index>
       </table>
-      <table name="agency_to_phone" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="agency_to_phone" remarks="Links each agency to its phone numbers: one row per agency and phone number. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="false" remarks="The agency. References agency.agency_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="agency_id" foreignKey="agency_to_phone_to_agency_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="agency_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="agency_id" sequenceNumberInPK="1"/>
@@ -130,46 +130,46 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="agency_type" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+      <table name="agency_type" remarks="NOMIS agency type codes and their descriptions, for example APPR Approved Premises. Reference only: the API does not read this table, and agency.agency_type holds the register's type names rather than these codes." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example APPR. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example Approved Premises. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="agency_type_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="all_agencies" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT prison.prison_id AS agency_id,&#10;    prison.name,&#10;    'PRISON'::text AS legacy_type&#10;   FROM prison&#10;UNION ALL&#10; SELECT court.court_id AS agency_id,&#10;    court.name,&#10;    'COURT'::text AS legacy_type&#10;   FROM court&#10;UNION ALL&#10; SELECT hospital.hospital_id AS agency_id,&#10;    hospital.name,&#10;        CASE&#10;            WHEN hospital.high_security THEN 'SECURE_HOSPITAL'::text&#10;            ELSE 'HOSPITAL'::text&#10;        END AS legacy_type&#10;   FROM hospital&#10;UNION ALL&#10; SELECT probation_office.probation_office_id AS agency_id,&#10;    probation_office.name,&#10;    'PROBATION_OFFICE'::text AS legacy_type&#10;   FROM probation_office&#10;UNION ALL&#10; SELECT police_custody_suite.police_custody_suite_id AS agency_id,&#10;    police_custody_suite.name,&#10;    'POLICE_CUSTODY_SUITE'::text AS legacy_type&#10;   FROM police_custody_suite&#10;UNION ALL&#10; SELECT approved_premises.approved_premises_id AS agency_id,&#10;    approved_premises.name,&#10;    'APPROVED_PREMISES'::text AS legacy_type&#10;   FROM approved_premises&#10;UNION ALL&#10; SELECT agency.agency_id,&#10;    agency.name,&#10;    agency.agency_type AS legacy_type&#10;   FROM agency;">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="legacy_type" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+      <table name="all_agencies" numRows="0" remarks="View of every agency id in the register, of any type, with its name and type. The API uses it to check that a new agency id is not already taken." schema="public" type="VIEW" viewSql=" SELECT prison.prison_id AS agency_id,&#10;    prison.name,&#10;    'PRISON'::text AS legacy_type&#10;   FROM prison&#10;UNION ALL&#10; SELECT court.court_id AS agency_id,&#10;    court.name,&#10;    'COURT'::text AS legacy_type&#10;   FROM court&#10;UNION ALL&#10; SELECT hospital.hospital_id AS agency_id,&#10;    hospital.name,&#10;        CASE&#10;            WHEN hospital.high_security THEN 'SECURE_HOSPITAL'::text&#10;            ELSE 'HOSPITAL'::text&#10;        END AS legacy_type&#10;   FROM hospital&#10;UNION ALL&#10; SELECT probation_office.probation_office_id AS agency_id,&#10;    probation_office.name,&#10;    'PROBATION_OFFICE'::text AS legacy_type&#10;   FROM probation_office&#10;UNION ALL&#10; SELECT police_custody_suite.police_custody_suite_id AS agency_id,&#10;    police_custody_suite.name,&#10;    'POLICE_CUSTODY_SUITE'::text AS legacy_type&#10;   FROM police_custody_suite&#10;UNION ALL&#10; SELECT approved_premises.approved_premises_id AS agency_id,&#10;    approved_premises.name,&#10;    'APPROVED_PREMISES'::text AS legacy_type&#10;   FROM approved_premises&#10;UNION ALL&#10; SELECT agency.agency_id,&#10;    agency.name,&#10;    agency.agency_type AS legacy_type&#10;   FROM agency;">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="true" remarks="Id of the agency. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="Short name of the agency. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="legacy_type" nullable="true" remarks="Type of agency, as the register's type name: PRISON, COURT, HOSPITAL, SECURE_HOSPITAL, PROBATION_OFFICE, POLICE_CUSTODY_SUITE, APPROVED_PREMISES or one of the agency.agency_type values. Despite the column name, these are not NOMIS codes. [Sensitivity: NONE]" size="2147483647" type="text" typeCode="12"/>
       </table>
-      <table name="approved_premises" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="approved_premises" remarks="Approved premises: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type APPR)." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="Id of the approved premises: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="approved_premises_id" foreignKey="approved_premises_to_agency_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_agency_address"/>
             <child column="approved_premises_id" foreignKey="approved_premises_to_email_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_email_address"/>
             <child column="approved_premises_id" foreignKey="approved_premises_to_phone_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name of the approved premises, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="Full name of the approved premises, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies. [Sensitivity: NONE]" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact" nullable="true" remarks="Name of a contact person at the approved premises, from NOMIS. Usually a named member of staff. [Sensitivity: STAFF]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="Whether the approved premises is in use. Inactive ones are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accessible_access" nullable="true" remarks="Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code. [Sensitivity: NONE]" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="inactive_date" nullable="true" remarks="Date the approved premises was made inactive, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area" nullable="true" remarks="NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="approved_premises_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="geographical_area" nullable="true" remarks="Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="approved_premises_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="region" nullable="true" remarks="Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="approved_premises_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="local_authority" nullable="true" remarks="Local authority from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="approved_premises_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="approved_premises_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
          <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
@@ -177,11 +177,11 @@
             <column ascending="true" name="approved_premises_id"/>
          </index>
       </table>
-      <table name="approved_premises_to_agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="approved_premises_to_agency_address" remarks="Links each approved premises to its addresses: one row per approved premises and address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="The approved premises. References approved_premises.approved_premises_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="approved_premises_id" foreignKey="approved_premises_to_agency_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="The address. References agency_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="approved_premises_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
          <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
@@ -191,11 +191,11 @@
             <column ascending="true" name="agency_address_id"/>
          </index>
       </table>
-      <table name="approved_premises_to_email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="approved_premises_to_email_address" remarks="Links each approved premises to its email addresses: one row per approved premises and email address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="The approved premises. References approved_premises.approved_premises_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="approved_premises_id" foreignKey="approved_premises_to_email_address_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="The email address. References email_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="approved_premises_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
          <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
@@ -205,11 +205,11 @@
             <column ascending="true" name="email_address_id"/>
          </index>
       </table>
-      <table name="approved_premises_to_phone" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="approved_premises_to_phone" remarks="Links each approved premises to its phone numbers: one row per approved premises and phone number. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approved_premises_id" nullable="false" remarks="The approved premises. References approved_premises.approved_premises_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="approved_premises_id" foreignKey="approved_premises_to_phone_to_approved_premises_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="approved_premises_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="approved_premises_id" sequenceNumberInPK="1"/>
@@ -219,8 +219,8 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="area" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+      <table name="area" remarks="Areas from NOMIS. Holds both prison areas and geographical areas such as counties, told apart by prison_area. Each belongs to a region." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example YORK. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <child column="area" foreignKey="agency_area_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
             <child column="geographical_area" foreignKey="agency_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
             <child column="area" foreignKey="approved_premises_area_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
@@ -237,29 +237,29 @@
             <child column="geographical_area" foreignKey="probation_office_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
             <child column="parent" foreignKey="area_fk" implied="false" onDeleteCascade="false" schema="public" table="subarea"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent" nullable="true" remarks="The region the area belongs to. References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="prison_area" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="Description, for example Yorkshire &amp; Humberside. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="prison_area" nullable="false" remarks="Whether this is a prison area (true) or a geographical area such as a county (false). [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="area_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="contact_details" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('contact_details_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+      <table name="contact_details" remarks="Prison departments that have contact details: one row per prison and department. The phone number, email address and website hang off it through the contact_details_to_* tables." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('contact_details_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
             <child column="contact_details_id" foreignKey="fk_contact_details_email_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_email_address"/>
             <child column="contact_details_id" foreignKey="fk_contact_details_phone_number_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_phone_number"/>
             <child column="contact_details_id" foreignKey="fk_contact_details_web_address_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_web_address"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="The prison. References prison.prison_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="prison_id" foreignKey="fk_contact_details_to_prison" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="department_type" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="modify_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="department_type" nullable="false" remarks="The department: PRISON, SOCIAL_VISIT, VIDEOLINK_CONFERENCING_CENTRE, OFFENDER_MANAGEMENT_UNIT or OFFICIAL_VISIT. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_timestamp" nullable="true" remarks="When the row was created. Set by the application. [Sensitivity: NONE]" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="modify_timestamp" nullable="true" remarks="When the row itself was last changed. Set by the application. A change to the linked phone number, email address or website alone may not move it. [Sensitivity: NONE]" size="29" type="timestamp" typeCode="93"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="contact_details_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -269,11 +269,11 @@
             <column ascending="true" name="department_type"/>
          </index>
       </table>
-      <table name="contact_details_to_email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+      <table name="contact_details_to_email_address" remarks="Links a prison department to its email address. A department has at most one." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="The prison department. References contact_details.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="fk_contact_details_email_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="The email address. References email_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="fk_join_to_email_address" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
          <primaryKey column="contact_details_id" sequenceNumberInPK="1"/>
@@ -288,11 +288,11 @@
             <column ascending="true" name="contact_details_id"/>
          </index>
       </table>
-      <table name="contact_details_to_phone_number" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+      <table name="contact_details_to_phone_number" remarks="Links a prison department to its phone number. A department has at most one." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="The prison department. References contact_details.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="fk_contact_details_phone_number_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_number_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_number_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="fk_join_to_phone_number" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="contact_details_id" sequenceNumberInPK="1"/>
@@ -307,11 +307,11 @@
             <column ascending="true" name="contact_details_id"/>
          </index>
       </table>
-      <table name="contact_details_to_web_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+      <table name="contact_details_to_web_address" remarks="Links a prison department to its website. A department has at most one." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_details_id" nullable="false" remarks="The prison department. References contact_details.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="fk_contact_details_web_address_join" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="web_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="web_address_id" nullable="false" remarks="The website. References web_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="fk_join_to_web_address" implied="false" onDeleteCascade="false" schema="public" table="web_address"/>
          </column>
          <primaryKey column="contact_details_id" sequenceNumberInPK="1"/>
@@ -326,52 +326,52 @@
             <column ascending="true" name="web_address_id"/>
          </index>
       </table>
-      <table name="county_suggestions" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+      <table name="county_suggestions" remarks="County names offered as suggestions when an address is typed in the registers front end." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example ANGUS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example Angus. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="county_suggestions_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="court" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="court" remarks="Courts: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type CRT)." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="Id of the court: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="court_id" foreignKey="court_to_agency_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_agency_address"/>
             <child column="court_id" foreignKey="court_to_email_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_email_address"/>
             <child column="court_id" foreignKey="court_to_phone_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="court_type" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name of the court, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="Full name of the court, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies. [Sensitivity: NONE]" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="Whether the court is in use. Inactive ones are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="inactive_date" nullable="true" remarks="Date the court was made inactive, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="court_type" nullable="false" remarks="Type of court. References court_type.code (enforced by the application, not by a database foreign key). [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="court_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="region" nullable="true" remarks="Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="court_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geographical_area" nullable="true" remarks="Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="court_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="local_authority" nullable="true" remarks="Local authority from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="court_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="court_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="accessible_access" nullable="true" remarks="Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code. [Sensitivity: NONE]" size="20" type="varchar" typeCode="12"/>
          <primaryKey column="court_id" sequenceNumberInPK="1"/>
          <index name="court_pkey" unique="true">
             <column ascending="true" name="court_id"/>
          </index>
       </table>
-      <table name="court_to_agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="court_to_agency_address" remarks="Links each court to its addresses: one row per court and address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="The court. References court.court_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="court_id" foreignKey="court_to_agency_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="The address. References agency_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="court_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
          <primaryKey column="court_id" sequenceNumberInPK="1"/>
@@ -381,11 +381,11 @@
             <column ascending="true" name="agency_address_id"/>
          </index>
       </table>
-      <table name="court_to_email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="court_to_email_address" remarks="Links each court to its email addresses: one row per court and email address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="The court. References court.court_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="court_id" foreignKey="court_to_email_address_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="The email address. References email_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="court_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
          <primaryKey column="court_id" sequenceNumberInPK="1"/>
@@ -395,11 +395,11 @@
             <column ascending="true" name="email_address_id"/>
          </index>
       </table>
-      <table name="court_to_phone" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="court_to_phone" remarks="Links each court to its phone numbers: one row per court and phone number. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="court_id" nullable="false" remarks="The court. References court.court_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="court_id" foreignKey="court_to_phone_to_court_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="court_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="court_id" sequenceNumberInPK="1"/>
@@ -409,17 +409,17 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="court_type" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+      <table name="court_type" remarks="Types of court." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example CC. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example Crown Court. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="court_type_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('email_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+      <table name="email_address" remarks="Email addresses of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same address can appear more than once." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('email_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
             <child column="email_address_id" foreignKey="agency_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_email_address"/>
             <child column="email_address_id" foreignKey="approved_premises_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_email_address"/>
             <child column="email_address_id" foreignKey="fk_join_to_email_address" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_email_address"/>
@@ -427,7 +427,7 @@
             <child column="email_address_id" foreignKey="police_custody_suite_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_email_address"/>
             <child column="email_address_id" foreignKey="probation_office_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_email_address"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="The email address. Mostly team mailboxes, but a few are a named member of staff's work address. [Sensitivity: STAFF]" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="email_address_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -452,30 +452,30 @@
             <column ascending="true" name="success"/>
          </index>
       </table>
-      <table name="hospital" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="hospital" remarks="Hospitals: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type HOSPITAL or HSHOSP)." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="Id of the hospital: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="hospital_id" foreignKey="hospital_to_agency_address_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital_to_agency_address"/>
             <child column="hospital_id" foreignKey="hospital_to_phone_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="high_security" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name of the hospital, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="Full name of the hospital, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies. [Sensitivity: NONE]" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="Whether the hospital is in use. Inactive ones are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="high_security" nullable="false" remarks="Whether this is a secure hospital (NOMIS type HSHOSP) rather than an ordinary one (HOSPITAL). [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inactive_date" nullable="true" remarks="Date the hospital was made inactive, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="hospital_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geographical_area" nullable="true" remarks="Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="hospital_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="region" nullable="true" remarks="Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="hospital_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="hospital_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="local_authority" nullable="true" remarks="Local authority from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="hospital_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
          <primaryKey column="hospital_id" sequenceNumberInPK="1"/>
@@ -483,11 +483,11 @@
             <column ascending="true" name="hospital_id"/>
          </index>
       </table>
-      <table name="hospital_to_agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="hospital_to_agency_address" remarks="Links each hospital to its addresses: one row per hospital and address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="The hospital. References hospital.hospital_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="hospital_id" foreignKey="hospital_to_agency_address_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="The address. References agency_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="hospital_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
          <primaryKey column="hospital_id" sequenceNumberInPK="1"/>
@@ -497,11 +497,11 @@
             <column ascending="true" name="agency_address_id"/>
          </index>
       </table>
-      <table name="hospital_to_phone" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="hospital_to_phone" remarks="Links each hospital to its phone numbers: one row per hospital and phone number. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hospital_id" nullable="false" remarks="The hospital. References hospital.hospital_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="hospital_id" foreignKey="hospital_to_phone_to_hospital_fk" implied="false" onDeleteCascade="false" schema="public" table="hospital"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="hospital_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="hospital_id" sequenceNumberInPK="1"/>
@@ -511,8 +511,8 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="local_authority" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+      <table name="local_authority" remarks="Local authorities from NOMIS." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example 00AA. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <child column="local_authority" foreignKey="agency_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
             <child column="local_authority" foreignKey="approved_premises_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
             <child column="local_authority" foreignKey="court_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
@@ -521,33 +521,23 @@
             <child column="local_authority" foreignKey="prison_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
             <child column="local_authority" foreignKey="probation_office_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example City of London. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="local_authority_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="offender_management_unit_archive" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
-            <parent column="prison_id" foreignKey="offender_management_unit_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="" size="256" type="varchar" typeCode="12"/>
-         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
-         <index name="offender_management_unit_pkey" unique="true">
-            <column ascending="true" name="prison_id"/>
-         </index>
-      </table>
-      <table name="operator" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('operator_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="80" type="varchar" typeCode="12"/>
+      <table name="operator" remarks="Who runs prisons: PSP for the public sector, or the name of a private provider." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('operator_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the operator, for example PSP or the provider's name. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="operator_pkey" unique="true">
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="payroll_region" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+      <table name="payroll_region" remarks="Prisoner payroll regions from NOMIS." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example HS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <child column="payroll_region" foreignKey="agency_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
             <child column="payroll_region" foreignKey="approved_premises_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
             <child column="payroll_region" foreignKey="court_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="court"/>
@@ -556,15 +546,15 @@
             <child column="payroll_region" foreignKey="prison_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
             <child column="payroll_region" foreignKey="probation_office_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example High Security. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="payroll_region_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="phone_number" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('phone_number_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+      <table name="phone_number" remarks="Phone numbers of prison departments and other agencies. Since V1_65 every owner has its own rows, so the same number can appear more than once." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('phone_number_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
             <child column="phone_id" foreignKey="agency_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_to_phone"/>
             <child column="phone_id" foreignKey="approved_premises_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises_to_phone"/>
             <child column="phone_number_id" foreignKey="fk_join_to_phone_number" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_phone_number"/>
@@ -573,36 +563,36 @@
             <child column="phone_id" foreignKey="police_custody_suite_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_phone"/>
             <child column="phone_id" foreignKey="probation_office_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="The phone number as entered. Phone numbers have no type, so business and fax numbers cannot be told apart. [Sensitivity: NONE]" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="phone_number_pkey" unique="true">
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="police_custody_suite" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="police_custody_suite" remarks="Police custody suites: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type POLICE or POLSTN)." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="Id of the police custody suite: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="police_custody_suite_id" foreignKey="police_custody_suite_to_agency_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_agency_address"/>
             <child column="police_custody_suite_id" foreignKey="police_custody_suite_to_email_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_email_address"/>
             <child column="police_custody_suite_id" foreignKey="police_custody_suite_to_phone_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name of the police custody suite, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="Full name of the police custody suite, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies. [Sensitivity: NONE]" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="Whether the police custody suite is in use. Inactive ones are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="inactive_date" nullable="true" remarks="Date the police custody suite was made inactive, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="area" nullable="true" remarks="NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="police_custody_suite_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="geographical_area" nullable="true" remarks="Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="police_custody_suite_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="region" nullable="true" remarks="Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="police_custody_suite_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="local_authority" nullable="true" remarks="Local authority from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="police_custody_suite_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="police_custody_suite_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
          <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
@@ -610,11 +600,11 @@
             <column ascending="true" name="police_custody_suite_id"/>
          </index>
       </table>
-      <table name="police_custody_suite_to_agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="police_custody_suite_to_agency_address" remarks="Links each police custody suite to its addresses: one row per police custody suite and address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="The police custody suite. References police_custody_suite.police_custody_suite_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="police_custody_suite_id" foreignKey="police_custody_suite_to_agency_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="The address. References agency_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="police_custody_suite_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
          <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
@@ -624,11 +614,11 @@
             <column ascending="true" name="agency_address_id"/>
          </index>
       </table>
-      <table name="police_custody_suite_to_email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="police_custody_suite_to_email_address" remarks="Links each police custody suite to its email addresses: one row per police custody suite and email address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="The police custody suite. References police_custody_suite.police_custody_suite_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="police_custody_suite_id" foreignKey="police_custody_suite_to_email_address_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="The email address. References email_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="police_custody_suite_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
          <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
@@ -638,11 +628,11 @@
             <column ascending="true" name="email_address_id"/>
          </index>
       </table>
-      <table name="police_custody_suite_to_phone" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="police_custody_suite_to_phone" remarks="Links each police custody suite to its phone numbers: one row per police custody suite and phone number. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="police_custody_suite_id" nullable="false" remarks="The police custody suite. References police_custody_suite.police_custody_suite_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="police_custody_suite_id" foreignKey="police_custody_suite_to_phone_to_pcs_fk" implied="false" onDeleteCascade="false" schema="public" table="police_custody_suite"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="police_custody_suite_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="police_custody_suite_id" sequenceNumberInPK="1"/>
@@ -652,40 +642,38 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="prison" numRows="173" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="prison" numRows="173" remarks="Prisons, young offender institutions and similar establishments: one row per prison. New prisons are created in NOMIS and arrive through the sync from NOMIS." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="Id of the prison: the NOMIS agency location id, for example MDI. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="prison_id" foreignKey="address_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="address"/>
             <child column="prison_id" foreignKey="fk_contact_details_to_prison" implied="false" onDeleteCascade="false" schema="public" table="contact_details"/>
-            <child column="prison_id" foreignKey="offender_management_unit_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="offender_management_unit_archive"/>
             <child column="prison_id" foreignKey="prison_category_prison_type_fk" implied="false" onDeleteCascade="false" schema="public" table="prison_category"/>
             <child column="prison_id" foreignKey="prison_operator_prison_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="prison_operator"/>
             <child column="prison_id" foreignKey="prison_type_prison_fk" implied="false" onDeleteCascade="true" schema="public" table="prison_type"/>
-            <child column="prison_id" foreignKey="videolink_conferencing_centre_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="videolink_conferencing_centre_archive"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="" size="256" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="4" name="male" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="female" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="contracted" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="8" name="lthse" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="gp_practice_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="prison_name_in_welsh" nullable="true" remarks="" size="80" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the prison as DPS shows it, for example Moorland (HMP &amp; YOI). Standardised in V1_22 and deliberately different from the NOMIS description. Printed on Send Legal Mail envelopes. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the prison is open. Closed prisons are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="The NOMIS description of the prison (AGENCY_LOCATIONS.DESCRIPTION), for example HMP &amp; YOI MOORLAND. Kept up to date by the sync from NOMIS. [Sensitivity: NONE]" size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="4" name="male" nullable="false" remarks="Whether the prison holds men. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="female" nullable="false" remarks="Whether the prison holds women. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="inactive_date" nullable="true" remarks="Date the prison was closed, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="contracted" nullable="false" remarks="Whether a private provider runs the prison under contract, rather than the public sector (PSP). [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="8" name="lthse" nullable="false" remarks="Whether the prison is part of the long-term high security estate. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="gp_practice_code" nullable="true" remarks="NHS GP practice code for the prison's healthcare. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="prison_name_in_welsh" nullable="true" remarks="Name of the prison in Welsh, for prisons in Wales, for example Carchar Brynbuga. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="area" nullable="true" remarks="NOMIS area of the prison (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="prison_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="geographical_area" nullable="true" remarks="Geographical area of the prison (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="prison_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="region" nullable="true" remarks="Region of the prison (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE), for example YOHUM. References region.code. Use this for regional reporting in place of the NOMIS AREAS table. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="prison_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="prison_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="local_authority" nullable="true" remarks="Local authority the prison is in, from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="prison_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
          <primaryKey column="prison_id" sequenceNumberInPK="1"/>
@@ -696,9 +684,9 @@
             <column ascending="true" name="gp_practice_code"/>
          </index>
       </table>
-      <table name="prison_category" numRows="81" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="category" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="2147483647" type="varchar" typeCode="12">
+      <table name="prison_category" numRows="81" remarks="Security categories each prison holds: one row per prison and category." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="category" nullable="false" remarks="The category: A, B, C, D, OPEN or CLOSED. [Sensitivity: NONE]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="The prison. References prison.prison_id. [Sensitivity: NONE]" size="2147483647" type="varchar" typeCode="12">
             <parent column="prison_id" foreignKey="prison_category_prison_type_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
          </column>
          <primaryKey column="prison_id" sequenceNumberInPK="1"/>
@@ -711,11 +699,11 @@
             <column ascending="true" name="prison_id"/>
          </index>
       </table>
-      <table name="prison_operator" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="prison_operator" remarks="Links each prison to its operator. A prison normally has one row, and the API treats the first one as the current operator." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="The prison. References prison.prison_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="prison_id" foreignKey="prison_operator_prison_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operator_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operator_id" nullable="false" remarks="The operator. References operator.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
          <primaryKey column="prison_id" sequenceNumberInPK="1"/>
          <primaryKey column="operator_id" sequenceNumberInPK="2"/>
          <index name="prison_operator_pkey" unique="true">
@@ -723,12 +711,12 @@
             <column ascending="true" name="operator_id"/>
          </index>
       </table>
-      <table name="prison_type" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('prison_type_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="prison_type" remarks="Types of each prison: one row per prison and type. A prison can have more than one, for example HMP and YOI." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('prison_type_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="prison_id" nullable="false" remarks="The prison. References prison.prison_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="prison_id" foreignKey="prison_type_prison_fk" implied="false" onDeleteCascade="true" schema="public" table="prison"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="type" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="type" nullable="false" remarks="The type. References type.id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="id" foreignKey="prison_type_type_fk" implied="false" onDeleteCascade="false" schema="public" table="type"/>
          </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
@@ -739,35 +727,35 @@
             <column ascending="true" name="prison_id"/>
          </index>
       </table>
-      <table name="probation_office" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="probation_office" remarks="Probation offices: one row each. Migrated from NOMIS AGENCY_LOCATIONS (agency type COMM)." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="Id of the probation office: the NOMIS agency location id (AGENCY_LOCATIONS.AGY_LOC_ID), up to six characters and unique across every agency type in the register. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="probation_office_id" foreignKey="probation_office_to_agency_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_agency_address"/>
             <child column="probation_office_id" foreignKey="probation_office_to_email_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_email_address"/>
             <child column="probation_office_id" foreignKey="probation_office_to_phone_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office_to_phone"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="3000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="accessible_access" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inactive_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name of the probation office, from NOMIS AGENCY_LOCATIONS.DESCRIPTION. Returned as description by /api/agencies. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="Full name of the probation office, from NOMIS AGENCY_LOCATIONS.LONG_DESCRIPTION. Returned as longDescription by /api/agencies. [Sensitivity: NONE]" size="3000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="Whether the probation office is in use. Inactive ones are kept so that historical records still resolve. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="accessible_access" nullable="true" remarks="Whether the building has accessible access: NONE, ACCESSIBLE, BY_ARRANGEMENT_ONLY or WHEELCHAIR_ACCESS. From the NOMIS disability access code. [Sensitivity: NONE]" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inactive_date" nullable="true" remarks="Date the probation office was made inactive, if it has been. [Sensitivity: NONE]" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area" nullable="true" remarks="NOMIS area (AGENCY_LOCATIONS.AREA_CODE). References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="probation_office_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geographical_area" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geographical_area" nullable="true" remarks="Geographical area (NOMIS AGENCY_LOCATIONS.GEOGRAPHIC_REGION_CODE), for example a county. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="probation_office_geographical_area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="region" nullable="true" remarks="Region (NOMIS AGENCY_LOCATIONS.NOMS_REGION_CODE). References region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="probation_office_region_fk" implied="false" onDeleteCascade="false" schema="public" table="region"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="cjit_code" nullable="true" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="local_authority" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="cjit_code" nullable="true" remarks="Criminal Justice Integrated Team (CJIT) code from NOMIS. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="local_authority" nullable="true" remarks="Local authority from NOMIS. References local_authority.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="probation_office_local_authority_fk" implied="false" onDeleteCascade="false" schema="public" table="local_authority"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="subarea" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="subarea" nullable="true" remarks="Probation sub-area from NOMIS. References subarea.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="probation_office_subarea_fk" implied="false" onDeleteCascade="false" schema="public" table="subarea"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="contact" nullable="true" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="payroll_region" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="contact" nullable="true" remarks="Name of a contact person at the probation office, from NOMIS. Usually a named member of staff. [Sensitivity: STAFF]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="payroll_region" nullable="true" remarks="Prisoner payroll region from NOMIS. References payroll_region.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="probation_office_payroll_region_fk" implied="false" onDeleteCascade="false" schema="public" table="payroll_region"/>
          </column>
          <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
@@ -775,11 +763,11 @@
             <column ascending="true" name="probation_office_id"/>
          </index>
       </table>
-      <table name="probation_office_to_agency_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="probation_office_to_agency_address" remarks="Links each probation office to its addresses: one row per probation office and address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="The probation office. References probation_office.probation_office_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="probation_office_id" foreignKey="probation_office_to_agency_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_address_id" nullable="false" remarks="The address. References agency_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="probation_office_to_agency_address_to_agency_address_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_address"/>
          </column>
          <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
@@ -789,11 +777,11 @@
             <column ascending="true" name="agency_address_id"/>
          </index>
       </table>
-      <table name="probation_office_to_email_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="probation_office_to_email_address" remarks="Links each probation office to its email addresses: one row per probation office and email address. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="The probation office. References probation_office.probation_office_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="probation_office_id" foreignKey="probation_office_to_email_address_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address_id" nullable="false" remarks="The email address. References email_address.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="probation_office_to_email_address_to_email_address_fk" implied="false" onDeleteCascade="false" schema="public" table="email_address"/>
          </column>
          <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
@@ -803,11 +791,11 @@
             <column ascending="true" name="email_address_id"/>
          </index>
       </table>
-      <table name="probation_office_to_phone" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="probation_office_to_phone" remarks="Links each probation office to its phone numbers: one row per probation office and phone number. The primary key stops the same link being stored twice." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="probation_office_id" nullable="false" remarks="The probation office. References probation_office.probation_office_id. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <parent column="probation_office_id" foreignKey="probation_office_to_phone_to_probation_office_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="phone_id" nullable="false" remarks="The phone number. References phone_number.id. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
             <parent column="id" foreignKey="probation_office_to_phone_to_phone_fk" implied="false" onDeleteCascade="false" schema="public" table="phone_number"/>
          </column>
          <primaryKey column="probation_office_id" sequenceNumberInPK="1"/>
@@ -817,8 +805,8 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="region" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+      <table name="region" remarks="Regions from NOMIS, used to group prisons and other agencies." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example YOHUM. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <child column="region" foreignKey="agency_region_fk" implied="false" onDeleteCascade="false" schema="public" table="agency"/>
             <child column="region" foreignKey="approved_premises_region_fk" implied="false" onDeleteCascade="false" schema="public" table="approved_premises"/>
             <child column="parent" foreignKey="region_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
@@ -828,60 +816,50 @@
             <child column="region" foreignKey="prison_region_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
             <child column="region" foreignKey="probation_office_region_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example Yorkshire &amp; Humberside. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="region_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="subarea" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12">
+      <table name="subarea" remarks="Probation sub-areas from NOMIS, each within an area. Used by probation offices." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example CITY. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <child column="subarea" foreignKey="probation_office_subarea_fk" implied="false" onDeleteCascade="false" schema="public" table="probation_office"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent" nullable="true" remarks="" size="12" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent" nullable="true" remarks="The area the sub-area belongs to. References area.code. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12">
             <parent column="code" foreignKey="area_fk" implied="false" onDeleteCascade="false" schema="public" table="area"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="Description, for example City. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="subarea_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="town_suggestions" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="40" type="varchar" typeCode="12"/>
+      <table name="town_suggestions" remarks="Town names offered as suggestions when an address is typed in the registers front end." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example 10001. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example Wadhurst. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
          <primaryKey column="code" sequenceNumberInPK="1"/>
          <index name="town_suggestions_pkey" unique="true">
             <column ascending="true" name="code"/>
          </index>
       </table>
-      <table name="type" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+      <table name="type" remarks="Prison types and their descriptions: HMP, YOI, IRC, STC and YCS." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="Type code, for example HMP. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12">
             <child column="type" foreignKey="prison_type_type_fk" implied="false" onDeleteCascade="false" schema="public" table="prison_type"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="" size="80" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example His Majesty's Prison. [Sensitivity: NONE]" size="80" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="type_pkey" unique="true">
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="videolink_conferencing_centre_archive" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="prison_id" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
-            <parent column="prison_id" foreignKey="videolink_conferencing_centre_prison_fk" implied="false" onDeleteCascade="false" schema="public" table="prison"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="" size="256" type="varchar" typeCode="12"/>
-         <primaryKey column="prison_id" sequenceNumberInPK="1"/>
-         <index name="videolink_conferencing_centre_pkey" unique="true">
-            <column ascending="true" name="prison_id"/>
-         </index>
-      </table>
-      <table name="web_address" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('web_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+      <table name="web_address" remarks="Website addresses of prison departments." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('web_address_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Surrogate key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
             <child column="web_address_id" foreignKey="fk_join_to_web_address" implied="false" onDeleteCascade="false" schema="public" table="contact_details_to_web_address"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="value" nullable="false" remarks="The website address. [Sensitivity: NONE]" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="web_address_pkey" unique="true">
             <column ascending="true" name="id"/>
