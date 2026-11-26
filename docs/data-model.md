@@ -3,6 +3,11 @@
 The API owns one PostgreSQL database. The schema is managed by Flyway; migrations are in
 `src/main/resources/db/migration` and run automatically when the application starts.
 
+For every table and column, see the [SchemaSpy report](https://ministryofjustice.github.io/prison-register/schema-spy-report/)
+and the [CSV data dictionary](https://ministryofjustice.github.io/prison-register/schema-spy-report/data-dictionary.csv).
+Both are rebuilt from the migrations on every merge to `main`. This page explains the parts that need
+more than a column list.
+
 ## Two families of tables
 
 The register grew in two stages, and the schema still shows it.

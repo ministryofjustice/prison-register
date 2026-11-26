@@ -1,0 +1,103 @@
+name: SchemaSpy report
+
+# Publishes the HMPPS Registers data dictionary:
+#   https://ministryofjustice.github.io/prison-register/schema-spy-report/
+#   https://ministryofjustice.github.io/prison-register/schema-spy-report/data-dictionary.csv
+#
+# The report is generated from a database built by Flyway, so it cannot drift from the migrations.
+
+on:
+  workflow_call:
+    inputs:
+      java_version:
+        description: Java version
+        type: string
+        default: '25'
+      java_options:
+        description: Java options
+        type: string
+        default: '-Xmx512m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process'
+      docker_compose_file:
+        description: Path to Docker Compose file to start required containers
+        type: string
+        default: 'docker-compose-schema-spy.yml'
+      database_name:
+        description: Database name
+        type: string
+        default: 'prison-register'
+      database_user:
+        description: Database user name
+        type: string
+        default: 'prison-register'
+      database_password:
+        description: Database user password
+        type: string
+        default: 'prison-register'
+      database_schema:
+        description: Database schema name
+        type: string
+        default: 'public'
+      publish:
+        description: Publish the report to GitHub Pages
+        type: boolean
+        default: true
+
+jobs:
+  schema-spy:
+    name: Schema Spy report generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Java
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java_version }}
+          cache: gradle
+          cache-dependency-path: |
+            *.gradle*
+            **/gradle-wrapper.properties
+
+      - name: Initialise database
+        shell: bash
+        run: |
+          docker compose -f ${{ inputs.docker_compose_file }} up -d --wait
+          export JAVA_OPTS="${{ inputs.java_options }}"
+          ./gradlew -Pinit-db=true test \
+            --tests uk.gov.justice.digital.hmpps.prisonregister.integration.InitialiseDatabase
+
+      - name: Generate database schema report
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/database_schema_report@cf153ef9fac2a87d0ae26cdd67c6b54dc6ce32f4 # v1.1.10
+        with:
+          database_name: ${{ inputs.database_name }}
+          schema: ${{ inputs.database_schema }}
+          user: ${{ inputs.database_user }}
+          password: ${{ inputs.database_password }}
+
+      - name: Generate CSV data dictionary
+        shell: bash
+        env:
+          DB_NAME: ${{ inputs.database_name }}
+          DB_USER: ${{ inputs.database_user }}
+          DB_PASSWORD: ${{ inputs.database_password }}
+          DB_SCHEMA: ${{ inputs.database_schema }}
+        run: scripts/generate-data-dictionary.sh /tmp/schemaspy/data-dictionary.csv
+
+      # Before the first publish, GitHub Pages must be switched on (Settings > Pages, deploy from the
+      # gh-pages branch, root) and an empty .nojekyll file added to the *root* of gh-pages. Without it
+      # Pages tries a Jekyll build over the SchemaSpy output, which the MoJ Actions policy blocks, and
+      # the site returns 404 with no error shown. A root .nojekyll survives later runs because this
+      # step only replaces schema-spy-report/.
+      - name: Publish to GitHub Pages
+        if: ${{ inputs.publish }}
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
+        with:
+          branch: gh-pages
+          folder: /tmp/schemaspy
+          target-folder: schema-spy-report

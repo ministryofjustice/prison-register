@@ -33,6 +33,7 @@ reference.
 | [architecture.md](architecture.md) | You need the shape of the service: components, layers, roles, events, sign-in. |
 | [process-flows.md](process-flows.md) | You need to know how a change travels between the front end, the API, NOMIS and the services that read the register. |
 | [data-model.md](data-model.md) | You are writing a query or a migration. |
+| [Data dictionary](https://ministryofjustice.github.io/prison-register/schema-spy-report/) | You need every table and column, for example to set up reporting. Rebuilt on every merge to `main`. |
 | [deployment.md](deployment.md) | You are shipping, or looking for a namespace, secret or alert. |
 | [common-problems.md](common-problems.md) | Something is not working, or you want the known issues. |
 | [load-test.md](load-test.md) | You are changing capacity settings or onboarding a large caller. |
@@ -49,6 +50,7 @@ reference.
 | `helm_deploy/` | Helm chart and per-environment values. |
 | `buildSrc/` | Gradle tasks for port-forwarding to RDS and reading secrets. |
 | `src/gatling/` | The load test. See [load-test.md](load-test.md). |
+| `scripts/generate-data-dictionary.sh`, `docker-compose-schema-spy.yml` | Build the published data dictionary. See the [README](../README.md#data-dictionary). |
 | `docs/` | You are here. |
 
 ## Useful links
