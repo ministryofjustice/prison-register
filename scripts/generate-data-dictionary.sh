@@ -5,8 +5,8 @@
 # Descriptions come from COMMENT ON statements in the Flyway migrations, so this is the same source of
 # truth as the SchemaSpy report. A column comment may end with a [Sensitivity: ...] tag (NONE, PERSONAL,
 # STAFF, SPECIAL-CATEGORY or OFFICIAL-SENSITIVE). The tag is pulled out into its own column, so a
-# consumer can filter on it rather than parse prose, and stripped from the description. Until the
-# comments are added, the description and sensitivity columns are empty.
+# consumer can filter on it rather than parse prose, and stripped from the description. The comments
+# were added in V1_71__schema_comments.sql.
 #
 # Usage:
 #   scripts/generate-data-dictionary.sh [output-file]

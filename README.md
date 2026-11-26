@@ -143,6 +143,10 @@ docker compose -f docker-compose-schema-spy.yml up -d --wait
 scripts/generate-data-dictionary.sh
 ```
 
+Every table, view and column has a description, and every column a sensitivity tag such as
+`[Sensitivity: NONE]` (`V1_71__schema_comments.sql` explains the tags). `SchemaCommentsTest` fails the
+build if one is missing, so a migration that adds a table or column must add its `COMMENT ON` too.
+
 The compose file needs ports 5432 and 4566 to be free. If another database is already on 5432, start
 one on a different port and pass it in with `SPRING_DATASOURCE_URL` and `DB_PORT`.
 
