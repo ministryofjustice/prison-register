@@ -86,7 +86,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
       // Then
       responseSpec.expectStatus().isNoContent
 
-      val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
+      val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, departmentType)
       assertThat(contactDetails).isNull()
       assertDbContactDetailsExist(prisonId, phoneNumber = phoneNumber, department = otherDepartmentType)
     }
@@ -278,7 +278,7 @@ class DeleteContactDetailsResourceTest : ContactDetailsBaseIntegrationTest() {
 
       responseSpec.expectStatus().isNoContent
 
-      val contactDetails = contactDetailsRepository.getByPrisonIdAndType(prisonId, departmentType)
+      val contactDetails = contactDetailsRepository.getByPrison_PrisonIdAndType(prisonId, departmentType)
 
       assertThat(contactDetails).isNull()
       assertDbContactDetailsExist(prisonId, phoneNumber = phoneNumber, department = otherDepartmentType)

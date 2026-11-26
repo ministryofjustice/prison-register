@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.constraints.Size
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
@@ -27,13 +28,35 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/api/agencies", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R')")
-class PublicApiResource(
+@Tag(
+  name = "HMPPS Agency Register API",
+  description = """
+  <h2>API for HMPPS Clients</h2>
+  <p>Requires role <b>HMPPS_REGISTERS_API__R</b></p> 
+  <p>Provides read-only access to HMPPS agency data, including prisons, probation offices, police custody suites, courts, hospitals and other agencies</p>""",
+)
+@ApiResponses(
+  value = [
+    ApiResponse(responseCode = "200", description = "Successful Operation"),
+    ApiResponse(
+      responseCode = "401",
+      description = "Unauthorized to access this endpoint",
+      content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+    ),
+    ApiResponse(
+      responseCode = "403",
+      description = "Missing required role. Requires the HMPPS_REGISTERS_API__R role",
+      content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+    ),
+  ],
+)
+class HmppsApiResource(
   private val publicApiService: PublicApiService,
 ) {
   @GetMapping
   @Operation(
     summary = "Get all agencies",
-    description = "Summary information on all agencies, including prisons, probation offices, police custody suites, courts, hospitals and other agencies ordered by agency ID ascending",
+    description = "Requires HMPPS_REGISTERS_API__R role. Summary information on all agencies, including prisons, probation offices, police custody suites, courts, hospitals and other agencies ordered by agency ID ascending",
   )
   @ApiResponses(
     value = [

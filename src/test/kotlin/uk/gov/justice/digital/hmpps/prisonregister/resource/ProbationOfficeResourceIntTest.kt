@@ -13,9 +13,11 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Import
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -32,9 +34,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCapture
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCaptureConfiguration
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
+@Import(SqlCaptureConfiguration::class)
 class ProbationOfficeResourceIntTest : IntegrationTestBase() {
 
   @Autowired
@@ -60,6 +65,9 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var snsService: SnsService
+
+  @Autowired
+  lateinit var sqlCapture: SqlCapture
 
   @DisplayName("Get probation office by id")
   @Nested
@@ -363,6 +371,153 @@ class ProbationOfficeResourceIntTest : IntegrationTestBase() {
           .responseBody!!
 
         assertThat(probationOffices).extracting("probationOfficeId").containsExactly("LEEDPB")
+      }
+    }
+  }
+
+  @DisplayName("Get all probation office summaries")
+  @Nested
+  inner class GetAllSummaries {
+    lateinit var probationOffice: ProbationOffice
+    lateinit var probationOffice2: ProbationOffice
+    lateinit var probationOffice3: ProbationOffice
+
+    @BeforeEach
+    fun setUp() {
+      probationOffice = dsl.probationOffice(
+        probationOfficeId = "SHEFPB",
+        name = "Sheffield Probation Office",
+        description = "Sheffield Central Probation Office",
+        active = false,
+      ) {
+        address(addressLine1 = "1 High Street", town = "Sheffield", postcode = "S1 1AA")
+        email(emailAddress = "sheffield@justice.gov.uk")
+        phoneNumber(phoneNumber = "0114 555 0000")
+      }
+
+      probationOffice2 = dsl.probationOffice(
+        probationOfficeId = "LEEDPB",
+        name = "Leeds Probation Office",
+      ) {
+        address(addressLine1 = "2 High Street", town = "Leeds", postcode = "LS1 1AA")
+        email(emailAddress = "leeds@justice.gov.uk")
+        phoneNumber(phoneNumber = "0113 555 0000")
+      }
+
+      probationOffice3 = dsl.probationOffice(
+        probationOfficeId = "BIRMPB",
+        name = "Birmingham Probation Office",
+        description = "Birmingham Main Probation Office",
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      probationOfficeRepository.deleteById(probationOffice.probationOfficeId)
+      probationOfficeRepository.deleteById(probationOffice2.probationOfficeId)
+      probationOfficeRepository.deleteById(probationOffice3.probationOfficeId)
+    }
+
+    private fun getSummaries(query: String = ""): List<ProbationOfficeSummaryDto> = webTestClient.get()
+      .uri("/probation-offices/summary$query")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBodyList<ProbationOfficeSummaryDto>()
+      .returnResult()
+      .responseBody!!
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/probation-offices/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/probation-offices/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/probation-offices/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `does not do a n + 1 query`() {
+        sqlCapture.statements.clear()
+
+        getSummaries()
+
+        assertThat(sqlCapture.statements).hasSize(1)
+      }
+
+      @Test
+      fun `will return all probation offices`() {
+        val offices = getSummaries()
+
+        assertThat(offices).extracting("probationOfficeId").contains("SHEFPB", "LEEDPB", "BIRMPB")
+
+        val officeDto = offices.first { it.probationOfficeId == "SHEFPB" }
+        assertThat(officeDto.probationOfficeName).isEqualTo("Sheffield Probation Office")
+        assertThat(officeDto.active).isFalse
+
+        val office2Dto = offices.first { it.probationOfficeId == "LEEDPB" }
+        assertThat(office2Dto.probationOfficeName).isEqualTo("Leeds Probation Office")
+        assertThat(office2Dto.active).isTrue
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        assertThat(getSummaries("?active=false")).extracting("probationOfficeId").containsExactly("SHEFPB")
+      }
+
+      @Test
+      fun `will filter by active flag when true`() {
+        val offices = getSummaries("?active=true")
+
+        assertThat(offices).extracting("probationOfficeId").contains("LEEDPB", "BIRMPB")
+        assertThat(offices).extracting("probationOfficeId").doesNotContain("SHEFPB")
+      }
+
+      @Test
+      fun `will filter by text search on probation office id`() {
+        assertThat(getSummaries("?textSearch=SHEFPB")).extracting("probationOfficeId").containsExactly("SHEFPB")
+      }
+
+      @Test
+      fun `will filter by text search on probation office name`() {
+        assertThat(getSummaries("?textSearch=Leeds Probation")).extracting("probationOfficeId").containsExactly("LEEDPB")
+      }
+
+      @Test
+      fun `will filter by text search on probation office description, ignoring case`() {
+        assertThat(getSummaries("?textSearch=main probation")).extracting("probationOfficeId").containsExactly("BIRMPB")
+      }
+
+      @Test
+      fun `will combine filters together`() {
+        assertThat(getSummaries("?active=true&textSearch=Leeds")).extracting("probationOfficeId").containsExactly("LEEDPB")
       }
     }
   }

@@ -1,14 +1,15 @@
 package uk.gov.justice.digital.hmpps.prisonregister.service
 
 import jakarta.persistence.EntityNotFoundException
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.prisonregister.model.AgencyAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.AllAgencyRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumber
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyId
 import uk.gov.justice.digital.hmpps.prisonregister.resource.AgencyIdsResponse
+import uk.gov.justice.digital.hmpps.prisonregister.resource.DepartmentDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyEmailDto
@@ -16,10 +17,11 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyUsageDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyPrisonPhoneDto
 
 @Service
 @Transactional
-class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val otherAgencyService: OtherAgencyService, val allAgencyRepository: AllAgencyRepository) {
+class LegacySyncService(val courtService: CourtService, val hospitalService: HospitalService, val probationOfficeService: ProbationOfficeService, val approvedPremisesService: ApprovedPremisesService, val policeCustodySuiteService: PoliceCustodySuiteService, val otherAgencyService: OtherAgencyService, val prisonService: PrisonService, val allAgencyRepository: AllAgencyRepository) {
   fun createOrUpdateAgency(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = when (agencyDto.agencyType) {
     LegacyAgencyType.COURT -> courtService.createOrUpdateCourtFromLegacyData(agencyId, agencyDto)
     LegacyAgencyType.HOSPITAL -> hospitalService.createOrUpdateHospitalFromLegacyData(agencyId, agencyDto, highSecurity = false)
@@ -29,6 +31,8 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.createOrUpdatePoliceCustodySuiteFromLegacyData(agencyId, agencyDto)
     else -> otherAgencyService.createOrUpdateAgencyFromLegacyData(agencyId, agencyDto)
   }
+  fun createOrUpdatePrison(agencyId: String, agencyDto: LegacyAgencyDto): LegacyAgencyResponse = prisonService.createOrUpdatePrisonFromLegacyData(agencyId, agencyDto)
+  fun updatePrisonNumber(agencyId: String, prisonPhoneDto: LegacyPrisonPhoneDto): DepartmentDto? = prisonService.updatePrisonNumber(agencyId, prisonPhoneDto)
 
   fun deleteAll() {
     courtService.deleteAll()
@@ -39,6 +43,7 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     otherAgencyService.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): AgencyIdsResponse {
     val ids = (
       courtService.getAllIds() +
@@ -54,14 +59,22 @@ class LegacySyncService(val courtService: CourtService, val hospitalService: Hos
     return AgencyIdsResponse(ids)
   }
 
-  fun getDetails(agencyId: String): LegacyAgencyDto = courtService.tryFindById(agencyId)
-    ?: hospitalService.tryFindById(agencyId)
-    ?: probationOfficeService.tryFindById(agencyId)
-    ?: approvedPremisesService.tryFindById(agencyId)
-    ?: policeCustodySuiteService.tryFindById(agencyId)
-    ?: otherAgencyService.tryFindById(agencyId)
-    ?: throw EntityNotFoundException("Agency $agencyId not found")
+  @Transactional(readOnly = true)
+  fun getAllPrisonIds(): AgencyIdsResponse = AgencyIdsResponse(prisonService.getAllIds().sorted().map { AgencyId(it) })
 
+  @Transactional(readOnly = true)
+  fun getDetails(agencyId: String): LegacyAgencyDto = when (allAgencyRepository.findFirstByAgencyId(agencyId)?.legacyType) {
+    LegacyAgencyType.COURT -> courtService.tryFindById(agencyId)
+    LegacyAgencyType.HOSPITAL, LegacyAgencyType.SECURE_HOSPITAL -> hospitalService.tryFindById(agencyId)
+    LegacyAgencyType.PROBATION_OFFICE -> probationOfficeService.tryFindById(agencyId)
+    LegacyAgencyType.APPROVED_PREMISES -> approvedPremisesService.tryFindById(agencyId)
+    LegacyAgencyType.POLICE_CUSTODY_SUITE -> policeCustodySuiteService.tryFindById(agencyId)
+    LegacyAgencyType.PRISON -> prisonService.tryFindById(agencyId)
+    null -> null
+    else -> otherAgencyService.tryFindById(agencyId)
+  } ?: throw EntityNotFoundException("Agency $agencyId not found")
+
+  @Transactional(readOnly = true)
   fun findAgencyUsage(agencyId: String): LegacyAgencyUsageDto? = allAgencyRepository.findFirstByAgencyId(agencyId)?.let {
     LegacyAgencyUsageDto(agencyId = it.agencyId, name = it.name, legacyType = it.legacyType)
   }
@@ -94,9 +107,16 @@ fun LegacyAgencyEmailDto.toAgencyEmail() = EmailAddress(
 )
 
 fun <E, DTO> MutableList<E>.update(dtoList: List<DTO>, compare: (entity: E, dto: DTO) -> Boolean, transform: (DTO) -> E) {
-  val toAdd = dtoList.filter { dto -> this.none { compare(it, dto) } }
-  val toRemove = this.filter { entity -> dtoList.none { compare(entity, it) } }
-  this.removeAll(toRemove)
+  // match entities to dtos one-to-one so duplicates are respected on both sides
+  val unmatched = this.toMutableList()
+  val toAdd = mutableListOf<DTO>()
+  dtoList.forEach { dto ->
+    val match = unmatched.indexOfFirst { compare(it, dto) }
+    if (match >= 0) unmatched.removeAt(match) else toAdd.add(dto)
+  }
+
+  // identity-based removal so equal entities that were matched are kept
+  this.removeAll { entity -> unmatched.any { it === entity } }
   this.addAll(toAdd.map { transform(it) })
 }
 

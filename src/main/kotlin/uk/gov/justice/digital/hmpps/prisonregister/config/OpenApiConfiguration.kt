@@ -14,9 +14,10 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
   @Bean
   fun customOpenAPI(): OpenAPI = OpenAPI()
     .info(
-      Info().title("Prison Register service")
+      Info().title("HMPPS Agency Register service")
         .version(version)
-        .description("A service that provides HMPPS Prison Information")
+        .summary("HMPPS Prison, Court and other agency information")
+        .description(this.javaClass.getResource("/documentation/service-description.html")!!.readText())
         .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )
 }

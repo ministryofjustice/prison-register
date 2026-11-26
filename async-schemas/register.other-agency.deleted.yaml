@@ -1,19 +1,19 @@
-name: register.agency.phone.amended
-title: register.agency.phone.amended
-summary: An agency phone number has been amended
+name: register.other-agency.deleted
+title: register.other-agency.deleted
+summary: An agency has been deleted
 contentType: application/json
 payload:
   type: object
   required: [additionalInformation, description, eventType, occurredAt, version]
   properties:
     additionalInformation:
-      $ref: ./register.additional-information.yaml#/agencyPhone
+      $ref: ./register.additional-information.yaml#/agency
     description:
       type: string
-      const: An agency phone number has been amended
+      const: An agency has been deleted
     eventType:
       type: string
-      const: register.agency.phone.amended
+      const: register.other-agency.deleted
     occurredAt:
       type: string
       description: The date and time the event occurred

@@ -13,6 +13,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Import
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -34,9 +35,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCapture
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCaptureConfiguration
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
+@Import(SqlCaptureConfiguration::class)
 class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
 
   @Autowired
@@ -62,6 +66,9 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var snsService: SnsService
+
+  @Autowired
+  lateinit var sqlCapture: SqlCapture
 
   @DisplayName("Get agency by id")
   @Nested
@@ -397,6 +404,168 @@ class OtherOtherAgencyResourceIntTest : IntegrationTestBase() {
           .responseBody!!
 
         assertThat(agencies).extracting("agencyId").containsExactly("LEDAIR")
+      }
+    }
+  }
+
+  @DisplayName("Get all agency summaries")
+  @Nested
+  inner class GetAllSummaries {
+    lateinit var otherAgency: OtherAgency
+    lateinit var otherAgency2: OtherAgency
+    lateinit var otherAgency3: OtherAgency
+
+    @BeforeEach
+    fun setUp() {
+      otherAgency = dsl.agency(
+        agencyId = "SHFCRC",
+        name = "Sheffield CRC",
+        description = "Sheffield Central CRC",
+        active = false,
+        otherAgencyType = OtherAgencyType.PROBATION_CRC,
+      ) {
+        address(addressLine1 = "1 High Street", town = "Sheffield", postcode = "S1 1AA")
+        email(emailAddress = "sheffield@justice.gov.uk")
+        phoneNumber(phoneNumber = "0114 555 0000")
+      }
+
+      otherAgency2 = dsl.agency(
+        agencyId = "LEEDAI",
+        name = "Leeds Airport",
+        otherAgencyType = OtherAgencyType.AIRPORT,
+      ) {
+        address(addressLine1 = "2 High Street", town = "Leeds", postcode = "LS1 1AA")
+        email(emailAddress = "leeds@justice.gov.uk")
+        phoneNumber(phoneNumber = "0113 555 0000")
+      }
+
+      otherAgency3 = dsl.agency(
+        agencyId = "BIRMPE",
+        name = "Birmingham PECS",
+        description = "Birmingham Main PECS",
+        otherAgencyType = OtherAgencyType.PECS,
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      otherAgencyRepository.deleteById(otherAgency.agencyId)
+      otherAgencyRepository.deleteById(otherAgency2.agencyId)
+      otherAgencyRepository.deleteById(otherAgency3.agencyId)
+    }
+
+    private fun getSummaries(query: String = ""): List<OtherAgencySummaryDto> = webTestClient.get()
+      .uri("/other-agencies/summary$query")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBodyList<OtherAgencySummaryDto>()
+      .returnResult()
+      .responseBody!!
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/other-agencies/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/other-agencies/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/other-agencies/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `does not do a n + 1 query`() {
+        sqlCapture.statements.clear()
+
+        getSummaries()
+
+        assertThat(sqlCapture.statements).hasSize(1)
+      }
+
+      @Test
+      fun `will return all other agencies`() {
+        val agencies = getSummaries()
+
+        assertThat(agencies).extracting("agencyId").contains("SHFCRC", "LEEDAI", "BIRMPE")
+
+        val agencyDto = agencies.first { it.agencyId == "SHFCRC" }
+        assertThat(agencyDto.agencyName).isEqualTo("Sheffield CRC")
+        assertThat(agencyDto.active).isFalse
+        assertThat(agencyDto.agencyType).isEqualTo("PROBATION_CRC")
+
+        val agency2Dto = agencies.first { it.agencyId == "LEEDAI" }
+        assertThat(agency2Dto.agencyName).isEqualTo("Leeds Airport")
+        assertThat(agency2Dto.active).isTrue
+        assertThat(agency2Dto.agencyType).isEqualTo("AIRPORT")
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        assertThat(getSummaries("?active=false")).extracting("agencyId").containsExactly("SHFCRC")
+      }
+
+      @Test
+      fun `will filter by active flag when true`() {
+        val agencies = getSummaries("?active=true")
+
+        assertThat(agencies).extracting("agencyId").contains("LEEDAI", "BIRMPE")
+        assertThat(agencies).extracting("agencyId").doesNotContain("SHFCRC")
+      }
+
+      @Test
+      fun `will filter by text search on agency id`() {
+        assertThat(getSummaries("?textSearch=SHFCRC")).extracting("agencyId").containsExactly("SHFCRC")
+      }
+
+      @Test
+      fun `will filter by text search on agency name`() {
+        assertThat(getSummaries("?textSearch=Leeds Airport")).extracting("agencyId").containsExactly("LEEDAI")
+      }
+
+      @Test
+      fun `will filter by text search on agency description, ignoring case`() {
+        assertThat(getSummaries("?textSearch=main pecs")).extracting("agencyId").containsExactly("BIRMPE")
+      }
+
+      @Test
+      fun `will filter by agency type`() {
+        assertThat(getSummaries("?otherAgencyTypeCodes=AIRPORT")).extracting("agencyId").containsExactly("LEEDAI")
+      }
+
+      @Test
+      fun `will filter by multiple agency types`() {
+        assertThat(getSummaries("?otherAgencyTypeCodes=AIRPORT,PECS")).extracting("agencyId").containsExactlyInAnyOrder("LEEDAI", "BIRMPE")
+      }
+
+      @Test
+      fun `will combine filters together`() {
+        assertThat(getSummaries("?active=true&otherAgencyTypeCodes=AIRPORT,PECS&textSearch=Leeds")).extracting("agencyId").containsExactly("LEEDAI")
       }
     }
   }

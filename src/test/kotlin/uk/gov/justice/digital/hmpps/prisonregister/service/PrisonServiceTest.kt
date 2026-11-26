@@ -26,19 +26,21 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.ContactDetailsNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.exceptions.PrisonNotFoundException
 import uk.gov.justice.digital.hmpps.prisonregister.model.Address
+import uk.gov.justice.digital.hmpps.prisonregister.model.AreaRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
 import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.VIDEOLINK_CONFERENCING_CENTRE
-import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
-import uk.gov.justice.digital.hmpps.prisonregister.model.PhoneNumberRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.LocalAuthorityRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.OperatorRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.PayrollRegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonFilter
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonType
+import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
-import uk.gov.justice.digital.hmpps.prisonregister.model.WebAddressRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.InsertPrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.PrisonTypeDto
@@ -50,12 +52,23 @@ import java.util.Optional
 class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
   private val contactDetailsRepository: ContactDetailsRepository = mock()
-  private val emailAddressRepository: EmailAddressRepository = mock()
-  private val phoneNumberRepository: PhoneNumberRepository = mock()
-  private val webAddressRepository: WebAddressRepository = mock()
   private val telemetryClient: TelemetryClient = mock()
+  private val areaRepository: AreaRepository = mock()
+  private val regionRepository: RegionRepository = mock()
+  private val payrollRegionRepository: PayrollRegionRepository = mock()
+  private val localAuthorityRepository: LocalAuthorityRepository = mock()
+  private val operatorRepository: OperatorRepository = mock()
 
-  private val prisonService = PrisonService(prisonRepository, contactDetailsRepository, emailAddressRepository, phoneNumberRepository, webAddressRepository, telemetryClient)
+  private val prisonService = PrisonService(
+    prisonRepository,
+    contactDetailsRepository,
+    telemetryClient,
+    areaRepository = areaRepository,
+    regionRepository = regionRepository,
+    payrollRegionRepository = payrollRegionRepository,
+    localAuthorityRepository = localAuthorityRepository,
+    operatorRepository = operatorRepository,
+  )
 
   @BeforeEach
   fun resetMocks() {
@@ -293,8 +306,20 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("MDI", "A prison 1", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+        prisonService.updatePrison("MDI", UpdatePrisonDto("A prison 1", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI), operator = null))
+      assertThat(updatedPrison).isEqualTo(
+        PrisonDto(
+          prisonId = "MDI",
+          prisonName = "A prison 1",
+          active = true,
+          lthse = false,
+          male = true,
+          female = false,
+          contracted = true,
+          currentOperator = null,
+          types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description)),
+        ),
+      )
       verify(prisonRepository).findById("MDI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
@@ -326,6 +351,7 @@ class PrisonServiceTest {
           female = false,
           contracted = true,
           categories = setOf(Category.D),
+          currentOperator = null,
         ),
       )
 
@@ -358,6 +384,7 @@ class PrisonServiceTest {
             PrisonTypeDto(Type.HMP, Type.HMP.description),
             PrisonTypeDto(Type.YOI, Type.YOI.description),
           ),
+          currentOperator = null,
         ),
       )
 
@@ -372,8 +399,32 @@ class PrisonServiceTest {
       )
 
       val updatedPrison =
-        prisonService.updatePrison("CFI", UpdatePrisonDto("HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, female = false, male = true, contracted = true, prisonTypes = setOf(Type.YOI)))
-      assertThat(updatedPrison).isEqualTo(PrisonDto("CFI", "HMP Cardiff", prisonNameInWelsh = "Carchar Caerdydd", active = true, lthse = false, male = true, female = false, contracted = true, types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description))))
+        prisonService.updatePrison(
+          "CFI",
+          UpdatePrisonDto(
+            "HMP Cardiff",
+            prisonNameInWelsh = "Carchar Caerdydd",
+            active = true,
+            female = false,
+            male = true,
+            contracted = true,
+            prisonTypes = setOf(Type.YOI),
+          ),
+        )
+      assertThat(updatedPrison).isEqualTo(
+        PrisonDto(
+          "CFI",
+          "HMP Cardiff",
+          prisonNameInWelsh = "Carchar Caerdydd",
+          active = true,
+          lthse = false,
+          male = true,
+          female = false,
+          contracted = true,
+          currentOperator = null,
+          types = listOf(PrisonTypeDto(Type.YOI, Type.YOI.description)),
+        ),
+      )
       verify(prisonRepository).findById("CFI")
       verify(telemetryClient).trackEvent(eq("prison-register-update"), any(), isNull())
     }
@@ -385,7 +436,7 @@ class PrisonServiceTest {
     @Test
     fun `delete email not found`() {
       val throwNotFound = true
-      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      whenever(contactDetailsRepository.getByPrison_PrisonIdAndType(anyString(), any())).thenReturn(null)
       assertThatThrownBy { prisonService.deleteEmailAddress("XXX", DepartmentType.OFFENDER_MANAGEMENT_UNIT, throwNotFound) }
         .isInstanceOf(ContactDetailsNotFoundException::class.java)
     }
@@ -412,7 +463,7 @@ class PrisonServiceTest {
       val contactDetailDto = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, null, null, null)
       val prison = Prison("BRI", "Bri Prison", active = true)
       val contactDetailEntity = ContactDetails(
-        prison.prisonId,
+        prison,
         contactDetailDto.type,
         emailAddress = null,
         webAddress = null,
@@ -439,7 +490,7 @@ class PrisonServiceTest {
       val prison = Prison("BRI", "Bri Prison", active = true)
 
       whenever(prisonRepository.findById(any())).thenReturn(Optional.of(prison))
-      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      whenever(contactDetailsRepository.getByPrison_PrisonIdAndType(anyString(), any())).thenReturn(null)
       assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
         .isInstanceOf(ContactDetailsNotFoundException::class.java)
     }
@@ -450,7 +501,7 @@ class PrisonServiceTest {
       val updateRequest = ContactDetailsDto(VIDEOLINK_CONFERENCING_CENTRE, emailAddress = "xxx@moj.gov.uk", phoneNumber = "01234567899", webAddress = "www.xxxmojdigital.blog.gov.uk")
 
       whenever(prisonRepository.findById(any())).thenThrow(EntityNotFoundException::class.java)
-      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      whenever(contactDetailsRepository.getByPrison_PrisonIdAndType(anyString(), any())).thenReturn(null)
 
       assertThatThrownBy { prisonService.updateContactDetails("XXX", updateRequest, removeIfNull) }
         .isInstanceOf(EntityNotFoundException::class.java)
@@ -462,7 +513,7 @@ class PrisonServiceTest {
 
     @Test
     fun `prison getReferenceById not found`() {
-      whenever(contactDetailsRepository.getByPrisonIdAndType(anyString(), any())).thenReturn(null)
+      whenever(contactDetailsRepository.getByPrison_PrisonIdAndType(anyString(), any())).thenReturn(null)
       whenever(prisonRepository.findById("XXX")).thenReturn(Optional.empty())
       assertThatThrownBy { prisonService.setEmailAddress("XXX", "email@gov.uk", DepartmentType.OFFENDER_MANAGEMENT_UNIT) }
         .isInstanceOf(PrisonNotFoundException::class.java)

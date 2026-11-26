@@ -1,7 +1,10 @@
 prison:
   type: object
-  required: [prisonId]
+  required: [source, prisonId]
   properties:
+    source:
+      type: string
+      description: The source of the information, either DPS or NOMIS
     prisonId:
       type: string
       description: Prison ID

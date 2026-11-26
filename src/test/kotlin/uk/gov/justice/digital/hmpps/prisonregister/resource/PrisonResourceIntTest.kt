@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -77,6 +76,30 @@ class PrisonResourceIntTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `find all prisons returns description`() {
+      whenever(prisonRepository.findAll()).thenReturn(
+        listOf(Prison("MDI", "Moorland HMP", description = "Moorland description", active = true)),
+      )
+      webTestClient.get().uri("/prisons")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$[0].prisonDescription").isEqualTo("Moorland description")
+    }
+
+    @Test
+    fun `find prison by id returns description`() {
+      whenever(prisonRepository.findAll()).thenReturn(
+        listOf(Prison("MDI", "Moorland HMP", description = "Moorland description", active = true)),
+      )
+      webTestClient.get().uri("/prisons/id/MDI")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$.prisonDescription").isEqualTo("Moorland description")
+    }
+
+    @Test
     fun `find prison by id`() {
       val prison = Prison("MDI", "Moorland HMP", active = true, male = true, female = false, contracted = true, categories = mutableSetOf(Category.D))
       val mdiAddress = Address(
@@ -98,9 +121,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
       prison.addresses = setOf(mdiAddress)
       prison.prisonOperators = setOf(Operator(1, "PSP"))
 
-      whenever(prisonRepository.findById(anyString())).thenReturn(
-        Optional.of(prison),
-      )
+      whenever(prisonRepository.findAll()).thenReturn(listOf(prison))
       webTestClient.get().uri("/prisons/id/MDI")
         .exchange()
         .expectStatus().isOk
@@ -146,8 +167,8 @@ class PrisonResourceIntTest : IntegrationTestBase() {
       )
 
       val prisonsList = listOf("MDI", "LEI")
-      whenever(prisonRepository.findAllByPrisonIdIsIn(prisonsList)).thenReturn(
-        prisons,
+      whenever(prisonRepository.findAll()).thenReturn(
+        prisons + Prison("BXI", "Brixton HMP", active = true, male = true),
       )
       webTestClient.post().uri("/prisons/prisonsByIds")
         .header("Content-Type", "application/json")
@@ -159,7 +180,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
 
     @Test
     fun `find prisons by ids allows null list`() {
-      whenever(prisonRepository.findAllByPrisonIdIsIn(emptyList())).thenReturn(emptyList())
+      whenever(prisonRepository.findAll()).thenReturn(listOf(Prison("LEI", "Leeds HMP", active = true, female = true)))
 
       webTestClient.post().uri("/prisons/prisonsByIds")
         .header("Content-Type", "application/json")
@@ -171,7 +192,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
 
     @Test
     fun `find prisons by ids ignores null values in list`() {
-      whenever(prisonRepository.findAllByPrisonIdIsIn(emptyList())).thenReturn(emptyList())
+      whenever(prisonRepository.findAll()).thenReturn(listOf(Prison("LEI", "Leeds HMP", active = true, female = true)))
 
       webTestClient.post().uri("/prisons/prisonsByIds")
         .header("Content-Type", "application/json")
@@ -352,5 +373,7 @@ class PrisonResourceIntTest : IntegrationTestBase() {
     }
   }
 
-  private fun String.loadJson(): String = PrisonResourceIntTest::class.java.getResource("$this.json").readText()
+  private fun String.loadJson(): String =
+    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    PrisonResourceIntTest::class.java.getResource("$this.json").readText()
 }

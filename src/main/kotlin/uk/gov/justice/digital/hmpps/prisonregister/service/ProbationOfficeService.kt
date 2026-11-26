@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyResponse
 import uk.gov.justice.digital.hmpps.prisonregister.resource.LegacyAgencyType
 import uk.gov.justice.digital.hmpps.prisonregister.resource.ProbationOfficeDto
+import uk.gov.justice.digital.hmpps.prisonregister.resource.ProbationOfficeSummaryDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.UpdateProbationOfficeDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyAddressDto
@@ -51,10 +52,25 @@ class ProbationOfficeService(
     probationOfficeRepository.deleteAll()
   }
 
+  @Transactional(readOnly = true)
   fun getAllIds(): List<String> = probationOfficeRepository.findAll().map { it.probationOfficeId }
 
+  @Transactional(readOnly = true)
   fun getAll(active: Boolean?, textSearch: String?): List<ProbationOfficeDto> = probationOfficeRepository.findAll(ProbationOfficeFilter(active, textSearch)).map { it.toProbationOfficeDto() }
 
+  @Transactional(readOnly = true)
+  fun getAllSummaries(active: Boolean?, textSearch: String?): List<ProbationOfficeSummaryDto> = probationOfficeRepository.findAllSummaries(
+    active = active,
+    textSearch = textSearch?.takeUnless { it.isBlank() }?.let { "%${it.uppercase()}%" },
+  ).map {
+    ProbationOfficeSummaryDto(
+      probationOfficeId = it.probationOfficeId,
+      probationOfficeName = it.probationOfficeName,
+      active = it.active,
+    )
+  }
+
+  @Transactional(readOnly = true)
   fun findById(probationOfficeId: String): ProbationOfficeDto = probationOfficeRepository.findByIdOrNull(probationOfficeId)?.toProbationOfficeDto()
     ?: throw EntityNotFoundException("Probation office $probationOfficeId not found")
 

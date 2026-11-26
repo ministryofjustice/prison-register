@@ -1,19 +1,24 @@
 package uk.gov.justice.digital.hmpps.prisonregister.resource
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.Hibernate
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -23,23 +28,58 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.model.Category
+import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetails
+import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.Type
+import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditService
+import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_INSERT
 import uk.gov.justice.digital.hmpps.prisonregister.service.AuditType.PRISON_REGISTER_UPDATE
 import uk.gov.justice.digital.hmpps.prisonregister.service.CLIENT_CAN_MAINTAIN_PRISON_DETAILS
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
 import java.time.Instant
+import java.time.LocalDate
 
 @RestController
 @Validated
-@RequestMapping(name = "Prison Maintenance", path = ["/prison-maintenance"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(name = "Prison Maintenance", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(
+  name = "Prison Maintenance API",
+  description = """
+  <h2>API for updating HMPPS Prison data</h2>
+  <p>Requires ROLE_MAINTAIN_REF_DATA or ROLE_MAINTAIN_PRISON_DATA or HMPPS_REGISTERS_API__MAINTAIN__RW with write scope</p> 
+  <p>Provides ability to update HMPPS Prison data</p>""",
+)
 class PrisonMaintenanceResource(
   private val prisonService: PrisonService,
   private val snsService: SnsService,
   private val auditService: AuditService,
 ) {
+  @Operation(summary = "Get details of specified prison", description = "Information on a specific prison")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  @PreAuthorize("$CLIENT_CAN_MAINTAIN_PRISON_DETAILS or hasAnyRole('HMPPS_REGISTERS_API__R') or hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @Tags(
+    Tag(name = "Prison Maintenance API"),
+    Tag(name = "HMPPS Agency Register API"),
+  )
+  @GetMapping(value = ["/prison-maintenance/id/{prisonId}/details", "/prisons/id/{prisonId}/details"])
+  fun getPrisonDetailsById(
+    @Schema(description = "Prison ID", example = "MDI", required = true)
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
+    prisonId: String,
+  ): FullPrisonDto = prisonService.findDetailsById(prisonId)
+
   @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
@@ -76,7 +116,7 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PostMapping("")
+  @PostMapping("/prison-maintenance")
   fun insertPrison(
     @RequestBody @Valid
     prisonInsertRecord: InsertPrisonDto,
@@ -134,7 +174,7 @@ class PrisonMaintenanceResource(
       ),
     ],
   )
-  @PutMapping("/id/{prisonId}")
+  @PutMapping("/prison-maintenance/id/{prisonId}")
   fun updatePrison(
     @Schema(description = "Prison Id", example = "MDI", required = true)
     @PathVariable
@@ -153,9 +193,69 @@ class PrisonMaintenanceResource(
     )
     return updatedPrison
   }
+
+  @PreAuthorize(CLIENT_CAN_MAINTAIN_PRISON_DETAILS)
+  @Operation(
+    summary = "Updates specified prison area details",
+    description = "Updates prison area information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA",
+    security = [SecurityRequirement(name = "MAINTAIN_REF_DATA", scopes = ["write"]), SecurityRequirement(name = "MAINTAIN_PRISON_DATA", scopes = ["write"])],
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = UpdatePrisonAreaDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Prison Area Information Updated",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Information request to update prison area",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to make prison update",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Prison ID not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PutMapping("/prison-maintenance/id/{prisonId}/area")
+  fun updatePrisonArea(
+    @Schema(description = "Prison Id", example = "MDI", required = true)
+    @PathVariable
+    @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
+    prisonId: String,
+    @RequestBody @Valid
+    request: UpdatePrisonAreaDto,
+  ): PrisonDto {
+    val updatedPrison = prisonService.updatePrisonArea(prisonId, request)
+    val now = Instant.now()
+    snsService.sendPrisonRegisterAreaAmendedEvent(prisonId, now)
+    auditService.sendAuditEvent(
+      AuditType.PRISON_REGISTER_AREA_UPDATE.name,
+      prisonId to request,
+      now,
+    )
+    return updatedPrison
+  }
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 @Schema(description = "Prison Insert Record")
 data class InsertPrisonDto(
   @Schema(description = "Prison Id", example = "MDI", required = true)
@@ -182,7 +282,6 @@ data class InsertPrisonDto(
   val female: Boolean = false,
 
   @Schema(description = "If this is a contracted prison", required = true)
-  @field:NotNull(message = "Prison contracted status is required")
   val contracted: Boolean,
 
   @Schema(description = "If this prison is part of the long term high security estate", required = false)
@@ -196,9 +295,12 @@ data class InsertPrisonDto(
 
   @Schema(description = "Set of categories for this prison", example = "[\"A\"]", required = false)
   val categories: Set<Category> = setOf(),
+
+  @Schema(description = "Operator of the prison: PSP for a public sector prison, or the provider of a contracted prison", required = false)
+  val operator: PrisonOperator? = null,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 @Schema(description = "Prison Update Record")
 data class UpdatePrisonDto(
   @Schema(description = "Name of the prison", example = "HMP Moorland", required = true)
@@ -209,6 +311,9 @@ data class UpdatePrisonDto(
   @Schema(description = "Welsh name of the prison", example = "Carchar Brynbuga", required = false)
   @field:Size(min = 3, max = 80, message = "Welsh prison name must be between 3 and 80 letters")
   val prisonNameInWelsh: String? = null,
+
+  @Schema(description = "Description of the prison", example = "HMP BRIXTON", required = false)
+  val prisonDescription: String? = null,
 
   @Schema(description = "Whether the prison is still active", required = true)
   val active: Boolean,
@@ -230,4 +335,81 @@ data class UpdatePrisonDto(
 
   @Schema(description = "Set of categories for this prison", example = "[\"A\"]", required = false)
   val categories: Set<Category> = setOf(),
+
+  @Schema(description = "Operator of the prison. When not provided, the operator will not be updated", required = false)
+  val operator: PrisonOperator? = null,
+)
+
+@Schema(description = "Prison Information")
+@JsonInclude(NON_NULL)
+data class DepartmentDto(val type: DepartmentType, val emailAddress: String?, val phoneNumber: String?, val webAddress: String?) {
+  constructor(type: ContactDetails) : this(
+    type.type,
+    type.emailAddress?.value,
+    type.phoneNumber?.value,
+    type.webAddress?.value,
+  )
+}
+
+@Schema(description = "Prison Information")
+@JsonInclude(NON_NULL)
+data class FullPrisonDto(
+  @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
+  @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
+  @Schema(description = "Name of the prison in Welsh", example = "Carchar Brynbuga", required = false) val prisonNameInWelsh: String? = null,
+  @Schema(description = "Description of the prison", example = "HMP BRIXTON", required = false) val prisonDescription: String? = null,
+  @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
+  @Schema(description = "Whether the prison has male prisoners") val male: Boolean,
+  @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
+  @Schema(description = "Whether the prison is contracted") val contracted: Boolean,
+  @Schema(description = "Whether the prison is part of long term high security estate") val lthse: Boolean,
+  @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
+  @Schema(description = "List of the categories for this prison") val categories: Set<Category> = setOf(),
+  @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
+  @Schema(description = "List of operators for this prison") @Deprecated("Use currentOperator instead") val operators: List<PrisonOperatorDto> = listOf(),
+  @Schema(description = "The current operator for this prison") val currentOperator: PrisonOperator?,
+  @Schema(description = "List of departments for this prison") val departments: List<DepartmentDto> = listOf(),
+  @Schema(description = "Date made inactive", example = "2023-12-31") val inactiveDate: LocalDate?,
+  @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
+  @Schema(description = "Area") val area: CodeDescription?,
+  @Schema(description = "Region") val region: CodeDescription?,
+  @Schema(description = "Geographical Area") val geographicalArea: CodeDescription?,
+  @Schema(description = "Local Authority") val localAuthority: CodeDescription?,
+  @Schema(description = "Prisoner Payroll Region") val payrollRegion: CodeDescription?,
+) {
+  constructor(prison: Prison) : this(
+    prisonId = prison.prisonId,
+    prisonName = prison.name,
+    prisonNameInWelsh = prison.prisonNameInWelsh,
+    prisonDescription = prison.description,
+    active = prison.active,
+    male = prison.male,
+    female = prison.female,
+    contracted = prison.contracted,
+    lthse = prison.lthse,
+    types = prison.prisonTypes.map { PrisonTypeDto(it) },
+    categories = prison.categories.also { Hibernate.initialize(it) },
+    addresses = prison.addresses.map { AddressDto(it) },
+    operators = prison.prisonOperators.map { PrisonOperatorDto(it) },
+    currentOperator = prison.prisonOperators.firstOrNull()?.let { PrisonOperator(id = it.id, name = it.name) },
+    departments = prison.departments.map { DepartmentDto(it) },
+    inactiveDate = prison.inactiveDate,
+    cjitCode = prison.cjitCode,
+    area = prison.area?.let { area -> CodeDescription(area.code, area.description) },
+    region = prison.region?.let { region -> CodeDescription(region.code, region.description) },
+    geographicalArea = prison.geographicalArea?.let { area -> CodeDescription(area.code, area.description) },
+    payrollRegion = prison.payrollRegion?.let { pr -> CodeDescription(pr.code, pr.description) },
+    localAuthority = prison.localAuthority?.let { localAuthority -> CodeDescription(localAuthority.code, localAuthority.description) },
+  )
+}
+
+@Schema(description = "Area prison data to update")
+@JsonInclude(NON_NULL)
+data class UpdatePrisonAreaDto(
+  @Schema(description = "CJIT Code", example = "123456789") val cjitCode: String?,
+  @Schema(description = "Area") val areaCode: String?,
+  @Schema(description = "Region") val regionCode: String?,
+  @Schema(description = "Geographical Area") val geographicalAreaCode: String?,
+  @Schema(description = "Local Authority") val localAuthorityCode: String?,
+  @Schema(description = "Prisoner Payroll Region") val payrollRegionCode: String?,
 )

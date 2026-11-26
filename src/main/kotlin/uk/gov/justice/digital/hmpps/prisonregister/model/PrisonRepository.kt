@@ -16,10 +16,10 @@ interface PrisonRepository :
   @Query("FROM Prison p where (:active is null or p.active = :active) order by p.name")
   fun findByActiveOrderByPrisonName(active: Boolean?): List<Prison>
 
-  fun findOneByGpPractice(gpPractice: String): Prison?
+  @Query("select p.prisonId from Prison p")
+  fun findAllPrisonIds(): List<String>
 
-  @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
-  fun findAllByPrisonIdIsIn(ids: List<String>): List<Prison>
+  fun findOneByGpPractice(gpPractice: String): Prison?
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   override fun findById(id: String): Optional<Prison>
@@ -29,4 +29,7 @@ interface PrisonRepository :
 
   @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
   override fun findAll(): List<Prison>
+
+  @EntityGraph(value = "prison-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
+  fun findAllByActiveTrue(): List<Prison>
 }

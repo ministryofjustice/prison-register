@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -32,6 +34,13 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/legacy", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW')")
+@Tag(
+  name = "NOMIS Synchronisation API",
+  description = """
+  <h2>API for synchronising data from and to NOMIS</h2>
+  <p>Requires ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW</p> 
+  <p>Used only for the Dps to NOMIS synchronisation service</p>""",
+)
 class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: LegacySyncService, private val snsService: SnsService) {
 
   @Operation(
@@ -73,7 +82,6 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
     @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
     agencyId: String,
     @RequestBody @Valid
-    @Suppress("unused")
     agencyDto: LegacyAgencyDto,
   ): LegacyAgencyResponse = legacySyncService.createOrUpdateAgency(agencyId, agencyDto).also {
     val now = Instant.now()
@@ -99,6 +107,90 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
       telemetry.trackEvent("legacy-sync-agency-created", mapOf("agencyId" to agencyId), null)
     }
   }
+
+  @Operation(
+    summary = "Creates or updates a prison",
+    description = "Used for synchronising data from NOMIS. This creates a prison, or updates it if it already exists, and publishes the corresponding prison-type domain event with source NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = LegacyAgencyDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Prison created or updated",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad Information request to create or update prison",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to add or update agency",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PostMapping("/sync/prison/id/{agencyId}")
+  fun createOrUpdatePrison(
+    @Schema(description = "NOMIS Agency Id", example = "WWI", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+    agencyId: String,
+    @RequestBody @Valid
+    agencyDto: LegacyAgencyDto,
+  ): LegacyAgencyResponse = legacySyncService.createOrUpdatePrison(agencyId, agencyDto).also {
+    val now = Instant.now()
+    if (it.updated) {
+      snsService.sendPrisonRegisterAmendedEvent(agencyId, now, "NOMIS")
+      telemetry.trackEvent("legacy-sync-prison-updated", mapOf("agencyId" to agencyId), null)
+    } else {
+      snsService.sendPrisonRegisterInsertedEvent(agencyId, now, "NOMIS")
+      telemetry.trackEvent("legacy-sync-prison-created", mapOf("agencyId" to agencyId), null)
+    }
+  }
+
+  @Operation(
+    summary = "Updates prison phone number by creating or updating a department record",
+    description = "Used for synchronising data from NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = [
+        Content(
+          mediaType = "application/json",
+          schema = Schema(implementation = LegacyPrisonPhoneDto::class),
+        ),
+      ],
+    ),
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Prison phone number updated",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @PutMapping("/sync/prison/id/{agencyId}/phone-number")
+  fun updatePrisonPhoneNumber(
+    @Schema(description = "NOMIS Agency Id", example = "WWI", required = true)
+    @PathVariable
+    @Size(min = 2, max = 6, message = "Agency Id must be between 2 and 6 characters")
+    agencyId: String,
+    @RequestBody @Valid
+    agencyDto: LegacyPrisonPhoneDto,
+  ): DepartmentDto? = legacySyncService.updatePrisonNumber(agencyId, agencyDto)
 
   @Operation(
     summary = "Migrates an agency of any type",
@@ -173,8 +265,31 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
   fun getAllAgencyIds(): AgencyIdsResponse = legacySyncService.getAllIds()
 
   @Operation(
+    summary = "Returns IDs of all prisons for reconciliation",
+    description = "Returns the IDs of all prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Prison IDs returned",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Incorrect permissions to retrieve prison IDs",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/reconciliation/prison/ids/all")
+  fun getAllPrisonIds(): AgencyIdsResponse = legacySyncService.getAllPrisonIds()
+
+  @Operation(
     summary = "Returns details of an agency of any type for reconciliation",
-    description = "Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Returns the details of any agency (prison, court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "200",
@@ -207,7 +322,7 @@ class LegacySyncResource(val telemetry: TelemetryClient, val legacySyncService: 
 
   @Operation(
     summary = "Returns details of an agency of any type",
-    description = "Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
+    description = "Returns the details of any agency (prison, court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW",
     responses = [
       ApiResponse(
         responseCode = "200",
@@ -324,6 +439,10 @@ data class LegacyAgencyDto(
   @Schema(description = "emailAddresses") val emailAddresses: List<LegacyAgencyEmailDto>,
   @Schema(description = "phoneNumbers") val phoneNumbers: List<LegacyAgencyPhoneDto>,
 )
+
+@Schema(description = "Prison phone number")
+@JsonInclude(NON_NULL)
+data class LegacyPrisonPhoneDto(val phoneNumber: LegacyAgencyPhoneDto)
 
 @JsonInclude(NON_NULL)
 data class LegacyAgencyAddressDto(

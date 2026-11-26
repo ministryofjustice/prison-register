@@ -1,0 +1,9 @@
+package uk.gov.justice.digital.hmpps.prisonregister.model
+
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface PrisonTypeRepository : JpaRepository<PrisonType, Long> {
+  fun type(type: Type): MutableList<PrisonType>
+}

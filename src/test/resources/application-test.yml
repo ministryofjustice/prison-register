@@ -20,6 +20,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        # Lets tests count the queries a request makes (AgencyListQueryCountIntTest)
+        generate_statistics: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/prison-register?sslmode=prefer

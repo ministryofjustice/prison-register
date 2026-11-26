@@ -3,7 +3,9 @@ generic-service:
   replicaCount: 2
 
   ingress:
-    host: prison-register-preprod.hmpps.service.justice.gov.uk
+    hosts:
+      - prison-register-preprod.hmpps.service.justice.gov.uk
+      - agency-register-preprod.hmpps.service.justice.gov.uk
 
   scheduledDowntime:
     enabled: true

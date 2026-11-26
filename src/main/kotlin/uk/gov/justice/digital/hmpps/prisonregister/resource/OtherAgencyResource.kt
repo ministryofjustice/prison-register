@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -56,11 +57,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/other-agencies", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Other Agency Maintenance API",
+  description = """
+  <h2>API for updating Other Agency data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Other Agency data, for instance PECS, Airports</p>""",
+)
 class OtherAgencyResource(
   private val otherAgencyService: OtherAgencyService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{agencyId}")
   @Operation(summary = "Get specified agency", description = "Information on a specific agency")
   @ApiResponses(
@@ -78,6 +88,8 @@ class OtherAgencyResource(
     agencyId: String,
   ): OtherAgencyDto = otherAgencyService.findById(agencyId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all agencies", description = "Information on all agencies")
   @ApiResponses(
@@ -97,6 +109,24 @@ class OtherAgencyResource(
     textSearch = textSearch,
     otherAgencyTypeCodes = otherAgencyTypeCodes,
   )
+
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all other agencies", description = "Other agency IDs, names, active status and agency types ordered by agency ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getOtherAgencySummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "Agency type codes to filter by", example = "AIRPORT, PECS", required = false) @RequestParam otherAgencyTypeCodes: List<OtherAgencyType>? = listOf(),
+  ): List<OtherAgencySummaryDto> = otherAgencyService.getAllSummaries(active, textSearch, otherAgencyTypeCodes)
 
   @Operation(
     summary = "Create a new agency",
@@ -757,6 +787,19 @@ class OtherAgencyResource(
     )
   }
 }
+
+@Schema(description = "Other Agency summary information")
+@JsonInclude(NON_NULL)
+data class OtherAgencySummaryDto(
+  @Schema(description = "Agency ID", example = "SHEFCC")
+  val agencyId: String,
+  @Schema(description = "Name", example = "Sheffield Agency")
+  val agencyName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+  @Schema(description = "Agency type", example = "PROBATION_CRC")
+  val agencyType: String,
+)
 
 @Schema(description = "Other Agency Information")
 @JsonInclude(NON_NULL)

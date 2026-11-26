@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -49,11 +50,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/hospitals", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Hospital Maintenance API",
+  description = """
+  <h2>API for updating Hospital data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Hospital data</p>""",
+)
 class HospitalResource(
   private val hospitalService: HospitalService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{hospitalId}")
   @Operation(summary = "Get specified hospital", description = "Information on a specific hospital")
   @ApiResponses(
@@ -71,6 +81,8 @@ class HospitalResource(
     hospitalId: String,
   ): HospitalDto = hospitalService.findById(hospitalId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all hospitals", description = "Information on all hospitals")
   @ApiResponses(
@@ -86,6 +98,24 @@ class HospitalResource(
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
     @Parameter(description = "High security", example = "true", required = false) @RequestParam highSecurity: Boolean? = null,
   ): List<HospitalDto> = hospitalService.getAll(active, textSearch, highSecurity)
+
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all hospitals", description = "Hospital IDs, names, active status and high security flag ordered by hospital ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getHospitalSummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+    @Parameter(description = "High security", example = "true", required = false) @RequestParam highSecurity: Boolean? = null,
+  ): List<HospitalSummaryDto> = hospitalService.getAllSummaries(active, textSearch, highSecurity)
 
   @Operation(
     summary = "Create a new hospital",
@@ -575,6 +605,19 @@ class HospitalResource(
     )
   }
 }
+
+@Schema(description = "Hospital summary information")
+@JsonInclude(NON_NULL)
+data class HospitalSummaryDto(
+  @Schema(description = "Hospital ID", example = "NWCLYC")
+  val hospitalId: String,
+  @Schema(description = "Name", example = "N Staffs Youth Hospital - Newcastle")
+  val hospitalName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+  @Schema(description = "Whether high security")
+  val highSecurity: Boolean,
+)
 
 @Schema(description = "Hospital Information")
 @JsonInclude(NON_NULL)

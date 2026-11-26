@@ -3,10 +3,13 @@ Prison registry services for hmpps
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/prison-register/tree/master.svg?style=svg)](https://circleci.com/gh/ministryofjustice/prison-register)
 [![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/prison-register/badge.svg)](https://snyk.io/test/github/ministryofjustice/prison-register)
-[![API docs](https://img.shields.io/badge/API_docs_(needs_VPN)-view-85EA2D.svg?logo=swagger)](https://prison-register-dev.hmpps.service.justice.gov.uk/swagger-ui.html)
+[![API docs](https://img.shields.io/badge/API_docs_(needs_VPN)-view-85EA2D.svg?logo=swagger)](https://agency-register-dev.hmpps.service.justice.gov.uk/swagger-ui.html)
 [![Event docs](https://img.shields.io/badge/Event_docs-view-85EA2D.svg)](https://studio.asyncapi.com/?url=https://raw.githubusercontent.com/ministryofjustice/prison-register/main/async-api.yml&readOnly)
+[![Data dictionary](https://img.shields.io/badge/Data_dictionary-view-85EA2D.svg)](https://ministryofjustice.github.io/prison-register/schema-spy-report/)
 
 Self-contained fat-jar micro-service to publish prison information
+
+**Developer documentation for the API and the [hmpps-registers](https://github.com/ministryofjustice/hmpps-registers) front end is in [docs/](docs/README.md)**: architecture, process flows, data model, getting started, deployment and common problems.
  
 ### Building
 
@@ -113,6 +116,39 @@ Then compare to see what's changed:
 ```bash
 diff old_gp_practice.sql new_gp_practice.sql
 ```
+
+## Contact ownership
+
+Email, phone and web address values may be duplicated. Each prison department or agency owns its
+own contact rows; JPA cascade and orphan removal manage their lifecycle without value-based reuse
+or manual cleanup. Optional prison contacts remain represented by absent join-table rows.
+
+Migration `V1_65` splits existing shared rows, retaining the original ID for one owner and assigning
+new IDs to the remaining owners. Agency contact IDs are prioritised over prison contact IDs;
+if agencies share a row, only one can retain its ID. Unshared IDs and all contact values are preserved.
+Deploy with old application instances stopped before migration so they cannot recreate shared ownership.
+
+## Data dictionary
+
+Every merge to `main` publishes a [SchemaSpy report](https://ministryofjustice.github.io/prison-register/schema-spy-report/)
+of the database and a flat [CSV data dictionary](https://ministryofjustice.github.io/prison-register/schema-spy-report/data-dictionary.csv)
+to GitHub Pages (`.github/workflows/schema-spy.yml`). Both are built from a database migrated by Flyway,
+so they match the migrations.
+
+To build them locally:
+
+```bash
+docker compose -f docker-compose-schema-spy.yml up -d --wait
+./gradlew -Pinit-db=true test --tests uk.gov.justice.digital.hmpps.prisonregister.integration.InitialiseDatabase
+scripts/generate-data-dictionary.sh
+```
+
+Every table, view and column has a description, and every column a sensitivity tag such as
+`[Sensitivity: NONE]` (`V1_71__schema_comments.sql` explains the tags). `SchemaCommentsTest` fails the
+build if one is missing, so a migration that adds a table or column must add its `COMMENT ON` too.
+
+The compose file needs ports 5432 and 4566 to be free. If another database is already on 5432, start
+one on a different port and pass it in with `SPRING_DATASOURCE_URL` and `DB_PORT`.
 
 ## Testing
 

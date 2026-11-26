@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
+import org.springframework.cache.CacheManager
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -67,9 +68,19 @@ abstract class IntegrationTestBase : TestBase() {
     System.setProperty("http.keepAlive", "false")
   }
 
+  @Autowired
+  protected lateinit var cacheManager: CacheManager
+
   @BeforeEach
   fun `clear queues`() {
     testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
+  }
+
+  // Some tests set up data with mocks or plain SQL, which does not clear the caches the way a
+  // committed change does, so start every test with empty caches
+  @BeforeEach
+  fun `clear caches`() {
+    cacheManager.cacheNames.forEach { cacheManager.getCache(it)?.clear() }
   }
 
   fun createAnyRole(): (HttpHeaders) -> Unit = setAuthorisation(roles = listOf("ANY_ROLE"), scopes = listOf("something"))

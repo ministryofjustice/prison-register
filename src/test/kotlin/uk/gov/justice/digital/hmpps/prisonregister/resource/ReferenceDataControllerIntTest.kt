@@ -27,6 +27,7 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
         "/reference-data/local-authorities",
         "/reference-data/areas?region=SW",
         "/reference-data/subareas?area=32",
+        "/reference-data/prison-operators",
       ],
     )
     fun `requires a valid authentication token`(uri: String) {
@@ -48,6 +49,7 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
         "/reference-data/local-authorities",
         "/reference-data/areas?region=SW",
         "/reference-data/subareas?area=32",
+        "/reference-data/prison-operators",
       ],
     )
     fun `requires correct role`(uri: String) {
@@ -70,6 +72,7 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
         "/reference-data/local-authorities",
         "/reference-data/areas?region=SW",
         "/reference-data/subareas?area=32",
+        "/reference-data/prison-operators",
       ],
     )
     fun `allowed with correct role`(uri: String) {
@@ -276,6 +279,25 @@ class ReferenceDataControllerIntTest : IntegrationTestBase() {
       assertThat(towns).hasSizeGreaterThan(100)
       assertThat(towns.map { it.description }).contains("Sheffield", "Chelmsford", "Colchester")
       assertThat(towns).contains(CodeDescription(code = "25343", description = "Sheffield"))
+    }
+  }
+
+  @DisplayName("GET /reference-data/prison-operators")
+  @Nested
+  inner class GetPrisonOperators {
+    @Test
+    fun `will return all prison operators`() {
+      val operators: List<PrisonOperator> = webTestClient.get()
+        .uri("/reference-data/prison-operators")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyList(PrisonOperator::class.java)
+        .returnResult().responseBody!!
+
+      assertThat(operators).hasSizeGreaterThan(1)
+      assertThat(operators.map { it.name }).contains("PSP")
     }
   }
 }

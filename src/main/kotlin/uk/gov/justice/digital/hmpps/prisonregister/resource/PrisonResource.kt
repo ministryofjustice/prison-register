@@ -9,9 +9,9 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
-import org.hibernate.Hibernate
 import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,12 +31,24 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.Type
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.PrisonNameDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.model.PrisonRequest
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonAddressService
+import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonLookupService
 import uk.gov.justice.digital.hmpps.prisonregister.service.PrisonService
 
 @RestController
 @Validated
 @RequestMapping("/prisons", produces = [MediaType.APPLICATION_JSON_VALUE])
-class PrisonResource(private val prisonService: PrisonService, private val addressService: PrisonAddressService) {
+@Tag(
+  name = "HMPPS Prison Register API",
+  description = """
+  <h2>API for HMPPS and Public Clients</h2>
+  <p>No role required</p> 
+  <p>Provides read-only access to HMPPS Prison data</p>""",
+)
+class PrisonResource(
+  private val prisonService: PrisonService,
+  private val prisonLookupService: PrisonLookupService,
+  private val addressService: PrisonAddressService,
+) {
   @GetMapping("/id/{prisonId}")
   @Operation(summary = "Get specified prison", description = "Information on a specific prison")
   @ApiResponses(
@@ -53,7 +65,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
     @PathVariable
     @Size(min = 3, max = 6, message = "Prison Id must be between 3 and 6 letters")
     prisonId: String,
-  ): PrisonDto = prisonService.findById(prisonId)
+  ): PrisonDto = prisonLookupService.findById(prisonId)
 
   @GetMapping
   @Operation(summary = "Get all prisons", description = "All prisons")
@@ -71,7 +83,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
       ),
     ],
   )
-  fun getPrisons(): List<PrisonDto> = prisonService.findAll()
+  fun getPrisons(): List<PrisonDto> = prisonLookupService.findAll()
 
   @GetMapping("/id/{prisonId}/address/{addressId}")
   @Operation(summary = "Get specified prison", description = "Information on a specific prison address")
@@ -139,7 +151,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   fun getPrisonNames(
     @Parameter(description = "If active is not set, return all prisons, otherwise return only the active or inactive ones based on the value", example = "true", required = false) @RequestParam active: Boolean?,
     @Parameter(description = "If parameter prisonId is not set, return the names of all prisons, otherwise return only the one corresponding to the prisonId code.  Filtering on active still applies", example = "WDI", required = false) @RequestParam prison_id: String?,
-  ): List<PrisonNameDto> = prisonService.getPrisonNames(active, prison_id)
+  ): List<PrisonNameDto> = prisonLookupService.getPrisonNames(active, prison_id)
 
   @PostMapping("/prisonsByIds", consumes = ["application/json"])
   @Operation(summary = "Get prisons by IDs", description = "Get prisons based on their IDs")
@@ -159,7 +171,7 @@ class PrisonResource(private val prisonService: PrisonService, private val addre
   )
   fun getPrisonsByIds(
     @RequestBody @Valid prisonRequest: PrisonRequest,
-  ) = prisonService.findPrisonsByIds(prisonRequest.prisonIds?.filterNotNull() ?: emptyList())
+  ) = prisonLookupService.findByIds(prisonRequest.prisonIds?.filterNotNull() ?: emptyList())
 }
 
 @Schema(description = "Prison Information")
@@ -168,6 +180,7 @@ data class PrisonDto(
   @Schema(description = "Prison ID", example = "MDI", required = true) val prisonId: String,
   @Schema(description = "Name of the prison", example = "Moorland HMP", required = true) val prisonName: String,
   @Schema(description = "Name of the prison in Welsh", example = "Carchar Brynbuga", required = false) val prisonNameInWelsh: String? = null,
+  @Schema(description = "Description of the prison", example = "HMP BRIXTON", required = false) val prisonDescription: String? = null,
   @Schema(description = "Whether the prison is still active", required = true) val active: Boolean,
   @Schema(description = "Whether the prison has male prisoners") val male: Boolean,
   @Schema(description = "Whether the prison has female prisoners") val female: Boolean,
@@ -176,25 +189,28 @@ data class PrisonDto(
   @Schema(description = "List of types for this prison") val types: List<PrisonTypeDto> = listOf(),
   @Schema(description = "List of the categories for this prison") val categories: Set<Category> = setOf(),
   @Schema(description = "List of address for this prison") val addresses: List<AddressDto> = listOf(),
-  @Schema(description = "List of operators for this prison") val operators: List<PrisonOperatorDto> = listOf(),
+  @Schema(description = "List of operators for this prison") @Deprecated("Use currentOperator instead") val operators: List<PrisonOperatorDto> = listOf(),
+  @Schema(description = "The current operator for this prison") val currentOperator: PrisonOperator?,
 ) {
   constructor(prison: Prison) : this(
-    prison.prisonId,
-    prison.name,
-    prison.prisonNameInWelsh,
-    prison.active,
-    prison.male,
-    prison.female,
-    prison.contracted,
-    prison.lthse,
-    prison.prisonTypes.map { PrisonTypeDto(it) },
-    prison.categories.also { Hibernate.initialize(it) },
-    prison.addresses.map { AddressDto(it) },
-    prison.prisonOperators.map { PrisonOperatorDto(it) },
+    prisonId = prison.prisonId,
+    prisonName = prison.name,
+    prisonNameInWelsh = prison.prisonNameInWelsh,
+    prisonDescription = prison.description,
+    active = prison.active,
+    male = prison.male,
+    female = prison.female,
+    contracted = prison.contracted,
+    lthse = prison.lthse,
+    types = prison.prisonTypes.map { PrisonTypeDto(it) },
+    categories = prison.categories.toSet(),
+    addresses = prison.addresses.map { AddressDto(it) },
+    operators = prison.prisonOperators.map { PrisonOperatorDto(it) },
+    currentOperator = prison.prisonOperators.firstOrNull()?.let { PrisonOperator(id = it.id, name = it.name) },
   )
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 data class AddressDto(
   @Schema(description = "Unique ID of the address", example = "10000", required = true) val id: Long,
   @Schema(description = "Address line 1", example = "Bawtry Road", required = false) val addressLine1: String?,
@@ -210,7 +226,7 @@ data class AddressDto(
   @Schema(description = "Country in Welsh", example = "Cymru", required = false) val countryInWelsh: String?,
 ) {
   constructor(address: Address) : this(
-    address.id!!,
+    address.id,
     address.addressLine1,
     address.addressLine2,
     address.town,
@@ -225,7 +241,7 @@ data class AddressDto(
   )
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 data class PrisonTypeDto(
   @Schema(description = "Prison type code", example = "HMP", required = true) val code: Type,
   @Schema(
@@ -237,7 +253,7 @@ data class PrisonTypeDto(
   constructor(prisonType: PrisonType) : this(prisonType.type, prisonType.type.description)
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 data class PrisonOperatorDto(
   @Schema(description = "Prison operator name", example = "PSP, G4S", required = true) val name: String,
 ) {

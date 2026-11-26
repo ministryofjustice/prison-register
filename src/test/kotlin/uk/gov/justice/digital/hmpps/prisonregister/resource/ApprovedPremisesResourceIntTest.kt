@@ -13,9 +13,11 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Import
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -32,9 +34,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCapture
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCaptureConfiguration
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
+@Import(SqlCaptureConfiguration::class)
 class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
 
   @Autowired
@@ -60,6 +65,9 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var snsService: SnsService
+
+  @Autowired
+  lateinit var sqlCapture: SqlCapture
 
   @DisplayName("Get approved premises by id")
   @Nested
@@ -361,6 +369,153 @@ class ApprovedPremisesResourceIntTest : IntegrationTestBase() {
           .responseBody!!
 
         assertThat(approvedPremises).extracting("approvedPremisesId").containsExactly("LEEDAP")
+      }
+    }
+  }
+
+  @DisplayName("Get all approved premises summaries")
+  @Nested
+  inner class GetAllSummaries {
+    lateinit var approvedPremises: ApprovedPremises
+    lateinit var approvedPremises2: ApprovedPremises
+    lateinit var approvedPremises3: ApprovedPremises
+
+    @BeforeEach
+    fun setUp() {
+      approvedPremises = dsl.approvedPremises(
+        approvedPremisesId = "SHEFAP",
+        name = "Sheffield Approved Premises",
+        description = "Sheffield Central Approved Premises",
+        active = false,
+      ) {
+        address(addressLine1 = "1 High Street", town = "Sheffield", postcode = "S1 1AA")
+        email(emailAddress = "sheffield@justice.gov.uk")
+        phoneNumber(phoneNumber = "0114 555 0000")
+      }
+
+      approvedPremises2 = dsl.approvedPremises(
+        approvedPremisesId = "LEEDAP",
+        name = "Leeds Approved Premises",
+      ) {
+        address(addressLine1 = "2 High Street", town = "Leeds", postcode = "LS1 1AA")
+        email(emailAddress = "leeds@justice.gov.uk")
+        phoneNumber(phoneNumber = "0113 555 0000")
+      }
+
+      approvedPremises3 = dsl.approvedPremises(
+        approvedPremisesId = "BIRMAP",
+        name = "Birmingham Approved Premises",
+        description = "Birmingham Main Approved Premises",
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
+      approvedPremisesRepository.deleteById(approvedPremises2.approvedPremisesId)
+      approvedPremisesRepository.deleteById(approvedPremises3.approvedPremisesId)
+    }
+
+    private fun getSummaries(query: String = ""): List<ApprovedPremisesSummaryDto> = webTestClient.get()
+      .uri("/approved-premises/summary$query")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBodyList<ApprovedPremisesSummaryDto>()
+      .returnResult()
+      .responseBody!!
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/approved-premises/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/approved-premises/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/approved-premises/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `does not do a n + 1 query`() {
+        sqlCapture.statements.clear()
+
+        getSummaries()
+
+        assertThat(sqlCapture.statements).hasSize(1)
+      }
+
+      @Test
+      fun `will return all approved premises`() {
+        val premises = getSummaries()
+
+        assertThat(premises).extracting("approvedPremisesId").contains("SHEFAP", "LEEDAP", "BIRMAP")
+
+        val premisesDto = premises.first { it.approvedPremisesId == "SHEFAP" }
+        assertThat(premisesDto.approvedPremisesName).isEqualTo("Sheffield Approved Premises")
+        assertThat(premisesDto.active).isFalse
+
+        val premises2Dto = premises.first { it.approvedPremisesId == "LEEDAP" }
+        assertThat(premises2Dto.approvedPremisesName).isEqualTo("Leeds Approved Premises")
+        assertThat(premises2Dto.active).isTrue
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        assertThat(getSummaries("?active=false")).extracting("approvedPremisesId").containsExactly("SHEFAP")
+      }
+
+      @Test
+      fun `will filter by active flag when true`() {
+        val premises = getSummaries("?active=true")
+
+        assertThat(premises).extracting("approvedPremisesId").contains("LEEDAP", "BIRMAP")
+        assertThat(premises).extracting("approvedPremisesId").doesNotContain("SHEFAP")
+      }
+
+      @Test
+      fun `will filter by text search on approved premises id`() {
+        assertThat(getSummaries("?textSearch=SHEFAP")).extracting("approvedPremisesId").containsExactly("SHEFAP")
+      }
+
+      @Test
+      fun `will filter by text search on approved premises name`() {
+        assertThat(getSummaries("?textSearch=Leeds Approved")).extracting("approvedPremisesId").containsExactly("LEEDAP")
+      }
+
+      @Test
+      fun `will filter by text search on approved premises description, ignoring case`() {
+        assertThat(getSummaries("?textSearch=main approved")).extracting("approvedPremisesId").containsExactly("BIRMAP")
+      }
+
+      @Test
+      fun `will combine filters together`() {
+        assertThat(getSummaries("?active=true&textSearch=Leeds")).extracting("approvedPremisesId").containsExactly("LEEDAP")
       }
     }
   }

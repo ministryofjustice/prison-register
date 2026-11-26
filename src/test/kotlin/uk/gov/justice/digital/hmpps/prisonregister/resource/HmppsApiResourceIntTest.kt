@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
@@ -36,7 +38,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.RegionRepository
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CodeDescription
 import java.time.LocalDate
 
-class PublicApiResourceIntTest : IntegrationTestBase() {
+class HmppsApiResourceIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var dsl: Root
@@ -980,6 +982,82 @@ class PublicApiResourceIntTest : IntegrationTestBase() {
           .exchange()
           .expectStatus().isBadRequest
       }
+    }
+  }
+
+  @DisplayName("Agency maintenance resource GET endpoints accessible with HMPPS_REGISTERS_API__R")
+  @Nested
+  inner class MaintenanceResourceGetsWithReadRole {
+    lateinit var court: Court
+    lateinit var hospital: Hospital
+    lateinit var policeCustodySuite: PoliceCustodySuite
+    lateinit var probationOffice: ProbationOffice
+    lateinit var approvedPremises: ApprovedPremises
+    lateinit var otherAgency: OtherAgency
+    lateinit var prison: Prison
+
+    @BeforeEach
+    fun setUp() {
+      court = dsl.court(courtId = "RCOURT", name = "Read Court")
+      hospital = dsl.hospital(hospitalId = "RHOSP", name = "Read Hospital")
+      policeCustodySuite = dsl.policeCustodySuite(policeCustodySuiteId = "RPCS", name = "Read Police Custody Suite")
+      probationOffice = dsl.probationOffice(probationOfficeId = "RPROB", name = "Read Probation Office")
+      approvedPremises = dsl.approvedPremises(approvedPremisesId = "RAPPR", name = "Read Approved Premises")
+      otherAgency = dsl.agency(
+        agencyId = "RAGEN",
+        name = "Read Agency",
+        otherAgencyType = OtherAgencyType.AIRPORT,
+      )
+      prison = dsl.prison(
+        prisonId = "ZZI",
+        name = "Read Prison",
+      )
+    }
+
+    @AfterEach
+    fun tearDown() {
+      courtRepository.deleteById(court.courtId)
+      hospitalRepository.deleteById(hospital.hospitalId)
+      policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      probationOfficeRepository.deleteById(probationOffice.probationOfficeId)
+      approvedPremisesRepository.deleteById(approvedPremises.approvedPremisesId)
+      otherAgencyRepository.deleteById(otherAgency.agencyId)
+      prisonRepository.deleteById(prison.prisonId)
+    }
+
+    @ParameterizedTest(name = "GET {0} returns 200")
+    @ValueSource(
+      strings = [
+        "/courts/id/RCOURT",
+        "/courts",
+        "/courts/summary",
+        "/hospitals/id/RHOSP",
+        "/hospitals",
+        "/police-custody-suites/id/RPCS",
+        "/police-custody-suites",
+        "/probation-offices/id/RPROB",
+        "/probation-offices",
+        "/approved-premises/id/RAPPR",
+        "/approved-premises",
+        "/other-agencies/id/RAGEN",
+        "/other-agencies",
+        "/prisons/id/ZZI/details",
+      ],
+    )
+    fun `can be accessed with the read role and maintain role`(uri: String) {
+      webTestClient.get()
+        .uri(uri)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+        .exchange()
+        .expectStatus().isOk
+
+      webTestClient.get()
+        .uri(uri)
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+        .exchange()
+        .expectStatus().isOk
     }
   }
 }

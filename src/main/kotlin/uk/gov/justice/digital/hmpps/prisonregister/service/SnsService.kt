@@ -23,24 +23,34 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   }
   private val domaineventsTopicClient by lazy { domaineventsTopic.snsClient }
 
-  fun sendPrisonRegisterInsertedEvent(prisonId: String, occurredAt: Instant) {
+  fun sendPrisonRegisterInsertedEvent(prisonId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSDomainEvent(
         "register.prison.inserted",
-        AdditionalInformation(prisonId),
+        AdditionalInformation(prisonId, source),
         occurredAt,
         "A prison has been inserted",
       ),
     )
   }
 
-  fun sendPrisonRegisterAmendedEvent(prisonId: String, occurredAt: Instant) {
+  fun sendPrisonRegisterAmendedEvent(prisonId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSDomainEvent(
         "register.prison.amended",
-        AdditionalInformation(prisonId),
+        AdditionalInformation(prisonId, source),
         occurredAt,
         "A prison has been updated",
+      ),
+    )
+  }
+  fun sendPrisonRegisterAreaAmendedEvent(prisonId: String, occurredAt: Instant, source: String = "DPS") {
+    publishToDomainEventsTopic(
+      HMPPSDomainEvent(
+        "register.prison.area.amended",
+        AdditionalInformation(prisonId, source),
+        occurredAt,
+        "A prison area has been updated",
       ),
     )
   }
@@ -142,7 +152,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   fun sendAgencyRegisterInsertedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
-        "register.agency.inserted",
+        "register.other-agency.inserted",
         AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been inserted",
@@ -153,7 +163,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   fun sendAgencyRegisterAmendedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
-        "register.agency.amended",
+        "register.other-agency.amended",
         AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been updated",
@@ -164,7 +174,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
   fun sendAgencyRegisterDeletedEvent(agencyId: String, occurredAt: Instant, source: String = "DPS") {
     publishToDomainEventsTopic(
       HMPPSAgencyDomainEvent(
-        "register.agency.deleted",
+        "register.other-agency.deleted",
         AgencyAdditionalInformation(agencyId = agencyId, source = source),
         occurredAt,
         "An agency has been deleted",
@@ -222,7 +232,7 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
       else -> throw IllegalArgumentException("Unknown agency contact detail type: $type")
     }
     publishToDomainEventsTopic(
-      HMPPSAgencyDomainEvent("register.agency.$type.$action", additionalInformation, occurredAt, description),
+      HMPPSAgencyDomainEvent("register.other-agency.$type.$action", additionalInformation, occurredAt, description),
     )
   }
 
@@ -613,7 +623,8 @@ class SnsService(hmppsQueueService: HmppsQueueService, private val objectMapper:
 
 data class AdditionalInformation(
   val prisonId: String,
-)
+  override val source: String = "DPS",
+) : SourcedAdditionalInformation(source)
 
 open class SourcedAdditionalInformation(
   open val source: String,

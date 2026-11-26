@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -55,11 +56,20 @@ import java.time.LocalDate
 @Validated
 @RequestMapping("/probation-offices", produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__MAINTAIN__RW')")
+@Tag(
+  name = "Probation Office Maintenance API",
+  description = """
+  <h2>API for updating Probation Office data</h2>
+  <p>Requires HMPPS_REGISTERS_API__MAINTAIN__RW</p> 
+  <p>Provides ability to view or update any Probation Office data</p>""",
+)
 class ProbationOfficeResource(
   private val probationOfficeService: ProbationOfficeService,
   private val auditService: AuditService,
   private val snsService: SnsService,
 ) {
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping("/id/{probationOfficeId}")
   @Operation(summary = "Get specified probation office", description = "Information on a specific probation office")
   @ApiResponses(
@@ -77,6 +87,8 @@ class ProbationOfficeResource(
     probationOfficeId: String,
   ): ProbationOfficeDto = probationOfficeService.findById(probationOfficeId)
 
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
   @GetMapping
   @Operation(summary = "Get all probation offices", description = "Information on all probation offices")
   @ApiResponses(
@@ -91,6 +103,23 @@ class ProbationOfficeResource(
     @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
     @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
   ): List<ProbationOfficeDto> = probationOfficeService.getAll(active, textSearch)
+
+  @Tag(name = "HMPPS Agency Register API")
+  @PreAuthorize("hasAnyRole('HMPPS_REGISTERS_API__R', 'HMPPS_REGISTERS_API__MAINTAIN__RW')")
+  @GetMapping("/summary")
+  @Operation(summary = "Get summary of all probation offices", description = "Probation office IDs, names and active status ordered by probation office ID ascending")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Successful Operation",
+      ),
+    ],
+  )
+  fun getProbationOfficeSummaries(
+    @Parameter(description = "Active", example = "true", required = false) @RequestParam active: Boolean? = null,
+    @Parameter(description = "Text search", example = "Sheffield", required = false) @RequestParam textSearch: String? = null,
+  ): List<ProbationOfficeSummaryDto> = probationOfficeService.getAllSummaries(active, textSearch)
 
   @Operation(
     summary = "Create a new probation office",
@@ -751,6 +780,17 @@ class ProbationOfficeResource(
     )
   }
 }
+
+@Schema(description = "Probation Office summary information")
+@JsonInclude(NON_NULL)
+data class ProbationOfficeSummaryDto(
+  @Schema(description = "Probation Office ID", example = "SHEFPB")
+  val probationOfficeId: String,
+  @Schema(description = "Name", example = "Sheffield Probation Office")
+  val probationOfficeName: String,
+  @Schema(description = "Whether still active")
+  val active: Boolean,
+)
 
 @Schema(description = "Probation Office Information")
 @JsonInclude(NON_NULL)

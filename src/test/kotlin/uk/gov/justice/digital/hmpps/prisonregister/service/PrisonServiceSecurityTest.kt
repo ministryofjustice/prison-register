@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonregister.service
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.ContactDetailsRepositor
 import uk.gov.justice.digital.hmpps.prisonregister.model.DepartmentType.OFFENDER_MANAGEMENT_UNIT
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddress
 import uk.gov.justice.digital.hmpps.prisonregister.model.EmailAddressRepository
+import uk.gov.justice.digital.hmpps.prisonregister.model.Prison
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonRepository
 
 @WithMockUser(authorities = ["ROLE_MAINTAIN_REF_DATA", "SCOPE_write"])
@@ -41,13 +43,14 @@ class PrisonServiceSecurityTest(@Autowired val prisonService: PrisonService) : I
   @Test
   @WithMaintenanceMockUser
   fun `Authorised user can update email`() {
+    val prison = mock<Prison>()
     val contactDetails = ContactDetails(
-      "MDI",
+      prison,
       OFFENDER_MANAGEMENT_UNIT,
       EmailAddress("a@b.com"),
     )
 
-    whenever(contactDetailsRepository.getByPrisonIdAndType("MDI", contactDetails.type)).thenReturn(contactDetails)
+    whenever(contactDetailsRepository.getByPrison_PrisonIdAndType("MDI", contactDetails.type)).thenReturn(contactDetails)
     prisonService.setEmailAddress("MDI", "a@b.com", contactDetails.type)
   }
 

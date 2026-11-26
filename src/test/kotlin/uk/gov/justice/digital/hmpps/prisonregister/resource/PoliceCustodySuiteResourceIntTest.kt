@@ -13,9 +13,11 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Import
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.prisonregister.ErrorResponse
 import uk.gov.justice.digital.hmpps.prisonregister.dsl.Root
 import uk.gov.justice.digital.hmpps.prisonregister.integration.IntegrationTestBase
@@ -31,9 +33,12 @@ import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.AgencyPhoneDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdateEmailAddressDto
 import uk.gov.justice.digital.hmpps.prisonregister.resource.dto.CreateOrUpdatePhoneNumberDto
 import uk.gov.justice.digital.hmpps.prisonregister.service.SnsService
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCapture
+import uk.gov.justice.digital.hmpps.prisonregister.utilities.SqlCaptureConfiguration
 import uk.gov.justice.digital.hmpps.prisonregister.utilities.TransactionHelper
 import java.time.LocalDate
 
+@Import(SqlCaptureConfiguration::class)
 class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
   @Autowired
@@ -59,6 +64,9 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var snsService: SnsService
+
+  @Autowired
+  lateinit var sqlCapture: SqlCapture
 
   @DisplayName("Get police custody suite by id")
   @Nested
@@ -356,6 +364,153 @@ class PoliceCustodySuiteResourceIntTest : IntegrationTestBase() {
           .responseBody!!
 
         assertThat(policeCustodySuites).extracting("policeCustodySuiteId").containsExactly("LEEDPC")
+      }
+    }
+  }
+
+  @DisplayName("Get all police custody suite summaries")
+  @Nested
+  inner class GetAllSummaries {
+    lateinit var policeCustodySuite: PoliceCustodySuite
+    lateinit var policeCustodySuite2: PoliceCustodySuite
+    lateinit var policeCustodySuite3: PoliceCustodySuite
+
+    @BeforeEach
+    fun setUp() {
+      policeCustodySuite = dsl.policeCustodySuite(
+        policeCustodySuiteId = "SHEFPS",
+        name = "Sheffield Police Custody Suite",
+        description = "Sheffield Central Police Custody Suite",
+        active = false,
+      ) {
+        address(addressLine1 = "1 High Street", town = "Sheffield", postcode = "S1 1AA")
+        email(emailAddress = "sheffield@justice.gov.uk")
+        phoneNumber(phoneNumber = "0114 555 0000")
+      }
+
+      policeCustodySuite2 = dsl.policeCustodySuite(
+        policeCustodySuiteId = "LEEDPS",
+        name = "Leeds Police Custody Suite",
+      ) {
+        address(addressLine1 = "2 High Street", town = "Leeds", postcode = "LS1 1AA")
+        email(emailAddress = "leeds@justice.gov.uk")
+        phoneNumber(phoneNumber = "0113 555 0000")
+      }
+
+      policeCustodySuite3 = dsl.policeCustodySuite(
+        policeCustodySuiteId = "BIRMPS",
+        name = "Birmingham Police Custody Suite",
+        description = "Birmingham Main Police Custody Suite",
+      ) {}
+    }
+
+    @AfterEach
+    fun tearDown() {
+      policeCustodySuiteRepository.deleteById(policeCustodySuite.policeCustodySuiteId)
+      policeCustodySuiteRepository.deleteById(policeCustodySuite2.policeCustodySuiteId)
+      policeCustodySuiteRepository.deleteById(policeCustodySuite3.policeCustodySuiteId)
+    }
+
+    private fun getSummaries(query: String = ""): List<PoliceCustodySuiteSummaryDto> = webTestClient.get()
+      .uri("/police-custody-suites/summary$query")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__MAINTAIN__RW")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBodyList<PoliceCustodySuiteSummaryDto>()
+      .returnResult()
+      .responseBody!!
+
+    @Nested
+    inner class Security {
+      @Test
+      fun `requires a valid authentication token`() {
+        webTestClient.get()
+          .uri("/police-custody-suites/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus().isUnauthorized
+      }
+
+      @Test
+      fun `requires correct role`() {
+        webTestClient.get()
+          .uri("/police-custody-suites/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("BANANAS")))
+          .exchange()
+          .expectStatus().isForbidden
+      }
+
+      @Test
+      fun `allowed with correct role`() {
+        webTestClient.get()
+          .uri("/police-custody-suites/summary")
+          .accept(MediaType.APPLICATION_JSON)
+          .headers(setAuthorisation(roles = listOf("HMPPS_REGISTERS_API__R")))
+          .exchange()
+          .expectStatus().isOk
+      }
+    }
+
+    @Nested
+    inner class HappyPath {
+
+      @Test
+      fun `does not do a n + 1 query`() {
+        sqlCapture.statements.clear()
+
+        getSummaries()
+
+        assertThat(sqlCapture.statements).hasSize(1)
+      }
+
+      @Test
+      fun `will return all police custody suites`() {
+        val suites = getSummaries()
+
+        assertThat(suites).extracting("policeCustodySuiteId").contains("SHEFPS", "LEEDPS", "BIRMPS")
+
+        val suiteDto = suites.first { it.policeCustodySuiteId == "SHEFPS" }
+        assertThat(suiteDto.policeCustodySuiteName).isEqualTo("Sheffield Police Custody Suite")
+        assertThat(suiteDto.active).isFalse
+
+        val suite2Dto = suites.first { it.policeCustodySuiteId == "LEEDPS" }
+        assertThat(suite2Dto.policeCustodySuiteName).isEqualTo("Leeds Police Custody Suite")
+        assertThat(suite2Dto.active).isTrue
+      }
+
+      @Test
+      fun `will filter by active flag`() {
+        assertThat(getSummaries("?active=false")).extracting("policeCustodySuiteId").containsExactly("SHEFPS")
+      }
+
+      @Test
+      fun `will filter by active flag when true`() {
+        val suites = getSummaries("?active=true")
+
+        assertThat(suites).extracting("policeCustodySuiteId").contains("LEEDPS", "BIRMPS")
+        assertThat(suites).extracting("policeCustodySuiteId").doesNotContain("SHEFPS")
+      }
+
+      @Test
+      fun `will filter by text search on police custody suite id`() {
+        assertThat(getSummaries("?textSearch=SHEFPS")).extracting("policeCustodySuiteId").containsExactly("SHEFPS")
+      }
+
+      @Test
+      fun `will filter by text search on police custody suite name`() {
+        assertThat(getSummaries("?textSearch=Leeds Police")).extracting("policeCustodySuiteId").containsExactly("LEEDPS")
+      }
+
+      @Test
+      fun `will filter by text search on police custody suite description, ignoring case`() {
+        assertThat(getSummaries("?textSearch=main police")).extracting("policeCustodySuiteId").containsExactly("BIRMPS")
+      }
+
+      @Test
+      fun `will combine filters together`() {
+        assertThat(getSummaries("?active=true&textSearch=Leeds")).extracting("policeCustodySuiteId").containsExactly("LEEDPS")
       }
     }
   }
