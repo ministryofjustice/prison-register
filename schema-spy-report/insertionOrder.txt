@@ -40,7 +40,6 @@ prison_type
 probation_office_to_agency_address
 probation_office_to_email_address
 probation_office_to_phone
-agency_type
 county_suggestions
 court_type
 flyway_schema_history

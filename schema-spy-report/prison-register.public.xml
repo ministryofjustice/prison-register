@@ -130,15 +130,6 @@
             <column ascending="true" name="phone_id"/>
          </index>
       </table>
-      <table name="agency_type" remarks="NOMIS agency type codes and their descriptions, for example APPR Approved Premises. Reference only: the API does not read this table, and agency.agency_type holds the register's type names rather than these codes." schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="code" nullable="false" remarks="Code, for example APPR. [Sensitivity: NONE]" size="12" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description, for example Approved Premises. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="active" nullable="false" remarks="Whether the code can still be used. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
-         <primaryKey column="code" sequenceNumberInPK="1"/>
-         <index name="agency_type_pkey" unique="true">
-            <column ascending="true" name="code"/>
-         </index>
-      </table>
       <table name="all_agencies" numRows="0" remarks="View of every agency id in the register, of any type, with its name and type. The API uses it to check that a new agency id is not already taken." schema="public" type="VIEW" viewSql=" SELECT prison.prison_id AS agency_id,&#10;    prison.name,&#10;    'PRISON'::text AS legacy_type&#10;   FROM prison&#10;UNION ALL&#10; SELECT court.court_id AS agency_id,&#10;    court.name,&#10;    'COURT'::text AS legacy_type&#10;   FROM court&#10;UNION ALL&#10; SELECT hospital.hospital_id AS agency_id,&#10;    hospital.name,&#10;        CASE&#10;            WHEN hospital.high_security THEN 'SECURE_HOSPITAL'::text&#10;            ELSE 'HOSPITAL'::text&#10;        END AS legacy_type&#10;   FROM hospital&#10;UNION ALL&#10; SELECT probation_office.probation_office_id AS agency_id,&#10;    probation_office.name,&#10;    'PROBATION_OFFICE'::text AS legacy_type&#10;   FROM probation_office&#10;UNION ALL&#10; SELECT police_custody_suite.police_custody_suite_id AS agency_id,&#10;    police_custody_suite.name,&#10;    'POLICE_CUSTODY_SUITE'::text AS legacy_type&#10;   FROM police_custody_suite&#10;UNION ALL&#10; SELECT approved_premises.approved_premises_id AS agency_id,&#10;    approved_premises.name,&#10;    'APPROVED_PREMISES'::text AS legacy_type&#10;   FROM approved_premises&#10;UNION ALL&#10; SELECT agency.agency_id,&#10;    agency.name,&#10;    agency.agency_type AS legacy_type&#10;   FROM agency;">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_id" nullable="true" remarks="Id of the agency. [Sensitivity: NONE]" size="6" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="Short name of the agency. [Sensitivity: NONE]" size="40" type="varchar" typeCode="12"/>
