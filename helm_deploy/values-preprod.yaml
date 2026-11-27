@@ -16,7 +16,6 @@ generic-service:
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     AUDIT_ENDPOINT_URL: "https://audit-api-preprod.hmpps.service.justice.gov.uk"
 
-# CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   businessHoursOnly: true
   rdsAlertsDatabases:

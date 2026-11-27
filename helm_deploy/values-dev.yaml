@@ -26,7 +26,6 @@ generic-service:
     SPRINGDOC_API_DOCS_ENABLED: "true"
     SPRINGDOC_SWAGGER_UI_ENABLED: "true"
 
-# CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   businessHoursOnly: true
   rdsAlertsDatabases:
